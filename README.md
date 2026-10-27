@@ -8,6 +8,11 @@ Players install from here through the launcher, which checks every file's SHA-25
 signature before the game sees it. Mods run in Horizon's sandbox, with no file, network or clock access, and can only
 do what their page lists.
 
+**Who is responsible.** Except the projects marked Official (made by the Horizon project), everything here is made and
+owned by its own authors, not by the Horizon project or its maintainers. A listing is not an endorsement. See the
+[mod policy](MOD-POLICY.md): what authors promise when they submit (ports of other mods included) and how to have
+a project taken down.
+
 ## Submit
 
 Use the form at [playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit): sign in with GitHub, pick the file
@@ -36,7 +41,8 @@ entry, and every later version must be signed with it, so nobody else can publis
 
 ## Report
 
-Something wrong with a project? [Report it](../../issues/new?template=report.yml). A project that does harm is taken
+Something wrong with a project? [Report it](../../issues/new?template=report.yml). Your work published without your
+permission? [Ask for a takedown](../../issues/new?template=takedown.yml) ([mod policy](MOD-POLICY.md)). A project that does harm is taken
 down in [`revoked.toml`](revoked.toml): the launcher then refuses it and turns installed copies off, telling players
 why.
 

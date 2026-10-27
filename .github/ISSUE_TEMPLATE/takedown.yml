@@ -1,0 +1,37 @@
+name: Takedown request (copyright)
+description: A project in the registry uses your work without your permission.
+title: "Takedown: "
+labels: [takedown]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for telling us. A project that uses your work without permission is removed
+        (see [MOD-POLICY.md](https://github.com/horizon-rust/horizon-mods/blob/main/MOD-POLICY.md)).
+        This issue is public: to write privately instead, use [lu4ovic.com](https://lu4ovic.com/#contact).
+  - type: input
+    id: project
+    attributes:
+      label: Project id
+      description: The last part of its page's address, playhorizon.dev/mods/<id>
+    validations:
+      required: true
+  - type: textarea
+    id: work
+    attributes:
+      label: Your work
+      description: What it is, where it is published, and what the project copies from it.
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: How to reach you
+      description: An email or profile, if not this GitHub account.
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Statement
+      options:
+        - label: I own the rights to this work, or I act for whoever does, and I believe this use is not allowed.
+          required: true

@@ -14,7 +14,7 @@ It shows a map in a corner of the screen: nothing else.
 authors = ["Horizon"]
 owners = ["ludovic111"]
 license = "MIT"
-source = "https://github.com/ludovic111/horizon/tree/main/mods/official/minimap"
+source = "https://github.com/horizon-rust/horizon/tree/main/mods/official/minimap"
 
 [[versions]]
 version = "1.0.0"

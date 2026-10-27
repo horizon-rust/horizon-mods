@@ -1,6 +1,6 @@
 # Horizon mods
 
-The registry of what is made for [Horizon](https://github.com/ludovic111/horizon): mods (`.hmod`), modpacks (`.hpack`)
+The registry of what is made for [Horizon](https://github.com/horizon-rust/horizon): mods (`.hmod`), modpacks (`.hpack`)
 and resource packs, each one reviewed before it is published. Browse them at
 [playhorizon.dev/mods](https://playhorizon.dev/mods) or in the launcher (Mods, then Horizon beside Modrinth).
 
@@ -24,7 +24,7 @@ What the registry takes now: mods, modpacks of registry mods, and resource packs
 shader pack format is out (Iris and OptiFine packs are on Modrinth). Before you submit a mod, run what the checks run:
 
 ```sh
-cargo install --git https://github.com/ludovic111/horizon cargo-horizon-mod
+cargo install --git https://github.com/horizon-rust/horizon cargo-horizon-mod
 cargo horizon-mod check target/horizon-mod/my_mod.hmod
 ```
 
@@ -53,8 +53,8 @@ why.
 | `scripts/` | What the workflows share |
 
 The format of the entries and of `index.json` is
-[docs/api/mod-index.md](https://github.com/ludovic111/horizon/blob/main/docs/api/mod-index.md) in Horizon's repository;
+[docs/api/mod-index.md](https://github.com/horizon-rust/horizon/blob/main/docs/api/mod-index.md) in Horizon's repository;
 the checks are `cargo horizon-mod check` and `cargo horizon-mod registry`, from Horizon at the commit in the
 repository variable `HORIZON_REV` (else `main`).
 
-The index: `https://ludovic111.github.io/horizon-mods/index.json`.
+The index: `https://horizon-rust.github.io/horizon-mods/index.json`.

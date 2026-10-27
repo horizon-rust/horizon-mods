@@ -15,7 +15,7 @@ It hears its own key and the mouse wheel while you hold it, and zooms the camera
 authors = ["Horizon"]
 owners = ["ludovic111"]
 license = "MIT"
-source = "https://github.com/ludovic111/horizon/tree/main/mods/official/zoom"
+source = "https://github.com/horizon-rust/horizon/tree/main/mods/official/zoom"
 
 [[versions]]
 version = "1.0.0"

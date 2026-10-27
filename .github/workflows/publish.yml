@@ -1,6 +1,6 @@
 # Merging publishes: each new version's file becomes a release asset
 # (<id>-<version>/<file>), then index.json and the icons go to GitHub Pages
-# (https://ludovic111.github.io/horizon-mods/index.json), which the launcher and
+# (https://horizon-rust.github.io/horizon-mods/index.json), which the launcher and
 # playhorizon.dev/mods read. Nothing is published if any entry fails its checks.
 # Every hour it runs again to refresh each project's `downloads`: GitHub's
 # download counts of its release assets.
@@ -49,7 +49,7 @@ jobs:
       - name: Build the index
         run: |
           mkdir -p site
-          cargo horizon-mod registry build . --files files --out site/index.json --generated "$(date -u +%FT%TZ)"
+          cargo horizon-mod registry build . --files files --out site/index.json --site https://horizon-rust.github.io/horizon-mods/ --generated "$(date -u +%FT%TZ)"
       - name: Publish new files as releases
         run: |
           cargo horizon-mod registry list . | while read -r sha id version file; do

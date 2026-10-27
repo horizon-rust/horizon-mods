@@ -17,7 +17,7 @@ It reads the game's items and recipes, hears its own keys and your clicks on the
 authors = ["Horizon"]
 owners = ["ludovic111"]
 license = "MIT"
-source = "https://github.com/ludovic111/horizon/tree/main/mods/official/recipes"
+source = "https://github.com/horizon-rust/horizon/tree/main/mods/official/recipes"
 
 [[versions]]
 version = "1.0.0"

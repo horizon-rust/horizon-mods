@@ -14,7 +14,7 @@ It reads the game's own frame counter and draws on the HUD: nothing else.
 authors = ["Horizon"]
 owners = ["ludovic111"]
 license = "MIT"
-source = "https://github.com/ludovic111/horizon/tree/main/mods/official/fps-overlay"
+source = "https://github.com/horizon-rust/horizon/tree/main/mods/official/fps-overlay"
 
 [[versions]]
 version = "1.0.0"

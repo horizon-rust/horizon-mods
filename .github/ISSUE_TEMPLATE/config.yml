@@ -4,5 +4,5 @@ contact_links:
     url: https://playhorizon.dev/mods/submit
     about: Mods, modpacks and resource packs for Horizon. Each submission is reviewed.
   - name: Horizon itself
-    url: https://github.com/ludovic111/horizon/issues
+    url: https://github.com/horizon-rust/horizon/issues
     about: Bugs in the game or the launcher.

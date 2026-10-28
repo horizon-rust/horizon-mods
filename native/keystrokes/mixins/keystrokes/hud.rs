@@ -6,6 +6,10 @@ fn keystrokes_hud(
     corners: &mut horizon_client::extras_hud::Corners,
 ) {
     use crate::game::official_keystrokes as m;
+    // Turned off in Options > Mods: nothing until the next build leaves it out.
+    if !game.native_on(m::ID) {
+        return;
+    }
     use horizon_client::extras::Corner;
     let settings = {
         let game = &*game;

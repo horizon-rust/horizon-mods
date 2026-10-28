@@ -6,7 +6,7 @@ priority = 100
 # The commit it was tested on. It uses only the native hook points (hooks 1 in
 # compatibility.json): the launcher builds it on any Horizon that has them.
 [compatibility]
-horizon_revision = "1149c92cb8c1fde5136197b6647a6eb220401a60"
+horizon_revision = "01d0f45c2d08d2b7686a3c44b02f574a3df72542"
 
 [[module]]
 id = "runtime"
@@ -31,6 +31,7 @@ kind = "HEAD"
 target = "horizon_client::game::native_hooks::Game<'_>::native_wheel"
 helper = "wheel.rs"
 bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
   { name = "steps", ty = "f32", value = "steps" },
   { name = "claimed", ty = "&mut bool", value = "&mut *claimed" },
 ]
@@ -41,6 +42,7 @@ kind = "HEAD"
 target = "horizon_client::game::native_hooks::Game<'_>::native_zoom"
 helper = "zoom.rs"
 bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "self" },
   { name = "zoom", ty = "&mut Option<crate::game::native_hooks::NativeZoom>", value = "&mut *zoom" },
 ]
 

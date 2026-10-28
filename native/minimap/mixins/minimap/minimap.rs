@@ -2,7 +2,8 @@
 fn minimap_view(game: &crate::game::Game<'_>, minimap: &mut Option<crate::game::native_hooks::NativeMinimap>) {
     use crate::game::official_minimap as m;
     use horizon_client::extras::Corner;
-    if minimap.is_some() {
+    // Turned off in Options > Mods: nothing until the next build leaves it out.
+    if minimap.is_some() || !game.native_on(m::ID) {
         return;
     }
     let settings = m::settings(|key| game.native_setting(m::ID, key));

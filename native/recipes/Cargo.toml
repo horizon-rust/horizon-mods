@@ -1,0 +1,11 @@
+[package]
+name = "horizon-mod-recipes"
+version = "2.0.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Horizon's official Recipes viewer, a native mod: every item beside your inventory, its recipes and uses."
+
+# The mod's logic and its tests: the same file the bundle adds to the game.
+[lib]
+path = "mixins/recipes/runtime.rs"

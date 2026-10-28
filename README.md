@@ -10,8 +10,8 @@ with no file, network or clock access, and can only do what their page lists.
 
 Native source mods (`.hnmod`, kind `native-mod`) are built into an isolated game by
 a launcher with native-mod support. They run with the player’s account permissions.
-Their bundles pin exact tested Horizon and Horizon Mixins revisions; support on
-other revisions is unverified. Registry checks inspect the source bundle without
+Their bundles pin the exact Horizon and Horizon Mixins revisions used for the build.
+Other revisions have not been validated. Registry checks inspect the source bundle without
 executing native code; reviewers must also examine the source and pinned-build
 validation. Publishing these requires the native-mod changes to `cargo-horizon-mod`
 and the launcher to have shipped first.

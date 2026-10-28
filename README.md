@@ -5,8 +5,16 @@ and resource packs, each one reviewed before it is published. Browse them at
 [playhorizon.dev/mods](https://playhorizon.dev/mods) or in the launcher (Mods, then Horizon beside Modrinth).
 
 Players install from here through the launcher, which checks every file's SHA-256 and, when the author signs, its
-signature before the game sees it. Mods run in Horizon's sandbox, with no file, network or clock access, and can only
-do what their page lists.
+signature before the game sees it. Sandboxed `.hmod` mods run in Horizon's sandbox,
+with no file, network or clock access, and can only do what their page lists.
+
+Native source mods (`.hnmod`, kind `native-mod`) are built into an isolated game by
+a launcher with native-mod support. They run with the player’s account permissions.
+Their bundles pin exact tested Horizon and Horizon Mixins revisions; support on
+other revisions is unverified. Registry checks inspect the source bundle without
+executing native code; reviewers must also examine the source and pinned-build
+validation. Publishing these requires the native-mod changes to `cargo-horizon-mod`
+and the launcher to have shipped first.
 
 **Who is responsible.** Except the projects marked Official (made by the Horizon project), everything here is made and
 owned by its own authors, not by the Horizon project or its maintainers. A listing is not an endorsement. See the

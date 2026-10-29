@@ -1,5 +1,5 @@
 id = "recipes"
-kind = "mod"
+kind = "native-mod"
 name = "Recipes"
 summary = "Every item beside your inventory, with its recipes and uses."
 description = """
@@ -13,11 +13,25 @@ Horizon's own recipe viewer.
 - On servers that are not Horizon, it shows this game's own 26.3 recipes. Which recipes you know, and what + can fill, follow the server's recipe book.
 
 It reads the game's items and recipes, hears its own keys and your clicks on the panel, and places recipes or gives items only when you ask: nothing else.
+
+Now a native mod (2.0.0): built into the game by the launcher, on the Horizon you play, like any native mod
+(Settings → Game → Native mods (experimental), then Build). It needs Horizon's native hook points version 2, in the
+Nightlies from 4baa571 on. Your settings and keys carry over from 1.0.0. Turn it off in Options > Mods: it rests at
+once, and the next build leaves it out. Its source is
+[horizon-mods/native/recipes](https://github.com/horizon-rust/horizon-mods/tree/main/native/recipes).
 """
 authors = ["Horizon"]
 owners = ["ludovic111"]
 license = "MIT"
-source = "https://github.com/horizon-rust/horizon/tree/main/mods/official/recipes"
+source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/recipes"
+
+[[versions]]
+version = "2.0.0"
+published = "2026-10-29"
+game = "26.3"
+file = "recipes-2.0.0.hnmod"
+sha256 = "51fddf300709404170061355afdf0b407f28eb928bcc0a9133c241cd63f4a0ed"
+changelog = "Native: built into the game by the launcher on Horizon's native hook points (version 2); settings and keys carry over; turn it off in Options > Mods."
 
 [[versions]]
 version = "1.0.0"

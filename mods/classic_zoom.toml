@@ -1,5 +1,5 @@
 id = "classic_zoom"
-kind = "mod"
+kind = "native-mod"
 name = "Classic Zoom"
 summary = "Hold V to zoom 3x, scroll for more, release to snap back. Instant, no settings, inspired by WI Zoom."
 description = """
@@ -32,13 +32,28 @@ Both can be installed at once: they use different keys.
 - Written from scratch for Horizon's mod API. Not affiliated with Wurst-Imperium.
 - Some servers forbid zoom mods: check the rules before you join.
 
+**Now a native mod (2.0.0)**: the launcher builds it into the game (Settings → Game → Native mods (experimental), then Build). Native mods are not sandboxed and run with your account's permissions, so read the source before you build it: it is one small bundle on Horizon's native hook points (key, wheel, zoom, mods list). Tested against Horizon `6f8c7a0e5d531d3834c4d0be4659a1db8e7e5c2a` with Horizon Mixins `0d6b103c70633d8fd9443d8d0acd3aadaacedb06`. A key set in 1.0.0 carries over. 1.0.0 is the WebAssembly version.
+
 Source and issues: [github.com/SU4G3/classic-zoom](https://github.com/SU4G3/classic-zoom)"""
 authors = ["Surge"]
 owners = ["SU4G3"]
 license = "GPL-3.0-or-later"
 source = "https://github.com/SU4G3/classic-zoom"
-icon = "https://github.com/SU4G3/classic-zoom/blob/main/.github/icon.png?raw=true"
+icon = "icons/classic_zoom.png"
 key = "RWTOxMcIG6MtC0QQnhWEMC+nLKJ6+u4trV/rF+4juSRuow8W4b5P+CPS"
+
+[[versions]]
+version = "2.0.0"
+published = "2026-10-29"
+game = "26.3"
+file = "classic_zoom-2.0.0.hnmod"
+sha256 = "a8bdeba615ed31b9bd10280fcf8ba04a31935bc65fff429fc0e83d1c8090dac9"
+signature = """
+untrusted comment: signature from minisign secret key
+RUTOxMcIG6MtCyXVhFrgrbWwg3pEBeR8iQ6g3w8MlWbzunH02kAF3swud3hq59EQvuoNpQxj7eTNRy6IJ4l+++7H1EazgGLV3AY=
+trusted comment: timestamp:1793286240\tfile:classic_zoom-2.0.0.hnmod\thashed
+bbYFmm0wap7Mgnt+wxSMkC/FqklbuAZage02x4Kt5Mi2mzknFbhWij/6sOx5ojRAquDT1XLRpRd2UrrAy4x4Bg=="""
+changelog = "Now a native mod (WebAssembly code mods are going away). Same zoom: V by default, 3x, x1.1 per wheel step within 1x-10x, instant, slower turning while zoomed; a key set in 1.0.0 carries over. Pinned to Horizon 6f8c7a0 and Horizon Mixins 0d6b103."
 
 [[versions]]
 version = "1.0.0"

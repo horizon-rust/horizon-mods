@@ -15,7 +15,7 @@ authors = ["d3grando"]
 owners = ["d3grando"]
 license = "MIT"
 source = "https://github.com/d3grando/enchantmenthints"
-icon = "https://raw.githubusercontent.com/d3grando/enchantmenthints/main/icon.png"
+icon = "icons/enchantmenthints.png"
 
 [[versions]]
 version = "0.1.0"

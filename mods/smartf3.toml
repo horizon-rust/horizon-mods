@@ -16,7 +16,7 @@ authors = ["d3grando"]
 owners = ["d3grando"]
 license = "MIT"
 source = "https://github.com/d3grando/smartf3"
-icon = "https://raw.githubusercontent.com/d3grando/smartf3/main/icon.png"
+icon = "icons/smartf3.png"
 
 [[versions]]
 version = "0.1.0"

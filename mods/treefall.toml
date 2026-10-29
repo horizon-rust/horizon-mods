@@ -16,7 +16,7 @@ authors = ["d3grando"]
 owners = ["d3grando"]
 license = "MIT"
 source = "https://github.com/d3grando/treefall"
-icon = "https://raw.githubusercontent.com/d3grando/treefall/main/icon.png"
+icon = "icons/treefall.png"
 
 [[versions]]
 version = "0.3.0"

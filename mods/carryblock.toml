@@ -17,7 +17,7 @@ authors = ["d3grando"]
 owners = ["d3grando"]
 license = "MIT"
 source = "https://github.com/d3grando/carryblock"
-icon = "https://raw.githubusercontent.com/d3grando/carryblock/main/icon.png"
+icon = "icons/carryblock.png"
 
 [[versions]]
 version = "0.1.2"

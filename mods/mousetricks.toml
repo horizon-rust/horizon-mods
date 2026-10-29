@@ -15,7 +15,7 @@ authors = ["d3grando"]
 owners = ["d3grando"]
 license = "MIT"
 source = "https://github.com/d3grando/mousetricks"
-icon = "https://raw.githubusercontent.com/d3grando/mousetricks/main/icon.png"
+icon = "icons/mousetricks.png"
 
 [[versions]]
 version = "0.2.0"

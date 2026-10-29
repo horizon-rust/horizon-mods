@@ -1,0 +1,19 @@
+id = "simple_coords"
+kind = "mod"
+name = "Simple Coords"
+summary = "Minimal coordinates HUD"
+description = """
+A minimal coordinates HUD: X, Y and Z on one line in the top-left corner.
+ /coords hides or shows the panel."""
+authors = ["andreore"]
+owners = ["andreore"]
+license = "MIT"
+source = "https://github.com/andreore/simple-coords"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-10-29"
+game = "26.3"
+file = "simple_coords-0.1.0.hmod"
+sha256 = "f8dea8b83687600479e116f3582ae1dde108224ab279f86dbfa6f43d4f9f6c7b"
+changelog = "First release: coordinates on one line in the top-left corner"

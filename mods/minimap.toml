@@ -1,5 +1,5 @@
 id = "minimap"
-kind = "mod"
+kind = "native-mod"
 name = "Minimap"
 summary = "A map of the world around you in a corner of the screen."
 description = """
@@ -10,11 +10,24 @@ Horizon's own minimap, formerly an extra in Options > Horizon Extras.
 - Settings: Options > Mods > Minimap > Settings (corner; size; square or round; zoom, 0.5 to 4 blocks per pixel; turn with the player).
 
 It shows a map in a corner of the screen: nothing else.
+
+Now a native mod (2.0.0): built into the game by the launcher, on the Horizon you play, like any native mod
+(Settings → Game → Native mods (experimental), then Build). Your settings carry over from 1.0.0. Turn it off in
+Options > Mods: it rests at once, and the next build leaves it out. Its source is
+[horizon-mods/native/minimap](https://github.com/horizon-rust/horizon-mods/tree/main/native/minimap).
 """
 authors = ["Horizon"]
 owners = ["ludovic111"]
 license = "MIT"
-source = "https://github.com/horizon-rust/horizon/tree/main/mods/official/minimap"
+source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/minimap"
+
+[[versions]]
+version = "2.0.0"
+published = "2026-10-29"
+game = "26.3"
+file = "minimap-2.0.0.hnmod"
+sha256 = "6f5dbca0699562b088a04b3f5abdc1b7faf8da51257a96da0a4ed639c6644ed9"
+changelog = "Native: built into the game by the launcher on Horizon's native hook points; settings carry over; turn it off in Options > Mods."
 
 [[versions]]
 version = "1.0.0"

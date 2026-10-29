@@ -65,7 +65,7 @@ why.
 | `.github/workflows/publish.yml` | On merge: releases, then `index.json` on Pages |
 | `.github/workflows/cleanup.yml` | Weekly: staging files nobody needs any more |
 | `.github/workflows/native.yml` | Horizon's native mods: each changed one's tests, `.hnmod` and game check, all of them together, and weekly on the newest Nightly |
-| `native/<name>/` | Horizon's own native mods (Zoom, FPS Counter, Keystrokes, Minimap): the source of their `.hnmod` files |
+| `native/<name>/` | Horizon's own native mods (Zoom, FPS Counter, Keystrokes, Minimap, Recipes): the source of their `.hnmod` files |
 | `native/tools/` | Shared by them: apply on Horizon, check, build, package, prove (`native/tools/native.py`) |
 | `scripts/` | What the workflows share |
 

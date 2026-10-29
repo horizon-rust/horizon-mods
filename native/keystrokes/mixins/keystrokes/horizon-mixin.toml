@@ -6,7 +6,7 @@ priority = 100
 # The commit it was tested on. It uses only the native hook points (hooks 1 in
 # compatibility.json): the launcher builds it on any Horizon that has them.
 [compatibility]
-horizon_revision = "8f91683323ac1165e7d76b3037e18f30fe647205"
+horizon_revision = "6f8c7a0e5d531d3834c4d0be4659a1db8e7e5c2a"
 
 [[module]]
 id = "runtime"

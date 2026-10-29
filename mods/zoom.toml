@@ -1,5 +1,5 @@
 id = "zoom"
-kind = "mod"
+kind = "native-mod"
 name = "Zoom"
 summary = "Hold a key to zoom in; the mouse wheel zooms further while you hold it."
 description = """
@@ -11,11 +11,24 @@ Horizon's own zoom, formerly an extra in Options > Horizon Extras.
 - Settings: Options > Mods > Zoom > Settings (the key; starting zoom; smooth zoom; slower turning).
 
 It hears its own key and the mouse wheel while you hold it, and zooms the camera: nothing else.
+
+Now a native mod (2.0.0): built into the game by the launcher, on the Horizon you play, like any native mod
+(Settings → Game → Native mods (experimental), then Build). Your settings carry over from 1.0.0. Turn it off in
+Options > Mods: it rests at once, and the next build leaves it out. Its source is
+[horizon-mods/native/zoom](https://github.com/horizon-rust/horizon-mods/tree/main/native/zoom).
 """
 authors = ["Horizon"]
 owners = ["ludovic111"]
 license = "MIT"
-source = "https://github.com/horizon-rust/horizon/tree/main/mods/official/zoom"
+source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/zoom"
+
+[[versions]]
+version = "2.0.0"
+published = "2026-10-29"
+game = "26.3"
+file = "zoom-2.0.0.hnmod"
+sha256 = "49fa2d7d635225c53304fbf1477606c0677eb23d94dac75b730f6c3ba065f127"
+changelog = "Native: built into the game by the launcher on Horizon's native hook points; settings carry over; turn it off in Options > Mods."
 
 [[versions]]
 version = "1.0.0"

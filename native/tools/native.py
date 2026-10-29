@@ -8,7 +8,8 @@
     python3 native/tools/native.py proof --resources PATH zoom   # build, then drive the game with horizon-ctl
     --horizon REV   build on another Horizon commit (`latest` = the newest Nightly) instead of the mods'
                     compatibility.json: they use only the native hook points, so they build on any Horizon whose
-                    NATIVE_HOOKS_API is at least the one they name, as the launcher does.
+                    NATIVE_HOOKS_API is at least the one they name, as the launcher does. Without it, mods pinned
+                    to different commits build on the commit of those that need the most hook points.
     `all` names every mod in native/.
 
 Horizon's source comes from GitHub's archive of the commit, never a local checkout; horizon-mixins is built once at
@@ -206,7 +207,10 @@ def main():
             package(m)
         return
     if args.horizon is None:
-        revs = {m.compat["horizon_revision"] for m in mods}
+        # Mods on the hook points build on any Horizon with the hook points they need, as the launcher builds
+        # them: the commit of the mods that need the most has them all (stage checks each mod's need).
+        newest = max(m.compat["hooks"] for m in mods)
+        revs = {m.compat["horizon_revision"] for m in mods if m.compat["hooks"] == newest}
         if len(revs) != 1:
             sys.exit(f"the mods were tested on different Horizons {sorted(revs)}: pass --horizon")
         revision = revs.pop()

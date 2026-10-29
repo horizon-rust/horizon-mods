@@ -1,5 +1,5 @@
 id = "keystrokes"
-kind = "mod"
+kind = "native-mod"
 name = "Keystrokes"
 summary = "Your movement keys, mouse buttons and space bar in a corner, lit while held, with clicks per second."
 description = """
@@ -10,11 +10,24 @@ Horizon's own keystrokes overlay, formerly an extra in Options > Horizon Extras.
 - Settings: Options > Mods > Keystrokes > Settings (corner; clicks per second).
 
 It reads which keys you hold and your clicks, and draws on the HUD: nothing else.
+
+Now a native mod (2.0.0): built into the game by the launcher, on the Horizon you play, like any native mod
+(Settings → Game → Native mods (experimental), then Build). Your settings carry over from 1.0.0. Turn it off in
+Options > Mods: it rests at once, and the next build leaves it out. Its source is
+[horizon-mods/native/keystrokes](https://github.com/horizon-rust/horizon-mods/tree/main/native/keystrokes).
 """
 authors = ["Horizon"]
 owners = ["ludovic111"]
 license = "MIT"
-source = "https://github.com/horizon-rust/horizon/tree/main/mods/official/keystrokes"
+source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/keystrokes"
+
+[[versions]]
+version = "2.0.0"
+published = "2026-10-29"
+game = "26.3"
+file = "keystrokes-2.0.0.hnmod"
+sha256 = "bed34d2f8049e92c52cd7c91c0c4c8c9d165faaf0183500cf4021d9e04783a7d"
+changelog = "Native: built into the game by the launcher on Horizon's native hook points; settings carry over; turn it off in Options > Mods."
 
 [[versions]]
 version = "1.0.0"

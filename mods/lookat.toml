@@ -1,26 +1,30 @@
 id = "lookat"
-kind = "mod"
+kind = "native-mod"
 name = "LookAt"
-summary = "The block under your crosshair as a vanilla tooltip: its icon, its name in your language and where it comes from. Reach up to 1024 blocks"
+summary = "The block or mob under your crosshair as a vanilla tooltip: icon, name in your language, health, the tool it needs and where it comes from"
 description = """
-The block under your crosshair at the top of the screen, drawn as a vanilla tooltip: its item's icon, its name in your language and the namespace it comes from.
+The block or entity under your crosshair at the top of the screen, drawn as a vanilla tooltip: its item's icon, its name in your language and the namespace it comes from.
 
-**Settings** (Options → Mods → LookAt):
+- **Blocks**: up to 1024 blocks away, across distant terrain.
+- **Mobs and players**: name and health as hearts or numbers; boats, minecarts, armor stands, paintings and item frames (with what they hold).
+- **Harvest tool**: ✔ or ✘ with the tool a block needs.
 
-- **Range**: Reach (5 blocks), 16, 64 or 1024 blocks, across distant terrain
-- **Position**: Top, Top left, Top right
-- **Background opacity**: 100%, 75%, 50%, 25%
-- **Item icon**, **Where it comes from**: on or off
-- **Position and distance**: the block's coordinates and how far it is
+**Settings** (Options → Mods → LookAt): range, position (top, top left, top right), size, background opacity, item icon, where it comes from, position and distance, entities, health, harvest tool. Boxes keep clear of F3, boss bars, the minimap and effect icons.
 
-To make the box bigger, raise the game's GUI Scale.
-
-**Blocks only for now**: the mod API can't see entities yet, so mobs show nothing."""
+**Now a native mod (0.2.1)**: the launcher builds it into the game (Settings → Game → Native mods (experimental), then Build). Native mods are not sandboxed and run with your account's permissions, so read the source before you build it. Tested against Horizon `142388e1c136e622652ec7505af15d8ad195e041` with Horizon Mixins `0d6b103c70633d8fd9443d8d0acd3aadaacedb06`; the launcher builds these exact pinned revisions. Settings from 0.1.0 carry over. 0.1.0 is the WebAssembly version."""
 authors = ["d3grando"]
 owners = ["d3grando"]
 license = "MIT"
 source = "https://github.com/d3grando/lookat"
-icon = "https://raw.githubusercontent.com/d3grando/lookat/main/icon.png"
+icon = "icons/lookat.png"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-10-29"
+game = "26.3"
+file = "lookat-0.2.1.hnmod"
+sha256 = "6c15726116825b5955984223d0e1bccd5d18375005af243a061b2ba2b9139f33"
+changelog = "Now a native mod (WebAssembly code mods are going away). New: mobs, players and other entities under the crosshair with their health, the harvest tool a block needs, a size setting, and boxes that keep clear of F3, boss bars, the minimap and effect icons. Pinned to Horizon 142388e and Horizon Mixins 0d6b103."
 
 [[versions]]
 version = "0.1.0"

@@ -7,3 +7,5 @@ pub mod smp_economy;
 pub mod smp_market;
 #[path = "../mixins/smp/smp_store.rs"]
 pub mod smp_store;
+#[path = "../mixins/smp/smp_trade.rs"]
+pub mod smp_trade;

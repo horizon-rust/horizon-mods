@@ -267,6 +267,13 @@ impl Economy {
         Ok(after)
     }
 
+    /// Appends a line of another kind to the audit log (a trade's items),
+    /// with the time; the change it records waits for it.
+    pub fn record(&mut self, mut entry: serde_json::Value) -> Result<(), String> {
+        entry["time"] = self.now.into();
+        self.audit.append(&entry)
+    }
+
     /// The accounts, richest first (then by name).
     pub fn top(&self) -> Vec<(&str, i64)> {
         let mut all: Vec<_> = self

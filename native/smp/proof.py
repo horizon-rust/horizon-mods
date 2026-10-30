@@ -7,6 +7,9 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - the commands are in each player's command tree (the chat box's suggestions);
 - the market (Steve in survival, items given from the console): /worth, /sell <item>, /sell hand, /buy, with the
   items gone from or in his inventory as his client sees it; a creative player can't sell;
+- trades (`/trade`, the server's chest menu clicked from each client): closing the menu, a full inventory, the
+  cancel button, dying and leaving each end or refuse a trade with nothing moved (each player's items counted from
+  their own client); a change of offer clears the other's confirmation; a confirmed trade swaps the items and money;
 - after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change.
 
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
@@ -129,6 +132,118 @@ class Client:
     def quit(self):
         self.run("quit", check=False)
 
+    def screen(self):
+        return self.run("screen")
+
+    def menu(self):
+        """The open server menu's items by its own slot (horizon-ctl numbers them from 300)."""
+        return {e["slot"] - 300: e for e in self.screen().get("slots", []) if e.get("item") and e["slot"] >= 300}
+
+    def slot_of(self, item):
+        """The inventory slot (0..36) holding `item`, as the open screen shows it."""
+        return next(e["slot"] for e in self.screen().get("slots", []) if e.get("item") == item and e["slot"] < 36)
+
+    def count(self, item):
+        counts = self.run("inventory").get("counts", {})
+        return counts.get(item, counts.get(item.removeprefix("minecraft:"), 0))
+
+    def click(self, slot):
+        self.run("click-slot", slot)
+        time.sleep(1)
+
+
+CONFIRM, CANCEL, THEIR_FIRST = 300 + 45, 300 + 48, 5
+
+
+def open_trade(alex, steve):
+    assert any("Trade request sent to Steve." in l for l in alex.say("/trade Steve"))
+    assert any("Alex wants to trade with you" in l for l in steve.chat()[-3:])
+    steve.say("/trade accept")
+    time.sleep(1)
+    for c, other in ((alex, "Steve"), (steve, "Alex")):
+        menu = c.menu()
+        assert menu.get(45, {}).get("item") == "minecraft:lime_stained_glass_pane", (c.name, menu)
+        title = "".join(s["text"] for s in c.screen().get("title", []))
+        assert title == f"Trade with {other}", title
+
+
+def trades(server, alex, steve, port, ctl, resources, root):
+    """Every way out of a trade, then one that goes through. Alex: 10 diamonds; Steve: 5 emeralds, 5 torches."""
+    results = {}
+    items = lambda: (alex.count("minecraft:diamond"), alex.count("minecraft:emerald"),
+                     steve.count("minecraft:diamond"), steve.count("minecraft:emerald"))
+    assert items() == (10, 0, 0, 5), items()
+    # Closing the menu.
+    open_trade(alex, steve)
+    alex.click(alex.slot_of("minecraft:diamond"))
+    shown = steve.menu().get(THEIR_FIRST, {})
+    assert (shown.get("item"), shown.get("count")) == ("minecraft:diamond", 10), shown
+    assert alex.count("minecraft:diamond") == 10, "offered stacks stay in the inventory"
+    alex.run("close")
+    time.sleep(1.5)
+    results["closed"] = steve.chat()[-2:]
+    assert any("Trade cancelled: Alex closed the trade. Nothing was exchanged." in l for l in results["closed"])
+    assert not steve.menu(), "the other's menu closes too"
+    assert items() == (10, 0, 0, 5), items()
+    # A full inventory: Steve can't take the diamonds; nothing moves, the trade stays open, both must confirm again.
+    server.console("give Steve minecraft:dirt 2176")
+    time.sleep(2)
+    open_trade(alex, steve)
+    alex.click(alex.slot_of("minecraft:diamond"))
+    alex.click(CONFIRM)
+    steve.click(CONFIRM)
+    results["full"] = alex.chat()[-2:]
+    assert any("The trade didn't go through: the second player has no room." in l for l in results["full"]), results
+    assert alex.menu().get(45, {}).get("item") == "minecraft:lime_stained_glass_pane", "confirmations cleared"
+    assert items() == (10, 0, 0, 5), items()
+    # The cancel button.
+    steve.click(CANCEL)
+    assert any("Trade cancelled: Steve cancelled." in l for l in alex.chat()[-2:])
+    server.console("clear Steve minecraft:dirt")
+    time.sleep(1)
+    # Through: Alex's diamonds for Steve's emeralds and 35 coins. Steve's money offer clears Alex's confirmation.
+    open_trade(alex, steve)
+    alex.click(alex.slot_of("minecraft:diamond"))
+    steve.click(steve.slot_of("minecraft:emerald"))
+    alex.click(CONFIRM)
+    assert alex.menu()[45]["item"] == "minecraft:lime_concrete"
+    assert steve.menu()[52]["item"] == "minecraft:lime_concrete", "Steve sees Alex confirmed"
+    steve.say("/trade money 35")
+    assert alex.menu()[45]["item"] == "minecraft:lime_stained_glass_pane", "a change clears the confirmation"
+    alex.click(CONFIRM)
+    steve.click(CONFIRM)
+    time.sleep(1)
+    results["done"] = alex.chat()[-2:]
+    assert any("Trade with Steve done" in l for l in results["done"]), results
+    assert items() == (0, 5, 10, 0), items()
+    assert any("Balance: 415 coins" in l for l in alex.say("/balance"))
+    assert any("Balance: 400 coins" in l for l in steve.say("/balance"))
+    # Dying (inventories kept, so a duplicate would show): Alex's death ends it, nothing moved.
+    server.console("gamerule keep_inventory true")
+    time.sleep(1)
+    open_trade(alex, steve)
+    alex.click(alex.slot_of("minecraft:emerald"))
+    server.console("kill Alex")
+    time.sleep(2)
+    results["death"] = steve.chat()[-2:]
+    assert any("Trade cancelled" in l for l in results["death"]), results
+    alex.run("respawn")
+    time.sleep(2)
+    assert items() == (0, 5, 10, 0), items()
+    # Leaving: Steve quits mid-trade; nothing moved, his items are his when he comes back.
+    open_trade(alex, steve)
+    steve.click(steve.slot_of("minecraft:diamond"))
+    steve.quit()
+    time.sleep(3)
+    results["left"] = alex.chat()[-2:]
+    assert any("Trade cancelled" in l for l in results["left"]), results
+    assert not alex.menu()
+    steve = Client(ctl, resources, "Steve2", root)
+    steve.name = "Steve"
+    steve.join(port)
+    assert items() == (0, 5, 10, 0), items()
+    return results, steve
+
 
 def run(ctl, resources, out):
     out = Path(out)
@@ -189,6 +304,11 @@ def run(ctl, resources, out):
         time.sleep(1)
         results["creative"] = alex.say("/sell all")
         assert any("only with players in survival or adventure mode" in l for l in results["creative"]), results
+        server.console("gamemode survival Alex")
+        server.console("give Alex minecraft:diamond 10")
+        server.console("give Steve minecraft:emerald 5")
+        time.sleep(2)
+        results["trades"], steve = trades(server, alex, steve, port, ctl, resources, root)
         steve.quit()
         alex.quit()
         lines = server.stop()
@@ -196,17 +316,22 @@ def run(ctl, resources, out):
         economy = json.loads((data / "economy.json").read_text())
         balances = {a["name"]: a["balance"] for a in economy["accounts"].values()}
         results["economy.json"] = balances
-        assert balances == {"Alex": 380, "Steve": 435}, balances
+        assert balances == {"Alex": 415, "Steve": 400}, balances
         audit = [json.loads(l) for l in (data / "audit.log").read_text().splitlines()]
         results["audit"] = [a["kind"] for a in audit]
         assert results["audit"] == ["open", "open", "eco_give", "pay", "sell 20 minecraft:wheat",
-                                    "sell 3 minecraft:diamond", "buy 5 minecraft:torch"], results["audit"]
+                                    "sell 3 minecraft:diamond", "buy 5 minecraft:torch", "trade", "trade_failed",
+                                    "trade", "trade_money"], results["audit"]
+        swap = [a for a in audit if a["kind"] == "trade"][-1]
+        assert (swap["a_items"], swap["b_items"], swap["b_money"]) == (
+            [{"item": "minecraft:diamond", "count": 10, "plain": True}],
+            [{"item": "minecraft:emerald", "count": 5, "plain": True}], 35), swap
         server.start()
         alex = Client(ctl, resources, "Alex2", root)
         alex.name = "Alex"
         alex.join(port)
         results["after_restart"] = alex.say("/balance")
-        assert any("Balance: 380 coins" in l for l in results["after_restart"]), results
+        assert any("Balance: 415 coins" in l for l in results["after_restart"]), results
         alex.quit()
         server.stop()
         print(json.dumps({"proof": "smp", "ok": True, **results}, indent=2))

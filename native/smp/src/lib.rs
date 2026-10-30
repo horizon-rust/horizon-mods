@@ -3,6 +3,8 @@
 //! `super::smp_store` reaches the same code in both.
 #[path = "../mixins/smp/smp_economy.rs"]
 pub mod smp_economy;
+#[path = "../mixins/smp/smp_games.rs"]
+pub mod smp_games;
 #[path = "../mixins/smp/smp_market.rs"]
 pub mod smp_market;
 #[path = "../mixins/smp/smp_store.rs"]

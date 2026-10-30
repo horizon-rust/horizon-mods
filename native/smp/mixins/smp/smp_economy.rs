@@ -47,6 +47,11 @@ pub struct Account {
 pub struct Accounts {
     /// By UUID, as `uuid_string` writes it.
     pub accounts: BTreeMap<String, Account>,
+    /// Money held for a game being decided (a coinflip's stake), by UUID:
+    /// in the same file as the balances, so a crash can't lose it or count
+    /// it twice. Given back when the economy opens (a restart voids games).
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub held: BTreeMap<String, i64>,
 }
 
 /// A player as a command sees them.
@@ -84,14 +89,113 @@ impl Economy {
     pub fn open(dir: &std::path::Path, config: Config) -> Result<Self, String> {
         let path = dir.join("economy.json");
         let accounts = read_json(&path)?;
-        Ok(Self {
+        let mut economy = Self {
             config,
             accounts,
             path,
             audit: Audit::new(dir.join("audit.log")),
             dirty: false,
             now: 0,
-        })
+        };
+        // Games the last run left undecided: their stakes go back.
+        let held: Vec<(String, i64)> = economy.accounts.held.clone().into_iter().collect();
+        for (key, amount) in held {
+            if let Some(uuid) = super::smp_store::parse_uuid(&key) {
+                economy.release("held_returned", uuid, amount)?;
+            }
+        }
+        Ok(economy)
+    }
+
+    /// Money `uuid` has held for a game.
+    pub fn held(&self, uuid: u128) -> i64 {
+        self.accounts
+            .held
+            .get(&uuid_string(uuid))
+            .copied()
+            .unwrap_or(0)
+    }
+
+    /// Moves `amount` of `uuid`'s balance to held, logged as `kind`.
+    pub fn hold(&mut self, kind: &str, uuid: u128, amount: i64) -> Result<(), String> {
+        let key = uuid_string(uuid);
+        let balance = self.balance(uuid);
+        if amount <= 0 || amount > MAX_AMOUNT {
+            return Err("The amount must be a positive whole number.".into());
+        }
+        if !self.accounts.accounts.contains_key(&key) {
+            return Err("No such account.".into());
+        }
+        if balance < amount {
+            return Err(format!("You only have {}.", self.money(balance)));
+        }
+        let entry = self.entry(kind, Some(uuid), None, amount, "");
+        self.audit.append(&entry)?;
+        self.accounts
+            .accounts
+            .get_mut(&key)
+            .expect("checked")
+            .balance -= amount;
+        *self.accounts.held.entry(key).or_default() += amount;
+        self.dirty = true;
+        Ok(())
+    }
+
+    /// Gives back up to `amount` of what `uuid` has held, logged as `kind`.
+    pub fn release(&mut self, kind: &str, uuid: u128, amount: i64) -> Result<(), String> {
+        let key = uuid_string(uuid);
+        let amount = amount.min(self.held(uuid));
+        if amount <= 0 {
+            return Ok(());
+        }
+        let entry = self.entry(kind, None, Some(uuid), amount, "");
+        self.audit.append(&entry)?;
+        self.take_held(&key, amount);
+        let account = self.accounts.accounts.entry(key).or_default();
+        account.balance = account.balance.saturating_add(amount);
+        self.dirty = true;
+        Ok(())
+    }
+
+    /// A game decided: each stake leaves held, and `winner` gets `prize`
+    /// (at most the stakes together), logged as `kind`.
+    pub fn award(
+        &mut self,
+        kind: &str,
+        stakes: &[(u128, i64)],
+        winner: u128,
+        prize: i64,
+    ) -> Result<(), String> {
+        let total: i64 = stakes.iter().map(|(_, a)| *a).sum();
+        if stakes.iter().any(|(u, a)| self.held(*u) < *a) || !(0..=total).contains(&prize) {
+            return Err("The stakes are not held.".into());
+        }
+        let mut entry = self.entry(kind, None, Some(winner), prize, "");
+        entry["stakes"] = stakes
+            .iter()
+            .map(|(u, a)| serde_json::json!({ "uuid": uuid_string(*u), "amount": a }))
+            .collect();
+        self.audit.append(&entry)?;
+        for (u, a) in stakes {
+            self.take_held(&uuid_string(*u), *a);
+        }
+        let account = self
+            .accounts
+            .accounts
+            .entry(uuid_string(winner))
+            .or_default();
+        account.balance = account.balance.saturating_add(prize);
+        self.dirty = true;
+        Ok(())
+    }
+
+    fn take_held(&mut self, key: &str, amount: i64) {
+        if let Some(h) = self.accounts.held.get_mut(key) {
+            *h -= amount;
+            if *h <= 0 {
+                self.accounts.held.remove(key);
+            }
+        }
     }
 
     /// Writes `economy.json` when it changed (end of a tick, world closing).

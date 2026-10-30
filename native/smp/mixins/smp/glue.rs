@@ -3,7 +3,8 @@
 // smp_trade, smp_games, smp_lottery, smp_places, smp_claims). Added to
 // the game as `game::smp_glue`; the helpers (register.rs, command.rs,
 // tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs, destroy_block.rs,
-// right_click_block.rs) call it from the
+// right_click_block.rs, block_spread.rs, piston_move.rs,
+// explosion_detonate.rs, fill_bucket.rs, attack_entity.rs) call it from the
 // hook points.
 
 use crate::game::{
@@ -29,7 +30,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.7.0";
+pub const VERSION: &str = "0.8.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -396,6 +397,60 @@ pub(in crate::game) fn guard(game: &mut Game<'_>, pos: [i32; 3], canceled: &mut 
         }
     }
 }
+/// A player hits the entity of type `kind` at `pos`: canceled when claims
+/// protect that type and the chunk is claimed by someone who doesn't trust
+/// them (`native_attack_entity`).
+pub(in crate::game) fn attack(game: &mut Game<'_>, kind: &str, pos: [f64; 3], canceled: &mut bool) {
+    if *canceled || !game.native_on(ID) {
+        return;
+    }
+    let protected = STATE
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .as_ref()
+        .is_some_and(|s| s.claims.as_ref().is_ok_and(|c| c.protects(kind)));
+    if protected {
+        guard(game, pos.map(|v| v.floor() as i32), canceled);
+    }
+}
+
+/// The world's dimension id, as players' places name it.
+pub(in crate::game) fn dimension_id(dimension: crate::game::LevelDimension) -> &'static str {
+    match dimension {
+        crate::game::LevelDimension::Overworld => "minecraft:overworld",
+        crate::game::LevelDimension::Nether => "minecraft:the_nether",
+        crate::game::LevelDimension::End => "minecraft:the_end",
+    }
+}
+
+/// Whether the world may change the blocks `to` from `from` (a fluid, fire,
+/// a piston's blocks): not into a claim from land of another owner. Asked
+/// on every flow: it only reads the claims already open, and allows while
+/// the SMP's state is busy (a hook inside the SMP's own call).
+pub(in crate::game) fn world_allows(dimension: &str, from: [i32; 3], to: &[[i32; 3]]) -> bool {
+    let Ok(state) = STATE.try_lock() else {
+        return true;
+    };
+    match state.as_ref().map(|s| &s.claims) {
+        Some(Ok(c)) => to.iter().all(|&t| c.spread_allowed(dimension, from, t)),
+        _ => true,
+    }
+}
+
+/// An explosion is about to break `blocks`: claimed land is spared
+/// (`native_explosion_detonate`).
+pub(in crate::game) fn explosion(game: &Game<'_>, dimension: &str, blocks: &mut Vec<[i32; 3]>) {
+    if !game.native_on(ID) {
+        return;
+    }
+    let Ok(state) = STATE.try_lock() else {
+        return;
+    };
+    if let Some(Ok(c)) = state.as_ref().map(|s| &s.claims) {
+        c.spare(dimension, blocks);
+    }
+}
+
 /// An item named `name` (not in italics, as a name the game gives).
 fn button(item: &str, name: &str, color: &str) -> ItemStack {
     let mut stack = ItemStack {

@@ -1,12 +1,12 @@
 [mod]
 id = "smp"
-version = "0.7.0"
+version = "0.8.0"
 priority = 100
 
-# The commit of horizon main it was tested on. It uses only the native hook points (hooks 21 in
+# The commit of horizon main it was tested on. It uses only the native hook points (hooks 22 in
 # compatibility.json): it builds on any Horizon that has them.
 [compatibility]
-horizon_revision = "b5b451de7c9d8d3dfc851c9405d4754724205e1b"
+horizon_revision = "524071f9cf4b2c69150e8fd39f6588ac04ed6f63"
 
 [[module]]
 id = "store"
@@ -145,5 +145,65 @@ helper = "right_click_block.rs"
 bindings = [
   { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
   { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "block_spread"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::GameLevel<'_>::native_block_spread"
+helper = "block_spread.rs"
+bindings = [
+  { name = "dimension", ty = "crate::game::LevelDimension", value = "dimension" },
+  { name = "from", ty = "horizon_core::position::BlockPos", value = "from" },
+  { name = "to", ty = "horizon_core::position::BlockPos", value = "to" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "piston_move"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::GameLevel<'_>::native_piston_move"
+helper = "piston_move.rs"
+bindings = [
+  { name = "dimension", ty = "crate::game::LevelDimension", value = "dimension" },
+  { name = "piston", ty = "horizon_core::position::BlockPos", value = "piston" },
+  { name = "direction", ty = "[i32; 3]", value = "direction" },
+  { name = "push", ty = "&[horizon_core::position::BlockPos]", value = "push" },
+  { name = "destroy", ty = "&[horizon_core::position::BlockPos]", value = "destroy" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "explosion_detonate"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_explosion_detonate"
+helper = "explosion_detonate.rs"
+bindings = [
+  { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
+  { name = "dimension", ty = "&str", value = "dimension" },
+  { name = "blocks", ty = "&mut Vec<[i32; 3]>", value = "&mut *blocks" },
+]
+
+[[injection]]
+id = "fill_bucket"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_fill_bucket"
+helper = "fill_bucket.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "attack_entity"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_attack_entity"
+helper = "attack_entity.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "kind", ty = "&str", value = "kind" },
+  { name = "pos", ty = "[f64; 3]", value = "pos" },
   { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
 ]

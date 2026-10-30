@@ -72,8 +72,13 @@ as any teleport does.
 click blocks: doors, chests, levers, buttons, placing a block, a bucket or flint on a block. Anyone else's click does
 nothing, and the action bar says whose land it is. The chunks a player may hold grow with the time played here
 (`claims.chunks`: `[hours, chunks]`, by default 4, 16 from 5 hours, 36 from 20, 64 from 100); `claims.enabled`
-turns them off. Not guarded yet: explosions, fire, pistons, liquids flowing in, entities (item frames, armour stands,
-animals) and buckets used in the air. The server's `spawn-protection` (vanilla's) guards the spawn.
+turns them off. The world stays out too: no water or lava flows, no fire spreads or burns, and no piston pushes into
+a claim from land that isn't its owner's (or a player's they trust), and explosions break no claimed block, whoever
+lit them. Buckets are guarded where they fill or empty, and hitting the claim's item frames, armour stands,
+paintings, boats, minecarts and animals does nothing for others (`claims.protected_entities`, entity ids; monsters
+and players aren't in it). Not guarded yet: right clicking an entity (rotating a frame's item, an armour stand's
+items, shearing, leads), which waits for Horizon's hook (#4648). The server's `spawn-protection` (vanilla's) guards
+the spawn.
 
 The currency is earned in game only: it can't be bought with real money or cashed out (Mojang's usage guidelines).
 
@@ -99,14 +104,15 @@ commands say so) rather than start from nothing.
 It hooks only Horizon's native hook points: `native_register_commands` and `native_perform_command` (API 8), the
 acting player's items (API 9), the server menus and `native_exchange_items` (API 10), the players' health and
 `native_run_command` (API 21), `native_destroy_block` (API 14), `native_right_click_block`, the acting player and the
-action bar (API 21), the server tick and the world lifecycle. `compatibility.json` names `"hooks": 21`.
+action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explosion_detonate`, `native_fill_bucket` and
+`native_attack_entity` (API 22), the server tick and the world lifecycle. `compatibility.json` names `"hooks": 22`.
 
 | File | What it is |
 |---|---|
 | `mixins/smp/horizon-mixin.toml` | The bundle: nine modules and the HEAD hooks |
 | `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
-| `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block}.rs` | One small helper per hook |
+| `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |
 
 ## Build and prove

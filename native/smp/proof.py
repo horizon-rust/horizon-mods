@@ -304,7 +304,8 @@ def claims(server, alex, steve):
     steve.run("place", *free, "--item", "minecraft:oak_planks", check=False)
     time.sleep(1.5)
     r["refused"] = [block(lever), block(dirt), block(free), json.dumps(steve.run("messages", 5))]
-    assert "powered=true" not in r["refused"][0] and "dirt" in r["refused"][1], r
+    # Not broken (grass may spread onto the dirt meanwhile).
+    assert "powered=true" not in r["refused"][0] and "minecraft:air" not in r["refused"][1], r
     assert "oak_planks" not in r["refused"][2], r
     assert "This land is claimed by Alex." in r["refused"][3], r
     r["trust"] = alex.say("/trust Steve")
@@ -313,9 +314,82 @@ def claims(server, alex, steve):
     steve.run("break", *dirt, "--timeout", 10, check=False)
     time.sleep(1.5)
     r["trusted"] = [block(lever), block(dirt)]
-    assert "powered=true" in r["trusted"][0] and "dirt" not in r["trusted"][1], r
+    assert "powered=true" in r["trusted"][0] and '"block": "minecraft:air"' in r["trusted"][1], r
     r["claims"] = alex.say("/claims")
     assert any("Your chunks (1 of 4)" in l for l in r["claims"]) and any("Trusted: Steve" in l for l in r["claims"]), r
+    return r
+
+
+def world_guard(server, alex, steve):
+    """Nothing reaches Alex's chunk from outside: water, fire, a piston, TNT, Steve's bucket and fists."""
+    r = {}
+    _, (ax, ay, az), _ = where(alex)
+    x0, z0, y = (math.floor(ax) >> 4) * 16, (math.floor(az) >> 4) * 16, math.floor(ay)
+    r["untrust"] = alex.say("/untrust Steve")
+    block = lambda x, yy, z: json.dumps(steve.run("block", x, yy, z))
+    for line in ("weather clear", f"tp Alex {x0 + 8.5} {y} {z0 - 12.5}", f"tp Steve {x0 + 4.5} {y} {z0 - 1.5}",
+                 # Water two blocks east of the chunk; fire on netherrack against planks on both sides of its
+                 # west edge (more planks outside, so some burn soon).
+                 f"setblock {x0 + 17} {y} {z0 + 8} minecraft:water",
+                 f"setblock {x0 - 1} {y - 1} {z0 + 8} minecraft:netherrack",
+                 f"setblock {x0} {y} {z0 + 8} minecraft:oak_planks",
+                 f"setblock {x0 - 2} {y} {z0 + 8} minecraft:oak_planks",
+                 f"setblock {x0 - 1} {y} {z0 + 7} minecraft:oak_planks",
+                 f"setblock {x0 - 1} {y} {z0 + 9} minecraft:oak_planks",
+                 f"setblock {x0 - 1} {y + 1} {z0 + 8} minecraft:oak_planks",
+                 f"setblock {x0 - 1} {y} {z0 + 8} minecraft:fire",
+                 # North of the chunk: a piston pushing dirt into it, another pushing away from it.
+                 f"setblock {x0 + 8} {y} {z0 - 2} minecraft:piston[facing=south]",
+                 f"setblock {x0 + 8} {y} {z0 - 1} minecraft:dirt",
+                 f"setblock {x0 + 12} {y} {z0 - 2} minecraft:piston[facing=north]",
+                 f"setblock {x0 + 12} {y} {z0 - 3} minecraft:dirt",
+                 f"setblock {x0 + 8} {y} {z0 - 3} minecraft:redstone_block",
+                 f"setblock {x0 + 12} {y} {z0 - 1} minecraft:redstone_block",
+                 "give Steve minecraft:water_bucket",
+                 f"summon minecraft:cow {x0 + 5.5} {y} {z0 + 0.5} {{NoAI:1b}}"):
+        server.console(line)
+    time.sleep(4)
+    r["water"] = [block(x0 + 16, y, z0 + 8), block(x0 + 15, y, z0 + 8)]
+    assert "water" in r["water"][0] and "water" not in r["water"][1], r
+    r["pistons"] = [block(x0 + 8, y, z0 - 2), block(x0 + 8, y, z0 - 1), block(x0 + 12, y, z0 - 2)]
+    assert "extended=false" in r["pistons"][0] and "dirt" in r["pistons"][1], r
+    assert "extended=true" in r["pistons"][2], r
+    # Steve's bucket on the chunk's ground: no water; then on the ground outside it.
+    steve.run("look-at-block", x0 + 3, y - 1, z0 + 1, "up")
+    steve.run("use-item")
+    time.sleep(1.5)
+    r["bucket"] = [block(x0 + 3, y, z0 + 1), json.dumps(steve.run("messages", 5))]
+    assert "water" not in r["bucket"][0] and "This land is claimed by Alex." in r["bucket"][1], r
+    # Steve's fist on Alex's cow: nothing, until Alex trusts him.
+    cow = steve.run("entities", 8, "cow")["entities"][0]
+    steve.run("attack", cow["id"])
+    time.sleep(1.5)
+    r["cow"] = [steve.run("entities", 8, "cow")["entities"][0]["health"]]
+    r["trust"] = alex.say("/trust Steve")
+    steve.run("attack", cow["id"])
+    time.sleep(1.5)
+    r["cow"].append(steve.run("entities", 8, "cow")["entities"][0]["health"])
+    assert r["cow"][0] == 10 and r["cow"][1] < 10, r
+    # Fire: the planks outside burn, those inside never.
+    for _ in range(90):
+        outside = [block(x0 - 2, y, z0 + 8), block(x0 - 1, y, z0 + 7), block(x0 - 1, y, z0 + 9),
+                   block(x0 - 1, y + 1, z0 + 8)]
+        if sum("oak_planks" not in b for b in outside) >= 2:
+            break
+        time.sleep(1)
+    r["fire"] = outside + [block(x0, y, z0 + 8)]
+    assert sum("oak_planks" not in b for b in outside) >= 1 and "oak_planks" in r["fire"][-1], r
+    # TNT two blocks south of the chunk: a crater outside, not one block of the chunk broken.
+    inside = lambda: json.dumps(steve.run("blocks", x0 + 4, y - 4, z0 + 12, x0 + 12, y + 2, z0 + 15)["counts"])
+    r["before_tnt"] = inside()
+    server.console(f"summon minecraft:tnt {x0 + 8.5} {y} {z0 + 17.5} {{fuse:1}}")
+    for _ in range(20):
+        time.sleep(1)
+        if "grass" not in block(x0 + 8, y - 1, z0 + 17):
+            break
+    time.sleep(1)
+    r["after_tnt"] = [inside(), block(x0 + 8, y - 1, z0 + 17)]
+    assert r["after_tnt"][0] == r["before_tnt"] and "grass" not in r["after_tnt"][1], r
     return r
 
 
@@ -474,6 +548,7 @@ def run(ctl, resources, out):
         # Before the coinflips: their last offer must still wait when the server stops.
         results["places"] = places(server, alex, steve)
         results["claims"] = claims(server, alex, steve)
+        results["world_guard"] = world_guard(server, alex, steve)
         results["coinflip"], alex_wins = coinflips(alex, steve)
         results["lottery"], alex_lotto = lottery(alex, steve, alex_wins)
         alex_after = 415 + (100 if alex_wins else -100) + (20 if alex_lotto else -30)

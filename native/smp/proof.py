@@ -10,6 +10,9 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - trades (`/trade`, the server's chest menu clicked from each client): closing the menu, a full inventory, the
   cancel button, dying and leaving each end or refuse a trade with nothing moved (each player's items counted from
   their own client); a change of offer clears the other's confirmation; a confirmed trade swaps the items and money;
+- coinflips (turned on in config.json before the first start, the other settings filled in): the stake is held from
+  the offer, the winner gets both, the limits and the cooldown refuse, and a stake left waiting when the server stops
+  comes back; the money in the game stays the same throughout;
 - after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change.
 
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
@@ -27,6 +30,7 @@ from pathlib import Path
 PROPERTIES = {
     "online-mode": "false", "white-list": "false", "enforce-secure-profile": "false", "level-type": "minecraft\\:flat", "spawn-protection": "0", "max-players": "4",
     "view-distance": "4", "simulation-distance": "4", "generate-structures": "false", "enable-command-block": "false",
+    "difficulty": "peaceful", "spawn-monsters": "false",
 }
 
 
@@ -167,6 +171,31 @@ def open_trade(alex, steve):
         assert title == f"Trade with {other}", title
 
 
+def coinflips(alex, steve):
+    """Alex 415, Steve 400. Returns what was seen and whether Alex won."""
+    results = {}
+    results["limits"] = alex.say("/coinflip 5")
+    assert any("A coinflip is 10 coins to 1,000 coins." in l for l in results["limits"]), results
+    results["offer"] = alex.say("/coinflip 100 Steve")
+    assert any("Coinflip of 100 coins offered to Steve" in l for l in results["offer"]), results
+    assert any("Balance: 315 coins" in l for l in alex.say("/balance")), "the stake is held"
+    assert any("Alex offers you a coinflip of 100 coins" in l for l in steve.chat()[-3:])
+    steve.say("/coinflip accept Alex")
+    time.sleep(1)
+    results["alex_saw"] = alex.chat()[-1:]
+    alex_wins = any("you won 200 coins" in l for l in results["alex_saw"])
+    assert alex_wins or any("you lost 100 coins" in l for l in results["alex_saw"]), results
+    steve_saw = steve.chat()[-2:]
+    assert any(("you lost 100 coins" if alex_wins else "you won 200 coins") in l for l in steve_saw), steve_saw
+    assert any(f"Balance: {415 + (100 if alex_wins else -100)} coins" in l for l in alex.say("/balance"))
+    assert any(f"Balance: {400 + (-100 if alex_wins else 100)} coins" in l for l in steve.say("/balance"))
+    results["cooldown"] = steve.say("/coinflip 50")
+    assert any("before your next coinflip" in l for l in results["cooldown"]), results
+    time.sleep(20)
+    assert any("Coinflip of 50 coins offered" in l for l in steve.say("/coinflip 50")), "after the cooldown"
+    return results, alex_wins
+
+
 def trades(server, alex, steve, port, ctl, resources, root):
     """Every way out of a trade, then one that goes through. Alex: 10 diamonds; Steve: 5 emeralds, 5 torches."""
     results = {}
@@ -256,14 +285,18 @@ def run(ctl, resources, out):
     steve = Client(ctl, resources, "Steve", root)
     results = {}
     try:
+        data = server.folder / "world" / "horizon-smp"
+        data.mkdir(parents=True)
+        (data / "config.json").write_text(json.dumps({"gambling": {"enabled": True, "cooldown_seconds": 20}}))
         server.start()
         alex.join(port)
         steve.join(port)
         time.sleep(2)
-        data = server.folder / "world" / "horizon-smp"
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
-        assert results["config_keys"] == ["currency", "market", "starting_balance"], config
+        assert results["config_keys"] == ["currency", "gambling", "market", "starting_balance"], config
+        assert config["gambling"] == {"enabled": True, "min_bet": 10, "max_bet": 1000, "cooldown_seconds": 20,
+                                      "offer_seconds": 60, "fee_percent": 0}, config
         assert config["market"]["items"]["minecraft:diamond"] == {"buy": 400, "sell": 100}, config
         server.console("op Alex")
         time.sleep(1)
@@ -309,19 +342,24 @@ def run(ctl, resources, out):
         server.console("give Steve minecraft:emerald 5")
         time.sleep(2)
         results["trades"], steve = trades(server, alex, steve, port, ctl, resources, root)
+        results["coinflip"], alex_wins = coinflips(alex, steve)
+        alex_after = 415 + (100 if alex_wins else -100)
+        # Steve's 50 is still waiting: the server stops with both on.
+        lines = server.stop()
         steve.quit()
         alex.quit()
-        lines = server.stop()
         assert not any("panicked" in l for l in lines), lines[-40:]
         economy = json.loads((data / "economy.json").read_text())
         balances = {a["name"]: a["balance"] for a in economy["accounts"].values()}
-        results["economy.json"] = balances
-        assert balances == {"Alex": 415, "Steve": 400}, balances
+        results["economy.json"] = economy
+        held = sum(economy.get("held", {}).values())
+        assert balances["Alex"] == alex_after and sum(balances.values()) + held == 815, economy
         audit = [json.loads(l) for l in (data / "audit.log").read_text().splitlines()]
         results["audit"] = [a["kind"] for a in audit]
         assert results["audit"] == ["open", "open", "eco_give", "pay", "sell 20 minecraft:wheat",
                                     "sell 3 minecraft:diamond", "buy 5 minecraft:torch", "trade", "trade_failed",
-                                    "trade", "trade_money"], results["audit"]
+                                    "trade", "trade_money", "coinflip_stake", "coinflip_stake", "coinflip_win",
+                                    "coinflip_stake"] + ["coinflip_cancel"] * (held == 0), results["audit"]
         swap = [a for a in audit if a["kind"] == "trade"][-1]
         assert (swap["a_items"], swap["b_items"], swap["b_money"]) == (
             [{"item": "minecraft:diamond", "count": 10, "plain": True}],
@@ -331,9 +369,14 @@ def run(ctl, resources, out):
         alex.name = "Alex"
         alex.join(port)
         results["after_restart"] = alex.say("/balance")
-        assert any("Balance: 415 coins" in l for l in results["after_restart"]), results
+        assert any(f"Balance: {alex_after} coins" in l for l in results["after_restart"]), results
         alex.quit()
         server.stop()
+        economy = json.loads((data / "economy.json").read_text())
+        assert "held" not in economy and sum(a["balance"] for a in economy["accounts"].values()) == 815, economy
+        kinds = [json.loads(l)["kind"] for l in (data / "audit.log").read_text().splitlines()]
+        assert kinds[-1] in ("held_returned", "coinflip_cancel"), kinds[-3:]
+        results["stake_back"] = kinds[-1]
         print(json.dumps({"proof": "smp", "ok": True, **results}, indent=2))
     finally:
         (out / "server.log").write_text("\n".join(server.lines))

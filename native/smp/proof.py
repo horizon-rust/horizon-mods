@@ -127,7 +127,13 @@ class Client:
         """A command typed in chat; returns the chat lines it brought."""
         before = len(self.chat())
         self.run("chat", line)
-        time.sleep(1.5)
+        # The answer, however busy the machine: up to 10 s for a first line,
+        # then a moment for the rest of it.
+        for _ in range(40):
+            time.sleep(0.25)
+            if len(self.chat()) > before:
+                break
+        time.sleep(1)
         return self.chat()[before:]
 
     def chat(self):

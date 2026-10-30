@@ -87,7 +87,7 @@ commands say so) rather than start from nothing.
 
 It hooks only Horizon's native hook points: `native_register_commands` and `native_perform_command` (API 8), the
 acting player's items (API 9), the server menus and `native_exchange_items` (API 10), the players' health and
-`native_run_command` (API 15), the server tick and the world lifecycle. `compatibility.json` names `"hooks": 15`.
+`native_run_command` (API 16), the server tick and the world lifecycle. `compatibility.json` names `"hooks": 16`.
 
 | File | What it is |
 |---|---|

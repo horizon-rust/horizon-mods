@@ -7,7 +7,7 @@ authors = ["Domanffe"]
 owners = ["Domanffe"]
 license = "MIT"
 source = "https://github.com/Domanffe/blockscope"
-icon = "https://raw.githubusercontent.com/Domanffe/blockscope/main/docs/icon.png"
+icon = "https://horizon-rust.github.io/horizon-mods/icons/blockscope.png"
 
 [[versions]]
 version = "0.2.0"

@@ -1,8 +1,8 @@
 {
   "game": "26.3",
-  "hooks": 18,
+  "hooks": 21,
   "horizon_repository": "https://github.com/horizon-rust/horizon",
-  "horizon_revision": "cf6e5c2474206eb697dfc6b2913878b36f7762e0",
+  "horizon_revision": "c0f09fed88c21b69865614daf1a1fc582af45646",
   "horizon_mixins_repository": "https://github.com/horizon-rust/horizon-mixins",
   "horizon_mixins_revision": "0d6b103c70633d8fd9443d8d0acd3aadaacedb06"
 }

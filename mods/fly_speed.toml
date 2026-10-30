@@ -1,0 +1,23 @@
+id = "fly_speed"
+kind = "native-mod"
+name = "Fly Speed"
+summary = "Allows you to change your fly speed"
+description = "Fly 0.1x to 20x your normal speed: /flyspeed, /flyspeed +1 to step, /flyspeed reset for 1x. Native Horizon mod."
+authors = ["ImmortalDev"]
+owners = ["ImmortalWhisper"]
+license = "All Rights Reserved"
+source = "https://github.com/ImmortalWhisper/Fly-Speed"
+key = "RWSy3RAfbzD2a0WMm0tQlVl+3GHigjwvwXKvzvnwfmoYrIAoIffbrSbP"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-10-30"
+game = "26.3"
+file = "fly_speed-0.1.0.hnmod"
+sha256 = "c50a3dcfd9ff68af00560f9cd330c4d18b3d9028113b6769ded54997d5267ddf"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUSy3RAfbzD2a/1H3F6VX9i5wllM8eP2z7FagPND9tqKj76TY2RNWvF/b4xYcqPLU7OLKAPDVY2+HglKTx9GKnAPPt0KQUYwmQQ=\r
+trusted comment: fly_speed-0.1.0.hnmod\r
+FcLZSTLhxoNvfQAXmKtGb96iTxdJgh2llOMq4GlGhJPgjrhCvllUHEsHWvXnk0sNKEJREKxQ3CVy8VmYcNQzBQ=="""
+changelog = "Created Mod"

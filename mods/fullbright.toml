@@ -1,0 +1,29 @@
+id = "fullbright"
+kind = "native-mod"
+name = "MoreGamma"
+summary = "Brightness past 100%: set your own gamma with /gamma, or toggle full brightness with /fullbright."
+description = """
+A native Horizon mod: the launcher builds it into the game (Settings → Game → Native mods, then Build). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Uses only Horizon's native hook points (hooks 1); tested on Horizon 41672b1 and horizon-mixins 0d6b103.
+
+See in the dark without torches or night vision. MoreGamma lets you set the brightness (gamma) far past the video settings' 100% "Bright" limit, with a chat command, and switch full brightness on and off.
+
+- `/gamma <value>`: your own gamma. `1` is vanilla's "Bright", `15` is fullbright, up to `100`; `/gamma 1500%` works too.
+- `/gamma` shows the gamma in effect.
+- `/gamma reset` (or `off`) goes back to your video settings slider; `/gamma on` turns your last custom gamma on again.
+- `/fullbright` toggles full brightness (gamma 15).
+- Options → Mods → Fullbright: an on/off button, a button cycling 100/200/500/1000/1500%, and a toggle key you can bind.
+
+Client-side: the commands are handled by your game before anything reaches a server, so it works in single player, on LAN and on servers. Your brightness slider and `options.txt` are never changed, so turning it off gives your own brightness back. Settings are remembered between sessions."""
+authors = ["bezi5kt"]
+owners = ["bezi5kt"]
+license = "MIT"
+source = "https://github.com/bezi5kt/gamma-rust"
+icon = "https://raw.githubusercontent.com/bezi5kt/gamma-rust/main/icon.png"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-30"
+game = "26.3"
+file = "fullbright-1.0.0.hnmod"
+sha256 = "573c5e04188e0b1a26eb42a8aeaeeefeb6fb334a096afaa834e71b8efa353ad7"
+changelog = "First release."

@@ -1,5 +1,6 @@
 id = "carryblock"
 kind = "native-mod"
+repo = "d3grando/carryblock"
 name = "Carry Block"
 summary = "Sneak and right-click with an empty hand to pick up a chest (with its items) or a small mob, carry it and put it down."
 description = """

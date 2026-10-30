@@ -1,5 +1,6 @@
 id = "chatheads"
 kind = "native-mod"
+repo = "Domanffe/chatheads"
 name = "ChatHeads"
 summary = "A player's head left of every chat line they wrote."
 description = """

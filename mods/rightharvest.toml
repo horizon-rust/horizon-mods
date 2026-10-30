@@ -1,5 +1,6 @@
 id = "rightharvest"
 kind = "native-mod"
+repo = "Domanffe/rightharvest"
 name = "RightClickHarvest"
 summary = "Right-click a ripe crop to pick it and sow it again."
 description = """

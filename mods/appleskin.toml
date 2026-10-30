@@ -1,5 +1,6 @@
 id = "appleskin"
 kind = "native-mod"
+repo = "soufied/AppleSkin-Horizon"
 name = "AppleSkin"
 summary = "Shows saturation, exhaustion and the food in your hand over the food bar."
 description = """

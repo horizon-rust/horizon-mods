@@ -15,12 +15,17 @@ who makes them, who is responsible for them, and how to have one removed. By sub
   hashes, that it builds or loads against the Horizon version it names, and that nothing obviously harmful is in it.
   That review is not a legal review, a security audit or a guarantee. Mods are provided as they are, without
   warranty, by their authors.
+- **A project is reviewed when it is listed, not release by release.** Its repository is linked from its entry, and the
+  releases it publishes there afterwards are listed after automatic checks only (the file's format, its hash, its
+  signature when the project has a key); no person reads them. The authors are responsible for every release; the
+  Horizon project can take any of them down.
 - **Native mods** (built into the game with [horizon-mixins](https://github.com/horizon-rust/horizon-mixins)) run
   with the same access to your computer as the game. Install them only from authors you trust.
 
 ## What authors promise when they submit
 
-Submitting a project, through the form or a pull request, means you confirm that:
+Listing a project, through the form or a pull request, means you confirm that it, and every release you publish in
+the repository you link, meets these promises:
 
 1. You made it, or you have the right to publish it, under the licence its entry names.
 2. **If it is a port or a translation of another mod** (for example from Java Edition), the original's licence allows
@@ -31,7 +36,7 @@ Submitting a project, through the form or a pull request, means you confirm that
    [usage guidelines](https://www.minecraft.net/usage-guidelines) and EULA allow. Horizon players bring their own
    copy of the game.
 4. It contains nothing that harms players: no malware, no stealing of accounts or data, no hidden network access.
-5. The `source` link has the code the published files were built from.
+5. The `source` link (your repository) has the code the released files were built from.
 
 You alone are responsible for what you publish and for any claim about it. The Horizon project may refuse, hide or
 remove any project, at any time, without having to give a reason.

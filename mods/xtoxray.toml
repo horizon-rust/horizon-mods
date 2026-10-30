@@ -1,5 +1,6 @@
 id = "xtoxray"
 kind = "native-mod"
+repo = "RealCat1st/XToXrayRust"
 name = "X To Xray"
 summary = "Opensource Xraymod"
 description = """

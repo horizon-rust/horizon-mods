@@ -1,5 +1,6 @@
 id = "enchantmenthints"
 kind = "native-mod"
+repo = "d3grando/enchantmenthints"
 name = "Enchantment Hints"
 summary = "A short description under every enchantment in item tooltips, in English and Russian."
 description = """

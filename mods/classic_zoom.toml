@@ -1,5 +1,6 @@
 id = "classic_zoom"
 kind = "native-mod"
+repo = "SU4G3/classic-zoom"
 name = "Classic Zoom"
 summary = "Hold V to zoom 3x, scroll for more, release to snap back. Instant, no settings, inspired by WI Zoom."
 description = """

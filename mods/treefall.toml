@@ -1,5 +1,6 @@
 id = "treefall"
 kind = "native-mod"
+repo = "d3grando/treefall"
 name = "TreeFall"
 summary = "Cut one log of a natural tree with an axe and the whole tree comes down."
 description = """

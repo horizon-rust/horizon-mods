@@ -1,5 +1,6 @@
 id = "itemnew"
 kind = "native-mod"
+repo = "d3grando/itemnew"
 name = "Item New"
 summary = "Newly picked-up items glow in your hotbar and inventory until you look at them."
 description = """

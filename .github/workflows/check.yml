@@ -67,6 +67,22 @@ jobs:
           path: files
           key: files-${{ hashFiles('head/mods/*.toml') }}
           restore-keys: files-
+      # The releases already read, to build the index with, and a trial of the releases of every
+      # project this pull request adds or changes (nothing is kept or reported in an issue).
+      - name: Read the releases of what it changes
+        run: |
+          git clone -q --depth 1 --branch versions "https://github.com/$GH_REPO" head/versions 2>/dev/null || true
+          ids=""
+          for f in head/mods/*.toml; do
+            id="$(basename "$f" .toml)"
+            cmp -s "$f" "base/mods/$id.toml" || ids="${ids:+$ids,}$id"
+          done
+          echo "Changed: ${ids:-none}"
+          if [ -n "$ids" ]; then
+            { echo "## Releases"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            python3 base/scripts/sync_releases.py head --only "$ids" --dry-run 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: Download its files
         run: base/scripts/fetch.sh head
       - name: Check each new file

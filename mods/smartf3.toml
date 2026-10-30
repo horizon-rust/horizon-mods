@@ -1,5 +1,6 @@
 id = "smartf3"
 kind = "native-mod"
+repo = "d3grando/smartf3"
 name = "SmartF3"
 summary = "A tidier, configurable F3 debug screen: the same information in modules you can colour, reorder and turn off."
 description = """

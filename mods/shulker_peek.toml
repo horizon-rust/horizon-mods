@@ -1,5 +1,6 @@
 id = "shulker_peek"
 kind = "native-mod"
+repo = "vstxx/shulkerpeek"
 name = "ShulkerPeek"
 summary = "A shulker box's contents as a 9 x 3 grid in its tooltip."
 description = """

@@ -1,5 +1,6 @@
 id = "eatinganimation"
 kind = "native-mod"
+repo = "soufied/EatingAnimation-Horizon"
 name = "Eating Animation"
 summary = "Shows bitten frames for the food, milk and potion in your hand while you eat or drink them."
 description = """

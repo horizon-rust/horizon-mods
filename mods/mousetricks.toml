@@ -1,5 +1,6 @@
 id = "mousetricks"
 kind = "native-mod"
+repo = "d3grando/mousetricks"
 name = "Mouse Tricks"
 summary = "Inventory mouse tricks: drag to spread or gather, the wheel moves items one by one, and R sorts."
 description = """

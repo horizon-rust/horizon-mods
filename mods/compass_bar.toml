@@ -1,5 +1,6 @@
 id = "compass_bar"
 kind = "mod"
+repo = "Fernandes585/Compass-Enhanced"
 name = "Compass Enhanced"
 summary = "A compass bar with degrees and colored directions, plus death points that guide you back."
 description = """

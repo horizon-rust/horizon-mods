@@ -1,5 +1,6 @@
 id = "veinminer"
 kind = "native-mod"
+repo = "levzzz5154/horizon-veinminer"
 name = "Veinminer"
 summary = "Mine connected ores and matching trees using Horizon's native player-mining behavior."
 description = """

@@ -1,5 +1,6 @@
 id = "lookat"
 kind = "native-mod"
+repo = "d3grando/lookat"
 name = "LookAt"
 summary = "The block or mob under your crosshair as a vanilla tooltip: icon, name in your language, health, the tool it needs and where it comes from"
 description = """

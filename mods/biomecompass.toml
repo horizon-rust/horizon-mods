@@ -1,5 +1,6 @@
 id = "biomecompass"
 kind = "native-mod"
+repo = "d3grando/biomecompass"
 name = "BiomeCompass"
 summary = "Craft a Biome Compass, pick a biome and its needle points to the nearest one."
 description = """

@@ -1,5 +1,6 @@
 id = "blockscope"
 kind = "mod"
+repo = "Domanffe/blockscope"
 name = "Blockscope"
 summary = "The block under your crosshair: its name, id, distance and icon, with reach, placement and opacity on its own settings page. A Jade-style tooltip for Horizon."
 description = "Jade-style block info for Horizon: the block under your crosshair, its name in your language, its block id, how far it is and its icon."

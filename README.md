@@ -1,7 +1,7 @@
 # Horizon mods
 
 The registry of what is made for [Horizon](https://github.com/horizon-rust/horizon): mods (`.hmod`), modpacks (`.hpack`)
-and resource packs, each one reviewed before it is published. Browse them at
+and resource packs. Each project is reviewed once, when it is listed; its later releases are checked by machine. Browse them at
 [playhorizon.dev/mods](https://playhorizon.dev/mods) or in the launcher (Mods, then Horizon beside Modrinth).
 
 Players install from here through the launcher, which checks every file's SHA-256 and, when the author signs, its
@@ -23,29 +23,64 @@ a project taken down.
 
 ## Submit
 
-Use the form at [playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit): sign in with GitHub, pick the file
-and fill in the page. The form checks the file, uploads it here and opens a pull request for you. Then:
+A project is listed by **a link to its GitHub repository and a page**. Use the form at
+[playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit) (sign in with GitHub), or open a pull request adding
+`mods/<id>.toml` yourself:
 
-1. This repository's checks run on it: the file's own checks, a trial run of a mod in the sandbox, the index it would
-   publish. Their report is in the pull request's checks.
-2. A reviewer (see [`.github/CODEOWNERS`](.github/CODEOWNERS)) reads the entry, the source and the report, and asks
-   for changes in the pull request if needed.
-3. Merging publishes it: the file becomes a release, the project appears on the site and in the launcher within
-   minutes.
+```toml
+id = "my_mod"
+kind = "native-mod"           # mod | native-mod | modpack | resourcepack | shader
+repo = "you/my-mod"           # your GitHub repository
+owners = ["you"]              # GitHub logins responsible for the project
+key = "RWT..."                # optional: your minisign public key, see Signing
+# The page, here or in horizon-registry.toml at the root of your repository (these win):
+name = "My mod"
+summary = "One line."
+license = "MIT"
+```
 
-What the registry takes now: mods, modpacks of registry mods, and resource packs. Shader packs open when Horizon's own
-shader pack format is out (Iris and OptiFine packs are on Modrinth). Before you submit a mod, run what the checks run:
+A reviewer (see [`.github/CODEOWNERS`](.github/CODEOWNERS)) reads the entry, your repository and its source, and the
+checks' report, and asks for changes in the pull request if needed. **That is the review: a project is reviewed when it
+is listed.** Merging lists it; it appears on the site and in the launcher as soon as it has a release.
+
+What the registry takes now: mods, native mods, modpacks of registry mods, and resource packs. Shader packs open when
+Horizon's own shader pack format is out (Iris and OptiFine packs are on Modrinth). Before you release, run what the
+checks run:
 
 ```sh
 cargo install --git https://github.com/horizon-rust/horizon cargo-horizon-mod
 cargo horizon-mod check target/horizon-mod/my_mod.hmod
 ```
 
-**Updates** come the same way: the form adds a version to your entry. Only an entry's `owners` publish its updates
-without a reviewer's extra look. A published file never changes: publish a new version.
+## Releasing a version
+
+**Publish a GitHub release in your repository. That is all.** Attach the file (`.hmod`, `.hnmod`, `.hpack`,
+`.hshader`, or a resource pack's `.zip`; exactly one per release), and its `.minisig` beside it if you sign. Not a
+draft, not a pre-release. Within the hour:
+
+1. The registry downloads the asset and runs the checks a submission runs: the file's own (its manifest, its content),
+   its signature when your entry has a key, and that its id is your entry's. Nothing is run: a native mod's code is
+   read, not built, by the registry.
+2. If they pass, the version is listed. The version, the game and a native mod's pins are the file's own manifest (the
+   tag when it names none); the date and the changelog are the release's, its notes. The SHA-256 is computed by the
+   registry, and the launcher downloads the asset from your repository and refuses other bytes.
+3. If they fail, the release is **skipped** and an issue here says why. Nothing is published. Publish a fixed release
+   with a new tag.
+
+No pull request, no reviewer. **Later releases are checked automatically, not reviewed by a person.** A published
+version never changes: publish a new one. Tags and asset names use letters, digits, `.`, `-`, `_`, `+`. A bad release is
+taken down in [`revoked.toml`](revoked.toml).
+
+**Your page** can live in your repository: a `horizon-registry.toml` at its root (read at the newest release's tag) with
+`name`, `summary`, `description`, `authors` and `license`. The entry's own fields win. Owners, key, kind and icon are
+changed by a pull request here.
 
 **Signing** is optional and recommended: put your [minisign](https://jedisct1.github.io/minisign/) public key in your
-entry, and every later version must be signed with it, so nobody else can publish an update in your name.
+entry, and every release must carry a `.minisig` made with it, so nobody who gets into your repository's releases can
+publish an update in your name without your key.
+
+Projects listed before releases were read have `[[versions]]` hosted in this repository; they keep working, and a
+release newer than the last of them is read like any other.
 
 ## Report
 
@@ -58,16 +93,17 @@ why.
 
 | Path | What |
 | --- | --- |
-| `mods/<id>.toml` | One project: its page and its versions, each pinned by SHA-256 |
+| `mods/<id>.toml` | One project: its repository link and page (and, for older projects, hosted versions pinned by SHA-256) |
+| `versions/<id>.json` | On the `versions` branch, written by the publish job: the releases read from each repository, as the index lists them |
 | `icons/<id>.png` | Its icon, at most 256 KiB |
 | `revoked.toml` | Files taken down |
 | `.github/workflows/check.yml` | A pull request's checks |
-| `.github/workflows/publish.yml` | On merge: releases, then `index.json` on Pages |
+| `.github/workflows/publish.yml` | On merge and every hour: reads new releases, then `index.json` on Pages |
 | `.github/workflows/cleanup.yml` | Weekly: staging files nobody needs any more |
 | `.github/workflows/native.yml` | Horizon's native mods: each changed one's tests, `.hnmod` and game check, all of them together, and weekly on the newest Nightly |
 | `native/<name>/` | Horizon's own native mods (Zoom, FPS Counter, Keystrokes, Minimap, Recipes, Coordinates HUD): the source of their `.hnmod` files |
 | `native/tools/` | Shared by them: apply on Horizon, check, build, package, prove (`native/tools/native.py`) |
-| `scripts/` | What the workflows share |
+| `scripts/` | What the workflows share (`sync_releases.py` reads the releases) |
 
 The format of the entries and of `index.json` is
 [docs/api/mod-index.md](https://github.com/horizon-rust/horizon/blob/main/docs/api/mod-index.md) in Horizon's repository;

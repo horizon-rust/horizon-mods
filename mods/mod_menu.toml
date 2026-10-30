@@ -1,5 +1,6 @@
 id = "mod_menu"
 kind = "mod"
+repo = "levzzz5154/horizon-mod-menu"
 name = "Mod Menu"
 summary = "Browse installed mods, including native mods, with versions, enabled states, filters and search."
 description = """

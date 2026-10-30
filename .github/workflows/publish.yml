@@ -2,8 +2,11 @@
 # (<id>-<version>/<file>), then index.json and the icons go to GitHub Pages
 # (https://horizon-rust.github.io/horizon-mods/index.json), which the launcher and
 # playhorizon.dev/mods read. Nothing is published if any entry fails its checks.
-# Every hour it runs again to refresh each project's `downloads`: GitHub's
-# download counts of its release assets.
+# Every hour it runs again to read the new GitHub releases of every project that
+# names a `repo` (scripts/sync_releases.py: each new release's file is downloaded
+# and checked like a submission, and listed when it passes, with no pull request),
+# and to refresh each project's `downloads`: GitHub's download counts of its
+# release assets. What it read is kept on the `versions` branch (versions/<id>.json).
 name: publish
 on:
   push:
@@ -13,6 +16,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  issues: write
   pages: write
   id-token: write
 concurrency:
@@ -29,8 +33,28 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       HORIZON_REV: ${{ vars.HORIZON_REV || 'main' }}
+      # The Minecraft version of a release whose file names none.
+      REGISTRY_GAME: ${{ vars.REGISTRY_GAME || '26.3' }}
     steps:
       - uses: actions/checkout@v4
+      # The releases already read: the `versions` branch, unprotected, written only by this job.
+      # It starts empty when the branch does not exist yet.
+      - id: branch
+        run: |
+          if git ls-remote --exit-code --heads origin versions >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.branch.outputs.exists == 'true'
+        with:
+          ref: versions
+          path: versions
+      - if: steps.branch.outputs.exists != 'true'
+        run: |
+          mkdir versions
+          git -C versions init -q -b versions
       - uses: actions/cache@v4
         with:
           path: |
@@ -46,10 +70,21 @@ jobs:
           key: files-${{ hashFiles('mods/*.toml') }}
           restore-keys: files-
       - run: scripts/fetch.sh .
+      - name: Read the new releases
+        run: python3 scripts/sync_releases.py .
       - name: Build the index
         run: |
           mkdir -p site
           cargo horizon-mod registry build . --files files --out site/index.json --site https://horizon-rust.github.io/horizon-mods/ --generated "$(date -u +%FT%TZ)"
+      # Only once the index built with what was read: a bad cache never lands.
+      - name: Keep what was read
+        run: |
+          cd versions
+          git add -A
+          if git diff --cached --quiet; then exit 0; fi
+          git -c user.name="horizon-mods" -c user.email="noreply@github.com" \
+            commit -q -m "Read releases: $(git diff --cached --name-only | sed 's/\.json$//' | grep -v '^\.' | tr '\n' ' ')"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GH_REPO}" HEAD:versions
       - name: Publish new files as releases
         run: |
           cargo horizon-mod registry list . | while read -r sha id version file; do

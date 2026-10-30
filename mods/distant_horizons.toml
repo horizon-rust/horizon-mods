@@ -1,5 +1,6 @@
 id = "distant_horizons"
 kind = "native-mod"
+repo = "denizsahin7744/distant-horizons-for-horizon-client"
 name = "Distant Horizons for Horizon Client"
 summary = "See far past your render distance: Distant Horizons' level-of-detail terrain, ported to Rust as a native mod."
 description = """

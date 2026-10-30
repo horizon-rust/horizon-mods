@@ -13,6 +13,8 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - coinflips (turned on in config.json before the first start, the other settings filled in): the stake is held from
   the offer, the winner gets both, the limits and the cooldown refuse, and a stake left waiting when the server stops
   comes back; the money in the game stays the same throughout;
+- the lottery: two players' tickets held, one drawn after `lottery_seconds`, the winner announced to everyone and paid
+  the pot;
 - after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change.
 
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
@@ -196,6 +198,27 @@ def coinflips(alex, steve):
     return results, alex_wins
 
 
+def lottery(alex, steve, alex_wins):
+    """Alex buys 3 tickets, Steve 2; the round draws 30 s after the first. Returns what was seen, whether Alex won."""
+    results = {}
+    alex_had = 415 + (100 if alex_wins else -100)
+    steve_had = 400 + (-100 if alex_wins else 100) - 50  # his coinflip of 50 is still held
+    results["buy"] = alex.say("/lottery buy 3")
+    assert any("You bought 3 ticket(s) for 30 coins; the pot is 30 coins" in l for l in results["buy"]), results
+    assert any("the pot is 50 coins" in l for l in steve.say("/lottery buy 2"))
+    assert any(f"Balance: {alex_had - 30} coins" in l for l in alex.say("/balance")), "the tickets are held"
+    results["status"] = steve.say("/lottery")
+    assert any("Lottery: pot 50 coins, 2 ticket(s) of yours" in l for l in results["status"]), results
+    time.sleep(32)
+    results["draw"] = [l for l in alex.chat()[-3:] if l.startswith("Lottery:")]
+    assert len(results["draw"]) == 1 and "won 50 coins" in results["draw"][0], results
+    assert results["draw"][0] in steve.chat()[-3:], "everyone hears the draw"
+    alex_lotto = results["draw"][0].startswith("Lottery: Alex won")
+    assert any(f"Balance: {alex_had - 30 + (50 if alex_lotto else 0)} coins" in l for l in alex.say("/balance"))
+    assert any(f"Balance: {steve_had - 20 + (0 if alex_lotto else 50)} coins" in l for l in steve.say("/balance"))
+    return results, alex_lotto
+
+
 def trades(server, alex, steve, port, ctl, resources, root):
     """Every way out of a trade, then one that goes through. Alex: 10 diamonds; Steve: 5 emeralds, 5 torches."""
     results = {}
@@ -287,7 +310,8 @@ def run(ctl, resources, out):
     try:
         data = server.folder / "world" / "horizon-smp"
         data.mkdir(parents=True)
-        (data / "config.json").write_text(json.dumps({"gambling": {"enabled": True, "cooldown_seconds": 20}}))
+        (data / "config.json").write_text(json.dumps({"gambling": {"enabled": True, "cooldown_seconds": 20,
+                                                                         "lottery_seconds": 30}}))
         server.start()
         alex.join(port)
         steve.join(port)
@@ -296,7 +320,8 @@ def run(ctl, resources, out):
         results["config_keys"] = sorted(config)
         assert results["config_keys"] == ["currency", "gambling", "market", "starting_balance"], config
         assert config["gambling"] == {"enabled": True, "min_bet": 10, "max_bet": 1000, "cooldown_seconds": 20,
-                                      "offer_seconds": 60, "fee_percent": 0}, config
+                                      "offer_seconds": 60, "fee_percent": 0, "ticket_price": 10,
+                                      "max_tickets": 100, "lottery_seconds": 30}, config
         assert config["market"]["items"]["minecraft:diamond"] == {"buy": 400, "sell": 100}, config
         server.console("op Alex")
         time.sleep(1)
@@ -343,7 +368,8 @@ def run(ctl, resources, out):
         time.sleep(2)
         results["trades"], steve = trades(server, alex, steve, port, ctl, resources, root)
         results["coinflip"], alex_wins = coinflips(alex, steve)
-        alex_after = 415 + (100 if alex_wins else -100)
+        results["lottery"], alex_lotto = lottery(alex, steve, alex_wins)
+        alex_after = 415 + (100 if alex_wins else -100) + (20 if alex_lotto else -30)
         # Steve's 50 is still waiting: the server stops with both on.
         lines = server.stop()
         steve.quit()
@@ -359,7 +385,8 @@ def run(ctl, resources, out):
         assert results["audit"] == ["open", "open", "eco_give", "pay", "sell 20 minecraft:wheat",
                                     "sell 3 minecraft:diamond", "buy 5 minecraft:torch", "trade", "trade_failed",
                                     "trade", "trade_money", "coinflip_stake", "coinflip_stake", "coinflip_win",
-                                    "coinflip_stake"] + ["coinflip_cancel"] * (held == 0), results["audit"]
+                                    "coinflip_stake", "lottery_ticket", "lottery_ticket", "lottery_win"] + (
+                                    ["coinflip_cancel"] * (held == 0)), results["audit"]
         swap = [a for a in audit if a["kind"] == "trade"][-1]
         assert (swap["a_items"], swap["b_items"], swap["b_money"]) == (
             [{"item": "minecraft:diamond", "count": 10, "plain": True}],

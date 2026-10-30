@@ -1,0 +1,19 @@
+id = "worldedit"
+kind = "native-mod"
+name = "WorldEdit"
+summary = "working port of java world edit"
+description = """
+//we for commands
+
+working schematics."""
+authors = ["_cykoo_"]
+owners = ["XnotCykoX"]
+license = "MIT"
+source = "https://github.com/XnotCykoX/WorldEdit-Horizon"
+
+[[versions]]
+version = "1.2.1"
+published = "2026-10-30"
+game = "26.3"
+file = "worldedit-1.2.1.hnmod"
+sha256 = "b2bb3019ecd4d5392644c54c70a87d6c3277538a6e18d0c311f3a051f7d2f015"

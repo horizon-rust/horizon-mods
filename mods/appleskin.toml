@@ -1,0 +1,23 @@
+id = "appleskin"
+kind = "native-mod"
+name = "AppleSkin"
+summary = "Saturation and what the food in your hand restores."
+description = """
+A gold bar above the hunger row shows saturation out of 20, the stat vanilla hides and the one that decides whether you heal or starve.
+
+While a food is in your hand, a line shows what eating it gives: nutrition and saturation, red and `(wasted)` when the bar cannot take it.
+
+Settings: Options > Mods > AppleSkin > Settings (the bar, the food line)."""
+authors = ["Domanffe"]
+owners = ["Domanffe"]
+license = "MIT"
+source = "https://github.com/Domanffe/appleskin"
+icon = "https://horizon-rust.github.io/horizon-mods/icons/appleskin.png"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-10-30"
+game = "26.3"
+file = "appleskin-0.1.0.hnmod"
+sha256 = "c708516ef37b9d18b1d8374958037fecf0a5112b98591bd6a6c197c8b3bfc35f"
+changelog = "First release: a native mod for Horizon 26.3. A gold bar above the hunger row shows saturation out of 20; while a food is in hand, a line shows what eating it gives and marks it (wasted) when the bar cannot take it. Settings in Options > Mods."

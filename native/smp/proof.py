@@ -5,6 +5,8 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - /balance, /pay (the payer's answer and the payee's line), refused payments (too much, to oneself, unknown name);
 - /baltop; /eco is refused below level 3 and works for an operator (made one from the server's console);
 - the commands are in each player's command tree (the chat box's suggestions);
+- the market (Steve in survival, items given from the console): /worth, /sell <item>, /sell hand, /buy, with the
+  items gone from or in his inventory as his client sees it; a creative player can't sell;
 - after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change.
 
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
@@ -144,8 +146,10 @@ def run(ctl, resources, out):
         steve.join(port)
         time.sleep(2)
         data = server.folder / "world" / "horizon-smp"
-        results["config"] = json.loads((data / "config.json").read_text())
-        assert results["config"] == {"currency": "coins", "starting_balance": 0}, results["config"]
+        config = json.loads((data / "config.json").read_text())
+        results["config_keys"] = sorted(config)
+        assert results["config_keys"] == ["currency", "market", "starting_balance"], config
+        assert config["market"]["items"]["minecraft:diamond"] == {"buy": 400, "sell": 100}, config
         server.console("op Alex")
         time.sleep(1)
         alex.say("/eco give Alex 500")
@@ -164,6 +168,27 @@ def run(ctl, resources, out):
         results["baltop"] = steve.say("/baltop")
         assert any("1. Alex: 380 coins" in l for l in results["baltop"]), results
         assert any("2. Steve: 120 coins" in l for l in results["baltop"]), results
+        server.console("give Steve minecraft:diamond 3")
+        server.console("give Steve minecraft:wheat 20")
+        time.sleep(2)
+        results["worth"] = steve.say("/worth diamond")
+        assert any("diamond: the market pays 100 coins each, sells it for 400 coins each." in l
+                   for l in results["worth"]), results
+        results["sell_wheat"] = steve.say("/sell wheat")
+        assert any("Sold 20 wheat for 20 coins." in l for l in results["sell_wheat"]), results
+        results["sell_hand"] = steve.say("/sell hand")
+        assert any("Sold 3 diamond for 300 coins." in l for l in results["sell_hand"]), results
+        results["buy"] = steve.say("/buy torch 5")
+        assert any("Bought 5 torch for 5 coins." in l for l in results["buy"]), results
+        time.sleep(1)
+        counts = steve.run("inventory").get("counts", {})
+        results["steve_items"] = counts
+        have = lambda item: counts.get(f"minecraft:{item}", counts.get(item, 0))
+        assert (have("diamond"), have("wheat"), have("torch")) == (0, 0, 5), counts
+        server.console("gamemode creative Alex")
+        time.sleep(1)
+        results["creative"] = alex.say("/sell all")
+        assert any("only with players in survival or adventure mode" in l for l in results["creative"]), results
         steve.quit()
         alex.quit()
         lines = server.stop()
@@ -171,10 +196,11 @@ def run(ctl, resources, out):
         economy = json.loads((data / "economy.json").read_text())
         balances = {a["name"]: a["balance"] for a in economy["accounts"].values()}
         results["economy.json"] = balances
-        assert balances == {"Alex": 380, "Steve": 120}, balances
+        assert balances == {"Alex": 380, "Steve": 435}, balances
         audit = [json.loads(l) for l in (data / "audit.log").read_text().splitlines()]
         results["audit"] = [a["kind"] for a in audit]
-        assert results["audit"] == ["open", "open", "eco_give", "pay"], results["audit"]
+        assert results["audit"] == ["open", "open", "eco_give", "pay", "sell 20 minecraft:wheat",
+                                    "sell 3 minecraft:diamond", "buy 5 minecraft:torch"], results["audit"]
         server.start()
         alex = Client(ctl, resources, "Alex2", root)
         alex.name = "Alex"

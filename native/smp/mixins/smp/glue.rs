@@ -1,13 +1,15 @@
 // The SMP in the server's game: its state for the open world, and the edges
 // between the game's types and the rules (smp_economy, smp_market,
-// smp_trade, smp_games, smp_lottery, smp_places). Added to
+// smp_trade, smp_games, smp_lottery, smp_places, smp_claims). Added to
 // the game as `game::smp_glue`; the helpers (register.rs, command.rs,
-// tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs) call it from the
+// tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs, destroy_block.rs,
+// right_click_block.rs) call it from the
 // hook points.
 
 use crate::game::{
     Game,
     native_server::{NativeCommand, NativeServerPlayer},
+    smp_claims::{self, Claims},
     smp_economy::{self, Economy, Out, Player},
     smp_games::{self, Games},
     smp_lottery::Lottery,
@@ -27,7 +29,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.6.0";
+pub const VERSION: &str = "0.7.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -39,6 +41,7 @@ pub struct Config {
     pub market: smp_market::Config,
     pub gambling: smp_games::Config,
     pub places: smp_places::Config,
+    pub claims: smp_claims::Config,
 }
 
 /// The SMP of the open world.
@@ -52,6 +55,9 @@ pub struct Smp {
     lottery: Lottery,
     /// An error when `places.json` can't be read: the commands say so.
     places: Result<Places, String>,
+    /// An error when `claims.json` can't be read: nothing is guarded then,
+    /// and the commands say so.
+    claims: Result<Claims, String>,
 }
 
 static STATE: Mutex<Option<Smp>> = Mutex::new(None);
@@ -96,6 +102,10 @@ fn open(dir: PathBuf) -> Smp {
     if let Err(e) = &places {
         log::error!("[smp] homes and warps are off: {e}");
     }
+    let claims = Claims::open(&dir, config.claims);
+    if let Err(e) = &claims {
+        log::error!("[smp] claims are off: {e}");
+    }
     Smp {
         dir,
         economy,
@@ -106,6 +116,7 @@ fn open(dir: PathBuf) -> Smp {
         games: Games::new(config.gambling),
         lottery: Lottery::default(),
         places,
+        claims,
     }
 }
 
@@ -133,6 +144,11 @@ fn save(smp: &mut Smp) {
     }
     if let Ok(p) = &mut smp.places
         && let Err(err) = p.save(chrono::Utc::now().timestamp_millis())
+    {
+        log::error!("[smp] {err}");
+    }
+    if let Ok(c) = &mut smp.claims
+        && let Err(err) = c.save()
     {
         log::error!("[smp] {err}");
     }
@@ -172,6 +188,12 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "tpaccept [player:word]",
         "tpdeny [player:word]",
         "rules",
+        "claim",
+        "claim info",
+        "unclaim",
+        "claims",
+        "trust <player:word>",
+        "untrust <player:word>",
     ] {
         commands.push(NativeCommand::new(usage));
     }
@@ -256,7 +278,8 @@ pub(in crate::game) fn perform(
     ran: &mut bool,
 ) {
     let word = line.split(' ').next().unwrap_or_default();
-    if !game.native_on(ID) || !(COMMANDS.contains(&word) || smp_places::COMMANDS.contains(&word)) {
+    let ours = [&COMMANDS[..], &smp_places::COMMANDS, &smp_claims::COMMANDS];
+    if !game.native_on(ID) || !ours.iter().any(|c| c.contains(&word)) {
         return;
     }
     let Some(dir) = game.native_world_dir() else {
@@ -280,7 +303,28 @@ pub(in crate::game) fn perform(
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
     let mut acts = Vec::new();
-    let out = if smp_places::COMMANDS.contains(&word) {
+    let out = if smp_claims::COMMANDS.contains(&word) {
+        let at = bodies(&players).into_iter().find(|b| b.uuid == me.uuid).map(|b| b.at);
+        let played = smp.places.as_ref().map_or(0, |p| p.played_seconds(me.uuid));
+        let economy = smp.economy.as_ref().ok();
+        let find = |n: &str| {
+            let on = players.iter().find(|p| p.name.eq_ignore_ascii_case(n));
+            on.map(|p| (p.uuid, p.name.clone()))
+                .or_else(|| economy?.find(n).map(|(u, a)| (u, a.name.clone())))
+        };
+        let name_of = |u: u128| {
+            let on = players.iter().find(|p| p.uuid == u).map(|p| p.name.clone());
+            on.or_else(|| economy?.name_of(u).map(str::to_owned))
+                .unwrap_or_else(|| smp_store::uuid_string(u))
+        };
+        match (&mut smp.claims, at) {
+            (Ok(c), Some(at)) => c.command(&me, &at, played, &find, &name_of, line).unwrap_or_default(),
+            (Ok(_), None) => vec![Out::Error("You are not in the world.".into())],
+            (Err(_), _) => vec![Out::Error(
+                "Claims are off: their file can't be read (see the server log).".into(),
+            )],
+        }
+    } else if smp_places::COMMANDS.contains(&word) {
         match &mut smp.places {
             Ok(p) => p.command(&me, &bodies(&players), now, line).unwrap_or_default(),
             Err(_) => vec![Out::Error(
@@ -317,6 +361,41 @@ pub(in crate::game) fn perform(
     show(game, out);
 }
 
+/// A player breaks or right clicks the block at `pos`: canceled in a chunk
+/// claimed by someone who doesn't trust them (`native_destroy_block`,
+/// `native_right_click_block`).
+pub(in crate::game) fn guard(game: &mut Game<'_>, pos: [i32; 3], canceled: &mut bool) {
+    if *canceled || !game.native_on(ID) {
+        return;
+    }
+    let (Some(who), Some(dir)) = (game.native_acting_player(), game.native_world_dir()) else {
+        return;
+    };
+    let mut guard = state(dir.join(smp_store::DIR));
+    let smp = guard.as_mut().expect("opened");
+    let Ok(claims) = &mut smp.claims else {
+        return;
+    };
+    let me = Player {
+        uuid: who.uuid,
+        name: who.name.clone(),
+        level: who.permission,
+    };
+    let economy = smp.economy.as_ref().ok();
+    let name_of = |u: u128| {
+        economy
+            .and_then(|e| e.name_of(u))
+            .map_or_else(|| smp_store::uuid_string(u), str::to_owned)
+    };
+    let now = chrono::Utc::now().timestamp_millis();
+    if let Err(line) = claims.check(&me, &who.dimension, pos, &name_of, now) {
+        *canceled = true;
+        drop(guard);
+        if let Some(line) = line {
+            game.native_action_bar(who.uuid, Text::literal(line).with_color(text::RED));
+        }
+    }
+}
 /// An item named `name` (not in italics, as a name the game gives).
 fn button(item: &str, name: &str, color: &str) -> ItemStack {
     let mut stack = ItemStack {

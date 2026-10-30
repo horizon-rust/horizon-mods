@@ -20,6 +20,7 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
 """
 import json
+import math
 import os
 import shutil
 import socket
@@ -284,6 +285,40 @@ def places(server, alex, steve):
     return r
 
 
+def claims(server, alex, steve):
+    """Alex claims a chunk: Steve can't break, use or place there until trusted."""
+    r = {}
+    _, (ax, ay, az), _ = where(alex)
+    cx, cz, y = math.floor(ax) >> 4, math.floor(az) >> 4, math.floor(ay)
+    r["claim"] = alex.say("/claim")
+    assert any("Claimed this chunk" in l for l in r["claim"]), r
+    lever, dirt, free = (cx * 16 + 8, y, cz * 16 + 8), (cx * 16 + 10, y, cz * 16 + 8), (cx * 16 + 8, y, cz * 16 + 10)
+    server.console("setblock %d %d %d minecraft:lever[face=floor]" % lever)
+    server.console("setblock %d %d %d minecraft:dirt" % dirt)
+    server.console(f"tp Steve {lever[0] + 0.5} {y} {lever[2] + 3.5}")
+    server.console("give Steve minecraft:oak_planks 4")
+    time.sleep(3)
+    block = lambda pos: json.dumps(steve.run("block", *pos))
+    steve.run("interact", *lever)
+    steve.run("break", *dirt, "--timeout", 4, check=False)
+    steve.run("place", *free, "--item", "minecraft:oak_planks", check=False)
+    time.sleep(1.5)
+    r["refused"] = [block(lever), block(dirt), block(free), json.dumps(steve.run("messages", 5))]
+    assert "powered=true" not in r["refused"][0] and "dirt" in r["refused"][1], r
+    assert "oak_planks" not in r["refused"][2], r
+    assert "This land is claimed by Alex." in r["refused"][3], r
+    r["trust"] = alex.say("/trust Steve")
+    assert any("Steve may now build" in l for l in r["trust"]), r
+    steve.run("interact", *lever)
+    steve.run("break", *dirt, "--timeout", 10, check=False)
+    time.sleep(1.5)
+    r["trusted"] = [block(lever), block(dirt)]
+    assert "powered=true" in r["trusted"][0] and "dirt" not in r["trusted"][1], r
+    r["claims"] = alex.say("/claims")
+    assert any("Your chunks (1 of 4)" in l for l in r["claims"]) and any("Trusted: Steve" in l for l in r["claims"]), r
+    return r
+
+
 def trades(server, alex, steve, port, ctl, resources, root):
     """Every way out of a trade, then one that goes through. Alex: 10 diamonds; Steve: 5 emeralds, 5 torches."""
     results = {}
@@ -387,7 +422,7 @@ def run(ctl, resources, out):
         time.sleep(2)
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
-        assert results["config_keys"] == ["currency", "gambling", "market", "places", "starting_balance"], config
+        assert results["config_keys"] == ["claims", "currency", "gambling", "market", "places", "starting_balance"], config
         assert config["gambling"] == {"enabled": True, "min_bet": 10, "max_bet": 1000, "cooldown_seconds": 20,
                                       "offer_seconds": 60, "fee_percent": 0, "ticket_price": 10,
                                       "max_tickets": 100, "lottery_seconds": 30}, config
@@ -438,6 +473,7 @@ def run(ctl, resources, out):
         results["trades"], steve = trades(server, alex, steve, port, ctl, resources, root)
         # Before the coinflips: their last offer must still wait when the server stops.
         results["places"] = places(server, alex, steve)
+        results["claims"] = claims(server, alex, steve)
         results["coinflip"], alex_wins = coinflips(alex, steve)
         results["lottery"], alex_lotto = lottery(alex, steve, alex_wins)
         alex_after = 415 + (100 if alex_wins else -100) + (20 if alex_lotto else -30)
@@ -448,6 +484,8 @@ def run(ctl, resources, out):
         assert not any("panicked" in l or "teleport failed" in l for l in lines), lines[-40:]
         saved = json.loads((data / "places.json").read_text())
         assert sorted(saved["warps"]) == ["shop"] and saved["spawn"] and len(saved["homes"]) == 1, saved
+        saved = json.loads((data / "claims.json").read_text())
+        assert len(saved["chunks"]) == 1 and len(saved["trust"]) == 1, saved
         economy = json.loads((data / "economy.json").read_text())
         balances = {a["name"]: a["balance"] for a in economy["accounts"].values()}
         results["economy.json"] = economy

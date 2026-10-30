@@ -192,6 +192,15 @@ impl Places {
         }
     }
 
+    /// The seconds a player has played here.
+    pub fn played_seconds(&self, uuid: u128) -> i64 {
+        self.data
+            .played
+            .get(&smp_store::uuid_string(uuid))
+            .copied()
+            .unwrap_or(0)
+    }
+
     /// How many homes a player may have now.
     pub fn home_limit(&self, uuid: u128) -> usize {
         let hours = self

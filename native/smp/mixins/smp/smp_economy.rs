@@ -254,6 +254,15 @@ impl Economy {
             .and_then(|(k, a)| Some((super::smp_store::parse_uuid(k)?, a)))
     }
 
+    /// The name last seen of a player who has an account.
+    pub fn name_of(&self, uuid: u128) -> Option<&str> {
+        let a = self
+            .accounts
+            .accounts
+            .get(&super::smp_store::uuid_string(uuid))?;
+        Some(&a.name)
+    }
+
     /// `1,250 coins`.
     pub fn money(&self, amount: i64) -> String {
         let digits = amount.unsigned_abs().to_string();

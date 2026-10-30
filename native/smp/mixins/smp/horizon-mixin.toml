@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.6.0"
+version = "0.7.0"
 priority = 100
 
 # The commit of horizon main it was tested on. It uses only the native hook points (hooks 21 in
@@ -49,6 +49,12 @@ id = "places"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_places"
 source = "smp_places.rs"
+
+[[module]]
+id = "claims"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_claims"
+source = "smp_claims.rs"
 
 [[module]]
 id = "glue"
@@ -118,4 +124,26 @@ bindings = [
   { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
   { name = "uuid", ty = "u128", value = "uuid" },
   { name = "window", ty = "i32", value = "window" },
+]
+
+[[injection]]
+id = "destroy_block"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_destroy_block"
+helper = "destroy_block.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
+]
+
+[[injection]]
+id = "right_click_block"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_right_click_block"
+helper = "right_click_block.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "pos", ty = "[i32; 3]", value = "pos" },
+  { name = "canceled", ty = "&mut bool", value = "&mut *canceled" },
 ]

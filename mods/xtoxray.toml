@@ -14,9 +14,9 @@ Instalation:
 """
 authors = ["1_st_Cat"]
 owners = ["RealCat1st"]
-license = "Apache 2.0"
+license = "Apache-2.0"
 source = "https://github.com/RealCat1st/XToXrayRust"
-icon = "https://github.com/RealCat1st/XToXrayRust/blob/main/icon.png"
+icon = "icons/xtoxray.png"
 key = "RWQVF+EFGGnX6eUNms+cP5AceLvx9b0rFYYXCty7so4MVbJ1SNpi9zNK"
 
 [[versions]]

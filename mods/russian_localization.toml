@@ -1,0 +1,67 @@
+id = "russian_localization"
+kind = "native-mod"
+name = "Russian Localization"
+summary = "Russian language support for Horizon with original Minecraft terminology and translated game settings."
+description = """
+Adds **Русский (Россия)** to Horizon's normal language settings.
+
+## Features
+
+- 8,649 original Russian Minecraft entries for menus, blocks, items, entities, messages and subtitles.
+- 68 Horizon translations, including Discord status, No AI and agent control captions.
+- Language selection persists across restarts. English remains available, and resource packs retain priority.
+- A separate namespace-based catalog for translations of other mods, empty in 1.0.0.
+
+## Compatibility
+
+Minecraft Java **26.3**. This native mod uses internal language/settings methods and requires the exact source revisions below:
+
+- Horizon: `33f417fb325ed2be307b21ac318f64c8f914ef61` (Nightly 2026-10-30-33f417f).
+- Horizon Mixins: `18161c1610aa02f159a38bd6c044233668566de4`.
+
+It does not declare the stable native-hooks API. All native mods in the same build must target a compatible Horizon revision.
+
+## Installation and trust
+
+The launcher compiles this source package into a native client. Native code runs with your account's permissions; review the source and accept the launcher's trust warning yourself. Allow several GB and 20–30 minutes for the first build. Supply prepared Minecraft resources from your own installation.
+
+The in-game mod toggle appears after entering a world. Some unrelated Horizon features still have hardcoded English text.
+
+## Verification
+
+Validated on macOS Apple silicon: native build, language selection, English switching, persistence, resource-pack priority and translated controls. Windows and Linux are unverified. The release passed 13 Python and 13 Rust tests; original catalog equality is checked automatically.
+
+[Source for version 1.0.0](https://github.com/qenterra/horizon-russian-localization/tree/v1.0.0) · [Screenshots](https://github.com/qenterra/horizon-russian-localization#screenshots) · [Installation](https://github.com/qenterra/horizon-russian-localization/blob/main/docs/installation.md)
+
+## License and original content
+
+MIT covers the mod's own code and independently authored Horizon translations. The original Minecraft Russian strings and their embedded copies are excluded from that grant and retain their separate [content notice](https://github.com/qenterra/horizon-russian-localization/blob/main/catalogs/minecraft-notice.md).
+
+Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft. Not made or endorsed by the Horizon project.
+
+Copyright © 2026 Nikita Melnychenko (QenTerra)."""
+authors = ["Nikita Melnychenko (QenTerra)"]
+owners = ["qenterra"]
+license = "MIT"
+source = "https://github.com/qenterra/horizon-russian-localization"
+icon = "https://raw.githubusercontent.com/qenterra/horizon-russian-localization/88f71a9d5571be2906a873220ee206d9bc2c82b1/docs/images/russian-localization-icon.png"
+key = "RWQzGrT05+cnPkcE/xEySJYssixu827FiA77OhfF03KqBQ9zDl+BJfsI"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-30"
+game = "26.3"
+file = "russian_localization-1.0.0.hnmod"
+sha256 = "7ba61916fdac1e89e829a76d05d27b71de71ecca50769c00631b405bdf250c94"
+signature = """
+untrusted comment: signature from minisign secret key
+RUQzGrT05+cnPhjhukn8lPW0XRnNzkwmvhw1lZEWBFHLkxUI3uS6AmC9H9Pn33ow2mA+NT80V4eEjJmWz2xDZVDw+Gi7tyNpNQQ=
+trusted comment: Russian Localization 1.0.0; id=russian_localization; Minecraft Java 26.3
+WBSVRWoyKps398mumvTfuKAd4R/DXzcovPeUY2spnc5nE4FkpsyrxAxetvKq/eb5y/C7XPSJUVvVqKs6+P7PCQ=="""
+changelog = """
+Initial release.
+
+- Adds Russian to the normal language settings, with persistence and English fallback.
+- Includes 8,649 original Russian Minecraft entries and 68 Horizon translations.
+- Preserves resource-pack priority and the original setting actions.
+- Provides a separate namespace-based catalog for future mod translations."""

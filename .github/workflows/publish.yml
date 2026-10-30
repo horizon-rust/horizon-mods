@@ -55,13 +55,21 @@ jobs:
         run: |
           mkdir versions
           git -C versions init -q -b versions
+      # The commit of HORIZON_REV (a branch name moves): the tool is cached and installed by it.
+      - id: rev
+        run: |
+          sha="$HORIZON_REV"
+          printf '%s' "$sha" | grep -qE '^[0-9a-f]{40}$' || sha="$(git ls-remote https://github.com/horizon-rust/horizon "refs/heads/$HORIZON_REV" "refs/tags/$HORIZON_REV" | head -1 | cut -f1)"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin
             ~/.cargo/horizon-rev
-          key: cargo-horizon-mod-${{ env.HORIZON_REV }}
+          key: cargo-horizon-mod-${{ steps.rev.outputs.sha }}
       - run: scripts/install-tool.sh
+        env:
+          HORIZON_REV: ${{ steps.rev.outputs.sha }}
       # Files kept from the last run: GitHub counts every download of a release
       # asset, so fetching them all again each hour would count as players.
       - uses: actions/cache@v4

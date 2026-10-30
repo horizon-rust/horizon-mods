@@ -4,6 +4,9 @@ The official Horizon server's survival layer ([design](https://github.com/horizo
 It is **not** part of Horizon's own server: only a server that builds this mod into its engine has it. It isn't listed
 in the registry.
 
+Players install nothing: it speaks only what a stock Horizon client already shows (commands with completions, chat
+lines; later vanilla chest menus filled by the server, sounds, titles, the action bar, boss bars, the sidebar).
+
 This version: the economy and the server market.
 
 | Command | Does |

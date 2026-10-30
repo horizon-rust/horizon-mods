@@ -11,7 +11,7 @@ Your block position and the direction you face in the top-left corner of the scr
 It reads the player's position, draws on the HUD and writes to chat: nothing else.
 
 Now a native mod (2.0.0): built into the game by the launcher, on the Horizon you play, like any native mod
-(Settings → Game → Native mods (experimental), then Build). It was the WebAssembly SDK's example mod; the time of
+(Settings → Game → Native mods (experimental), then Build). The time of
 day line is gone, since Horizon's hook points don't give the game's clock yet. Turn it off in Options > Mods: it
 rests at once, and the next build leaves it out. Its source is
 [horizon-mods/native/coords-hud](https://github.com/horizon-rust/horizon-mods/tree/main/native/coords-hud).

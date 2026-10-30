@@ -32,7 +32,7 @@ Both can be installed at once: they use different keys.
 - Written from scratch for Horizon's mod API. Not affiliated with Wurst-Imperium.
 - Some servers forbid zoom mods: check the rules before you join.
 
-**Now a native mod (2.0.0)**: the launcher builds it into the game (Settings → Game → Native mods (experimental), then Build). Native mods are not sandboxed and run with your account's permissions, so read the source before you build it: it is one small bundle on Horizon's native hook points (key, wheel, zoom, mods list). Tested against Horizon `6f8c7a0e5d531d3834c4d0be4659a1db8e7e5c2a` with Horizon Mixins `0d6b103c70633d8fd9443d8d0acd3aadaacedb06`. A key set in 1.0.0 carries over. 1.0.0 is the WebAssembly version.
+**Now a native mod (2.0.0)**: the launcher builds it into the game (Settings → Game → Native mods (experimental), then Build). Native mods are not sandboxed and run with your account's permissions, so read the source before you build it: it is one small bundle on Horizon's native hook points (key, wheel, zoom, mods list). Tested against Horizon `6f8c7a0e5d531d3834c4d0be4659a1db8e7e5c2a` with Horizon Mixins `0d6b103c70633d8fd9443d8d0acd3aadaacedb06`. A key set in 1.0.0 carries over.
 
 Source and issues: [github.com/SU4G3/classic-zoom](https://github.com/SU4G3/classic-zoom)"""
 authors = ["Surge"]

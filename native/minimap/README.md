@@ -3,7 +3,7 @@
 Horizon's official Minimap: a map of the terrain around you in a corner, in map colours, square or round, north up or turning with you, drawn by Horizon's own minimap. Its settings page (Options > Mods > Minimap > Settings) picks the corner, size, shape, zoom and turning.
 
 It is a [horizon-mixins](https://github.com/horizon-rust/horizon-mixins) bundle (`mixins/minimap/`) that the Horizon
-launcher builds into the game. It replaces the WebAssembly Minimap 1.x and keeps its settings: the same files (`horizon-mods/.horizon-mod-data/minimap/corner`, `size`, `shape`, `zoom`, `rotate`).
+launcher builds into the game. It keeps the settings of earlier versions: the same files (`horizon-mods/.horizon-mod-data/minimap/corner`, `size`, `shape`, `zoom`, `rotate`).
 
 ## Install
 
@@ -38,6 +38,6 @@ python3 native/tools/native.py proof minimap --resources /path/to/.local/horizon
 ```
 
 The proof needs resources prepared from your own Minecraft 26.3 (`horizon-prepare`); none are in this repository.
-It seeds the WebAssembly mod's settings (bottom right, round, 2 blocks per pixel) in a temporary game folder, then checks that Options > Mods shows them, and that the Corner button moves the map to the top left and writes the same file. CI runs `cargo test`, packages the `.hnmod` and checks the game on the tested commit, and every Monday on the newest Nightly.
+It seeds an earlier version's settings (bottom right, round, 2 blocks per pixel) in a temporary game folder, then checks that Options > Mods shows them, and that the Corner button moves the map to the top left and writes the same file. CI runs `cargo test`, packages the `.hnmod` and checks the game on the tested commit, and every Monday on the newest Nightly.
 
 License: MIT.

@@ -3,7 +3,7 @@
 Horizon's official FPS counter: frames per second in a box in a corner of the screen, and, if you like, the slowest frame and the 1% low of the last 5 seconds. Its settings page (Options > Mods > FPS Counter > Settings) picks the corner and the lows.
 
 It is a [horizon-mixins](https://github.com/horizon-rust/horizon-mixins) bundle (`mixins/fps_overlay/`) that the Horizon
-launcher builds into the game. It replaces the WebAssembly FPS Counter 1.x and keeps its settings: the same files (`horizon-mods/.horizon-mod-data/fps_overlay/corner`, `lows`).
+launcher builds into the game. It keeps the settings of earlier versions: the same files (`horizon-mods/.horizon-mod-data/fps_overlay/corner`, `lows`).
 
 ## Install
 
@@ -38,6 +38,6 @@ python3 native/tools/native.py proof fps-overlay --resources /path/to/.local/hor
 ```
 
 The proof needs resources prepared from your own Minecraft 26.3 (`horizon-prepare`); none are in this repository.
-It seeds the WebAssembly mod's settings (bottom right, lows on) in a temporary game folder, then checks that Options > Mods shows them, and that the Corner button moves the box to the top left and writes the same file. CI runs `cargo test`, packages the `.hnmod` and checks the game on the tested commit, and every Monday on the newest Nightly.
+It seeds an earlier version's settings (bottom right, lows on) in a temporary game folder, then checks that Options > Mods shows them, and that the Corner button moves the box to the top left and writes the same file. CI runs `cargo test`, packages the `.hnmod` and checks the game on the tested commit, and every Monday on the newest Nightly.
 
 License: MIT.

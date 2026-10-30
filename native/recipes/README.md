@@ -7,7 +7,7 @@ Settings): a click on an item in the panel gives you one, a right click a stack.
 Options > Mods.
 
 It is a [horizon-mixins](https://github.com/horizon-rust/horizon-mixins) bundle (`mixins/recipes/`) that the Horizon
-launcher builds into the game. It replaces the WebAssembly Recipes 1.x and keeps its settings: the same file
+launcher builds into the game. It keeps the settings of earlier versions: the same file
 (`horizon-mods/.horizon-mod-data/recipes/give`) and the same keys (`key.recipes.recipe`, `key.recipes.uses` in
 `horizon-mods.txt`).
 
@@ -44,7 +44,7 @@ python3 native/tools/native.py proof recipes --resources /path/to/.local/horizon
 ```
 
 The proof needs resources prepared from your own Minecraft 26.3 (`horizon-prepare`); none are in this repository.
-It seeds the WebAssembly mod's setting ("Click gives items" on) in a temporary game folder, checks that Options > Mods
+It seeds an earlier version's setting ("Click gives items" on) in a temporary game folder, checks that Options > Mods
 shows the mod, its keys and the setting, then opens the inventory: the panel shows items, a click on one in creative
 mode gives it, and with the setting turned off the same click opens its recipe page.
 

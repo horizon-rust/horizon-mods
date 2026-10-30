@@ -1,0 +1,28 @@
+id = "pixelmon"
+kind = "native-mod"
+name = "Pixelmon"
+summary = "An early Pixelmon 9.4.2 port for Horizon with command-based catching, battles, party and PC storage."
+description = """
+A rough, experimental Pixelmon 9.4.2 port for Horizon, targeting Minecraft 26.3.
+
+This early version includes:
+
+- Starter selection, manual wild spawning, catching and battles
+- Party and PC storage
+- Virtual supplies and world save/reload
+
+Controls currently use `/pokemon` commands in integrated worlds. Models are rough and currently limited to Bulbasaur, Charmander, Squirtle and Pikachu.
+
+Menus, natural spawning, physical item interactions and dedicated multiplayer remain unfinished. This is an early playable prototype with bugs and missing features. I’ll continue working on it."""
+authors = ["CateDesu"]
+owners = ["CateDesu"]
+license = "All Rights Reserved"
+source = "https://github.com/CateDesu/pixelmon-horizon-port"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-10-30"
+game = "26.3"
+file = "pixelmon-0.1.0.hnmod"
+sha256 = "95d3df997632990f0ecce3b4f58c7b1523ec67fae6e2b2922b9bc587c7ac68f0"
+changelog = "Initial commit"

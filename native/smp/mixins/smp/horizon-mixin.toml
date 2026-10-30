@@ -1,12 +1,12 @@
 [mod]
 id = "smp"
-version = "0.1.0"
+version = "0.2.0"
 priority = 100
 
-# The commit it was tested on. It uses only the native hook points (hooks 8 in
+# The commit it was tested on. It uses only the native hook points (hooks 9 in
 # compatibility.json): it builds on any Horizon that has them.
 [compatibility]
-horizon_revision = "768d20d9980c2e04cc76951d18ec6c72ccef0176"
+horizon_revision = "b070f41ddae470df36694dff7f176bdda2a3ad90"
 
 [[module]]
 id = "store"
@@ -19,6 +19,12 @@ id = "economy"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_economy"
 source = "smp_economy.rs"
+
+[[module]]
+id = "market"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_market"
+source = "smp_market.rs"
 
 [[module]]
 id = "glue"

@@ -1,0 +1,28 @@
+id = "appleskin"
+kind = "native-mod"
+name = "AppleSkin"
+summary = "Shows saturation, exhaustion and the food in your hand over the food bar."
+description = """
+AppleSkin for Horizon, a native mod.
+Draws saturation, exhaustion and the food in your hand over the food bar,
+as the original AppleSkin does.
+Based on AppleSkin by squeek502. See the LICENSE in the source for the
+original copyright and licence notices."""
+authors = ["soufi"]
+owners = ["soufied"]
+license = "MIT"
+source = "https://github.com/soufied/AppleSkin-Horizon"
+key = "RWT6eNq4e5WfVDA2lzOOi6XCm/+jJgilqT1+HUUM33ie5MCjcRfSg760"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-30"
+game = "26.3"
+file = "appleskin-1.0.0.hnmod"
+sha256 = "3c25b916f74f47faf40070a8654c546d15cb79ac3947f140e257f4cb041aeb96"
+signature = """
+untrusted comment: signature from minisign secret key
+RUT6eNq4e5WfVEMHvcSGm73mmamWosNGGcdt7Qn05wqgRuAlDj/DyzH66lS2u8nvB43GnZJ7xCmgoM5xArHJuN9kD30iIKj0zws=
+trusted comment: timestamp:1793368049\tfile:appleskin-1.0.0.hnmod\thashed
+gjEf247x8XwHpOI2Ra3ngk6umC/mFZiHOCfZyzxg5IFJ7CNJVpofnw/l7ITtePPeyi4r3+0D6FvmmhtuiqVAAg=="""
+changelog = "First release. AppleSkin for Horizon as a native mod: saturation, exhaustion and the food in your hand, drawn over the food bar."

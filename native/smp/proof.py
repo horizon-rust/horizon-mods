@@ -219,7 +219,8 @@ def trades(server, alex, steve, port, ctl, resources, root):
     assert any("Balance: 415 coins" in l for l in alex.say("/balance"))
     assert any("Balance: 400 coins" in l for l in steve.say("/balance"))
     # Dying (inventories kept, so a duplicate would show): Alex's death ends it, nothing moved.
-    server.console("gamerule keepInventory true")
+    server.console("gamerule keep_inventory true")
+    time.sleep(1)
     open_trade(alex, steve)
     alex.click(alex.slot_of("minecraft:emerald"))
     server.console("kill Alex")

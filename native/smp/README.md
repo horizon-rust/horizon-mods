@@ -8,7 +8,7 @@ Players install nothing: it speaks only what a stock Horizon client already show
 lines, vanilla chest menus the server fills with ordinary items (the trade menu); later sounds, titles, the action
 bar, boss bars and the sidebar).
 
-This version: the economy, the server market and player trades.
+This version: the economy, the server market, player trades and the coinflip.
 
 | Command | Does |
 |---|---|
@@ -23,6 +23,8 @@ This version: the economy, the server market and player trades.
 | `/trade accept [player]`, `/trade deny [player]` | answers a request |
 | `/trade money <amount>` | the money you add to your offer (0: none) |
 | `/trade cancel` | ends your trade, or withdraws your request |
+| `/coinflip <amount> [player]` | stakes an amount for anyone (or one player) to match; off unless `gambling.enabled` |
+| `/coinflip accept <player>`, `/coinflip cancel`, `/coinflip list` | takes an offer (a fair coin decides, the winner gets both stakes), withdraws yours, lists those waiting |
 
 The market trades only plain items (not worn, named or enchanted), and only with players in survival or adventure
 mode. Items move first, then money, both logged; a sale the log refuses gives the items back, and a purchase checks the
@@ -38,6 +40,12 @@ the trade, and swaps everything in one step, or nothing (and both must confirm a
 `/trade cancel`, leaving, dying or the other player leaving ends the trade with nothing moved. Survival and
 adventure players only.
 
+**Coinflips.** Off by default: the owner turns them on in `config.json` (`gambling`: `enabled`, `min_bet` 10,
+`max_bet` 1000, `cooldown_seconds` 30, `offer_seconds` 60, `fee_percent` 0). A stake is held from the offer, in
+`economy.json` with the balances, until the coin falls; an offer cancelled, not taken in time, or whose player
+left gives it back, and so does the next start for one the server stopped with. The coin is a fresh random key from
+the system, never the world's random. Only the in-game currency is staked and won.
+
 The currency is earned in game only: it can't be bought with real money or cashed out (Mojang's usage guidelines).
 
 ## Data
@@ -48,7 +56,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | File | Holds |
 |---|---|
 | `config.json` | `currency` (default `coins`), `starting_balance` (default 0), and `market`: `enabled` and `items`, each item's `buy` (what the market asks) and `sell` (what it pays), 0 closing that side; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
-| `economy.json` | balances by player UUID, with the name last seen |
+| `economy.json` | balances by player UUID, with the name last seen, and `held`: coinflip stakes being decided |
 | `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `eco_give`...), `amount`, `from`/`to` with their balance before, `by` for an operator; a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
 
 `economy.json` is written whole to a temporary file, flushed and renamed over the old one, at most once a server tick
@@ -63,8 +71,8 @@ lifecycle. `compatibility.json` names `"hooks": 10`.
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: five modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: six modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |

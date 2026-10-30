@@ -1,6 +1,6 @@
 // The SMP in the server's game: its state for the open world, and the edges
 // between the game's types and the rules (smp_economy, smp_market,
-// smp_trade). Added to
+// smp_trade, smp_games). Added to
 // the game as `game::smp_glue`; the helpers (register.rs, command.rs,
 // tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs) call it from the
 // hook points.
@@ -9,6 +9,7 @@ use crate::game::{
     Game,
     native_server::{NativeCommand, NativeServerPlayer},
     smp_economy::{self, Economy, Out, Player},
+    smp_games::{self, Games},
     native_menus::native_menu_inventory_slot,
     smp_market::{self, Bag, Market},
     smp_store,
@@ -24,7 +25,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.3.0";
+pub const VERSION: &str = "0.4.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -34,6 +35,7 @@ pub struct Config {
     #[serde(flatten)]
     pub economy: smp_economy::Config,
     pub market: smp_market::Config,
+    pub gambling: smp_games::Config,
 }
 
 /// The SMP of the open world.
@@ -43,6 +45,7 @@ pub struct Smp {
     economy: Result<Economy, String>,
     market: Market,
     trades: Trades<ItemStack>,
+    games: Games,
 }
 
 static STATE: Mutex<Option<Smp>> = Mutex::new(None);
@@ -90,6 +93,7 @@ fn open(dir: PathBuf) -> Smp {
             config: config.market,
         },
         trades: Trades::default(),
+        games: Games::new(config.gambling),
     }
 }
 
@@ -134,6 +138,10 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "trade deny [player:word]",
         "trade cancel",
         "trade money <amount:integer>",
+        "coinflip <amount:integer> [player:word]",
+        "coinflip accept <player:word>",
+        "coinflip cancel",
+        "coinflip list",
     ] {
         commands.push(NativeCommand::new(usage));
     }
@@ -169,9 +177,17 @@ impl Bag for GameBag<'_, '_> {
     }
 }
 
-const COMMANDS: [&str; 9] = [
-    "balance", "bal", "pay", "baltop", "eco", "worth", "sell", "buy", "trade",
+const COMMANDS: [&str; 10] = [
+    "balance", "bal", "pay", "baltop", "eco", "worth", "sell", "buy", "trade", "coinflip",
 ];
+
+/// A fair coin, never the world's random: a fresh SipHash key (seeded from
+/// the system's randomness) over the time.
+fn heads() -> bool {
+    use std::hash::BuildHasher;
+    let time = std::time::SystemTime::now();
+    std::collections::hash_map::RandomState::new().hash_one(time) & 1 == 1
+}
 
 /// A player's command.
 pub(in crate::game) fn perform(
@@ -214,6 +230,10 @@ pub(in crate::game) fn perform(
                     let (out, a) = smp.trades.command(e, &me, trades, &online, now, line)?;
                     acts = a;
                     Some(out)
+                })
+                .or_else(|| {
+                    let named = |n: &str| online(n).map(|(u, name, _)| (u, name));
+                    smp.games.command(e, &me, &named, now, &mut heads, line)
                 })
                 .unwrap_or_default()
         }
@@ -472,9 +492,24 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     };
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
-    if let Ok(e) = &mut smp.economy {
+    let mut out = Vec::new();
+    if let Ok(e) = &mut smp.economy
+        && n % 20 == 0
+    {
         for p in &players {
             e.seen(p.uuid, &p.name);
+        }
+        // Once a second: coinflips nobody took, and those of players gone.
+        out.extend(smp.games.expire(e, chrono::Utc::now().timestamp_millis()));
+        let gone: Vec<u128> = smp
+            .games
+            .offers
+            .iter()
+            .map(|o| o.from)
+            .filter(|u| !players.iter().any(|p| p.uuid == *u))
+            .collect();
+        for uuid in gone {
+            smp.games.left(e, uuid);
         }
     }
     // Each trade's offers against the inventories now: a player gone or
@@ -485,7 +520,6 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         .iter()
         .flat_map(|t| t.sides.iter().map(|s| (s.uuid, s.name.clone())))
         .collect();
-    let mut out = Vec::new();
     for (uuid, name) in sides {
         match game.native_player_stacks(uuid) {
             None => {

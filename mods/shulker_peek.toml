@@ -21,7 +21,7 @@ authors = ["vstxx"]
 owners = ["vstxx"]
 license = "MIT"
 source = "https://github.com/vstxx/shulkerpeek"
-icon = "https://media.discordapp.net/attachments/1429508088528109770/1565474829585350717/vast-vastbrowser.png?ex=6ae5098c&is=6ae3b80c&hm=8b033c71b5412fa84ba8c3ba130eaafdee82dd8a72219ddb8966c5d73fa3a510&=&format=webp&quality=lossless&width=1024&height=1024"
+icon = "icons/shulker_peek.png"
 
 [[versions]]
 version = "0.1.0"

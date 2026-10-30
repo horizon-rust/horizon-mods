@@ -1,12 +1,12 @@
 [mod]
 id = "smp"
-version = "0.2.0"
+version = "0.3.0"
 priority = 100
 
-# The commit it was tested on. It uses only the native hook points (hooks 9 in
+# The commit it was tested on. It uses only the native hook points (hooks 10 in
 # compatibility.json): it builds on any Horizon that has them.
 [compatibility]
-horizon_revision = "b070f41ddae470df36694dff7f176bdda2a3ad90"
+horizon_revision = "e23b4b7d8ff3318da3f96f9e0f11ba961ffefe99"
 
 [[module]]
 id = "store"
@@ -25,6 +25,12 @@ id = "market"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_market"
 source = "smp_market.rs"
+
+[[module]]
+id = "trade"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_trade"
+source = "smp_trade.rs"
 
 [[module]]
 id = "glue"
@@ -70,4 +76,28 @@ target = "horizon_client::game::native_hooks::Game<'_>::native_world_lifecycle"
 helper = "lifecycle.rs"
 bindings = [
   { name = "phase", ty = "crate::game::native_lifecycle::WorldPhase", value = "phase" },
+]
+
+[[injection]]
+id = "menu_clicked"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_menu_clicked"
+helper = "menu_clicked.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "uuid", ty = "u128", value = "uuid" },
+  { name = "window", ty = "i32", value = "window" },
+  { name = "slot", ty = "i32", value = "slot" },
+  { name = "mode", ty = "i32", value = "mode" },
+]
+
+[[injection]]
+id = "menu_closed"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_menu_closed"
+helper = "menu_closed.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "uuid", ty = "u128", value = "uuid" },
+  { name = "window", ty = "i32", value = "window" },
 ]

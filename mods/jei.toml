@@ -1,0 +1,96 @@
+id = "jei"
+kind = "native-mod"
+name = "JEI for Horizon"
+summary = "An item and recipe viewer for Horizon: every item beside container screens, with search, recipes and uses"
+description = """
+An item and recipe viewer for [Horizon](https://playhorizon.dev), the Rust reimplementation of Minecraft: Java Edition.
+
+Horizon JEI is inspired by [JustEnoughItems (JEI)](https://github.com/mezz/JustEnoughItems). JEI serves as the reference specification, while this project is a completely new Rust implementation built around Horizon's native hook points.
+
+**Version 0.1.0 — Core Viewer**
+
+### Features
+
+- **Item Browser:** Browse every item registered by the game through a paginated panel alongside container screens, with a search bar supporting JEI's search grammar: words, `"quoted phrases"`, `-exclusions`, `|` alternatives, `@namespace`, and `#tag`.
+- **Recipe Viewer:** Press **R** to view an item's recipes or **U** to see its uses. Both work over the item panel and container slots.
+- **Recipe Categories:** Dedicated tabs for crafting, furnace, blast furnace, smoker, campfire, stonecutter, smithing, and brewing, supporting all five of the game's recipe layouts, including cooking time and XP.
+- **Recipe Navigation:** Browse recipe history with **Back** and click recipe slots to open the corresponding item.
+- **Recipe Placement:** Use the **+** button to place a recipe into the open crafting grid, provided it is available in the recipe book.
+- **Item Giving:** Give items through Options → Mods → JEI or `/jei give`. In creative mode, left-click gives one item and right-click gives a full stack. In survival mode, clicking opens the recipe viewer instead.
+- **Localization:** English and Spanish interface translations. Item names are retrieved directly from the game and respect the player's language.
+- **Diagnostics:** `/jei` reports the game's recipe table sizes.
+
+### Current Limitations
+
+The 0.1.0 release focuses on the core viewer. Bookmarks, container slot click integration, tooltips, creative inventory integration, non-recipe categories (anvil, grindstone, composter, and fuel), and shift-click recipe placement are not yet supported.
+
+Some of these features require native hook points that Horizon does not currently expose. See the [JEI parity matrix](https://github.com/enderliker/horizon-jei/blob/main/docs/jei-parity.md) for implementation details.
+
+### Requirements & Security
+
+Requires Horizon **26.3**, hook points version **2**, and the current Nightly build.
+
+Horizon native mods are compiled directly into the game and are **not sandboxed**. Only build source code you trust.
+
+Horizon JEI reads the game's tables, container interface, chat, and its own settings directory (`horizon-mods/.horizon-mod-data/jei/`). It does not write to any other location.
+
+*Unofficial project. Not affiliated with mezz, Mojang, Microsoft, or the Horizon project.*"""
+authors = ["enderliker"]
+owners = ["enderliker"]
+license = "MIT"
+source = "https://github.com/enderliker/horizon-jei"
+key = "RWRqzx718YYz/OHRM+pAnFWlDv8Rrgar5C4NszQg3EKJWQZWNel5Sslf"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-10-30"
+game = "26.3"
+file = "jei-0.1.0.hnmod"
+sha256 = "c5590e0d4618d435fc0c56abcc9cdabf253be694710068a3dd4643ac25466b5b"
+signature = """
+untrusted comment: signature from minisign secret key
+RURqzx718YYz/AZEFNcRh0lQFAgg8JsladNTOULcWqBnZFoFoApH0UvoQQkTk8wC/LfZpfJkrn7XRzSUOPUOfudUebBSHHdVYQ0=
+trusted comment: jei 0.1.0 for Horizon 26.3
+OqC3JuFFGuGNdxATsGIvM20nrld1ME2ks3tI2hfaMX2s5bCgwYjieUDk7FbDQD8zxd3KHqOYaUTz6T+njgUNCw=="""
+changelog = """
+The first playable Horizon JEI viewer, built on Horizon's native hook points (version 2).
+
+### Item Browser & Search
+- Added an item panel alongside container screens, displaying every item known to the game with pagination.
+- Implemented JEI's search grammar:
+  - Words and `"quoted phrases"`.
+  - `-exclusions` and `|` alternatives.
+  - `@namespace` and `#tag` filters.
+  - `$tooltip` and `%creative tab` are not supported yet, pending access to the required data.
+
+### Recipe & Usage Viewer
+- Press **R** to view an item's recipes and **U** to view its uses.
+- Works over the item panel and any slot in a container screen.
+- Clicking an item in the panel opens the same views.
+- Added recipe pages with dedicated tabs for:
+  - Crafting
+  - Furnace
+  - Blast Furnace
+  - Smoker
+  - Campfire
+  - Stonecutter
+  - Smithing
+  - Brewing
+- Supports all five of the game's recipe layouts, including cooking time and XP.
+- Added a **Back** button to navigate through viewing history.
+- Clicking a recipe slot opens that item's recipes.
+
+### Recipe Placement
+- Added the **+** button to place recipes into the open crafting grid when the recipe book contains them.
+- The button remains disabled until the recipe is available in the recipe book.
+- Shift-click is not supported yet because the panel's action event does not expose modifier keys.
+
+### Item Giving
+- Added item giving through **Options → Mods → JEI** or `/jei give`.
+- In creative mode, left-click gives one item and right-click gives a full stack.
+- In survival mode, clicking an item opens its recipes instead.
+
+### Localization & Diagnostics
+- Added English and Spanish UI translations, configurable through the mod's **Language** setting.
+- Item names are retrieved directly from the game and always respect the player's language.
+- Added `/jei` to report the game's table sizes."""

@@ -3,4 +3,5 @@
 # (Ludovic decides who is in it). /.github/ and takedowns stay Ludovic's.
 *            @ludovic111 @horizon-rust/horizon-team
 /.github/    @ludovic111
+/scripts/    @ludovic111
 /revoked.toml @ludovic111

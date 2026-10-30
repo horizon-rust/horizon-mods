@@ -42,7 +42,38 @@ cargo horizon-mod check target/horizon-mod/my_mod.hmod
 ```
 
 **Updates** come the same way: the form adds a version to your entry. Only an entry's `owners` publish its updates
-without a reviewer's extra look. A published file never changes: publish a new version.
+without a reviewer's extra look (below). A published file never changes: publish a new version.
+
+### Owner updates
+
+When an owner of a project updates it through the form, and **only a new version is added** (the entry's key, owners,
+icon, kind, id and page text are exactly as on `main`; the version is signed if the entry has a key), no reviewer is
+needed. The flow:
+
+1. The form checks that your GitHub login is in the entry's `owners` on `main` and that nothing else of the entry
+   changed, and opens the pull request as the registry's account with the label `owner-update` and, at the end of its
+   body, a trailer holding the id, version, SHA-256, file, your login and an HMAC-SHA256 over them with the secret
+   `REGISTRY_UPDATE_KEY` (only the form and this repository know it). Anyone else's pull request cannot carry a valid one.
+2. [`owner-update.yml`](.github/workflows/owner-update.yml) runs [`scripts/owner_update.py`](scripts/owner_update.py)
+   from `main` (never the pull request's code) and verifies: the HMAC; the author is the form's account (variable
+   `REGISTRY_BOT`); the diff is exactly `mods/<id>.toml` with one new `[[versions]]` table matching the signed
+   id, version, SHA-256 and file, every other field unchanged and `main`'s copy unchanged since; the submitter is in
+   `owners` on `main`; the id is not in `revoked.toml`.
+3. It waits for the other workflows on the pull request's head commit (`check`, and `native` when it ran) to succeed.
+4. It merges (a merge commit pinned to the verified head) with `REGISTRY_MERGE_TOKEN`, which is how `publish.yml` runs
+   on the merge.
+
+A new project, a changed page, key, owners or icon, a missing signature, a failed check or anything that does not verify
+leaves the pull request to a reviewer as before (a red `owner-update` run says why). Tests of the verification:
+`python3 scripts/test_owner_update.py`.
+
+**Setup** (Ludovic, once; the changes under `.github/` and `scripts/` are his to review):
+
+| What | Where |
+| --- | --- |
+| `REGISTRY_UPDATE_KEY`: the same random secret (32+ characters) | the secret of this repository, and the variable of the Railway service `horizon-mod-registry` (see its README); unset on either side, nothing merges by itself |
+| `REGISTRY_MERGE_TOKEN`: a fine-grained token (or a GitHub App's) of an account that may bypass the review rule, with Contents and Pull requests read and write on this repository | the secret of this repository; add the account to the bypass list of the ruleset (or "Allow specified actors to bypass required pull requests" of the branch protection). Required status checks stay required for everyone |
+| `REGISTRY_BOT`: the login of the form's account (`GITHUB_BOT_TOKEN`'s owner) | the variable of this repository (also read by `check.yml`; default `horizon-mods-bot`) |
 
 **Signing** is optional and recommended: put your [minisign](https://jedisct1.github.io/minisign/) public key in your
 entry, and every later version must be signed with it, so nobody else can publish an update in your name.
@@ -63,6 +94,7 @@ why.
 | `revoked.toml` | Files taken down |
 | `.github/workflows/check.yml` | A pull request's checks |
 | `.github/workflows/publish.yml` | On merge: releases, then `index.json` on Pages |
+| `.github/workflows/owner-update.yml`, `scripts/owner_update.py` | Merges an owner's update of their own project when it verifies |
 | `.github/workflows/cleanup.yml` | Weekly: staging files nobody needs any more |
 | `.github/workflows/native.yml` | Horizon's native mods: each changed one's tests, `.hnmod` and game check, all of them together, and weekly on the newest Nightly |
 | `native/<name>/` | Horizon's own native mods (Zoom, FPS Counter, Keystrokes, Minimap, Recipes, Coordinates HUD): the source of their `.hnmod` files |

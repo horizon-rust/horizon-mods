@@ -1,0 +1,44 @@
+# Merges an owner's update of their own project without a reviewer: the submission form's pull request
+# (opened by the form's account, signed with an HMAC trailer in its body, label `owner-update`) whose diff is
+# one new [[versions]] table in mods/<id>.toml, by someone in that entry's `owners`. scripts/owner_update.py
+# verifies all of it and waits for the other workflows (check, and native when it ran) to pass on the head commit.
+# Anything else is a reviewer's, as before. Setup (Ludovic's): README.md, "Owner updates".
+#
+# pull_request_target: it runs main's copy of this file and script, with secrets, and never checks out or runs the
+# pull request's code: the script only reads the pull request through the API, as data. Merging needs the
+# secret REGISTRY_MERGE_TOKEN, an account allowed to bypass the review rule; a merge by GITHUB_TOKEN would not
+# start publish.yml either.
+name: owner-update
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, reopened, labeled, synchronize]
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+concurrency:
+  group: owner-update-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  owner-update:
+    # The label only keeps this off other pull requests; the signed trailer is the proof.
+    if: contains(github.event.pull_request.labels.*.name, 'owner-update')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+      - run: python3 scripts/test_owner_update.py
+      - name: Verify, wait for the checks, merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MERGE_TOKEN: ${{ secrets.REGISTRY_MERGE_TOKEN }}
+          UPDATE_KEY: ${{ secrets.REGISTRY_UPDATE_KEY }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          BOT: ${{ vars.REGISTRY_BOT || 'horizon-mods-bot' }}
+          SELF: ${{ github.workflow }}
+        run: python3 scripts/owner_update.py

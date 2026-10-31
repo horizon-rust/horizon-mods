@@ -1,0 +1,23 @@
+id = "light_overlay"
+kind = "native-mod"
+name = "Light Overlay"
+summary = "1:1 Light Overlay & MiniHUD (F7): visualizes mob-spawnable blocks with 3D Yellow (night spawn) and Red (always/cave spawn) crosses (X) or 3D light level numbers"
+description = "A 1:1 native Rust port of Light Overlay and MiniHUD's F7 Light Level Overlay for Horizon. Press F7 during gameplay to scan nearby spawnable block surfaces and render depth-tested 3D markers directly on block tops. Red markers indicate blocks where hostile mobs can spawn at any time (caves/indoor darkness), Yellow markers indicate blocks where hostile mobs can spawn at night, and optional Green markers show safe blocks. Supports Crosses (X), 3D Numbers (0-15), or Both, with configurable scan radius (8 to 20 blocks) and Modern (== 0) or Legacy (<= 7) spawn thresholds."
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/light-overlay"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "light_overlay-1.0.0.hnmod"
+sha256 = "b4aeb56b13d9c73df267a1dc7b1f588f4db39bfd55f7beaef97a014fffb5b076"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTNy4CWemZ33Twp2eJ5FybX79KHuEbkVXRfv1C8+lWasqO1vOdx2A+8oN9eTR9XIh+QKjjw6xwrkG1u2nDoYkk5ww=\r
+trusted comment: timestamp:1793444149\tfile:light_overlay-1.0.0.hnmod\thashed\r
+3mGbUejwekJoW98TqQVK9QKS0aXMamM9rfCVOEwot/Xq/ZbaT1kUdDJMo6mn0iJIeodvdAFd7TnDEoguj7jkCA=="""
+changelog = "Initial release for 26.3 Horizon. "

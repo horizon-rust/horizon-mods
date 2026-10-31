@@ -70,6 +70,8 @@ pub enum Out {
     Reply(String),
     Error(String),
     Tell(u128, String),
+    /// A line to every player (and the server's log).
+    All(String),
 }
 
 pub struct Economy {

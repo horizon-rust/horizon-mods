@@ -5,6 +5,8 @@
 pub mod smp_economy;
 #[path = "../mixins/smp/smp_games.rs"]
 pub mod smp_games;
+#[path = "../mixins/smp/smp_lottery.rs"]
+pub mod smp_lottery;
 #[path = "../mixins/smp/smp_market.rs"]
 pub mod smp_market;
 #[path = "../mixins/smp/smp_store.rs"]

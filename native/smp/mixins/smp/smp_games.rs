@@ -27,6 +27,11 @@ pub struct Config {
     pub offer_seconds: i64,
     /// What the server keeps of the pot, in percent (0: the winner takes all).
     pub fee_percent: i64,
+    /// The lottery: a ticket's price, the tickets one player may hold in a
+    /// draw, and the time from a round's first ticket to its draw.
+    pub ticket_price: i64,
+    pub max_tickets: i64,
+    pub lottery_seconds: i64,
 }
 
 impl Default for Config {
@@ -38,6 +43,9 @@ impl Default for Config {
             cooldown_seconds: 30,
             offer_seconds: 60,
             fee_percent: 0,
+            ticket_price: 10,
+            max_tickets: 100,
+            lottery_seconds: 3600,
         }
     }
 }

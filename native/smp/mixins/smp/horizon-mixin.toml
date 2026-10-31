@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.11.0"
+version = "0.12.0"
 priority = 100
 
 # The commit of horizon main it was tested on. It uses only the native hook points (hooks 49 in
@@ -25,6 +25,18 @@ id = "market"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_market"
 source = "smp_market.rs"
+
+[[module]]
+id = "recipes"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_recipes"
+source = "smp_recipes.rs"
+
+[[module]]
+id = "shop"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_shop"
+source = "smp_shop.rs"
 
 [[module]]
 id = "trade"

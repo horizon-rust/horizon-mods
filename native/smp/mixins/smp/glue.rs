@@ -1,5 +1,5 @@
 // The SMP in the server's game: its state for the open world, and the edges
-// between the game's types and the rules (smp_economy, smp_market,
+// between the game's types and the rules (smp_economy, smp_market, smp_shop,
 // smp_trade, smp_games, smp_lottery, smp_places, smp_claims). Added to
 // the game as `game::smp_glue`; the helpers (register.rs, command.rs,
 // tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs, destroy_block.rs,
@@ -19,6 +19,7 @@ use crate::game::{
     smp_presence::{self, Presence},
     native_menus::native_menu_inventory_slot,
     smp_market::{self, Bag, Market},
+    smp_shop::{self, Shop},
     smp_store,
     smp_trade::{self, Act, Cell, Trades},
 };
@@ -32,7 +33,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.11.0";
+pub const VERSION: &str = "0.12.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -42,6 +43,7 @@ pub struct Config {
     #[serde(flatten)]
     pub economy: smp_economy::Config,
     pub market: smp_market::Config,
+    pub shop: smp_shop::Config,
     pub gambling: smp_games::Config,
     pub places: smp_places::Config,
     pub claims: smp_claims::Config,
@@ -55,6 +57,9 @@ pub struct Smp {
     /// An error when `economy.json` can't be read: the commands say so.
     economy: Result<Economy, String>,
     market: Market,
+    shop_config: smp_shop::Config,
+    /// The `/shop` menus open.
+    shop: Shop,
     trades: Trades<ItemStack>,
     games: Games,
     lottery: Lottery,
@@ -109,10 +114,17 @@ fn open(dir: PathBuf) -> Smp {
             (Config::default(), false)
         }
     };
+    let mut config = config;
+    // Prices never edited: today's defaults (the balances are untouched).
+    let write = smp_market::migrate(&mut config.market) || write;
     if write && let Err(e) = smp_store::write_json(&config_path, &config) {
         log::error!("[smp] {e}");
     }
     log::info!("[smp] {NAME} {VERSION} on {}", dir.display());
+    let (market, problems) = Market::open(&dir, config.market);
+    for p in problems {
+        log::warn!("[smp] {p}");
+    }
     let economy = Economy::open(&dir, config.economy);
     if let Err(e) = &economy {
         log::error!("[smp] the economy is off: {e}");
@@ -138,9 +150,9 @@ fn open(dir: PathBuf) -> Smp {
     Smp {
         dir,
         economy,
-        market: Market {
-            config: config.market,
-        },
+        market,
+        shop_config: config.shop,
+        shop: Shop::default(),
         trades: Trades::default(),
         games: Games::new(config.gambling),
         lottery: Lottery::default(),
@@ -172,6 +184,9 @@ fn save(smp: &mut Smp) {
     if let Ok(e) = &mut smp.economy
         && let Err(err) = e.save()
     {
+        log::error!("[smp] {err}");
+    }
+    if let Err(err) = smp.market.save() {
         log::error!("[smp] {err}");
     }
     if let Ok(p) = &mut smp.places
@@ -208,6 +223,7 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "sell all",
         "sell <item:item> [count:integer]",
         "buy <item:item> [count:integer]",
+        "shop",
         "trade <player:word>",
         "trade accept [player:word]",
         "trade deny [player:word]",
@@ -249,11 +265,14 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
     for usage in ["setspawn", "setwarp <name:word>", "delwarp <name:word>"] {
         commands.push(NativeCommand::op(usage, 3));
     }
-    for verb in ["give", "take", "set"] {
-        commands.push(NativeCommand::op(
-            &format!("eco {verb} <player:word> <amount:integer>"),
-            3,
-        ));
+    for name in ["eco", "money"] {
+        for verb in ["give", "take", "set"] {
+            commands.push(NativeCommand::op(
+                &format!("{name} {verb} <player:word> <amount:integer>"),
+                3,
+            ));
+        }
+        commands.push(NativeCommand::op(&format!("{name} give * <amount:integer>"), 3));
     }
 }
 
@@ -281,8 +300,9 @@ impl Bag for GameBag<'_, '_> {
     }
 }
 
-const COMMANDS: [&str; 11] = [
-    "balance", "bal", "pay", "baltop", "eco", "worth", "sell", "buy", "trade", "coinflip", "lottery",
+const COMMANDS: [&str; 13] = [
+    "balance", "bal", "pay", "baltop", "eco", "money", "worth", "sell", "buy", "shop", "trade", "coinflip",
+    "lottery",
 ];
 
 /// The players on, as the places see them.
@@ -439,12 +459,15 @@ pub(in crate::game) fn perform(
                 "Homes and warps are off: their file can't be read (see the server log).".into(),
             )],
         }
+    } else if word == "shop" {
+        open_shop(game, smp, &me)
     } else {
         match &mut smp.economy {
         Ok(e) => {
             e.seen(me.uuid, &me.name);
+            let on: Vec<(u128, String)> = players.iter().map(|p| (p.uuid, p.name.clone())).collect();
             let mut bag = GameBag(game);
-            e.command(&me, line)
+            e.command(&me, &on, line)
                 .or_else(|| smp.market.command(e, &me, trades, &mut bag, line))
                 .or_else(|| {
                     let (out, a) = smp.trades.command(e, &me, trades, &online, now, line)?;
@@ -737,6 +760,10 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
     };
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
+    if smp.shop.views.get(&uuid).is_some_and(|v| v.0 == Some(window)) {
+        shop_clicked(game, smp, uuid, slot, mode == 1);
+        return;
+    }
     let Some(t) = smp.trades.trade_of(uuid) else {
         return;
     };
@@ -769,6 +796,10 @@ pub(in crate::game) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32)
     };
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
+    if smp.shop.views.get(&uuid).is_some_and(|v| v.0 == Some(window)) {
+        smp.shop.views.remove(&uuid);
+        return;
+    }
     let Some(t) = smp.trades.trade_of(uuid) else {
         return;
     };
@@ -781,6 +812,224 @@ pub(in crate::game) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32)
     act(game, smp, acts);
     drop(guard);
     show(game, out);
+}
+
+/// A player's items outside their command (a click in a menu): read from
+/// their inventory, moved by the console's `clear` and `give`, each move
+/// measured on the inventory before and after.
+struct MenuBag<'a, 'g> {
+    game: &'a mut Game<'g>,
+    uuid: u128,
+    name: String,
+}
+
+impl MenuBag<'_, '_> {
+    fn stacks(&self) -> Vec<Option<ItemStack>> {
+        self.game.native_player_stacks(self.uuid).unwrap_or_default()
+    }
+    /// Every stack of `item`, plain or not (`clear` takes any).
+    fn total(&self, item: &str) -> u32 {
+        self.stacks().iter().flatten().filter(|s| &*s.item == item).map(|s| s.count).sum()
+    }
+}
+
+fn plain(s: &ItemStack) -> bool {
+    s.damage == 0 && s.extra.is_none()
+}
+
+impl Bag for MenuBag<'_, '_> {
+    fn held(&self) -> Option<(String, u32, bool)> {
+        None
+    }
+    fn carried(&self) -> Vec<(String, u32)> {
+        let mut out: Vec<(String, u32)> = Vec::new();
+        for s in self.stacks().iter().flatten().filter(|s| plain(s)) {
+            match out.iter_mut().find(|(id, _)| **id == *s.item) {
+                Some((_, n)) => *n += s.count,
+                None => out.push((s.item.to_string(), s.count)),
+            }
+        }
+        out
+    }
+    /// The plain ones; none while a named or worn one is carried, which
+    /// `clear` could take in their place.
+    fn count(&mut self, item: &str) -> u32 {
+        let stacks = self.stacks();
+        let of = || stacks.iter().flatten().filter(|s| &*s.item == item);
+        if of().any(|s| !plain(s)) {
+            return 0;
+        }
+        of().map(|s| s.count).sum()
+    }
+    fn take(&mut self, item: &str, count: u32) -> u32 {
+        if !smp_market::valid_id(item) || count == 0 {
+            return 0;
+        }
+        let before = self.total(item);
+        self.game.native_run_command(&format!("clear {} {item} {count}", self.name));
+        before.saturating_sub(self.total(item))
+    }
+    fn room(&mut self, item: &str) -> u32 {
+        self.stacks()
+            .iter()
+            .map(|s| match s {
+                None => smp_shop::STACK,
+                Some(s) if &*s.item == item && plain(s) => smp_shop::STACK.saturating_sub(s.count),
+                Some(_) => 0,
+            })
+            .sum()
+    }
+    /// What doesn't fit (`room` counts 64 a stack) falls at the player's
+    /// feet for them, as `give` does: given all the same.
+    fn give(&mut self, item: &str, count: u32) -> u32 {
+        if !smp_market::valid_id(item) || count == 0 {
+            return 0;
+        }
+        let line = format!("give {} {item} {count}", self.name);
+        if self.game.native_run_command(&line) { count } else { 0 }
+    }
+}
+
+/// The shop menu's cells as items.
+fn shop_items(smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
+    let economy = smp.economy.as_ref().ok();
+    let money = |n: i64| economy.map_or_else(|| n.to_string(), |e| e.money(n));
+    let config = &smp.market.config;
+    smp.shop
+        .layout(&smp.shop_config, config, uuid)
+        .into_iter()
+        .map(|cell| {
+            use smp_shop::Cell as C;
+            Some(match cell {
+                C::Empty => return None,
+                C::Filler => button("minecraft:gray_stained_glass_pane", " ", "gray"),
+                C::Category(icon, name, n) => button(&icon, &format!("{name} ({n} items)"), "yellow"),
+                C::Item(id, price) => button(&id, &smp_shop::item_label(&id, price, &money), "white"),
+                C::Back => button("minecraft:arrow", "Back", "white"),
+                C::Prev => button("minecraft:arrow", "Previous page", "white"),
+                C::Next => button("minecraft:arrow", "Next page", "white"),
+                C::Balance => {
+                    let b = economy.map_or(0, |e| e.balance(uuid));
+                    button("minecraft:gold_ingot", &format!("Balance: {}", money(b)), "gold")
+                }
+                C::SellAll => button("minecraft:hopper", "Sell everything the market buys", "green"),
+                C::Limits => {
+                    let line = economy.and_then(|e| smp.market.limits_line(e, uuid));
+                    button("minecraft:clock", &line.unwrap_or_else(|| "No selling limit".into()), "aqua")
+                }
+                C::Help => button("minecraft:book", smp_shop::HELP_TEXT, "white"),
+                C::Close => button("minecraft:barrier", "Close", "red"),
+            })
+        })
+        .collect()
+}
+
+/// `/shop`: the menu opens on its first page.
+fn open_shop(game: &mut Game<'_>, smp: &mut Smp, me: &Player) -> Vec<Out> {
+    if !smp.market.config.enabled || !smp.shop_config.enabled {
+        return vec![Out::Error("The shop is closed.".into())];
+    }
+    if smp.trades.trade_of(me.uuid).is_some() {
+        return vec![Out::Error("Finish or cancel your trade first.".into())];
+    }
+    smp.shop.views.insert(me.uuid, (None, smp_shop::Page::Main));
+    let items = shop_items(smp, me.uuid);
+    let title = Text::literal(smp.shop_config.title.clone());
+    let window = game.native_open_menu(me.uuid, smp_shop::ROWS, title, items);
+    match window {
+        Some(w) => {
+            smp.shop.views.insert(me.uuid, (Some(w), smp_shop::Page::Main));
+            Vec::new()
+        }
+        None => {
+            smp.shop.views.remove(&me.uuid);
+            vec![Out::Error("The shop couldn't open.".into())]
+        }
+    }
+}
+
+/// A click in a player's shop menu: a page, a purchase or a sale, then the
+/// menu shows the new balance and limits.
+fn shop_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32, shift: bool) {
+    use smp_shop::Click;
+    let Some(p) = game.native_server_players().into_iter().find(|p| p.uuid == uuid) else {
+        return;
+    };
+    let me = Player {
+        uuid,
+        name: p.name.clone(),
+        level: p.permission,
+    };
+    // A click on a stack of the player's own sells it; one on the menu is
+    // the shop's.
+    let (sale, click) = match native_menu_inventory_slot(smp_shop::SIZE, slot) {
+        Some(i) => match game.native_player_stacks(uuid).and_then(|s| s.get(i).cloned().flatten()) {
+            Some(s) if !plain(&s) => {
+                let why = "The market only takes plain items (not worn, named or enchanted).";
+                tell(game, uuid, vec![Out::Error(why.into())]);
+                return;
+            }
+            Some(s) => (Some((s.item.to_string(), s.count)), Click::Nothing),
+            None => return,
+        },
+        None => match usize::try_from(slot) {
+            Ok(s) => (None, smp.shop.click(&smp.shop_config, &smp.market.config, uuid, s, shift)),
+            Err(_) => return,
+        },
+    };
+    match (&sale, &click) {
+        (None, Click::Nothing) => return,
+        (_, Click::Close) => {
+            smp.shop.views.remove(&uuid);
+            game.native_close_menu(uuid);
+            return;
+        }
+        _ => {}
+    }
+    let mut out = Vec::new();
+    let moves = sale.is_some() || matches!(click, Click::Buy(..) | Click::SellAll);
+    if moves && !matches!(p.game_mode, 0 | 2) {
+        out.push(Out::Error("The market trades only with players in survival or adventure mode.".into()));
+    } else if moves {
+        let Ok(economy) = &mut smp.economy else {
+            let why = "The economy is off: its file can't be read (see the server log).";
+            tell(game, uuid, vec![Out::Error(why.into())]);
+            return;
+        };
+        economy.now = chrono::Utc::now().timestamp_millis();
+        economy.seen(uuid, &me.name);
+        let mut bag = MenuBag {
+            game: &mut *game,
+            uuid,
+            name: me.name.clone(),
+        };
+        out = match (sale, click) {
+            (Some((id, n)), _) => smp.market.sell(economy, &me, &mut bag, &[&id, &n.to_string()]),
+            (None, Click::Buy(id, n)) => smp.market.buy(economy, &me, &mut bag, &[&id, &n.to_string()]),
+            _ => smp.market.sell(economy, &me, &mut bag, &["all"]),
+        };
+        // The menu shows the balance.
+        out.retain(|o| !matches!(o, Out::Reply(s) if s.starts_with("Balance: ")));
+    }
+    let items = shop_items(smp, uuid);
+    game.native_set_menu_items(uuid, items);
+    tell(game, uuid, out);
+}
+
+/// What a menu click answers, to the player who clicked (no command's
+/// feedback there).
+fn tell(game: &mut Game<'_>, uuid: u128, out: Vec<Out>) {
+    for o in out {
+        match o {
+            Out::Reply(s) => {
+                game.native_tell(uuid, Text::literal(s).with_color(text::GREEN));
+            }
+            Out::Error(s) => {
+                game.native_tell(uuid, Text::literal(s).with_color(text::RED));
+            }
+            o => show(game, vec![o]),
+        }
+    }
 }
 
 fn show(game: &mut Game<'_>, out: Vec<Out>) {

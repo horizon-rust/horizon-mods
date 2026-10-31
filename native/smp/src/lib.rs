@@ -17,6 +17,10 @@ pub mod smp_market;
 pub mod smp_places;
 #[path = "../mixins/smp/smp_presence.rs"]
 pub mod smp_presence;
+#[path = "../mixins/smp/smp_recipes.rs"]
+pub mod smp_recipes;
+#[path = "../mixins/smp/smp_shop.rs"]
+pub mod smp_shop;
 #[path = "../mixins/smp/smp_store.rs"]
 pub mod smp_store;
 #[path = "../mixins/smp/smp_trade.rs"]

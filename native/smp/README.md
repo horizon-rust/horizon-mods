@@ -9,7 +9,7 @@ lines, vanilla chest menus the server fills with ordinary items (the trade menu)
 bar, boss bars and the sidebar).
 
 This version: the economy, the server market and its `/shop` menu, player trades, the coinflip, the lottery, places (spawn, homes, warps,
-teleport requests, the rules), land claims, and the scoreboard (a sidebar of the richest players, the Tab list's
+teleport requests, the rules), land claims, and the scoreboard (a sidebar with your balance, playtime and the richest players, the Tab list's
 header and footer).
 
 | Command | Does |
@@ -45,7 +45,7 @@ header and footer).
 | `/nick <name>`, `/nick off` | another name for you in chat and the Tab list (hovering it gives your real one); one change every 10 minutes |
 | `/nick <player> <name\|off>` | operators of level 3: sets or takes off a player's nickname |
 | `/realname <nick>` | who goes by that nickname |
-| `/sidebar off`, `/sidebar on`, `/sidebar` | hides the richest players' sidebar for you (remembered), shows it again |
+| `/sidebar off`, `/sidebar on`, `/sidebar` | hides the scoreboard sidebar for you (remembered), shows it again |
 
 The market trades only plain items (not worn, named or enchanted), and only with players in survival or adventure
 mode. Items move first, then money, both logged; a sale the log refuses gives the items back, and a purchase checks the
@@ -135,13 +135,16 @@ and players aren't in it). Not guarded yet: right clicking an entity (rotating a
 items, shearing, leads), which waits for Horizon's hook (#4648). The server's `spawn-protection` (vanilla's) guards
 the spawn.
 
-**The scoreboard.** A sidebar on the right lists the `board.top` (10) richest players with their balance (`125.4k`,
-`3.2M`), then a gap and your own rank and balance. It's rebuilt only when a balance changed, at
-most every `board.refresh_seconds` (60), and sent only to the players whose lines changed: nothing runs per tick per
-player. The Tab list shows `board.tab_header` and `board.tab_footer` (`{server}`, `{tps}`, `{players}` filled in,
-every `board.tab_refresh_seconds`, 5). `board.sidebar` and `board.tab` turn either off; `board.title` and
-`board.server_name` name them. The sidebar uses one scoreboard objective of its own (`horizon:native_sidebar`) and
-leaves the world's scoreboard alone.
+**The scoreboard.** A sidebar on the right, titled `board.title` ("Horizon SMP"): your own block first (your name, or
+your nickname; your balance, `125.4k`, `3.2M`; your playtime, `2h 05m`; the players online), then the `board.top` (3)
+richest players with their balance, then `board.footer` (`play.playhorizon.dev`, empty for none). The ranking is
+built once for everyone, only when a balance changed (at most every `board.min_seconds`, 5) or every
+`board.refresh_seconds` (60); each player's own lines are looked at on the same `board.refresh_seconds`, and a
+sidebar is sent only to the players whose lines changed and to newcomers: nothing runs per tick per player. The Tab
+list shows `board.tab_header` and `board.tab_footer` (`{server}`, `{tps}`, `{players}` filled in, every
+`board.tab_refresh_seconds`, 5). `board.sidebar` and `board.tab` turn either off; `board.server_name` names the Tab
+list. A server that kept 0.13's defaults (`Richest players`, the top 10) gets these at its first start of 0.14. The
+sidebar uses one scoreboard objective of its own (`horizon:native_sidebar`) and leaves the world's scoreboard alone.
 
 **Presence.** A player's first join is announced to everyone (`presence.first_join`, empty for none) and they read
 `presence.welcome` and the rules. Each player gets `presence.daily_reward` (50) once a day (UTC) for being on, logged

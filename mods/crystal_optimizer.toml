@@ -1,0 +1,33 @@
+id = "crystal_optimizer"
+kind = "native-mod"
+name = "Marlow's Crystal Optimizer"
+summary = "Client-side End Crystal PvP optimizer: instant 0ms break prediction, zero miss penalty, and fast place."
+description = """
+Marlow's Crystal Optimizer
+
+A native Horizon mod by CayMac, bringing the premier client-side competitive Crystal PvP utility (originally created by Bram1903 for Java) into Horizon:
+
+0ms Instant Break Prediction: Client-side entity prediction eliminates the delay of waiting for server confirmation packets. The End Crystal despawns locally on the exact frame you strike it, allowing seamless placement and ultra-responsive combos even on higher ping.
+Zero Miss Penalty (miss_time = 0): Completely removes vanilla Minecraft's artificial 10-tick (500ms) miss delay, so rapid attacks are never blocked or swallowed.
+Fast Place: Removes the 4-tick right-click delay when holding Obsidian or End Crystals, enabling maximum placement speed.
+Auto-Break on Hold: Seamlessly attacks crystals when holding down the attack button as your crosshair passes over them.
+100% Server-Legal: Sends strictly vanilla attack and punch packets with standard reach checks. No Reach hacks, no automated macros, fully compliant with competitive CPvP rules.
+Customizable: Configurable in-game via Options > Mods > Marlow's Crystal Optimizer."""
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/crystal-optimizer"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "crystal_optimizer-1.0.0.hnmod"
+sha256 = "b58052f43a8507fb984c70a12af99853f8a1cc5526e6b127cd2468880310cc84"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTN1bcXcXpUPQprlx2fr+YDTN9GDM9J5GJsxtn8akR1jj8rLTL2nrwpCTbiQLfja6HyW5mST6t/Q0JUkfJexlRiQU=\r
+trusted comment: timestamp:1793469433\tfile:crystal_optimizer-1.0.0.hnmod\thashed\r
+u0i8WpIVLETk9b+VLS5DIthfr38smS99X5/x5N9jFHmjwK1yQYMpwFWpCoorDv1qvPmYYNN/+TWDoVfun9lKDQ=="""
+changelog = "Initial release for 26.3 Horizon. "

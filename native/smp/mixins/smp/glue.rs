@@ -34,7 +34,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.13.0";
+pub const VERSION: &str = "0.14.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -122,7 +122,9 @@ fn open(dir: PathBuf) -> Smp {
     };
     let mut config = config;
     // Prices never edited: today's defaults (the balances are untouched).
-    let write = smp_market::migrate(&mut config.market) || write;
+    let write = smp_market::migrate(&mut config.market) | write;
+    // 0.13's sidebar (the richest ten), never edited: 0.14's scoreboard.
+    let write = smp_board::migrate(&mut config.board) | write;
     if write && let Err(e) = smp_store::write_json(&config_path, &config) {
         log::error!("[smp] {e}");
     }
@@ -1225,6 +1227,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     // changed.
     let mut sidebars = Vec::new();
     let mut tab = None;
+    let (nicks, places) = (&smp.nicks, &smp.places);
     if n % 20 == 0
         && let Ok(b) = &mut smp.board
     {
@@ -1234,7 +1237,18 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         {
             b.rebuild(e.accounts(), now, e.revision());
         }
-        sidebars = b.updates(&on);
+        // Asked only for the players whose sidebar is looked at.
+        let me = |uuid: u128| smp_board::Me {
+            name: nicks
+                .as_ref()
+                .ok()
+                .and_then(|n| n.nick_of(uuid))
+                .map(str::to_owned)
+                .or_else(|| players.iter().find(|p| p.uuid == uuid).map(|p| p.name.clone()))
+                .unwrap_or_default(),
+            played_seconds: places.as_ref().map_or(0, |p| p.played_seconds(uuid)),
+        };
+        sidebars = b.updates(now, &on, me);
         let to = b.tab_due(now, &on);
         if !to.is_empty() {
             let (rate, mspt) = game.native_tick_stats();
@@ -1350,6 +1364,20 @@ fn sidebar(title: &str, lines: &[Line]) -> NativeSidebar {
     let lines = lines
         .iter()
         .map(|l| match l {
+            Line::Name(name) => (Text::literal(name.clone()).with_color(text::GREEN).bold(), None),
+            Line::Stat { label, value } => {
+                let color = match *label {
+                    "Balance" => text::GOLD,
+                    "Online" => text::GREEN,
+                    _ => text::WHITE,
+                };
+                (
+                    Text::literal(*label).with_color(text::GRAY),
+                    Some(Text::literal(value.clone()).with_color(color)),
+                )
+            }
+            Line::Gap => (Text::literal(""), None),
+            Line::Heading => (Text::literal("Richest").with_color(text::YELLOW), None),
             Line::Top { rank, name, amount, me } => {
                 let color = if *me { text::GREEN } else { text::WHITE };
                 (
@@ -1357,11 +1385,7 @@ fn sidebar(title: &str, lines: &[Line]) -> NativeSidebar {
                     Some(Text::literal(amount.clone()).with_color(text::GOLD)),
                 )
             }
-            Line::Gap => (Text::literal(""), None),
-            Line::Me { rank, amount } => (
-                Text::literal(if *rank == 0 { "You".to_owned() } else { format!("You: #{rank}") }).with_color(text::GREEN),
-                Some(Text::literal(amount.clone()).with_color(text::GOLD)),
-            ),
+            Line::Footer(address) => (Text::literal(address.clone()).with_color(text::AQUA), None),
         })
         .collect();
     NativeSidebar {

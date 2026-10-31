@@ -23,7 +23,7 @@ authors = ["Lutziano888"]
 owners = ["Lutziano888"]
 license = "MIT"
 source = "https://github.com/Lutziano888/horizon-freecam"
-icon = "https://raw.githubusercontent.com/Lutziano888/FreecamHorizonMinecraft/main/icon.png"
+icon = "icons/fair_freecam.png"
 
 [[versions]]
 version = "1.2.0"

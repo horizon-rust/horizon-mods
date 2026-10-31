@@ -1,0 +1,53 @@
+id = "continuity_rust"
+kind = "native-mod"
+name = "Continuity: Rust Edition"
+summary = "Unofficial Continuity port for Horizon 26.3 with connected textures, overlays and emissive textures."
+description = """
+Continuity: Rust Edition is an unofficial Rust port of Continuity for Horizon and Minecraft 26.3, maintained by byMehd.
+
+The original Continuity mod is by PepperCode1 and the Continuity contributors. This edition is not affiliated with or endorsed by the original author or the Horizon team.
+
+Original project: https://github.com/PepperCode1/Continuity
+Modrinth: https://modrinth.com/mod/continuity
+CurseForge: https://www.curseforge.com/minecraft/mc-mods/continuity
+
+Based on Continuity 3.0.1+26.3. Provides connected textures, compact textures, overlays, emissive textures for blocks and items, resource conditions and two settings in the Horizon mod menu. Texture rules are processed during chunk meshing rather than every frame. Overlay and emissive layers can add geometry.
+
+Compatibility
+Minecraft 26.3. Requires Horizon revision 1da354b67a509812c4141b67de2affd6de65c342 and horizon mixins revision 0e9229d88d7b6ab18add048de680d873f04cd9b5. Other revisions require a compatibility check.
+
+Installation
+Add the hnmod to a compatible native mod instance and rebuild it. Enable a connected texture resource pack in the game. The original default pack, Programmer Art rules and separate glass pane fix are included in the public sources. Run python tools/package.py from the source project to generate the two resource pack ZIP files, then place them in resourcepacks and enable the desired packs. Minecraft assets and compiled games are not distributed.
+
+Validation
+30 passing Rust tests. The exact Java reference agrees on 256 CTM masks and 504 random seed cases. Compact glass reconstruction matches all 256 reference images. Rendering and settings were checked in an isolated game. This does not certify every third party pack, shader or Java rendering detail. Performance measurements and limits are documented in VALIDATION.md.
+
+License
+LGPL version 3 only. Original copyrights, credits, modification notices and license texts are retained. Included Horizon and Fancy Regex portions retain their MIT notices. Users can modify and rebuild the covered source.
+
+Release sources: https://github.com/byMehd/Continuity_Rust_Edition/tree/e652c14e79bb936d12fc3c9367fdda0a8cfa2381
+Validation: https://github.com/byMehd/Continuity_Rust_Edition/blob/main/VALIDATION.md
+
+Icon attribution
+Original Continuity project artwork, credited to PepperCode1 and the Continuity contributors. The displayed 256 by 256 image is from the original CurseForge page. The same artwork is included in the original project resources. Its original authorship is retained; this unofficial Rust port does not claim ownership of the original artwork.
+
+Original icon source: https://github.com/PepperCode1/Continuity/blob/1.20.1/dev/src/main/resources/assets/continuity/icon.png
+Project license: https://www.curseforge.com/minecraft/mc-mods/continuity/license"""
+authors = ["PepperCode1 (original mod)", "Continuity contributors (original mod)"]
+owners = ["byMehd"]
+license = "LGPL-3.0-only"
+source = "https://github.com/byMehd/Continuity_Rust_Edition"
+icon = "https://media.forgecdn.net/avatars/thumbnails/437/816/256/256/637682110255957193.png"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "continuity_rust-1.0.0.hnmod"
+sha256 = "7651b82bb3455ff578114c57361934d67b43955647db12eb417470d027033e2a"
+changelog = """
+Initial release for Minecraft 26.3.
+
+Connected texture providers, compact textures, overlays, emissive block and item textures, resource conditions and two in game settings.
+
+Optimized native build with 30 passing Rust tests, Java reference comparisons and isolated game rendering checks. See VALIDATION.md for measured performance and known limits."""

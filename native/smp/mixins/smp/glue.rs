@@ -9,7 +9,8 @@
 
 use crate::game::{
     Game,
-    native_server::{NativeCommand, NativeServerPlayer},
+    native_server::{NativeCommand, NativeServerPlayer, NativeSidebar},
+    smp_board::{self, Board, Line},
     smp_claims::{self, Claims},
     smp_economy::{self, Economy, Out, Player},
     smp_games::{self, Games},
@@ -30,7 +31,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.8.0";
+pub const VERSION: &str = "0.9.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -43,6 +44,7 @@ pub struct Config {
     pub gambling: smp_games::Config,
     pub places: smp_places::Config,
     pub claims: smp_claims::Config,
+    pub board: smp_board::Config,
 }
 
 /// The SMP of the open world.
@@ -59,10 +61,15 @@ pub struct Smp {
     /// An error when `claims.json` can't be read: nothing is guarded then,
     /// and the commands say so.
     claims: Result<Claims, String>,
+    /// An error when `board.json` can't be read: no sidebar then.
+    board: Result<Board, String>,
 }
 
 static STATE: Mutex<Option<Smp>> = Mutex::new(None);
 static TICKS: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+/// Whether the next tick has work (a teleport warming up, a trade open, a
+/// command's changes to write): otherwise only one tick a second does any.
+static BUSY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
 
 fn open(dir: PathBuf) -> Smp {
     let config_path = dir.join("config.json");
@@ -107,6 +114,10 @@ fn open(dir: PathBuf) -> Smp {
     if let Err(e) = &claims {
         log::error!("[smp] claims are off: {e}");
     }
+    let board = Board::open(&dir, config.board);
+    if let Err(e) = &board {
+        log::error!("[smp] the sidebar is off: {e}");
+    }
     Smp {
         dir,
         economy,
@@ -118,6 +129,7 @@ fn open(dir: PathBuf) -> Smp {
         lottery: Lottery::default(),
         places,
         claims,
+        board,
     }
 }
 
@@ -150,6 +162,11 @@ fn save(smp: &mut Smp) {
     }
     if let Ok(c) = &mut smp.claims
         && let Err(err) = c.save()
+    {
+        log::error!("[smp] {err}");
+    }
+    if let Ok(b) = &mut smp.board
+        && let Err(err) = b.save()
     {
         log::error!("[smp] {err}");
     }
@@ -195,6 +212,9 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "claims",
         "trust <player:word>",
         "untrust <player:word>",
+        "sidebar",
+        "sidebar on",
+        "sidebar off",
     ] {
         commands.push(NativeCommand::new(usage));
     }
@@ -279,10 +299,16 @@ pub(in crate::game) fn perform(
     ran: &mut bool,
 ) {
     let word = line.split(' ').next().unwrap_or_default();
-    let ours = [&COMMANDS[..], &smp_places::COMMANDS, &smp_claims::COMMANDS];
+    let ours = [
+        &COMMANDS[..],
+        &smp_places::COMMANDS,
+        &smp_claims::COMMANDS,
+        &smp_board::COMMANDS,
+    ];
     if !game.native_on(ID) || !ours.iter().any(|c| c.contains(&word)) {
         return;
     }
+    BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
     let Some(dir) = game.native_world_dir() else {
         return;
     };
@@ -304,7 +330,21 @@ pub(in crate::game) fn perform(
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
     let mut acts = Vec::new();
-    let out = if smp_claims::COMMANDS.contains(&word) {
+    let out = if smp_board::COMMANDS.contains(&word) {
+        match &mut smp.board {
+            Ok(b) => {
+                let (out, show) = b.command(&me, line).unwrap_or_default();
+                // Shown again at the next second's update; taken away now.
+                if show == Some(false) {
+                    game.native_sidebar(me.uuid, None);
+                }
+                out
+            }
+            Err(_) => vec![Out::Error(
+                "The sidebar is off: its file can't be read (see the server log).".into(),
+            )],
+        }
+    } else if smp_claims::COMMANDS.contains(&word) {
         let at = bodies(&players).into_iter().find(|b| b.uuid == me.uuid).map(|b| b.at);
         let played = smp.places.as_ref().map_or(0, |p| p.played_seconds(me.uuid));
         let economy = smp.economy.as_ref().ok();
@@ -686,10 +726,16 @@ fn show(game: &mut Game<'_>, out: Vec<Out>) {
 /// The end of each server tick: accounts for the players on (once a second)
 /// and the files that changed.
 pub(in crate::game) fn tick(game: &mut Game<'_>) {
+    use std::sync::atomic::Ordering::Relaxed;
+    let n = TICKS.fetch_add(1, Relaxed);
+    // An idle tick costs a counter: the rest runs once a second, or each
+    // tick while something waits on it.
+    if n % 20 != 0 && !BUSY.load(Relaxed) {
+        return;
+    }
     let Some(dir) = game.native_world_dir() else {
         return;
     };
-    let n = TICKS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
     let warming = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty());
@@ -773,9 +819,67 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             Some(_) => {}
         }
     }
+    // The sidebars and the Tab list, once a second, sent only where they
+    // changed.
+    let mut sidebars = Vec::new();
+    let mut tab = None;
+    if n % 20 == 0
+        && let Ok(b) = &mut smp.board
+    {
+        let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
+        if let Ok(e) = &smp.economy
+            && b.due(now, e.revision())
+        {
+            b.rebuild(e.accounts(), now, e.revision());
+        }
+        sidebars = b.updates(&on);
+        let to = b.tab_due(now, &on);
+        if !to.is_empty() {
+            let (rate, mspt) = game.native_tick_stats();
+            let tps = f64::from(rate).min(1000.0 / mspt.max(0.001));
+            tab = Some((to, b.tab_lines(tps, mspt, on.len())));
+        }
+    }
+    let title = smp.board.as_ref().map(|b| b.config.title.clone()).unwrap_or_default();
+    let busy = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty()) || !smp.trades.open.is_empty();
+    BUSY.store(busy, Relaxed);
     save(smp);
     drop(guard);
+    for (uuid, lines) in sidebars {
+        game.native_sidebar(uuid, Some(&sidebar(&title, &lines)));
+    }
+    if let Some((to, (header, footer))) = tab {
+        let (header, footer) = (Text::literal(header).with_color(text::GOLD), Text::literal(footer).with_color(text::GRAY));
+        for uuid in to {
+            game.native_tab_list(uuid, &header, &footer);
+        }
+    }
     show(game, out);
+}
+
+/// A player's sidebar lines as the game shows them.
+fn sidebar(title: &str, lines: &[Line]) -> NativeSidebar {
+    let lines = lines
+        .iter()
+        .map(|l| match l {
+            Line::Top { rank, name, amount, me } => {
+                let color = if *me { text::GREEN } else { text::WHITE };
+                (
+                    Text::literal(format!("{rank}. ")).with_color(text::GRAY).append(Text::literal(name.clone()).with_color(color)),
+                    Some(Text::literal(amount.clone()).with_color(text::GOLD)),
+                )
+            }
+            Line::Gap => (Text::literal(""), None),
+            Line::Me { rank, amount } => (
+                Text::literal(if *rank == 0 { "You".to_owned() } else { format!("You: #{rank}") }).with_color(text::GREEN),
+                Some(Text::literal(amount.clone()).with_color(text::GOLD)),
+            ),
+        })
+        .collect();
+    NativeSidebar {
+        title: Text::literal(title).with_color(text::GOLD).bold(),
+        lines,
+    }
 }
 
 /// The world closed: its files are written and its state let go.

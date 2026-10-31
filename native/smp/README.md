@@ -9,7 +9,8 @@ lines, vanilla chest menus the server fills with ordinary items (the trade menu)
 bar, boss bars and the sidebar).
 
 This version: the economy, the server market, player trades, the coinflip, the lottery, places (spawn, homes, warps,
-teleport requests, the rules) and land claims.
+teleport requests, the rules), land claims, and the scoreboard (a sidebar of the richest players, the Tab list's
+header and footer).
 
 | Command | Does |
 |---|---|
@@ -35,6 +36,7 @@ teleport requests, the rules) and land claims.
 | `/claim`, `/claim info`, `/unclaim` | claims the chunk you stand in (all its height), says whose it is, frees it (operators of level 3: anyone's) |
 | `/claims` | your chunks, how many you may hold, and who you trust |
 | `/trust <player>`, `/untrust <player>` | lets a player (or no longer) build and use things on all your land |
+| `/sidebar off`, `/sidebar on`, `/sidebar` | hides the richest players' sidebar for you (remembered), shows it again |
 
 The market trades only plain items (not worn, named or enchanted), and only with players in survival or adventure
 mode. Items move first, then money, both logged; a sale the log refuses gives the items back, and a purchase checks the
@@ -80,6 +82,14 @@ and players aren't in it). Not guarded yet: right clicking an entity (rotating a
 items, shearing, leads), which waits for Horizon's hook (#4648). The server's `spawn-protection` (vanilla's) guards
 the spawn.
 
+**The scoreboard.** A sidebar on the right lists the `board.top` (10) richest players with their balance (`125.4k`,
+`3.2M`), then a gap and your own rank and balance. It's rebuilt only when a balance changed, at
+most every `board.refresh_seconds` (60), and sent only to the players whose lines changed: nothing runs per tick per
+player. The Tab list shows `board.tab_header` and `board.tab_footer` (`{server}`, `{tps}`, `{players}` filled in,
+every `board.tab_refresh_seconds`, 5). `board.sidebar` and `board.tab` turn either off; `board.title` and
+`board.server_name` name them. The sidebar uses one scoreboard objective of its own (`horizon:native_sidebar`) and
+leaves the world's scoreboard alone.
+
 The currency is earned in game only: it can't be bought with real money or cashed out (Mojang's usage guidelines).
 
 ## Data
@@ -92,6 +102,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `config.json` | `currency` (default `coins`), `starting_balance` (default 0), and `market`: `enabled` and `items`, each item's `buy` (what the market asks) and `sell` (what it pays), 0 closing that side; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
 | `economy.json` | balances by player UUID, with the name last seen, and `held`: coinflip stakes and lottery tickets being decided |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
+| `board.json` | the players who hid the sidebar (`/sidebar off`) |
 | `claims.json` | each claimed chunk (`<dimension> <chunk x> <chunk z>`) with its owner, and whom each owner trusts |
 | `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `eco_give`...), `amount`, `from`/`to` with their balance before, `by` for an operator; a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
 
@@ -105,12 +116,13 @@ It hooks only Horizon's native hook points: `native_register_commands` and `nati
 acting player's items (API 9), the server menus and `native_exchange_items` (API 10), the players' health and
 `native_run_command` (API 21), `native_destroy_block` (API 14), `native_right_click_block`, the acting player and the
 action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explosion_detonate`, `native_fill_bucket` and
-`native_attack_entity` (API 22), the server tick and the world lifecycle. `compatibility.json` names `"hooks": 22`.
+`native_attack_entity` (API 22), `native_sidebar`, `native_tab_list` and `native_tick_stats` (API 44), the server tick
+and the world lifecycle. `compatibility.json` names `"hooks": 44`.
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: nine modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: ten modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |

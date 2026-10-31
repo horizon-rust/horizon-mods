@@ -1,6 +1,6 @@
 // The SMP in the server's game: its state for the open world, and the edges
 // between the game's types and the rules (smp_economy, smp_market,
-// smp_trade, smp_games, smp_lottery). Added to
+// smp_trade, smp_games, smp_lottery, smp_places). Added to
 // the game as `game::smp_glue`; the helpers (register.rs, command.rs,
 // tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs) call it from the
 // hook points.
@@ -11,6 +11,7 @@ use crate::game::{
     smp_economy::{self, Economy, Out, Player},
     smp_games::{self, Games},
     smp_lottery::Lottery,
+    smp_places::{self, Body, Place, Places},
     native_menus::native_menu_inventory_slot,
     smp_market::{self, Bag, Market},
     smp_store,
@@ -26,7 +27,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.5.0";
+pub const VERSION: &str = "0.6.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -37,6 +38,7 @@ pub struct Config {
     pub economy: smp_economy::Config,
     pub market: smp_market::Config,
     pub gambling: smp_games::Config,
+    pub places: smp_places::Config,
 }
 
 /// The SMP of the open world.
@@ -48,6 +50,8 @@ pub struct Smp {
     trades: Trades<ItemStack>,
     games: Games,
     lottery: Lottery,
+    /// An error when `places.json` can't be read: the commands say so.
+    places: Result<Places, String>,
 }
 
 static STATE: Mutex<Option<Smp>> = Mutex::new(None);
@@ -88,6 +92,10 @@ fn open(dir: PathBuf) -> Smp {
     if let Err(e) = &economy {
         log::error!("[smp] the economy is off: {e}");
     }
+    let places = Places::open(&dir, config.places);
+    if let Err(e) = &places {
+        log::error!("[smp] homes and warps are off: {e}");
+    }
     Smp {
         dir,
         economy,
@@ -97,6 +105,7 @@ fn open(dir: PathBuf) -> Smp {
         trades: Trades::default(),
         games: Games::new(config.gambling),
         lottery: Lottery::default(),
+        places,
     }
 }
 
@@ -119,6 +128,11 @@ fn state(dir: PathBuf) -> std::sync::MutexGuard<'static, Option<Smp>> {
 fn save(smp: &mut Smp) {
     if let Ok(e) = &mut smp.economy
         && let Err(err) = e.save()
+    {
+        log::error!("[smp] {err}");
+    }
+    if let Ok(p) = &mut smp.places
+        && let Err(err) = p.save(chrono::Utc::now().timestamp_millis())
     {
         log::error!("[smp] {err}");
     }
@@ -147,8 +161,22 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "coinflip list",
         "lottery",
         "lottery buy <tickets:integer>",
+        "spawn",
+        "home [name:word]",
+        "sethome [name:word]",
+        "delhome [name:word]",
+        "homes",
+        "warp <name:word>",
+        "warps",
+        "tpa <player:word>",
+        "tpaccept [player:word]",
+        "tpdeny [player:word]",
+        "rules",
     ] {
         commands.push(NativeCommand::new(usage));
+    }
+    for usage in ["setspawn", "setwarp <name:word>", "delwarp <name:word>"] {
+        commands.push(NativeCommand::op(usage, 3));
     }
     for verb in ["give", "take", "set"] {
         commands.push(NativeCommand::op(
@@ -186,6 +214,24 @@ const COMMANDS: [&str; 11] = [
     "balance", "bal", "pay", "baltop", "eco", "worth", "sell", "buy", "trade", "coinflip", "lottery",
 ];
 
+/// The players on, as the places see them.
+fn bodies(players: &[NativeServerPlayer]) -> Vec<Body> {
+    players
+        .iter()
+        .map(|p| Body {
+            uuid: p.uuid,
+            name: p.name.clone(),
+            at: Place {
+                dimension: p.dimension.clone(),
+                x: p.position[0],
+                y: p.position[1],
+                z: p.position[2],
+            },
+            health: p.health,
+        })
+        .collect()
+}
+
 /// A random number below `n` (n > 0), never the world's random: a fresh
 /// SipHash key (seeded from the system's randomness) over the time.
 fn below(n: u64) -> u64 {
@@ -209,7 +255,8 @@ pub(in crate::game) fn perform(
     line: &str,
     ran: &mut bool,
 ) {
-    if !game.native_on(ID) || !COMMANDS.contains(&line.split(' ').next().unwrap_or_default()) {
+    let word = line.split(' ').next().unwrap_or_default();
+    if !game.native_on(ID) || !(COMMANDS.contains(&word) || smp_places::COMMANDS.contains(&word)) {
         return;
     }
     let Some(dir) = game.native_world_dir() else {
@@ -233,7 +280,15 @@ pub(in crate::game) fn perform(
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
     let mut acts = Vec::new();
-    let out = match &mut smp.economy {
+    let out = if smp_places::COMMANDS.contains(&word) {
+        match &mut smp.places {
+            Ok(p) => p.command(&me, &bodies(&players), now, line).unwrap_or_default(),
+            Err(_) => vec![Out::Error(
+                "Homes and warps are off: their file can't be read (see the server log).".into(),
+            )],
+        }
+    } else {
+        match &mut smp.economy {
         Ok(e) => {
             e.seen(me.uuid, &me.name);
             let mut bag = GameBag(game);
@@ -254,6 +309,7 @@ pub(in crate::game) fn perform(
         Err(_) => vec![Out::Error(
             "The economy is off: its file can't be read (see the server log).".into(),
         )],
+        }
     };
     act(game, smp, acts);
     drop(guard);
@@ -500,14 +556,40 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         return;
     };
     let n = TICKS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-    let players = if n % 20 == 0 {
+    let mut guard = state(dir.join(smp_store::DIR));
+    let smp = guard.as_mut().expect("opened");
+    let warming = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty());
+    let players = if n % 20 == 0 || warming {
         game.native_server_players()
     } else {
         Vec::new()
     };
-    let mut guard = state(dir.join(smp_store::DIR));
-    let smp = guard.as_mut().expect("opened");
+    let now = chrono::Utc::now().timestamp_millis();
     let mut out = Vec::new();
+    // Teleports: each tick while one warms up; requests expire once a second.
+    if let Ok(p) = &mut smp.places
+        && (n % 20 == 0 || warming)
+    {
+        if n % 20 == 0 {
+            let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
+            p.played(&on, now);
+        }
+        let (o, go) = p.tick(&bodies(&players), now);
+        out.extend(o);
+        for t in go {
+            // `.3`: a whole number would be a block's centre to `tp`.
+            let line = format!(
+                "execute in {} run tp {} {:.3} {:.3} {:.3}",
+                t.to.dimension, t.name, t.to.x, t.to.y, t.to.z
+            );
+            out.push(if game.native_run_command(&line) {
+                Out::Tell(t.uuid, t.done)
+            } else {
+                log::warn!("[smp] a teleport failed: {line}");
+                Out::Tell(t.uuid, "The teleport failed.".into())
+            });
+        }
+    }
     if let Ok(e) = &mut smp.economy
         && n % 20 == 0
     {
@@ -526,7 +608,6 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         for uuid in gone {
             smp.games.left(e, uuid);
         }
-        let now = chrono::Utc::now().timestamp_millis();
         out.extend(smp.lottery.tick(&smp.games.config, e, now, &mut below));
     }
     // Each trade's offers against the inventories now: a player gone or

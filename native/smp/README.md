@@ -8,7 +8,8 @@ Players install nothing: it speaks only what a stock Horizon client already show
 lines, vanilla chest menus the server fills with ordinary items (the trade menu); later sounds, titles, the action
 bar, boss bars and the sidebar).
 
-This version: the economy, the server market, player trades, the coinflip and the lottery.
+This version: the economy, the server market, player trades, the coinflip, the lottery, and places: spawn, homes,
+warps, teleport requests and the rules.
 
 | Command | Does |
 |---|---|
@@ -26,6 +27,11 @@ This version: the economy, the server market, player trades, the coinflip and th
 | `/coinflip <amount> [player]` | stakes an amount for anyone (or one player) to match; off unless `gambling.enabled` |
 | `/lottery`, `/lottery buy <tickets>` | the pot, your tickets and the time to the draw; buys tickets (off unless `gambling.enabled`) |
 | `/coinflip accept <player>`, `/coinflip cancel`, `/coinflip list` | takes an offer (a fair coin decides, the winner gets both stakes), withdraws yours, lists those waiting |
+| `/spawn` | to the server's spawn; `/setspawn` (operators of level 3) sets it where you stand |
+| `/home [name]`, `/sethome [name]`, `/delhome [name]`, `/homes` | your homes (`home` when unnamed): go, set or move one where you stand, delete, list |
+| `/warp <name>`, `/warps` | to a warp, the list; `/setwarp <name>`, `/delwarp <name>` for operators of level 3 |
+| `/tpa <player>`, `/tpaccept [player]`, `/tpdeny [player]` | asks to go to a player (60 s to answer); answers a request |
+| `/rules` | the server's rules |
 
 The market trades only plain items (not worn, named or enchanted), and only with players in survival or adventure
 mode. Items move first, then money, both logged; a sale the log refuses gives the items back, and a purchase checks the
@@ -52,6 +58,13 @@ from a round's first ticket to its draw). Tickets are held like coinflip stakes;
 random among all sold (more tickets, more chances), its owner gets the pot (less `fee_percent`), and everyone hears
 it. A round with a single player, or one the server stopped with, gives every ticket back.
 
+**Places.** A teleport waits `warmup_seconds` (3) in `config.json`'s `places`; a player who moves or is hurt meanwhile
+stays where they are, and `cooldown_seconds` (10) passes between two of one player's teleports. `/tpa` takes the
+asker to where the other player is when the warmup ends. Homes grow with the time played on the server since the mod
+was on (`homes`: `[hours, homes]`, by default 1 home, 2 from 5 hours, 3 from 20, 5 from 100). `rules` holds `/rules`'
+lines. Teleports are vanilla's `tp`, run as the server (`execute in <level> run tp`), so they cross levels and land
+as any teleport does.
+
 The currency is earned in game only: it can't be bought with real money or cashed out (Mojang's usage guidelines).
 
 ## Data
@@ -63,6 +76,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 |---|---|
 | `config.json` | `currency` (default `coins`), `starting_balance` (default 0), and `market`: `enabled` and `items`, each item's `buy` (what the market asks) and `sell` (what it pays), 0 closing that side; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
 | `economy.json` | balances by player UUID, with the name last seen, and `held`: coinflip stakes and lottery tickets being decided |
+| `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
 | `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `eco_give`...), `amount`, `from`/`to` with their balance before, `by` for an operator; a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
 
 `economy.json` is written whole to a temporary file, flushed and renamed over the old one, at most once a server tick
@@ -72,13 +86,13 @@ commands say so) rather than start from nothing.
 ## Made on the hook points
 
 It hooks only Horizon's native hook points: `native_register_commands` and `native_perform_command` (API 8), the
-acting player's items (API 9), the server menus and `native_exchange_items` (API 10), the server tick and the world
-lifecycle. `compatibility.json` names `"hooks": 10`.
+acting player's items (API 9), the server menus and `native_exchange_items` (API 10), the players' health and
+`native_run_command` (API 21), the server tick and the world lifecycle. `compatibility.json` names `"hooks": 21`.
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: seven modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: eight modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |

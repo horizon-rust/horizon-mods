@@ -127,7 +127,13 @@ class Client:
         """A command typed in chat; returns the chat lines it brought."""
         before = len(self.chat())
         self.run("chat", line)
-        time.sleep(1.5)
+        # The answer, however busy the machine: up to 10 s for a first line,
+        # then a moment for the rest of it.
+        for _ in range(40):
+            time.sleep(0.25)
+            if len(self.chat()) > before:
+                break
+        time.sleep(1)
         return self.chat()[before:]
 
     def chat(self):
@@ -217,6 +223,65 @@ def lottery(alex, steve, alex_wins):
     assert any(f"Balance: {alex_had - 30 + (50 if alex_lotto else 0)} coins" in l for l in alex.say("/balance"))
     assert any(f"Balance: {steve_had - 20 + (0 if alex_lotto else 50)} coins" in l for l in steve.say("/balance"))
     return results, alex_lotto
+
+
+def where(c):
+    """The client's dimension, position and health."""
+    s = c.run("state")
+    return s.get("dimension"), s["player"]["position"], s["player"]["health"]
+
+
+def near(a, b):
+    return sum((x - y) ** 2 for x, y in zip(a, b)) < 1.5 ** 2
+
+
+def places(server, alex, steve):
+    """Spawn, homes, warps, /tpa and /rules; teleports across levels, called off by a move or a hit."""
+    r = {}
+    r["setspawn"] = alex.say("/setspawn")
+    assert any("The spawn is here now." in l for l in r["setspawn"]), r
+    r["sethome"] = steve.say("/sethome base")
+    assert any('Home "base" set here.' in l for l in r["sethome"]), r
+    _, home, _ = where(steve)
+    r["limit"] = steve.say("/sethome two")
+    assert any("You have 1 of 1 homes" in l for l in r["limit"]), r
+    # To the Nether's bedrock roof, then home, across levels.
+    server.console("execute in minecraft:the_nether run tp Steve 0.5 128 0.5")
+    time.sleep(5)
+    assert where(steve)[0] == "minecraft:the_nether", where(steve)
+    r["home"] = steve.say("/home base")
+    assert any("Teleporting in 2 s: don't move." in l for l in r["home"]), r
+    time.sleep(5)
+    dim, at, _ = where(steve)
+    r["home_reached"] = [dim, at]
+    assert dim == "minecraft:overworld" and near(at, home), (r, home)
+    assert any('Teleported to home "base".' in l for l in steve.chat()[-4:]), steve.chat()[-4:]
+    # A move or a hit during the warmup calls it off.
+    steve.say("/spawn")
+    steve.run("move", "forward", 1)
+    time.sleep(2)
+    r["moved"] = steve.chat()[-3:]
+    assert any("Teleport called off: you moved." in l for l in r["moved"]), r
+    steve.say("/spawn")
+    server.console("damage Steve 2")
+    time.sleep(3)
+    r["hurt"] = steve.chat()[-3:]
+    assert any("Teleport called off: you were hurt." in l for l in r["hurt"]), r
+    # A request: Alex goes to Steve once Steve accepts.
+    alex.say("/tpa Steve")
+    assert any("Alex asks to teleport to you" in l for l in steve.chat()[-3:]), steve.chat()[-3:]
+    steve.say("/tpaccept")
+    time.sleep(4)
+    r["tpa"] = [where(alex)[1], where(steve)[1]]
+    assert near(*r["tpa"]), r
+    alex.say("/setwarp shop")
+    r["warps"] = steve.say("/warps")
+    assert any("Warps: shop" in l for l in r["warps"]), r
+    r["warp_refused"] = steve.say("/setwarp mine")
+    assert not any("set here" in l for l in r["warp_refused"]), r
+    r["rules"] = steve.say("/rules")
+    assert any("1. Be respectful to everyone." in l for l in r["rules"]), r
+    return r
 
 
 def trades(server, alex, steve, port, ctl, resources, root):
@@ -311,14 +376,18 @@ def run(ctl, resources, out):
         data = server.folder / "world" / "horizon-smp"
         data.mkdir(parents=True)
         (data / "config.json").write_text(json.dumps({"gambling": {"enabled": True, "cooldown_seconds": 20,
-                                                                         "lottery_seconds": 30}}))
+                                                                         "lottery_seconds": 30},
+                                                      "places": {"warmup_seconds": 2, "cooldown_seconds": 0}}))
         server.start()
+        # No monster may end a step early: a slime once killed Steve on the flat world.
+        for line in ("difficulty peaceful", "gamerule spawn_monsters false", "kill @e[type=minecraft:slime]"):
+            server.console(line)
         alex.join(port)
         steve.join(port)
         time.sleep(2)
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
-        assert results["config_keys"] == ["currency", "gambling", "market", "starting_balance"], config
+        assert results["config_keys"] == ["currency", "gambling", "market", "places", "starting_balance"], config
         assert config["gambling"] == {"enabled": True, "min_bet": 10, "max_bet": 1000, "cooldown_seconds": 20,
                                       "offer_seconds": 60, "fee_percent": 0, "ticket_price": 10,
                                       "max_tickets": 100, "lottery_seconds": 30}, config
@@ -367,6 +436,8 @@ def run(ctl, resources, out):
         server.console("give Steve minecraft:emerald 5")
         time.sleep(2)
         results["trades"], steve = trades(server, alex, steve, port, ctl, resources, root)
+        # Before the coinflips: their last offer must still wait when the server stops.
+        results["places"] = places(server, alex, steve)
         results["coinflip"], alex_wins = coinflips(alex, steve)
         results["lottery"], alex_lotto = lottery(alex, steve, alex_wins)
         alex_after = 415 + (100 if alex_wins else -100) + (20 if alex_lotto else -30)
@@ -374,7 +445,9 @@ def run(ctl, resources, out):
         lines = server.stop()
         steve.quit()
         alex.quit()
-        assert not any("panicked" in l for l in lines), lines[-40:]
+        assert not any("panicked" in l or "teleport failed" in l for l in lines), lines[-40:]
+        saved = json.loads((data / "places.json").read_text())
+        assert sorted(saved["warps"]) == ["shop"] and saved["spawn"] and len(saved["homes"]) == 1, saved
         economy = json.loads((data / "economy.json").read_text())
         balances = {a["name"]: a["balance"] for a in economy["accounts"].values()}
         results["economy.json"] = economy

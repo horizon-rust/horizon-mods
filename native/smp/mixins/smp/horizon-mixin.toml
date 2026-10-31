@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.10.0"
+version = "0.11.0"
 priority = 100
 
 # The commit of horizon main it was tested on. It uses only the native hook points (hooks 49 in
@@ -55,6 +55,12 @@ id = "board"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_board"
 source = "smp_board.rs"
+
+[[module]]
+id = "presence"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_presence"
+source = "smp_presence.rs"
 
 [[module]]
 id = "claims"

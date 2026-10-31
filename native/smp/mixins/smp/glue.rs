@@ -16,6 +16,7 @@ use crate::game::{
     smp_games::{self, Games},
     smp_lottery::Lottery,
     smp_places::{self, Body, Place, Places},
+    smp_presence::{self, Presence},
     native_menus::native_menu_inventory_slot,
     smp_market::{self, Bag, Market},
     smp_store,
@@ -31,7 +32,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.10.0";
+pub const VERSION: &str = "0.11.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -45,6 +46,7 @@ pub struct Config {
     pub places: smp_places::Config,
     pub claims: smp_claims::Config,
     pub board: smp_board::Config,
+    pub presence: smp_presence::Config,
 }
 
 /// The SMP of the open world.
@@ -63,6 +65,9 @@ pub struct Smp {
     claims: Result<Claims, String>,
     /// An error when `board.json` can't be read: no sidebar then.
     board: Result<Board, String>,
+    /// An error when `presence.json` can't be read: no welcome, reward or
+    /// AFK then.
+    presence: Result<Presence, String>,
     /// `/claim show`: whose chunk border is drawn (level, chunk x, chunk z)
     /// until when.
     shows: std::collections::HashMap<u128, (String, i32, i32, i64)>,
@@ -73,6 +78,9 @@ static TICKS: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0
 /// Whether the next tick has work (a teleport warming up, a trade open, a
 /// command's changes to write): otherwise only one tick a second does any.
 static BUSY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+/// Sleep-count changes decided inside a player's command, for the next
+/// second's tick.
+static PENDING_SLEEP: Mutex<Vec<smp_presence::Act>> = Mutex::new(Vec::new());
 
 fn open(dir: PathBuf) -> Smp {
     let config_path = dir.join("config.json");
@@ -121,6 +129,12 @@ fn open(dir: PathBuf) -> Smp {
     if let Err(e) = &board {
         log::error!("[smp] the sidebar is off: {e}");
     }
+    // Players the economy knows were here before: no first-join welcome.
+    let known = economy.as_ref().map(|e| e.accounts().into_iter().map(|a| a.0).collect()).unwrap_or_else(|_| Vec::new());
+    let presence = Presence::open(&dir, config.presence, known);
+    if let Err(e) = &presence {
+        log::error!("[smp] welcomes, daily rewards and AFK are off: {e}");
+    }
     Smp {
         dir,
         economy,
@@ -133,6 +147,7 @@ fn open(dir: PathBuf) -> Smp {
         places,
         claims,
         board,
+        presence,
         shows: Default::default(),
     }
 }
@@ -171,6 +186,11 @@ fn save(smp: &mut Smp) {
     }
     if let Ok(b) = &mut smp.board
         && let Err(err) = b.save()
+    {
+        log::error!("[smp] {err}");
+    }
+    if let Ok(p) = &mut smp.presence
+        && let Err(err) = p.save()
     {
         log::error!("[smp] {err}");
     }
@@ -222,6 +242,7 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "sidebar",
         "sidebar on",
         "sidebar off",
+        "afk",
     ] {
         commands.push(NativeCommand::new(usage));
     }
@@ -311,6 +332,7 @@ pub(in crate::game) fn perform(
         &smp_places::COMMANDS,
         &smp_claims::COMMANDS,
         &smp_board::COMMANDS,
+        &smp_presence::COMMANDS,
     ];
     if !game.native_on(ID) || !ours.iter().any(|c| c.contains(&word)) {
         return;
@@ -337,7 +359,34 @@ pub(in crate::game) fn perform(
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
     let mut acts = Vec::new();
-    let out = if smp_board::COMMANDS.contains(&word) {
+    // Any SMP command is activity (no longer AFK), and past the limit waits.
+    let mut sleeps = Vec::new();
+    let mut before = Vec::new();
+    if let Ok(p) = &mut smp.presence {
+        match p.allow(&me, now) {
+            Ok((o, a)) => (before, sleeps) = (o, a),
+            Err(o) => {
+                drop(guard);
+                *ran = true;
+                show(game, vec![o]);
+                return;
+            }
+        }
+    }
+    let out = if smp_presence::COMMANDS.contains(&word) {
+        match &mut smp.presence {
+            Ok(p) => match p.command(&me, line) {
+                Some((o, a)) => {
+                    sleeps.extend(a);
+                    o
+                }
+                None => Vec::new(),
+            },
+            Err(_) => vec![Out::Error(
+                "AFK is off: presence.json can't be read (see the server log).".into(),
+            )],
+        }
+    } else if smp_board::COMMANDS.contains(&word) {
         match &mut smp.board {
             Ok(b) => {
                 let (out, show) = b.command(&me, line).unwrap_or_default();
@@ -417,7 +466,13 @@ pub(in crate::game) fn perform(
     act(game, smp, acts);
     drop(guard);
     *ran = true;
-    show(game, out);
+    // Inside the player's command: the sleep count changes at the next
+    // second's tick (`native_sleep_ignored` works outside a player's hook).
+    if !sleeps.is_empty() {
+        PENDING_SLEEP.lock().unwrap_or_else(|e| e.into_inner()).extend(sleeps);
+    }
+    before.extend(out);
+    show(game, before);
 }
 
 /// A player breaks or right clicks the block at `pos`: canceled in a chunk
@@ -837,6 +892,38 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             Some(_) => {}
         }
     }
+    // Welcomes, daily rewards and AFK, once a second.
+    let mut sleeps = std::mem::take(&mut *PENDING_SLEEP.lock().unwrap_or_else(|e| e.into_inner()));
+    if n % 20 == 0
+        && let Ok(pr) = &mut smp.presence
+    {
+        let seen: Vec<smp_presence::Seen> = players
+            .iter()
+            .map(|p| smp_presence::Seen {
+                uuid: p.uuid,
+                name: p.name.clone(),
+                pose: [p.position[0], p.position[1], p.position[2], f64::from(p.yaw), f64::from(p.pitch)],
+            })
+            .collect();
+        let today = chrono::Utc::now().format("%Y-%m-%d").to_string();
+        let rules = smp.places.as_ref().map(|p| p.config.rules.clone()).unwrap_or_default();
+        let (o, acts) = pr.tick(&seen, &today, now, &rules);
+        out.extend(o);
+        let reward = pr.config.daily_reward;
+        for a in acts {
+            match a {
+                smp_presence::Act::Reward(uuid) => {
+                    if let Ok(e) = &mut smp.economy {
+                        match e.adjust("daily_reward", uuid, reward, "") {
+                            Ok(_) => out.push(Out::Tell(uuid, format!("Daily reward: {}.", e.money(reward)))),
+                            Err(err) => log::warn!("[smp] daily reward: {err}"),
+                        }
+                    }
+                }
+                a => sleeps.push(a),
+            }
+        }
+    }
     // `/claim show`: the border once a second, to that player only.
     let mut particles = Vec::new();
     if n % 20 == 0 {
@@ -885,6 +972,11 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     BUSY.store(busy, Relaxed);
     save(smp);
     drop(guard);
+    for a in sleeps {
+        if let smp_presence::Act::Sleep(uuid, ignored) = a {
+            game.native_sleep_ignored(uuid, ignored);
+        }
+    }
     for line in particles {
         game.native_run_command(&line);
     }

@@ -99,6 +99,14 @@ class Server:
         return self.lines
 
 
+def new_lines(before, after):
+    """The lines `after` adds to `before`: the client keeps only its last 100 chat lines, so the oldest may be gone."""
+    for n in range(min(len(before), len(after)), -1, -1):
+        if before[len(before) - n:] == after[:n]:
+            return after[n:]
+    return after
+
+
 class Client:
     """A real client under horizon-ctl, joined to the server as `name`."""
 
@@ -126,16 +134,16 @@ class Client:
 
     def say(self, line):
         """A command typed in chat; returns the chat lines it brought."""
-        before = len(self.chat())
+        before = self.chat()
         self.run("chat", line)
         # The answer, however busy the machine: up to 10 s for a first line,
         # then a moment for the rest of it.
         for _ in range(40):
             time.sleep(0.25)
-            if len(self.chat()) > before:
+            if self.chat() != before:
                 break
         time.sleep(1)
-        return self.chat()[before:]
+        return new_lines(before, self.chat())
 
     def chat(self):
         """Every chat line so far, oldest first (`messages` answers newest first)."""
@@ -221,8 +229,12 @@ def lottery(alex, steve, alex_wins):
     assert len(results["draw"]) == 1 and "won 50 coins" in results["draw"][0], results
     assert results["draw"][0] in steve.chat()[-3:], "everyone hears the draw"
     alex_lotto = results["draw"][0].startswith("Lottery: Alex won")
-    assert any(f"Balance: {alex_had - 30 + (50 if alex_lotto else 0)} coins" in l for l in alex.say("/balance"))
-    assert any(f"Balance: {steve_had - 20 + (0 if alex_lotto else 50)} coins" in l for l in steve.say("/balance"))
+    results["alex_after"] = alex.say("/balance")
+    assert any(f"Balance: {alex_had - 30 + (50 if alex_lotto else 0)} coins" in l for l in results["alex_after"]), (
+        results, alex_had, alex.chat()[-12:])
+    results["steve_after"] = steve.say("/balance")
+    assert any(f"Balance: {steve_had - 20 + (0 if alex_lotto else 50)} coins" in l for l in results["steve_after"]), (
+        results, steve_had, steve.chat()[-12:])
     return results, alex_lotto
 
 
@@ -456,6 +468,37 @@ def polish(server, alex, steve, out):
     return r
 
 
+def presence(server, alex, steve):
+    """/afk keeps Steve out of the sleep count (Alex alone in bed passes the night); moving brings him back; too many
+    commands at once wait."""
+    r = {}
+    r["afk"] = steve.say("/afk")
+    assert any("You are AFK" in l for l in r["afk"]), r
+    _, (ax, ay, az), _ = where(alex)
+    x, y, z = math.floor(ax) + 2, math.floor(ay), math.floor(az)
+    for line in (f"setblock {x} {y} {z} minecraft:red_bed[part=foot,facing=south]",
+                 f"setblock {x} {y} {z + 1} minecraft:red_bed[part=head,facing=south]", "time set 18000"):
+        server.console(line)
+    time.sleep(2)
+    alex.run("interact", x, y, z)
+    # Five seconds asleep, then the morning; Steve, AFK and awake, doesn't hold it back.
+    for _ in range(40):
+        r["time_of_day"] = alex.run("status")["day_time"] % 24000
+        if r["time_of_day"] < 12000:
+            break
+        time.sleep(0.5)
+    assert r["time_of_day"] < 12000, r
+    steve.run("move", "forward", 1)
+    time.sleep(2.5)
+    assert any("You are back." in l for l in steve.chat()[-4:]), steve.chat()[-4:]
+    for _ in range(9):
+        steve.run("chat", "/bal")
+    time.sleep(2)
+    r["spam"] = steve.chat()[-12:]
+    assert any("Slow down: at most 8 commands every 5 s." in l for l in r["spam"]), r
+    return r
+
+
 def trades(server, alex, steve, port, ctl, resources, root):
     """Every way out of a trade, then one that goes through. Alex: 10 diamonds; Steve: 5 emeralds, 5 torches."""
     results = {}
@@ -549,7 +592,9 @@ def run(ctl, resources, out):
         data.mkdir(parents=True)
         (data / "config.json").write_text(json.dumps({"gambling": {"enabled": True, "cooldown_seconds": 20,
                                                                          "lottery_seconds": 30},
-                                                      "places": {"warmup_seconds": 2, "cooldown_seconds": 0}}))
+                                                      "places": {"warmup_seconds": 2, "cooldown_seconds": 0},
+                                                      # Paid once, after the restart, not to change the sums.
+                                                      "presence": {"daily_reward": 0}}))
         server.start()
         # No monster may end a step early: a slime once killed Steve on the flat world.
         for line in ("difficulty peaceful", "gamerule spawn_monsters false", "kill @e[type=minecraft:slime]"):
@@ -559,7 +604,12 @@ def run(ctl, resources, out):
         time.sleep(2)
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
-        assert results["config_keys"] == ["board", "claims", "currency", "gambling", "market", "places", "starting_balance"], config
+        assert results["config_keys"] == ["board", "claims", "currency", "gambling", "market", "places", "presence",
+                                          "starting_balance"], config
+        results["welcome"] = steve.chat()
+        assert any("Welcome to the server, Steve!" in l for l in results["welcome"]), results["welcome"]
+        assert any("1. Be respectful to everyone." in l for l in results["welcome"]), results["welcome"]
+        assert any("Steve joined for the first time" in l for l in alex.chat()), alex.chat()
         assert config["gambling"] == {"enabled": True, "min_bet": 10, "max_bet": 1000, "cooldown_seconds": 20,
                                       "offer_seconds": 60, "fee_percent": 0, "ticket_price": 10,
                                       "max_tickets": 100, "lottery_seconds": 30}, config
@@ -614,6 +664,7 @@ def run(ctl, resources, out):
         results["world_guard"] = world_guard(server, alex, steve)
         results["board"] = board(alex, steve, out)
         results["polish"] = polish(server, alex, steve, out)
+        results["presence"] = presence(server, alex, steve)
         results["coinflip"], alex_wins = coinflips(alex, steve)
         results["lottery"], alex_lotto = lottery(alex, steve, alex_wins)
         alex_after = 415 + (100 if alex_wins else -100) + (20 if alex_lotto else -30)
@@ -644,19 +695,25 @@ def run(ctl, resources, out):
         assert (swap["a_items"], swap["b_items"], swap["b_money"]) == (
             [{"item": "minecraft:diamond", "count": 10, "plain": True}],
             [{"item": "minecraft:emerald", "count": 5, "plain": True}], 35), swap
+        # The daily reward, on: Alex gets it when she joins again.
+        config = json.loads((data / "config.json").read_text())
+        config["presence"]["daily_reward"] = 7
+        (data / "config.json").write_text(json.dumps(config))
         server.start()
         alex = Client(ctl, resources, "Alex2", root)
         alex.name = "Alex"
         alex.join(port)
         results["after_restart"] = alex.say("/balance")
-        assert any(f"Balance: {alex_after} coins" in l for l in results["after_restart"]), results
+        assert any(f"Balance: {alex_after + 7} coins" in l for l in results["after_restart"]), results
+        assert any("Daily reward: 7 coins." in l for l in alex.chat()), alex.chat()
+        assert not any("joined for the first time" in l for l in alex.chat()), alex.chat()
         alex.quit()
         server.stop()
         economy = json.loads((data / "economy.json").read_text())
-        assert "held" not in economy and sum(a["balance"] for a in economy["accounts"].values()) == 815, economy
+        assert "held" not in economy and sum(a["balance"] for a in economy["accounts"].values()) == 815 + 7, economy
         kinds = [json.loads(l)["kind"] for l in (data / "audit.log").read_text().splitlines()]
-        assert kinds[-1] in ("held_returned", "coinflip_cancel"), kinds[-3:]
-        results["stake_back"] = kinds[-1]
+        assert kinds[-2] in ("held_returned", "coinflip_cancel") and kinds[-1] == "daily_reward", kinds[-3:]
+        results["stake_back"] = kinds[-2]
         print(json.dumps({"proof": "smp", "ok": True, **results}, indent=2))
     finally:
         (out / "server.log").write_text("\n".join(server.lines))

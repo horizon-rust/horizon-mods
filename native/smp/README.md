@@ -34,6 +34,7 @@ header and footer).
 | `/tpa <player>`, `/tpaccept [player]`, `/tpdeny [player]` | asks to go to a player (60 s to answer); answers a request |
 | `/rules` | the server's rules |
 | `/back` | back to where you died, or where your last teleport took you from (warmup and cooldown as any teleport) |
+| `/afk` | marks you away from the keyboard until you move, turn or run a command |
 | `/playtime [player]` | how long you (or a player who is on) have played here |
 | `/claim`, `/claim info`, `/unclaim` | claims the chunk you stand in (all its height), says whose it is, frees it (operators of level 3: anyone's) |
 | `/claim show` | draws the border of the chunk you stand in for 10 s, for you only: green yours or a trusting owner's, red someone else's, white free |
@@ -93,6 +94,14 @@ every `board.tab_refresh_seconds`, 5). `board.sidebar` and `board.tab` turn eith
 `board.server_name` name them. The sidebar uses one scoreboard objective of its own (`horizon:native_sidebar`) and
 leaves the world's scoreboard alone.
 
+**Presence.** A player's first join is announced to everyone (`presence.first_join`, empty for none) and they read
+`presence.welcome` and the rules. Each player gets `presence.daily_reward` (50) once a day (UTC) for being on, logged
+as `daily_reward` (0 turns it off). A player who hasn't moved, turned or run a command for `presence.afk_minutes` (5),
+or typed `/afk`, is AFK: they don't count for sleeping (vanilla's `players_sleeping_percentage`) until they move or
+get in a bed; `presence.afk_announce` tells everyone instead of only them. A player runs at most
+`presence.spam_commands` (8) of the SMP's commands in `presence.spam_seconds` (5); operators of level 3 aren't
+limited. All of it is looked at once a second.
+
 The currency is earned in game only: it can't be bought with real money or cashed out (Mojang's usage guidelines).
 
 ## Data
@@ -105,6 +114,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `config.json` | `currency` (default `coins`), `starting_balance` (default 0), and `market`: `enabled` and `items`, each item's `buy` (what the market asks) and `sell` (what it pays), 0 closing that side; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
 | `economy.json` | balances by player UUID, with the name last seen, and `held`: coinflip stakes and lottery tickets being decided |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
+| `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |
 | `claims.json` | each claimed chunk (`<dimension> <chunk x> <chunk z>`) with its owner, and whom each owner trusts |
 | `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `eco_give`...), `amount`, `from`/`to` with their balance before, `by` for an operator; a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
@@ -124,8 +134,8 @@ and the world lifecycle. `compatibility.json` names `"hooks": 49`.
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: ten modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: eleven modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |

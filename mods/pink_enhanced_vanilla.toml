@@ -1,0 +1,23 @@
+id = "pink_enhanced_vanilla"
+kind = "resourcepack"
+name = "Pink Enhanced Vanilla"
+summary = "A pink enhanced vanilla resource pack made by CayMac."
+description = "A sleek, vibrant PvP and aesthetic vanilla resource pack with custom pink weapons, totems, and UI."
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/pink-enhanced-vanilla"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "pink_enhanced_vanilla-1.0.0.zip"
+sha256 = "181cbbacecec8333b53f15beb1f51b220bcfdfd06e7c58de16483a34e68889e5"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTN/Mnsy7f5sGsNyi80ElUkcXL0qs5/Ua6kW0OWO03HGdPBFcrbcV+RW3fmePgE7d6jN9MSJElcbEiSQbiFXfGlwg=\r
+trusted comment: timestamp:1793459205\tfile:pink_enhanced_vanilla-1.0.0.zip\thashed\r
+3kWYF+s/qF1e7uP1oAdovIYp8NugCuC9U2Mz0xd1fkdbLXicSb36xNNp+V+GzvL0HGK7ZV5DtS0D1wkkYw5hCw=="""
+changelog = "Initial release for 26.3 Horizon. "

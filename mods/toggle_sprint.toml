@@ -1,0 +1,23 @@
+id = "toggle_sprint"
+kind = "native-mod"
+name = "Toggle Sprint"
+summary = "1:1 Better Sprinting & Lunar ToggleSprint HUD: toggle sprint and toggle sneak with [Sprinting (Toggled)] / [Key Held] / [Flying] status HUD and configurable Cre"
+description = "A 1:1 native Rust port of Better Sprinting and the Lunar/Badlion ToggleSprint HUD for Horizon. Allows toggling continuous sprint (V or vanilla Sprint key) and sneak (C) without holding keys down, while automatically pausing toggled sneak inside inventory and chest screens so Shift-clicking items works normally. Renders the classic movement status HUD ([Sprinting (Toggled)], [Sprinting (Key Held)], [Sneaking (Toggled)], [Sneaking (Key Held)], [Flying (2.0x Boost)], [Swimming], [Gliding (Elytra)], [Riding]) and includes a configurable Creative Fly Speed Boost multiplier (1.0x to 4.0x)."
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/toggle-sprint"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "toggle_sprint-1.0.0.hnmod"
+sha256 = "b2a4190f9c19adbceae4a639342b7630bfc3047339eabf57673b7807db5edc6a"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTN3mUUTEw+mmiuQhcddYpNrjRnGA43/GS3y/qgY1EnL0kGp4NTBouTlVJbiThEkQfOrqIjnwlshUB18PrQloxAAw=\r
+trusted comment: timestamp:1793443789\tfile:toggle_sprint-1.0.0.hnmod\thashed\r
+2kNF92yIivWMWhgUH7ypwU3pciKG3ouiHhpZrQmX8fWZHay2da9HgdOYFAUp5KaHJ1NAgBuwL1zMfwVf61X+Cw=="""
+changelog = "Initial release for 26.3 Horizon. "

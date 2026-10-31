@@ -1,7 +1,9 @@
 // Land claims: a player claims the chunk they stand in (`/claim`), all its
 // height, and only they and the players they trust (`/trust`) break blocks
 // or right click blocks there (doors, chests, levers, placing, buckets on a
-// block). The chunks a player may hold grow with the time they played here.
+// block), or hit its frames, armor stands and animals. Nothing flows, burns
+// or is pushed into it from land of someone else, and explosions spare it.
+// The chunks a player may hold grow with the time they played here.
 // Operators of level 3 pass everywhere and may `/unclaim` any chunk. Kept in
 // `claims.json`, written atomically. No game types. Added to the game as
 // `game::smp_claims`; also a module of this crate, for its tests.
@@ -21,6 +23,8 @@ pub struct Config {
     /// Chunks a player may claim, by hours played here: `[hours, chunks]`,
     /// the last line reached counts.
     pub chunks: Vec<[i64; 2]>,
+    /// The entities only the owner and trusted players may hit in a claim.
+    pub protected_entities: Vec<String>,
 }
 
 impl Default for Config {
@@ -28,9 +32,80 @@ impl Default for Config {
         Self {
             enabled: true,
             chunks: vec![[0, 4], [5, 16], [20, 36], [100, 64]],
+            protected_entities: PROTECTED
+                .iter()
+                .map(|&e| format!("minecraft:{e}"))
+                .collect(),
         }
     }
 }
+
+/// Frames, stands, vehicles and the animals a player keeps: not monsters.
+const PROTECTED: &[&str] = &[
+    "item_frame",
+    "glow_item_frame",
+    "armor_stand",
+    "painting",
+    "leash_knot",
+    "minecart",
+    "chest_minecart",
+    "furnace_minecart",
+    "hopper_minecart",
+    "tnt_minecart",
+    "oak_boat",
+    "spruce_boat",
+    "birch_boat",
+    "jungle_boat",
+    "acacia_boat",
+    "dark_oak_boat",
+    "mangrove_boat",
+    "cherry_boat",
+    "pale_oak_boat",
+    "bamboo_raft",
+    "oak_chest_boat",
+    "spruce_chest_boat",
+    "birch_chest_boat",
+    "jungle_chest_boat",
+    "acacia_chest_boat",
+    "dark_oak_chest_boat",
+    "mangrove_chest_boat",
+    "cherry_chest_boat",
+    "pale_oak_chest_boat",
+    "bamboo_chest_raft",
+    "allay",
+    "armadillo",
+    "axolotl",
+    "bee",
+    "camel",
+    "cat",
+    "chicken",
+    "cow",
+    "donkey",
+    "fox",
+    "frog",
+    "goat",
+    "happy_ghast",
+    "horse",
+    "llama",
+    "mooshroom",
+    "mule",
+    "ocelot",
+    "panda",
+    "parrot",
+    "pig",
+    "rabbit",
+    "sheep",
+    "sniffer",
+    "snow_golem",
+    "iron_golem",
+    "copper_golem",
+    "strider",
+    "turtle",
+    "villager",
+    "wolf",
+    "trader_llama",
+    "wandering_trader",
+];
 
 /// `claims.json`.
 #[derive(Default, Serialize, Deserialize)]
@@ -47,8 +122,9 @@ pub struct Claims {
     path: PathBuf,
     data: Data,
     changed: bool,
-    /// `data.chunks` by (dimension, chunk x, chunk z), for each block event.
-    owners: HashMap<(String, i32, i32), u128>,
+    /// `data.chunks` by dimension, then (chunk x, chunk z): asked on every
+    /// fluid flow, so a lookup allocates nothing.
+    owners: HashMap<String, HashMap<(i32, i32), u128>>,
     /// When each player was last told a chunk isn't theirs.
     told: HashMap<u128, i64>,
 }
@@ -67,7 +143,7 @@ impl Claims {
     pub fn open(dir: &Path, config: Config) -> Result<Self, String> {
         let path = dir.join("claims.json");
         let data: Data = smp_store::read_json(&path)?;
-        let mut owners = HashMap::new();
+        let mut owners: HashMap<String, HashMap<(i32, i32), u128>> = HashMap::new();
         for (k, owner) in &data.chunks {
             let mut w = k.split(' ');
             let (Some(d), Some(x), Some(z), Some(u)) = (
@@ -78,7 +154,7 @@ impl Claims {
             ) else {
                 return Err(format!("{}: a bad claim `{k}`", path.display()));
             };
-            owners.insert((d.to_owned(), x, z), u);
+            owners.entry(d.to_owned()).or_default().insert((x, z), u);
         }
         Ok(Self {
             config,
@@ -100,9 +176,41 @@ impl Claims {
 
     /// Who holds the chunk of this block, if anyone.
     pub fn owner(&self, dimension: &str, x: i32, z: i32) -> Option<u128> {
-        self.owners
-            .get(&(dimension.to_owned(), x >> 4, z >> 4))
-            .copied()
+        self.chunk_owner(dimension, x >> 4, z >> 4)
+    }
+
+    fn chunk_owner(&self, dimension: &str, cx: i32, cz: i32) -> Option<u128> {
+        self.owners.get(dimension)?.get(&(cx, cz)).copied()
+    }
+
+    /// Whether the world may change the block at `to` from `from` (a fluid,
+    /// fire, a piston): yes, unless `to` is claimed by someone other than
+    /// `from`'s owner or a player they trust.
+    pub fn spread_allowed(&self, dimension: &str, from: [i32; 3], to: [i32; 3]) -> bool {
+        if !self.config.enabled {
+            return true;
+        }
+        let Some(owner) = self.owner(dimension, to[0], to[2]) else {
+            return true;
+        };
+        match self.owner(dimension, from[0], from[2]) {
+            Some(source) => source == owner || self.trusts(owner, source),
+            None => false,
+        }
+    }
+
+    /// Takes out of an explosion's blocks those in a claim: explosions
+    /// spare claimed land, whoever lit them.
+    pub fn spare(&self, dimension: &str, blocks: &mut Vec<[i32; 3]>) {
+        if self.config.enabled && self.owners.get(dimension).is_some_and(|c| !c.is_empty()) {
+            blocks.retain(|b| self.owner(dimension, b[0], b[2]).is_none());
+        }
+    }
+
+    /// Whether entities of type `kind` (`minecraft:cow`) are kept from
+    /// players a claim's owner doesn't trust.
+    pub fn protects(&self, kind: &str) -> bool {
+        self.config.protected_entities.iter().any(|e| e == kind)
     }
 
     fn trusts(&self, owner: u128, who: u128) -> bool {
@@ -141,7 +249,11 @@ impl Claims {
 
     /// How many chunks `uuid` holds.
     fn held(&self, uuid: u128) -> usize {
-        self.owners.values().filter(|&&u| u == uuid).count()
+        self.owners
+            .values()
+            .flat_map(|c| c.values())
+            .filter(|&&u| u == uuid)
+            .count()
     }
 
     /// How many chunks a player may hold after `played` seconds here.
@@ -176,7 +288,7 @@ impl Claims {
             return Some(vec![Out::Error("Claims are off on this server.".into())]);
         }
         let (cx, cz) = chunk_of(at);
-        let here = (at.dimension.clone(), cx, cz);
+        let here = at.dimension.as_str();
         let blocks = format!(
             "x {} to {}, z {} to {}",
             cx * 16,
@@ -186,7 +298,7 @@ impl Claims {
         );
         let me_key = smp_store::uuid_string(me.uuid);
         Some(match (command, &words[1..]) {
-            ("claim", []) => match self.owners.get(&here).copied() {
+            ("claim", []) => match self.chunk_owner(here, cx, cz) {
                 Some(u) if u == me.uuid => vec![Out::Error("This chunk is already yours.".into())],
                 Some(u) => vec![Out::Error(format!("This chunk is {}'s.", name_of(u)))],
                 None => {
@@ -196,8 +308,9 @@ impl Claims {
                             "You hold {held} of {limit} chunks: play longer for more, or /unclaim one."
                         ))]
                     } else {
-                        self.data.chunks.insert(key(&here.0, cx, cz), me_key);
-                        self.owners.insert(here, me.uuid);
+                        self.data.chunks.insert(key(here, cx, cz), me_key);
+                        let chunks = self.owners.entry(here.to_owned()).or_default();
+                        chunks.insert((cx, cz), me.uuid);
                         self.changed = true;
                         vec![Out::Reply(format!(
                             "Claimed this chunk ({blocks}), {} of {limit}. /trust <player> lets a friend build.",
@@ -206,14 +319,16 @@ impl Claims {
                     }
                 }
             },
-            ("claim", ["info"]) => vec![Out::Reply(match self.owners.get(&here) {
-                Some(&u) => format!("This chunk ({blocks}) is {}'s.", name_of(u)),
+            ("claim", ["info"]) => vec![Out::Reply(match self.chunk_owner(here, cx, cz) {
+                Some(u) => format!("This chunk ({blocks}) is {}'s.", name_of(u)),
                 None => format!("This chunk ({blocks}) is free: /claim it."),
             })],
-            ("unclaim", []) => match self.owners.get(&here).copied() {
+            ("unclaim", []) => match self.chunk_owner(here, cx, cz) {
                 Some(u) if u == me.uuid || me.level >= 3 => {
-                    self.owners.remove(&here);
-                    self.data.chunks.remove(&key(&here.0, cx, cz));
+                    if let Some(chunks) = self.owners.get_mut(here) {
+                        chunks.remove(&(cx, cz));
+                    }
+                    self.data.chunks.remove(&key(here, cx, cz));
                     self.changed = true;
                     vec![Out::Reply(format!("Unclaimed this chunk ({blocks})."))]
                 }
@@ -341,6 +456,42 @@ mod tests {
     }
     fn name_of(u: u128) -> String {
         if u == A { "Alex" } else { "Steve" }.into()
+    }
+
+    #[test]
+    fn the_world_stays_out_of_a_claim() {
+        let d = dir();
+        let mut c = Claims::open(&d, Config::default()).unwrap();
+        c.command(&player(A, 0), &at(8.0, 8.0), 0, &find, &name_of, "claim")
+            .unwrap();
+        let ow = "minecraft:overworld";
+        // Into Alex's chunk from outside: refused; inside it and out of it: allowed.
+        assert!(!c.spread_allowed(ow, [16, 64, 8], [15, 64, 8]));
+        assert!(c.spread_allowed(ow, [14, 64, 8], [15, 64, 8]));
+        assert!(c.spread_allowed(ow, [15, 64, 8], [16, 64, 8]));
+        assert!(c.spread_allowed("minecraft:the_nether", [16, 64, 8], [15, 64, 8]));
+        // From Steve's chunk next door: allowed once Alex trusts Steve.
+        c.command(&player(B, 0), &at(24.0, 8.0), 0, &find, &name_of, "claim")
+            .unwrap();
+        assert!(!c.spread_allowed(ow, [16, 64, 8], [15, 64, 8]));
+        c.command(
+            &player(A, 0),
+            &at(8.0, 8.0),
+            0,
+            &find,
+            &name_of,
+            "trust steve",
+        )
+        .unwrap();
+        assert!(c.spread_allowed(ow, [16, 64, 8], [15, 64, 8]));
+        assert!(!c.spread_allowed(ow, [15, 64, 8], [16, 64, 8]));
+        // Explosions spare both claims, not the land around them.
+        let mut blocks = vec![[0, 64, 0], [20, 64, 0], [40, 64, 0], [-1, 64, 0]];
+        c.spare(ow, &mut blocks);
+        assert_eq!(blocks, vec![[40, 64, 0], [-1, 64, 0]]);
+        assert!(c.protects("minecraft:item_frame") && c.protects("minecraft:cow"));
+        assert!(!c.protects("minecraft:zombie") && !c.protects("minecraft:player"));
+        let _ = std::fs::remove_dir_all(d);
     }
 
     #[test]

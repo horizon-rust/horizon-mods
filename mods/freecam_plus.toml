@@ -10,7 +10,7 @@ authors = ["_idom_"]
 owners = ["umbx-dot"]
 license = "MIT"
 source = "https://github.com/umbx-dot/horizon-freecam"
-icon = "https://raw.githubusercontent.com/umbx-dot/horizon-freecam/main/icon.png"
+icon = "icons/freecam_plus.png"
 key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
 
 [[versions]]

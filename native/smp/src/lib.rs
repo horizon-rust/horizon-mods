@@ -15,6 +15,8 @@ pub mod smp_lottery;
 pub mod smp_market;
 #[path = "../mixins/smp/smp_places.rs"]
 pub mod smp_places;
+#[path = "../mixins/smp/smp_presence.rs"]
+pub mod smp_presence;
 #[path = "../mixins/smp/smp_store.rs"]
 pub mod smp_store;
 #[path = "../mixins/smp/smp_trade.rs"]

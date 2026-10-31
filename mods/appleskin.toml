@@ -1,18 +1,35 @@
 id = "appleskin"
 kind = "native-mod"
 name = "AppleSkin"
-summary = "Shows saturation, exhaustion and the food in your hand over the food bar."
+summary = "Shows how much HP, hunger, and saturation will be restored."
 description = """
 AppleSkin for Horizon, a native mod.
-Draws saturation, exhaustion and the food in your hand over the food bar,
-as the original AppleSkin does.
+
+Renders saturation, exhaustion, and held-food values over the hunger bar, as the original AppleSkin does.
+
 Based on AppleSkin by squeek502. See the LICENSE in the source for the
 original copyright and licence notices."""
 authors = ["soufi"]
 owners = ["soufied"]
 license = "MIT"
 source = "https://github.com/soufied/AppleSkin-Horizon"
+icon = "icons/appleskin.png"
 key = "RWT6eNq4e5WfVDA2lzOOi6XCm/+jJgilqT1+HUUM33ie5MCjcRfSg760"
+
+[[versions]]
+version = "0.1.1"
+published = "2026-10-31"
+game = "26.3"
+file = "appleskin-0.1.1.hnmod"
+sha256 = "182117d2a9767bc22a7c6652efd24551990cea015193784f20aeb8a7ba35b4ac"
+signature = """
+untrusted comment: signature from minisign secret key
+RUT6eNq4e5WfVPcAN+WeTYujFNeWw6oMKKV7nXxfIfyeqg83qrFNNA/LYfOrmxwV0DgO+tf5Sk5piJjS7hEtyKhl9rs0VpBOfgg=
+trusted comment: timestamp:1793418678\tfile:appleskin-0.1.1.hnmod\thashed
+gK9BQoCtM8sRPSvSiBzAT2IE8nZlCDfUa7tWCG7cG/v7H41E+4DnflE0KtAPdqi/9+MQT3ONmT4qbGFVio58BA=="""
+changelog = """
+dumped to 0.1.1
+added icon"""
 
 [[versions]]
 version = "1.0.0"

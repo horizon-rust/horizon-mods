@@ -1,0 +1,30 @@
+id = "armor_status"
+kind = "native-mod"
+name = "Armor Status"
+summary = "Displays equipped armor & held items with authentic Java durability colors."
+description = """
+A native ArmorStatusHUD mod for the Horizon Rust client.
+
+Features
+Displays all 4 armor slots plus main and off-hand items on the HUD.
+Authentic Java durability color coding (Green > Yellow > Orange > Red).
+Item count display for non-damageable held items (torches, food, blocks).
+Default position: Bottom Right (freely customizable in Options > Mods)."""
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/armor-status"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "armor_status-1.0.0.hnmod"
+sha256 = "82c8672fa2c43d7946a26a560fd56fdd8f34beecf4bcb459c2d508b3d09eeee6"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTN+dR+lW2uDL5+FJfKRnHJvelJnWmhWGQeS/p0lNFVDFfq3BjZ2LCuNEtza8cZvcuKuuYF5asmxsnbtB/MMykYQA=\r
+trusted comment: timestamp:1793439927\tfile:armor_status-1.0.0.hnmod\thashed\r
+LTwf1kuPLucJIBfHPdx1nsp0YuHSlxbFG6PYKG2HnMxMf4acAsZbWR0QdQnzkn+7Oc/T60iQPh3X14RBST3+Bg=="""
+changelog = "Initial release for Horizon 26.3."

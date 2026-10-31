@@ -1,5 +1,5 @@
 id = "blockscope"
-kind = "mod"
+kind = "native-mod"
 name = "Blockscope"
 summary = "The block under your crosshair: its name, id, distance and icon, with reach, placement and opacity on its own settings page. A Jade-style tooltip for Horizon."
 description = "Jade-style block info for Horizon: the block under your crosshair, its name in your language, its block id, how far it is and its icon."
@@ -8,6 +8,14 @@ owners = ["Domanffe"]
 license = "MIT"
 source = "https://github.com/Domanffe/blockscope"
 icon = "https://horizon-rust.github.io/horizon-mods/icons/blockscope.png"
+
+[[versions]]
+version = "0.3.0"
+published = "2026-10-30"
+game = "26.3"
+file = "blockscope-0.3.0.hnmod"
+sha256 = "ba4a1c887ab26a2a9189c671cbdbea3ce2ed212a6e3d32f1fffaa60386198358"
+changelog = "Native: the WebAssembly mod rewritten as a mixin bundle for the launcher's native mods, with hardness and the tool's icon, block states, crop growth, a container's slots and a creature's health, each on its own switch. Its settings carry over from 0.2.0."
 
 [[versions]]
 version = "0.2.0"

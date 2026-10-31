@@ -33,7 +33,10 @@ header and footer).
 | `/warp <name>`, `/warps` | to a warp, the list; `/setwarp <name>`, `/delwarp <name>` for operators of level 3 |
 | `/tpa <player>`, `/tpaccept [player]`, `/tpdeny [player]` | asks to go to a player (60 s to answer); answers a request |
 | `/rules` | the server's rules |
+| `/back` | back to where you died, or where your last teleport took you from (warmup and cooldown as any teleport) |
+| `/playtime [player]` | how long you (or a player who is on) have played here |
 | `/claim`, `/claim info`, `/unclaim` | claims the chunk you stand in (all its height), says whose it is, frees it (operators of level 3: anyone's) |
+| `/claim show` | draws the border of the chunk you stand in for 10 s, for you only: green yours or a trusting owner's, red someone else's, white free |
 | `/claims` | your chunks, how many you may hold, and who you trust |
 | `/trust <player>`, `/untrust <player>` | lets a player (or no longer) build and use things on all your land |
 | `/sidebar off`, `/sidebar on`, `/sidebar` | hides the richest players' sidebar for you (remembered), shows it again |

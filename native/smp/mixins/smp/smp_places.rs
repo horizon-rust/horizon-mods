@@ -1,7 +1,8 @@
 // Places: the server's spawn (`/spawn`, `/setspawn`), each player's homes
 // (`/home`, `/sethome`, `/delhome`, `/homes`), warps (`/warp`, `/warps`,
 // `/setwarp`, `/delwarp`), teleport requests between players (`/tpa`,
-// `/tpaccept`, `/tpdeny`), and `/rules`. A teleport waits `warmup_seconds`,
+// `/tpaccept`, `/tpdeny`), `/back` (where the player died, or was before
+// their last teleport), `/playtime` and `/rules`. A teleport waits `warmup_seconds`,
 // and a player who moves or is hurt meanwhile stays where they are; the glue
 // moves them with a vanilla `tp` run as the server. The number of homes grows
 // with the time a player has played here, counted by the mod. Everything is
@@ -116,9 +117,9 @@ pub struct Teleport {
 }
 
 /// The places' commands.
-pub const COMMANDS: [&str; 14] = [
+pub const COMMANDS: [&str; 16] = [
     "spawn", "setspawn", "home", "sethome", "delhome", "homes", "warp", "warps", "setwarp",
-    "delwarp", "tpa", "tpaccept", "tpdeny", "rules",
+    "delwarp", "tpa", "tpaccept", "tpdeny", "rules", "back", "playtime",
 ];
 
 pub struct Places {
@@ -132,6 +133,21 @@ pub struct Places {
     pub pending: Vec<Pending>,
     requests: Vec<Request>,
     last: HashMap<u128, i64>,
+    /// Where `/back` goes: the place and whether they died there. Not kept
+    /// over a restart.
+    back: HashMap<u128, (Place, bool)>,
+    /// The players seen dead (health 0) and not respawned yet.
+    dead: std::collections::HashSet<u128>,
+}
+
+/// `2 h 05 min`, `12 min`.
+fn duration(seconds: i64) -> String {
+    let (h, m) = (seconds / 3600, seconds % 3600 / 60);
+    if h > 0 {
+        format!("{h} h {m:02} min")
+    } else {
+        format!("{m} min")
+    }
 }
 
 /// A home's or a warp's name: 1 to 16 of `a-z 0-9 _ -`.
@@ -162,6 +178,8 @@ impl Places {
             pending: Vec::new(),
             requests: Vec::new(),
             last: HashMap::new(),
+            back: HashMap::new(),
+            dead: Default::default(),
         })
     }
 
@@ -268,6 +286,31 @@ impl Places {
         let key = smp_store::uuid_string(me.uuid);
         let named = |n: &str| bodies.iter().find(|b| b.name.eq_ignore_ascii_case(n));
         Some(match (command, &words[1..]) {
+            ("back", []) => match self.back.get(&me.uuid).cloned() {
+                Some((p, died)) => {
+                    let what = if died {
+                        "where you died"
+                    } else {
+                        "where you were"
+                    };
+                    self.start(body, To::Place(p, what.into()), now)
+                }
+                None => vec![Out::Error(
+                    "Nowhere to go back to yet: /back follows a death or a teleport.".into(),
+                )],
+            },
+            ("playtime", []) => vec![Out::Reply(format!(
+                "You have played here for {}.",
+                duration(self.played_seconds(me.uuid))
+            ))],
+            ("playtime", [name]) => match named(name) {
+                Some(b) => vec![Out::Reply(format!(
+                    "{} has played here for {}.",
+                    b.name,
+                    duration(self.played_seconds(b.uuid))
+                ))],
+                None => vec![Out::Error(format!("{name} isn't on."))],
+            },
             ("rules", []) => {
                 let mut out = vec![Out::Reply("Rules of this server:".into())];
                 for (i, r) in self.config.rules.iter().enumerate() {
@@ -473,6 +516,16 @@ impl Places {
             }
             keep
         });
+        // A death, seen once a second: /back goes there.
+        for b in bodies {
+            if b.health <= 0.0 {
+                if self.dead.insert(b.uuid) {
+                    self.back.insert(b.uuid, (b.at.clone(), true));
+                }
+            } else {
+                self.dead.remove(&b.uuid);
+            }
+        }
         for p in std::mem::take(&mut self.pending) {
             let Some(me) = bodies.iter().find(|b| b.uuid == p.uuid) else {
                 continue;
@@ -497,6 +550,7 @@ impl Places {
                 match to {
                     Some(to) => {
                         self.last.insert(p.uuid, now);
+                        self.back.insert(p.uuid, (p.from.clone(), false));
                         go.push(Teleport {
                             uuid: p.uuid,
                             name: me.name.clone(),
@@ -589,6 +643,42 @@ mod tests {
             place(10.0)
         );
         std::fs::remove_dir_all(d).unwrap();
+    }
+
+    #[test]
+    fn back_goes_where_the_player_died_or_was_before_a_teleport() {
+        let d = dir();
+        let mut p = Places::open(&d, Config::default()).unwrap();
+        let out = p
+            .command(&player(A, 0), &[body(A, 0.0)], 0, "back")
+            .unwrap();
+        assert!(matches!(&out[0], Out::Error(s) if s.contains("Nowhere")));
+        // Dead at x 40: seen by the next tick, once.
+        let mut dead = body(A, 40.0);
+        dead.health = 0.0;
+        p.tick(&[dead.clone()], 1_000);
+        dead.at = place(41.0);
+        p.tick(&[dead], 2_000);
+        let alive = [body(A, 0.0)];
+        p.tick(&alive, 3_000);
+        p.command(&player(A, 0), &alive, 3_000, "back").unwrap();
+        let (_, go) = p.tick(&alive, 6_000);
+        assert_eq!(go[0].to, place(40.0));
+        assert_eq!(go[0].done, "Teleported to where you died.");
+        // Then /back goes to where that teleport started.
+        let there = [body(A, 40.0)];
+        p.command(&player(A, 0), &there, 20_000, "back").unwrap();
+        let (_, go) = p.tick(&there, 23_000);
+        assert_eq!(go[0].to, place(0.0));
+        assert_eq!(go[0].done, "Teleported to where you were.");
+        p.played(&[A], 0);
+        let out = p.command(&player(A, 0), &there, 0, "playtime").unwrap();
+        assert_eq!(
+            out,
+            vec![Out::Reply("You have played here for 0 min.".into())]
+        );
+        assert_eq!(duration(7_500), "2 h 05 min");
+        let _ = std::fs::remove_dir_all(d);
     }
 
     #[test]

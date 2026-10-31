@@ -31,7 +31,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.9.0";
+pub const VERSION: &str = "0.10.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -63,6 +63,9 @@ pub struct Smp {
     claims: Result<Claims, String>,
     /// An error when `board.json` can't be read: no sidebar then.
     board: Result<Board, String>,
+    /// `/claim show`: whose chunk border is drawn (level, chunk x, chunk z)
+    /// until when.
+    shows: std::collections::HashMap<u128, (String, i32, i32, i64)>,
 }
 
 static STATE: Mutex<Option<Smp>> = Mutex::new(None);
@@ -130,6 +133,7 @@ fn open(dir: PathBuf) -> Smp {
         places,
         claims,
         board,
+        shows: Default::default(),
     }
 }
 
@@ -206,8 +210,11 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "tpaccept [player:word]",
         "tpdeny [player:word]",
         "rules",
+        "back",
+        "playtime [player:word]",
         "claim",
         "claim info",
+        "claim show",
         "unclaim",
         "claims",
         "trust <player:word>",
@@ -343,6 +350,17 @@ pub(in crate::game) fn perform(
             Err(_) => vec![Out::Error(
                 "The sidebar is off: its file can't be read (see the server log).".into(),
             )],
+        }
+    } else if line.split_whitespace().eq(["claim", "show"]) {
+        match bodies(&players).into_iter().find(|b| b.uuid == me.uuid) {
+            Some(b) => {
+                let (cx, cz) = ((b.at.x.floor() as i32) >> 4, (b.at.z.floor() as i32) >> 4);
+                smp.shows.insert(me.uuid, (b.at.dimension, cx, cz, now + 10_000));
+                vec![Out::Reply(
+                    "This chunk's border, for 10 s: green yours, red someone else's, white free.".into(),
+                )]
+            }
+            None => vec![Out::Error("You are not in the world.".into())],
         }
     } else if smp_claims::COMMANDS.contains(&word) {
         let at = bodies(&players).into_iter().find(|b| b.uuid == me.uuid).map(|b| b.at);
@@ -819,6 +837,28 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             Some(_) => {}
         }
     }
+    // `/claim show`: the border once a second, to that player only.
+    let mut particles = Vec::new();
+    if n % 20 == 0 {
+        smp.shows.retain(|_, s| s.3 > now);
+        for (uuid, (dimension, cx, cz, _)) in &smp.shows {
+            let Some(p) = players.iter().find(|p| p.uuid == *uuid && p.dimension == *dimension) else {
+                continue;
+            };
+            let relation = smp.claims.as_ref().ok().and_then(|c| c.relation(dimension, cx * 16, cz * 16, *uuid));
+            let color = match relation {
+                Some(true) => "0,1,0",
+                Some(false) => "1,0,0",
+                None => "1,1,1",
+            };
+            for [x, y, z] in smp_claims::border(*cx, *cz, p.position[1] + 1.0, 2) {
+                particles.push(format!(
+                    "execute in {dimension} run particle minecraft:dust{{color:[{color}],scale:1.5}} {x:.1} {y:.1} {z:.1} 0 0 0 0 1 force {}",
+                    p.name
+                ));
+            }
+        }
+    }
     // The sidebars and the Tab list, once a second, sent only where they
     // changed.
     let mut sidebars = Vec::new();
@@ -845,6 +885,9 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     BUSY.store(busy, Relaxed);
     save(smp);
     drop(guard);
+    for line in particles {
+        game.native_run_command(&line);
+    }
     for (uuid, lines) in sidebars {
         game.native_sidebar(uuid, Some(&sidebar(&title, &lines)));
     }

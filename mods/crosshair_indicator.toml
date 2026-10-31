@@ -1,0 +1,33 @@
+id = "crosshair_indicator"
+kind = "native-mod"
+name = "Crosshair Indicator"
+summary = "Dynamic target reach awareness: visual feedback on your crosshair when hovering over an entity in attack range."
+description = """
+Crosshair Indicator
+
+A native Horizon mod by CayMac that ports the popular Java Crosshair Indicator mod into Horizon:
+
+Dynamic Target Reach Awareness: Real-time visual feedback directly on your crosshair when hovering over an entity in attack reach (<= 3.0 blocks).
+Iconic PvP Target Reticle: Default crisp white corner brackets [ + ] hugging the crosshair, matching classic competitive PvP clients.
+Multiple Styles: Choose between Brackets [ + ], Center Dot, Diamond, and Tactical Chevron.
+Custom Color Themes: Classic White (Default), Dynamic (Green/Orange cooldown awareness), Combat Red, Pink Aesthetic, Diamond Cyan, and Gold.
+Cooldown Bar: Optional subtle weapon cooldown progress indicator below the crosshair.
+Configurable: Easily customize styles, themes, and keybinds in Options > Mods > Crosshair Indicator."""
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/crosshair-indicator"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "crosshair_indicator-1.0.0.hnmod"
+sha256 = "96beba1f7c94fca492b552fb12af0d20047dc1799f0801607841d56b12786226"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTNz67XDjUwaJ8if7+jDk+qXnJLdhtyjh8mk04UuZ2bme/Tzcpi1Od4ppYmvqzfZ+rEAeG2hb9Lytn+J2nFy1u8gc=\r
+trusted comment: timestamp:1793461576\tfile:crosshair_indicator-1.0.0.hnmod\thashed\r
+zF7EJHDjJPwVG+cYcSgvGJv4kjjYRMdMZipUQyABH0DEMIZ2Fe13hb2nbYYRZlNDG1j4kjhgEYQTODFiAlaCBQ=="""
+changelog = "Initial release for 26.3 Horizon."

@@ -2,12 +2,41 @@ id = "fly_speed"
 kind = "native-mod"
 name = "Fly Speed"
 summary = "Allows you to change your fly speed"
-description = "Fly 0.1x to 20x your normal speed: /flyspeed, /flyspeed +1 to step, /flyspeed reset for 1x. Native Horizon mod."
+description = '''
+Fly Speed
+
+A native Horizon mod: /flyspeed changes how fast you fly, from chat or from Options > Mods > Fly Speed > Settings.
+Commands
+Command 	What it does
+/flyspeed 	Says the current multiplier
+/flyspeed 2 	Flies twice as fast
+/flyspeed 1.5 	Any multiplier from 0.1 to 20
+/flyspeed +1 / /flyspeed -0.5 	Steps from the current one
+/flyspeed reset 	Back to the game's own speed (1x)
+/flyspeed-help 	Shows the command help
+/flyspeed-reset 	Back to the game's own speed (1x)
+
+Horizon chat autocomplete lists /flyspeed, /flyspeed-help and /flyspeed-reset when the mod is enabled. Numeric and relative arguments are entered after /flyspeed as shown above.
+
+The settings page has one button that steps through 0.5x, 1x, 2x, 4x, 8x and 16x. The choice is kept per mod in %APPDATA%\horizon\horizon-mods\.horizon-mod-data\fly_speed\multiplier.'''
 authors = ["ImmortalDev"]
 owners = ["ImmortalWhisper"]
 license = "All Rights Reserved"
 source = "https://github.com/ImmortalWhisper/Fly-Speed"
 key = "RWSy3RAfbzD2a0WMm0tQlVl+3GHigjwvwXKvzvnwfmoYrIAoIffbrSbP"
+
+[[versions]]
+version = "0.2.0"
+published = "2026-10-31"
+game = "26.3"
+file = "fly_speed-0.2.0.hnmod"
+sha256 = "4d50b18d86371b2bf4b43726b506278d7e404a8227609a33165f7aa83ba0cda0"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUSy3RAfbzD2a5ifgP18M+HL50mRWYUyHGyOuzQWHF1Fe4FXHFACMrE1VSR2glqJHUCIjMhrBdUvkqGFrsyrOJV/tEulKqf5WQM=\r
+trusted comment: fly_speed-0.2.0.hnmod\r
+slpXxdQq/FE0Qq2Eqmln6p11DsSR84YjvqLbC+gpZEHg/DRU8eB9VivJl4Jhc1rU4X9Z7P1QOfga9ZYVQz4FDg=="""
+changelog = "Added Tab complete-able commands"
 
 [[versions]]
 version = "0.1.0"

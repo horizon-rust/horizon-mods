@@ -8,8 +8,8 @@ Players install nothing: it speaks only what a stock Horizon client already show
 lines, vanilla chest menus the server fills with ordinary items (the trade menu); later sounds, titles, the action
 bar, boss bars and the sidebar).
 
-This version: the economy, the server market, player trades, the coinflip, the lottery, and places: spawn, homes,
-warps, teleport requests and the rules.
+This version: the economy, the server market, player trades, the coinflip, the lottery, places (spawn, homes, warps,
+teleport requests, the rules) and land claims.
 
 | Command | Does |
 |---|---|
@@ -32,6 +32,9 @@ warps, teleport requests and the rules.
 | `/warp <name>`, `/warps` | to a warp, the list; `/setwarp <name>`, `/delwarp <name>` for operators of level 3 |
 | `/tpa <player>`, `/tpaccept [player]`, `/tpdeny [player]` | asks to go to a player (60 s to answer); answers a request |
 | `/rules` | the server's rules |
+| `/claim`, `/claim info`, `/unclaim` | claims the chunk you stand in (all its height), says whose it is, frees it (operators of level 3: anyone's) |
+| `/claims` | your chunks, how many you may hold, and who you trust |
+| `/trust <player>`, `/untrust <player>` | lets a player (or no longer) build and use things on all your land |
 
 The market trades only plain items (not worn, named or enchanted), and only with players in survival or adventure
 mode. Items move first, then money, both logged; a sale the log refuses gives the items back, and a purchase checks the
@@ -65,6 +68,13 @@ was on (`homes`: `[hours, homes]`, by default 1 home, 2 from 5 hours, 3 from 20,
 lines. Teleports are vanilla's `tp`, run as the server (`execute in <level> run tp`), so they cross levels and land
 as any teleport does.
 
+**Claims.** In a claimed chunk, only its owner, the players they trust and operators of level 3 break blocks or right
+click blocks: doors, chests, levers, buttons, placing a block, a bucket or flint on a block. Anyone else's click does
+nothing, and the action bar says whose land it is. The chunks a player may hold grow with the time played here
+(`claims.chunks`: `[hours, chunks]`, by default 4, 16 from 5 hours, 36 from 20, 64 from 100); `claims.enabled`
+turns them off. Not guarded yet: explosions, fire, pistons, liquids flowing in, entities (item frames, armour stands,
+animals) and buckets used in the air. The server's `spawn-protection` (vanilla's) guards the spawn.
+
 The currency is earned in game only: it can't be bought with real money or cashed out (Mojang's usage guidelines).
 
 ## Data
@@ -77,6 +87,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `config.json` | `currency` (default `coins`), `starting_balance` (default 0), and `market`: `enabled` and `items`, each item's `buy` (what the market asks) and `sell` (what it pays), 0 closing that side; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
 | `economy.json` | balances by player UUID, with the name last seen, and `held`: coinflip stakes and lottery tickets being decided |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
+| `claims.json` | each claimed chunk (`<dimension> <chunk x> <chunk z>`) with its owner, and whom each owner trusts |
 | `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `eco_give`...), `amount`, `from`/`to` with their balance before, `by` for an operator; a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
 
 `economy.json` is written whole to a temporary file, flushed and renamed over the old one, at most once a server tick
@@ -87,14 +98,15 @@ commands say so) rather than start from nothing.
 
 It hooks only Horizon's native hook points: `native_register_commands` and `native_perform_command` (API 8), the
 acting player's items (API 9), the server menus and `native_exchange_items` (API 10), the players' health and
-`native_run_command` (API 21), the server tick and the world lifecycle. `compatibility.json` names `"hooks": 21`.
+`native_run_command` (API 21), `native_destroy_block` (API 14), `native_right_click_block`, the acting player and the
+action bar (API 21), the server tick and the world lifecycle. `compatibility.json` names `"hooks": 21`.
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: eight modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: nine modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
-| `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed}.rs` | One small helper per hook |
+| `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |
 
 ## Build and prove

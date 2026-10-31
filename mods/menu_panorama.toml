@@ -3,10 +3,6 @@ kind = "resourcepack"
 name = "Menu Panorama"
 summary = "Put your own wallpaper behind the main menu in Horizon — Minecraft 26.3, rewritten in Rust."
 description = """
-Name → Menu Panorama
-Summary → одна строка:
-Put your own wallpaper behind the main menu in Horizon — Minecraft 26.3, rewritten in Rust.
-Description → вставь этот Markdown:
 Menu Panorama is a resource pack for **Horizon** — Minecraft: Java Edition 26.3, rewritten from scratch in **Rust**.
 
 It replaces the six textures of the main-menu background with a picture you choose. It is a plain resource pack, not a Java mod: no mod loader, no Java, and no code from the pack is executed. Horizon loads it natively.
@@ -24,13 +20,13 @@ authors = ["form1t"]
 owners = ["form1t"]
 license = "MIT"
 source = "https://github.com/form1t/menu-panorama"
-icon = "https://raw.githubusercontent.com/form1t/menu-panorama/main/assets/icon-256.png"
+icon = "icons/menu_panorama.png"
 
 [[versions]]
-version = "panorama-1.0.0"
+version = "1.0.0"
 published = "2026-10-31"
 game = "26.3"
-file = "menu_panorama-panorama-1.0.0.zip"
+file = "menu_panorama-1.0.0.zip"
 sha256 = "e0403b003e6c93dec683037202cebb47880025cfe21e2d8fc7818321ee362401"
 changelog = """
 First release.

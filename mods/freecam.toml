@@ -1,0 +1,31 @@
+id = "freecam"
+kind = "native-mod"
+name = "Freecam"
+summary = "Fair-play spectator camera with solid block collision, hidden hands, and smooth flight kinematics."
+description = """
+A fair-play detached spectator camera mod for the Horizon Rust client.
+
+Features
+Fair-Play Collision: Full continuous swept AABB block collision prevents wall clipping or cave x-ray abuse.
+Clean View: First-person hands and held items are cleanly hidden in camera mode; footstep view bobbing is eliminated.
+Smooth Kinematics: Smooth acceleration, braking, and strafe controls (WASD, Space, Shift).
+Dynamic Speed: Adjust flight speed on the fly with the mouse scroll wheel (0.25x to 6.0x).
+Safe Character: Your player entity remains safely frozen in place with 0 server movement packets sent."""
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/freecam"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "freecam-1.0.0.hnmod"
+sha256 = "c1ca1402c7556864a97f7d20b229a16a8ebce911ed9d5f183485e55e3191b4a8"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTN5vruEhreD1KyHhlaCQ9S8d4CM5O2OA0dUKinasv5NB0VtOxfNnysLFKk4f6fTmD2DmaHgFzQF5MxXebEGQbDgo=\r
+trusted comment: timestamp:1793439927\tfile:freecam-1.0.0.hnmod\thashed\r
+9wYnJ1yDCCxCRyd2CBh9R+HPvIsqK76JeOv8Q5tqcilEJAbGGM3ZDSbtDC+uxRZ9UYOhqLBvBdw9zbSz/oUCCw=="""
+changelog = "Initial release for Horizon 26.3 with solid block collision and fair play physics."

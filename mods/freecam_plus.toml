@@ -1,0 +1,27 @@
+id = "freecam_plus"
+kind = "native-mod"
+name = "Freecam+"
+summary = "Fly the camera anywhere while your player stays perfectly still."
+description = """
+Press U and your camera leaves your body. Fly it with WASD, Space and Shift, hold Ctrl to go faster and use the mouse wheel to change the speed. Your player does not move or turn, so the server sees you standing still. Through walls and speed can be changed in Options, Mods, Freecam.
+
+Since this is a native mod it will not work in v0.2.97 as there are no native hooks possible. This works on all nightly releases and LIKELY on version upwards from v0.2.97."""
+authors = ["_idom_"]
+owners = ["umbx-dot"]
+license = "MIT"
+source = "https://github.com/umbx-dot/horizon-freecam"
+icon = "icons/freecam_plus.png"
+key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "freecam_plus-1.0.0.hnmod"
+sha256 = "264218191c32e7107982eab297b30a43076c5f1467d4e292cb844213258b5eb1"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUT9Ujo/oCprPAR7aucj7Ez3exPIc7MGDVH8ns9azj3ilxe+G4JTWb0PnF0YYxAm0FQJJs3DcmHxHjEEfiiWymsAnTG/cdggrQI=\r
+trusted comment: timestamp:1793450278\tfile:freecam_plus-1.0.0.hnmod\thashed\r
+/4Di5+zUUSOmYB56u/GDYran5upJjtmfdUff5uKER6lknPGYjsgeLfENH8trB+d8g2hhn70b5+lGxy9mrBfJBg=="""
+changelog = "Initial Release. "

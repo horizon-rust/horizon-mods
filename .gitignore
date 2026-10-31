@@ -3,3 +3,4 @@
 /bootstrap/
 /native/target/
 /native/*/target/
+__pycache__/

@@ -18,7 +18,7 @@ authors = ["bezi5kt"]
 owners = ["bezi5kt"]
 license = "MIT"
 source = "https://github.com/bezi5kt/gamma-rust"
-icon = "https://raw.githubusercontent.com/bezi5kt/gamma-rust/main/icon.png"
+icon = "icons/fullbright.png"
 
 [[versions]]
 version = "1.0.0"

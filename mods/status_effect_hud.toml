@@ -1,0 +1,23 @@
+id = "status_effect_hud"
+kind = "native-mod"
+name = "Status Effect HUD"
+summary = "1:1 Status Effect Bars & Inventory HUD+ Potion HUD: displays active potion/beacon effects with icons, Roman numeral amplifiers, color-coded mm:ss countdown time"
+description = "A 1:1 native Rust port of Status Effect Bars and Inventory HUD+ (Potion HUD) for Horizon. Renders all active potion and beacon status effects directly on the HUD during gameplay with their official mob_effect sprites, translated effect names, and Roman numeral potency levels (II, III, IV). Includes color-coded mm:ss countdown timers (White for >30s, Yellow for 10-30s, Flashing Red for <=10s urgent expiration warning, and Aqua infinity symbol for permanent effects) alongside smooth duration progress bars colored in each effect's authentic vanilla potion color."
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/status-effect-hud"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "status_effect_hud-1.0.0.hnmod"
+sha256 = "afa30125bb8b402892f1719e550b66d4eb4d7264895f71bb9c98a4caf5c7b432"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTNzV+wcfmnupP9b3ECNs7/D2jW8vAV9eAd1rxLpETdSVxvuPpnbTPB/W9APouT8uLbsZLrB9wFsOoBtrhuUPmCw0=\r
+trusted comment: timestamp:1793443789\tfile:status_effect_hud-1.0.0.hnmod\thashed\r
+MkNOcfvQQP8dWwvaSdoGIasz6tYOCB13U0OVFIApxz9VzhCUGRZXTYaSitlSSoBfGqYCQk87zvliwvklR0lbDQ=="""
+changelog = "Initial release for 26.3 Horizon. "

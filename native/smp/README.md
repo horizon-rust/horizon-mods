@@ -8,7 +8,7 @@ Players install nothing: it speaks only what a stock Horizon client already show
 lines, vanilla chest menus the server fills with ordinary items (the trade menu); later sounds, titles, the action
 bar, boss bars and the sidebar).
 
-This version: the economy, the server market, player trades, the coinflip, the lottery, places (spawn, homes, warps,
+This version: the economy, the server market and its `/shop` menu, player trades, the coinflip, the lottery, places (spawn, homes, warps,
 teleport requests, the rules), land claims, and the scoreboard (a sidebar of the richest players, the Tab list's
 header and footer).
 
@@ -17,8 +17,10 @@ header and footer).
 | `/balance [player]`, `/bal` | your balance, or another player's |
 | `/pay <player> <amount>` | gives money to a player who has an account (anyone who has played since the mod was on) |
 | `/baltop [page]` | the richest players, 10 a page |
-| `/eco give\|take\|set <player> <amount>` | operators of level 3: corrections, logged |
-| `/worth [item]` | what the market pays and asks for an item (the one in your hand without a name) |
+| `/eco give\|take\|set <player> <amount>`, `/money ...` | operators of level 3: corrections, logged (`/money` is the same command); the player given money is told |
+| `/eco give * <amount>` | operators of level 3: to every player on, one logged change each |
+| `/shop` | the market as a chest menu: categories, a click buys one, a shift-click 64, a click on a stack of yours sells it, "Sell all" |
+| `/worth [item]` | what the market pays and asks for an item (the one in your hand without a name), and what you may still sell today |
 | `/sell hand [count]`, `/sell <item> [count]`, `/sell all` | sells to the market: the stack in your hand, an item, or everything it buys |
 | `/buy <item> [count]` | buys from the market, only what fits in your inventory |
 | `/trade <player>` | asks a player to trade (60 s to answer) |
@@ -45,6 +47,43 @@ header and footer).
 The market trades only plain items (not worn, named or enchanted), and only with players in survival or adventure
 mode. Items move first, then money, both logged; a sale the log refuses gives the items back, and a purchase checks the
 money and the room before anything moves.
+
+**No way to get rich from the market.** The market makes money only from what players gather, and only so much a day:
+- Buying always costs more than selling: an item whose `sell` is not below its `buy` isn't bought (the server log
+  says so at the start).
+- No chain of recipes turns what the market sells into something it buys for more: the cheapest way to get each item
+  from the market (bought, or crafted, smelted, cut from bought items, through any number of recipes) is worked out,
+  and an item the market would buy for more than that isn't bought. The tests walk every vanilla recipe
+  (`SMP_VANILLA_DATA=<.local/horizon-client/26.3/data/minecraft> cargo test`); the server checks the iron, gold,
+  copper, diamond, emerald, coal, redstone, lapis, wheat, wood and food chains at each start.
+- Each player sells at most `daily_sell_coins` (2,000 coins) and `daily_sell_items` (640 of each item) a UTC day,
+  `/worth` and the shop show what is left, and `market.json` keeps the day's count across restarts.
+- Amounts are checked: no price above 1,000,000,000,000, no sum that overflows.
+- The coinflip and the lottery give the winner the stakes (less `fee_percent`, 0 by default): they move money
+  between players and never make any.
+
+Default prices (coins, buy / sell; `-` not traded that way):
+
+| Category | Items |
+|---|---|
+| Farming | wheat 3/1, wheat seeds 2/-, carrot 3/1, potato 3/1, beetroot 3/1, sugar cane 3/1, pumpkin 8/3, melon slice 2/1, cactus 3/1, bone meal 3/- |
+| Mining | coal 8/2, copper ingot 6/2, iron ingot 30/8, gold ingot 40/10, redstone 4/1, lapis 8/2, quartz 8/2, emerald 80/20, diamond 400/100 |
+| Wood | the eight logs 4/1 |
+| Mob drops | rotten flesh -/1, bone 3/1, string 3/1, gunpowder 8/2, spider eye 4/1, slime ball 10/2, blaze rod 30/8, leather 6/2, feather 2/1 |
+| Building | cobblestone 1/-, stone 2/-, dirt 1/-, sand 2/-, gravel 2/-, glass 3/-, bricks 4/-, stone bricks 3/- |
+| Food | bread 5/-, cooked beef 6/-, cooked porkchop 6/-, cooked chicken 5/-, baked potato 4/-, apple 4/-, golden carrot 40/- |
+| Tools | torch 1/-, ladder 2/-, crafting table 4/-, chest 6/-, furnace 6/- |
+
+A `config.json` still holding the 18 prices of versions 0.1 to 0.11, never edited, gets these at the first start of
+0.12.0; edited prices are kept. Only items that stack to 64 belong in the market: a shift-click buys 64, and what
+doesn't fit falls at the player's feet for them.
+
+**The shop.** `/shop` opens a 6-row chest menu on the market's prices: the categories of `config.json`'s `shop` (an
+item in none goes under "Other"), each item named with its prices. A click buys one, a shift-click 64; a click on a
+stack in your own inventory, below the menu, sells it; "Sell all" sells everything the market buys. The bottom row
+shows your balance and today's selling limit. It goes through the market's own rules (survival or adventure only,
+items then money, logged, the daily limits); the items move by the console's `clear` and `give`, measured on the
+inventory before and after, so the money follows what really moved.
 
 **Trades.** Once accepted, both players see a 6-row chest menu: their own offer on the left (16 stacks), the other's
 on the right, each side's money, their confirm and cancel buttons, and whether the other has confirmed. A click on a
@@ -111,9 +150,10 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 
 | File | Holds |
 |---|---|
-| `config.json` | `currency` (default `coins`), `starting_balance` (default 0), and `market`: `enabled` and `items`, each item's `buy` (what the market asks) and `sell` (what it pays), 0 closing that side; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
+| `config.json` | `currency` (default `coins`), `starting_balance` (default 0), `market`: `enabled`, `items` (each item's `buy`, what the market asks, and `sell`, what it pays, 0 closing that side), `daily_sell_coins` (2000) and `daily_sell_items` (640), 0 for no limit; `shop`: `enabled`, `title`, `categories` (`name`, `icon`, `items`); written with the defaults the first time, and again when a newer version adds keys (your values kept) |
 | `economy.json` | balances by player UUID, with the name last seen, and `held`: coinflip stakes and lottery tickets being decided |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
+| `market.json` | what each player sold today (coins and items), for the daily limits |
 | `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |
 | `claims.json` | each claimed chunk (`<dimension> <chunk x> <chunk z>`) with its owner, and whom each owner trusts |
@@ -134,8 +174,8 @@ and the world lifecycle. `compatibility.json` names `"hooks": 49`.
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: eleven modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: thirteen modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |

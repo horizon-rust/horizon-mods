@@ -15,7 +15,10 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
   comes back; the money in the game stays the same throughout;
 - the lottery: two players' tickets held, one drawn after `lottery_seconds`, the winner announced to everyone and paid
   the pot;
-- after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change.
+- after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change;
+- /money and /eco give * for an operator, then the /shop menu: a category, one item bought by a click and a stack by
+  a shift-click, a stack of the player's own sold by clicking it, "Sell all" stopped by the daily limit (the rest
+  kept, the limit shown in the menu and in /worth, the day's sales in market.json), the close button.
 
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
 """
@@ -499,6 +502,57 @@ def presence(server, alex, steve):
     return r
 
 
+def shop(server, alex):
+    """Alex alone, op, in survival: /money and /eco give *, then the /shop menu: a category, buying one and a stack,
+    selling a stack of hers, "Sell all" up to the daily limit, closing. Returns the coins it added, and the lines."""
+    results = {}
+    # Only what the step gives her: "Sell all" would sell the rest too.
+    server.console("clear Alex")
+    time.sleep(1)
+    results["money"] = alex.say("/money give Alex 2000")
+    assert any("Alex now has" in l for l in results["money"]), results
+    results["everyone"] = alex.say("/eco give * 10")
+    assert any("Gave 10 coins to 1 player(s) on." in l for l in results["everyone"]), results
+    assert alex.count("minecraft:iron_ingot") == 0
+    alex.say("/shop")
+    menu = alex.menu()
+    assert menu[10]["item"] == "minecraft:wheat" and menu[48]["item"] == "minecraft:gold_ingot", menu
+    alex.click(300 + 11)  # Mining
+    menu = alex.menu()
+    assert [menu[i]["item"] for i in range(3)] == ["minecraft:coal", "minecraft:copper_ingot",
+                                                   "minecraft:iron_ingot"], menu
+    alex.click(300 + 2)  # one iron ingot
+    assert alex.count("minecraft:iron_ingot") == 1, alex.run("inventory")
+    results["bought"] = alex.chat()[-2:]
+    assert any("Bought 1 iron ingot for 30 coins." in l for l in results["bought"]), results
+    alex.click(300 + 45)  # back
+    alex.click(300 + 14)  # Building
+    alex.run("click-slot", 300 + 0, "shift")  # a stack of cobblestone
+    time.sleep(1)
+    assert alex.count("minecraft:cobblestone") == 64, alex.run("inventory")
+    # Her own stack of iron, clicked: sold.
+    alex.click(alex.slot_of("minecraft:iron_ingot"))
+    results["sold"] = alex.chat()[-2:]
+    assert any("Sold 1 iron ingot for 8 coins." in l for l in results["sold"]), results
+    assert alex.count("minecraft:iron_ingot") == 0
+    # Sell all, up to the 2,000 coins a day: 19 of 30 diamonds (8 coins earned already).
+    server.console("give Alex minecraft:diamond 30")
+    time.sleep(2)
+    alex.click(300 + 49)
+    results["sell_all"] = alex.chat()[-3:]
+    assert any("Sold 19 diamond for 1,900 coins." in l for l in results["sell_all"]), results
+    assert any("11 diamond kept: today's selling limit." in l for l in results["sell_all"]), results
+    assert alex.count("minecraft:diamond") == 11, alex.run("inventory")
+    limits = alex.menu()[50]
+    results["limits"] = limits
+    assert "92 coins left of your 2,000 coins a day" in json.dumps(limits), limits
+    alex.click(300 + 53)  # close
+    assert not alex.menu()
+    results["worth"] = alex.say("/worth diamond")
+    assert any("You may sell 621 more diamond today." in l for l in results["worth"]), results
+    return 2000 + 10 - 30 - 64 + 8 + 1900, results
+
+
 def trades(server, alex, steve, port, ctl, resources, root):
     """Every way out of a trade, then one that goes through. Alex: 10 diamonds; Steve: 5 emeralds, 5 torches."""
     results = {}
@@ -605,7 +659,7 @@ def run(ctl, resources, out):
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
         assert results["config_keys"] == ["board", "claims", "currency", "gambling", "market", "places", "presence",
-                                          "starting_balance"], config
+                                          "shop", "starting_balance"], config
         results["welcome"] = steve.chat()
         assert any("Welcome to the server, Steve!" in l for l in results["welcome"]), results["welcome"]
         assert any("1. Be respectful to everyone." in l for l in results["welcome"]), results["welcome"]
@@ -707,13 +761,24 @@ def run(ctl, resources, out):
         assert any(f"Balance: {alex_after + 7} coins" in l for l in results["after_restart"]), results
         assert any("Daily reward: 7 coins." in l for l in alex.chat()), alex.chat()
         assert not any("joined for the first time" in l for l in alex.chat()), alex.chat()
+        added, results["shop"] = shop(server, alex)
         alex.quit()
         server.stop()
         economy = json.loads((data / "economy.json").read_text())
-        assert "held" not in economy and sum(a["balance"] for a in economy["accounts"].values()) == 815 + 7, economy
+        total = sum(a["balance"] for a in economy["accounts"].values())
+        assert "held" not in economy and total == 815 + 7 + added, economy
         kinds = [json.loads(l)["kind"] for l in (data / "audit.log").read_text().splitlines()]
+        shop_kinds = ["eco_give", "eco_give", "buy 1 minecraft:iron_ingot", "buy 64 minecraft:cobblestone",
+                      "sell 1 minecraft:iron_ingot", "sell 19 minecraft:diamond"]
+        assert kinds[-len(shop_kinds):] == shop_kinds, kinds[-8:]
+        kinds = kinds[:-len(shop_kinds)]
         assert kinds[-2] in ("held_returned", "coinflip_cancel") and kinds[-1] == "daily_reward", kinds[-3:]
         results["stake_back"] = kinds[-2]
+        sold = json.loads((data / "market.json").read_text())["sold"]
+        # Steve's sales of the first run's day, and Alex's.
+        assert sorted((s["coins"], s["items"]) for s in sold.values()) == [
+            (320, {"minecraft:diamond": 3, "minecraft:wheat": 20}),
+            (1908, {"minecraft:diamond": 19, "minecraft:iron_ingot": 1})], sold
         print(json.dumps({"proof": "smp", "ok": True, **results}, indent=2))
     finally:
         (out / "server.log").write_text("\n".join(server.lines))

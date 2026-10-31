@@ -114,6 +114,9 @@ fn open(dir: PathBuf) -> Smp {
             (Config::default(), false)
         }
     };
+    let mut config = config;
+    // Prices never edited: today's defaults (the balances are untouched).
+    let write = smp_market::migrate(&mut config.market) || write;
     if write && let Err(e) = smp_store::write_json(&config_path, &config) {
         log::error!("[smp] {e}");
     }

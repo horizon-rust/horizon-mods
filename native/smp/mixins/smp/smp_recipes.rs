@@ -176,6 +176,7 @@ pub fn loops(prices: &BTreeMap<String, Price>, recipes: &[Recipe]) -> Vec<Loop> 
         .collect()
 }
 
+#[cfg(test)]
 /// An ingredient of a recipe file: an item, a `#tag`, or a list of either,
 /// as the items it allows (`tags` maps a tag to its items, tags in tags
 /// resolved).
@@ -195,6 +196,7 @@ fn choices(v: &serde_json::Value, tags: &BTreeMap<String, Vec<String>>) -> Vec<S
     }
 }
 
+#[cfg(test)]
 /// A vanilla recipe file (`data/minecraft/recipe/*.json`) as a recipe, for
 /// the kinds that turn items into items: shaped and shapeless crafting,
 /// transmuting, the furnaces and the campfire, the stonecutter and the
@@ -248,6 +250,7 @@ pub fn parse(json: &serde_json::Value, tags: &BTreeMap<String, Vec<String>>) -> 
     })
 }
 
+#[cfg(test)]
 /// Item tags (`data/minecraft/tags/item/*.json`, by name: `logs`) resolved
 /// into items, as `minecraft:logs` → items.
 pub fn resolve_tags(raw: &BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<String>> {

@@ -135,6 +135,51 @@ impl Default for Config {
     }
 }
 
+/// The default prices of SMP 0.1 to 0.11: a config that still holds
+/// exactly these (never edited) gets today's defaults (`migrate`).
+const OLD_PRICES: [(&str, i64, i64); 18] = [
+    ("wheat", 0, 1),
+    ("carrot", 0, 1),
+    ("potato", 0, 1),
+    ("sugar_cane", 0, 1),
+    ("pumpkin", 0, 3),
+    ("melon_slice", 0, 1),
+    ("cactus", 0, 1),
+    ("oak_log", 4, 1),
+    ("coal", 8, 2),
+    ("iron_ingot", 30, 8),
+    ("gold_ingot", 40, 10),
+    ("redstone", 4, 1),
+    ("lapis_lazuli", 8, 2),
+    ("emerald", 80, 20),
+    ("diamond", 400, 100),
+    ("bread", 5, 0),
+    ("cooked_beef", 6, 0),
+    ("torch", 1, 0),
+];
+
+/// A config whose prices are still the old defaults, untouched: today's
+/// defaults instead. Whether it changed (the file is written again).
+pub fn migrate(config: &mut Config) -> bool {
+    let old: BTreeMap<String, Price> = OLD_PRICES
+        .iter()
+        .map(|(id, buy, sell)| {
+            (
+                format!("minecraft:{id}"),
+                Price {
+                    buy: *buy,
+                    sell: *sell,
+                },
+            )
+        })
+        .collect();
+    if config.items != old {
+        return false;
+    }
+    config.items = Config::default().items;
+    true
+}
+
 /// What one player sold today.
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
@@ -270,7 +315,8 @@ impl Market {
         (market, problems)
     }
 
-    /// A market that keeps nothing on disk, its config as given.
+    /// A market that keeps nothing on disk, its config as given (tests).
+    #[cfg(test)]
     pub fn new(config: Config) -> Self {
         Self {
             config,
@@ -957,5 +1003,32 @@ mod tests {
             .unwrap();
         assert!(matches!(&out[0], Out::Error(_)), "{out:?}");
         fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn the_old_default_prices_become_the_new_ones_and_edited_ones_stay() {
+        let mut config = Config {
+            items: OLD_PRICES
+                .iter()
+                .map(|(id, buy, sell)| {
+                    (
+                        format!("minecraft:{id}"),
+                        Price {
+                            buy: *buy,
+                            sell: *sell,
+                        },
+                    )
+                })
+                .collect(),
+            ..Config::default()
+        };
+        let mut edited = config.clone();
+        assert!(migrate(&mut config));
+        assert_eq!(config.items, Config::default().items);
+        assert!(!migrate(&mut config), "once");
+        edited.items.get_mut("minecraft:diamond").unwrap().sell = 90;
+        let before = edited.clone();
+        assert!(!migrate(&mut edited));
+        assert_eq!(edited, before);
     }
 }

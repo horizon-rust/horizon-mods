@@ -5,7 +5,7 @@ further in or out. Its settings page (Options > Mods > Zoom > Settings) has the 
 starting zoom (2x to 10x), smooth zoom (eased like the spyglass) and slower turning while zoomed.
 
 It is a [horizon-mixins](https://github.com/horizon-rust/horizon-mixins) bundle (`mixins/zoom/`) that the Horizon
-launcher builds into the game. It replaces the WebAssembly Zoom 1.x and keeps its settings: the same files
+launcher builds into the game. It keeps the settings of earlier versions: the same files
 (`horizon-mods/.horizon-mod-data/zoom/level`, `smooth`, `sensitivity`) and the same key line
 (`key.zoom.zoom:…` in `horizon-mods.txt`).
 
@@ -42,7 +42,7 @@ python3 native/tools/native.py proof zoom --resources /path/to/.local/horizon-cl
 ```
 
 The proof needs resources prepared from your own Minecraft 26.3 (`horizon-prepare`); none are in this repository.
-It seeds the WebAssembly Zoom's settings (8x, no smoothing, key C) in a temporary game folder, then checks that
+It seeds an earlier version's settings (8x, no smoothing, key C) in a temporary game folder, then checks that
 Options > Mods shows them, that Z does nothing and C zooms, that the wheel zooms instead of moving the hotbar
 while C is held, and that the page's buttons write the same files. CI runs `cargo test`, packages the `.hnmod`
 and checks the game on the tested commit, and every Monday on the newest Nightly.

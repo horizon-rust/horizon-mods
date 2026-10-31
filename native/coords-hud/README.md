@@ -6,7 +6,7 @@ Your block position and the direction you face in a box in the top-left corner o
 - `/coords` hides or shows the box, and the game keeps your choice (also Options > Mods > Coordinates HUD > Settings).
 
 It is a [horizon-mixins](https://github.com/horizon-rust/horizon-mixins) bundle (`mixins/coords_hud/`) that the Horizon
-launcher builds into the game. It replaces the WebAssembly Coordinates HUD 0.1.0, the WebAssembly SDK's example mod.
+launcher builds into the game. It is a small example mod.
 The time of day line is gone: Horizon's hook points don't give the game's clock yet.
 
 ## Install

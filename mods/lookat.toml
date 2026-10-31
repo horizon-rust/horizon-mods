@@ -11,7 +11,7 @@ The block or entity under your crosshair at the top of the screen, drawn as a va
 
 **Settings** (Options → Mods → LookAt): range, position (top, top left, top right), size, background opacity, item icon, where it comes from, position and distance, entities, health, harvest tool. Boxes keep clear of F3, boss bars, the minimap and effect icons.
 
-**Now a native mod (0.2.1)**: the launcher builds it into the game (Settings → Game → Native mods (experimental), then Build). Native mods are not sandboxed and run with your account's permissions, so read the source before you build it. Tested against Horizon `142388e1c136e622652ec7505af15d8ad195e041` with Horizon Mixins `0d6b103c70633d8fd9443d8d0acd3aadaacedb06`; the launcher builds these exact pinned revisions. Settings from 0.1.0 carry over. 0.1.0 is the WebAssembly version."""
+**Now a native mod (0.2.1)**: the launcher builds it into the game (Settings → Game → Native mods (experimental), then Build). Native mods are not sandboxed and run with your account's permissions, so read the source before you build it. Tested against Horizon `142388e1c136e622652ec7505af15d8ad195e041` with Horizon Mixins `0d6b103c70633d8fd9443d8d0acd3aadaacedb06`; the launcher builds these exact pinned revisions. Settings from 0.1.0 carry over."""
 authors = ["d3grando"]
 owners = ["d3grando"]
 license = "MIT"

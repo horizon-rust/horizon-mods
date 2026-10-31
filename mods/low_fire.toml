@@ -1,0 +1,37 @@
+id = "low_fire"
+kind = "native-mod"
+name = "Low Fire"
+summary = "Lowers or hides the first-person burning fire overlay for crystal clear vision in PvP and survival."
+description = """
+Low Fire
+
+A native Horizon mod by CayMac that ports the essential Low Fire PvP & survival feature to Horizon:
+
+Crystal Clear Visibility: Lowers the intrusive first-person burning fire overlay down to the bottom edge of the screen so your crosshair and view are never obstructed in combat.
+Customizable Height:
+Low (22%): Standard competitive PvP low fire.
+Very Low (14%): Sleek, minimal flame bar.
+Minimal (8%): Discreet bottom-border burning indicator.
+No Fire (0%): Completely hides the first-person fire overlay.
+Vanilla (100%): Normal vanilla fire rendering.
+Adjustable Opacity: Choose between 100%, 75%, and 50% transparency.
+100% Damage & Server Accurate: Fire ticks and burning damage logic remain completely unaltered.
+In-Game Toggle: Toggleable on the fly with a keybind or in Options > Mods > Low Fire."""
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/low-fire"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "low_fire-1.0.0.hnmod"
+sha256 = "1e5ef66fa87280aef9a33513361c49ceee02851e088b50a0f7ec593111a67945"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTNxo/S3UBZ2rWGje1JZL6zSmh81Gx5hRVx8wT3znLTpJ0bxvxXgx5KwwHxFCfpAjU1FYYRdOIiZwYeV6t8gQlyQE=\r
+trusted comment: timestamp:1793479715\tfile:low_fire-1.0.0.hnmod\thashed\r
+a6xiGNXbohzBQHIf5Yg/yPQFT4n2be4IsBSLnM5rz8yZ0Y49NGpXm0pFLbI1MqG1eI2J1krlygD2ipPg8yzVDQ=="""
+changelog = "Initial release for 26.3 Horizon. "

@@ -1,12 +1,12 @@
 [mod]
 id = "smp"
-version = "0.12.0"
+version = "0.13.0"
 priority = 100
 
-# The commit of horizon main it was tested on. It uses only the native hook points (hooks 49 in
+# The commit of horizon main it was tested on. It uses only the native hook points (hooks 62 in
 # compatibility.json): it builds on any Horizon that has them.
 [compatibility]
-horizon_revision = "5272f3ad64bc68e1f80068a201f38d442ea01fbc"
+horizon_revision = "c348d5da9c488f1d2453b0d2b03c2751b2379b05"
 
 [[module]]
 id = "store"
@@ -55,6 +55,12 @@ id = "lottery"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_lottery"
 source = "smp_lottery.rs"
+
+[[module]]
+id = "nick"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_nick"
+source = "smp_nick.rs"
 
 [[module]]
 id = "places"

@@ -42,6 +42,9 @@ header and footer).
 | `/claim show` | draws the border of the chunk you stand in for 10 s, for you only: green yours or a trusting owner's, red someone else's, white free |
 | `/claims` | your chunks, how many you may hold, and who you trust |
 | `/trust <player>`, `/untrust <player>` | lets a player (or no longer) build and use things on all your land |
+| `/nick <name>`, `/nick off` | another name for you in chat and the Tab list (hovering it gives your real one); one change every 10 minutes |
+| `/nick <player> <name\|off>` | operators of level 3: sets or takes off a player's nickname |
+| `/realname <nick>` | who goes by that nickname |
 | `/sidebar off`, `/sidebar on`, `/sidebar` | hides the richest players' sidebar for you (remembered), shows it again |
 
 The market trades only plain items (not worn, named or enchanted), and only with players in survival or adventure
@@ -77,6 +80,13 @@ Default prices (coins, buy / sell; `-` not traded that way):
 A `config.json` still holding the 18 prices of versions 0.1 to 0.11, never edited, gets these at the first start of
 0.12.0; edited prices are kept. Only items that stack to 64 belong in the market: a shift-click buys 64, and what
 doesn't fit falls at the player's feet for them.
+
+**Nicknames.** 3 to 16 letters, digits or `_`; never the name of anyone who has played here (the economy's
+accounts and `usercache.json`) or of an operator (`ops.json`), nor another player's nickname; it must pass the
+server's chat filter. The change is made at the next second. The nickname shows in chat (messages, `/me`, `/msg`)
+and the Tab list, and hovering it gives the real name; the real name stays everywhere else: the server's log, the
+anticheat, commands and selectors, the Discord bridge. The player's profile (name, UUID) never changes.
+`config.json`'s `nicks`: `enabled`, `cooldown_seconds` (600).
 
 **The shop.** `/shop` opens a 6-row chest menu on the market's prices: the categories of `config.json`'s `shop` (an
 item in none goes under "Other"), each item named with its prices. A click buys one, a shift-click 64; a click on a
@@ -153,6 +163,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `config.json` | `currency` (default `coins`), `starting_balance` (default 0), `market`: `enabled`, `items` (each item's `buy`, what the market asks, and `sell`, what it pays, 0 closing that side), `daily_sell_coins` (2000) and `daily_sell_items` (640), 0 for no limit; `shop`: `enabled`, `title`, `categories` (`name`, `icon`, `items`); written with the defaults the first time, and again when a newer version adds keys (your values kept) |
 | `economy.json` | balances by player UUID, with the name last seen, and `held`: coinflip stakes and lottery tickets being decided |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
+| `nicks.json` | each player's nickname and when they last changed it |
 | `market.json` | what each player sold today (coins and items), for the daily limits |
 | `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |
@@ -169,13 +180,14 @@ It hooks only Horizon's native hook points: `native_register_commands` and `nati
 acting player's items (API 9), the server menus and `native_exchange_items` (API 10), the players' health and
 `native_run_command` (API 21), `native_destroy_block` (API 14), `native_right_click_block`, the acting player and the
 action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explosion_detonate`, `native_fill_bucket` and
-`native_attack_entity` (API 22), `native_sidebar`, `native_tab_list` and `native_tick_stats` (API 49), the server tick
-and the world lifecycle. `compatibility.json` names `"hooks": 49`.
+`native_attack_entity` (API 22), `native_sidebar`, `native_tab_list` and `native_tick_stats` (API 49),
+`native_set_nickname` and `native_text_allowed` (API 62), the server tick and the world lifecycle.
+`compatibility.json` names `"hooks": 58`.
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: thirteen modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: fourteen modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |

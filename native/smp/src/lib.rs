@@ -13,6 +13,8 @@ pub mod smp_games;
 pub mod smp_lottery;
 #[path = "../mixins/smp/smp_market.rs"]
 pub mod smp_market;
+#[path = "../mixins/smp/smp_nick.rs"]
+pub mod smp_nick;
 #[path = "../mixins/smp/smp_places.rs"]
 pub mod smp_places;
 #[path = "../mixins/smp/smp_presence.rs"]

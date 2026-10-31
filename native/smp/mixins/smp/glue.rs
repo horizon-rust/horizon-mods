@@ -19,6 +19,7 @@ use crate::game::{
     smp_presence::{self, Presence},
     native_menus::native_menu_inventory_slot,
     smp_market::{self, Bag, Market},
+    smp_nick::{self, Names as _, Nicks},
     smp_shop::{self, Shop},
     smp_store,
     smp_trade::{self, Act, Cell, Trades},
@@ -33,7 +34,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.12.0";
+pub const VERSION: &str = "0.13.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -49,6 +50,7 @@ pub struct Config {
     pub claims: smp_claims::Config,
     pub board: smp_board::Config,
     pub presence: smp_presence::Config,
+    pub nicks: smp_nick::Config,
 }
 
 /// The SMP of the open world.
@@ -73,6 +75,10 @@ pub struct Smp {
     /// An error when `presence.json` can't be read: no welcome, reward or
     /// AFK then.
     presence: Result<Presence, String>,
+    /// An error when `nicks.json` can't be read: nicknames are off then.
+    nicks: Result<Nicks, String>,
+    /// The players on whose nickname the game shows (this run).
+    nicks_shown: std::collections::HashSet<u128>,
     /// `/claim show`: whose chunk border is drawn (level, chunk x, chunk z)
     /// until when.
     shows: std::collections::HashMap<u128, (String, i32, i32, i64)>,
@@ -144,6 +150,10 @@ fn open(dir: PathBuf) -> Smp {
     // Players the economy knows were here before: no first-join welcome.
     let known = economy.as_ref().map(|e| e.accounts().into_iter().map(|a| a.0).collect()).unwrap_or_else(|_| Vec::new());
     let presence = Presence::open(&dir, config.presence, known);
+    let nicks = Nicks::open(&dir, config.nicks);
+    if let Err(e) = &nicks {
+        log::error!("[smp] nicknames are off: {e}");
+    }
     if let Err(e) = &presence {
         log::error!("[smp] welcomes, daily rewards and AFK are off: {e}");
     }
@@ -160,6 +170,8 @@ fn open(dir: PathBuf) -> Smp {
         claims,
         board,
         presence,
+        nicks,
+        nicks_shown: Default::default(),
         shows: Default::default(),
     }
 }
@@ -206,6 +218,11 @@ fn save(smp: &mut Smp) {
     }
     if let Ok(p) = &mut smp.presence
         && let Err(err) = p.save()
+    {
+        log::error!("[smp] {err}");
+    }
+    if let Ok(n) = &mut smp.nicks
+        && let Err(err) = n.save()
     {
         log::error!("[smp] {err}");
     }
@@ -259,10 +276,12 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "sidebar on",
         "sidebar off",
         "afk",
+        "nick <name:word>",
+        "realname <nick:word>",
     ] {
         commands.push(NativeCommand::new(usage));
     }
-    for usage in ["setspawn", "setwarp <name:word>", "delwarp <name:word>"] {
+    for usage in ["setspawn", "setwarp <name:word>", "delwarp <name:word>", "nick <name:word> <nick:word>"] {
         commands.push(NativeCommand::op(usage, 3));
     }
     for name in ["eco", "money"] {
@@ -272,7 +291,7 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
                 3,
             ));
         }
-        commands.push(NativeCommand::op(&format!("{name} give * <amount:integer>"), 3));
+        // `give * <amount>` goes through `<player:word>`: a literal `*` isn't a command word.
     }
 }
 
@@ -353,6 +372,7 @@ pub(in crate::game) fn perform(
         &smp_claims::COMMANDS,
         &smp_board::COMMANDS,
         &smp_presence::COMMANDS,
+        &smp_nick::COMMANDS,
     ];
     if !game.native_on(ID) || !ours.iter().any(|c| c.contains(&word)) {
         return;
@@ -393,7 +413,13 @@ pub(in crate::game) fn perform(
             }
         }
     }
-    let out = if smp_presence::COMMANDS.contains(&word) {
+    let out = if smp_nick::COMMANDS.contains(&word) {
+        let names = ServerNames::read(&dir, smp.economy.as_ref().ok());
+        match &mut smp.nicks {
+            Ok(n) => n.command(&me, &names, now, line).unwrap_or_default(),
+            Err(_) => vec![Out::Error("Nicknames are off: nicks.json can't be read (see the server log).".into())],
+        }
+    } else if smp_presence::COMMANDS.contains(&word) {
         match &mut smp.presence {
             Ok(p) => match p.command(&me, line) {
                 Some((o, a)) => {
@@ -1216,6 +1242,39 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             tab = Some((to, b.tab_lines(tps, mspt, on.len())));
         }
     }
+    // Nicknames: the changes asked for, then those of players who came on.
+    if n % 20 == 0
+        && let Ok(nicks) = &mut smp.nicks
+    {
+        let pending = std::mem::take(&mut nicks.pending);
+        // The files behind the real names are read only when a change waits.
+        let names = (!pending.is_empty()).then(|| ServerNames::read(&dir, smp.economy.as_ref().ok()));
+        for change in pending {
+            let names = names.as_ref().expect("read above");
+            let real = names.name_of(change.uuid).unwrap_or_default();
+            if let Some(nick) = &change.nick
+                && game.native_text_allowed(nick) == Some(false)
+            {
+                out.push(Out::Tell(change.by, format!("{nick} isn't allowed here.")));
+                continue;
+            }
+            out.extend(nicks.apply(&change, &real, now));
+            if game.native_set_nickname(change.uuid, change.nick.as_deref()) {
+                smp.nicks_shown.insert(change.uuid);
+            } else {
+                smp.nicks_shown.remove(&change.uuid);
+            }
+        }
+        for p in &players {
+            if !smp.nicks_shown.contains(&p.uuid)
+                && let Some(nick) = nicks.nick_of(p.uuid)
+                && game.native_set_nickname(p.uuid, Some(nick))
+            {
+                smp.nicks_shown.insert(p.uuid);
+            }
+        }
+        smp.nicks_shown.retain(|u| players.iter().any(|p| p.uuid == *u) || nicks.nick_of(*u).is_none());
+    }
     let title = smp.board.as_ref().map(|b| b.config.title.clone()).unwrap_or_default();
     let busy = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty()) || !smp.trades.open.is_empty();
     BUSY.store(busy, Relaxed);
@@ -1239,6 +1298,51 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         }
     }
     show(game, out);
+}
+
+/// The names a nickname may not copy: the economy's accounts, the server's
+/// `usercache.json` (everyone who has joined) and `ops.json`, beside the
+/// world's folder. Read for each `/nick` and each second with changes.
+struct ServerNames {
+    /// (UUID, real name), and whether an operator.
+    names: Vec<(u128, String)>,
+    ops: Vec<String>,
+}
+
+impl ServerNames {
+    fn read(world: &std::path::Path, economy: Option<&Economy>) -> Self {
+        let mut names: Vec<(u128, String)> = economy
+            .map(|e| e.accounts().into_iter().map(|a| (a.0, a.1)).collect())
+            .unwrap_or_default();
+        let server = world.parent().unwrap_or(world);
+        let list = |file: &str| -> Vec<serde_json::Value> {
+            std::fs::read(server.join(file))
+                .ok()
+                .and_then(|b| serde_json::from_slice(&b).ok())
+                .unwrap_or_default()
+        };
+        for e in list("usercache.json") {
+            if let (Some(name), Some(uuid)) = (e["name"].as_str(), e["uuid"].as_str().and_then(smp_store::parse_uuid))
+                && !names.iter().any(|(u, _)| *u == uuid)
+            {
+                names.push((uuid, name.to_owned()));
+            }
+        }
+        let ops = list("ops.json").iter().filter_map(|e| e["name"].as_str().map(str::to_owned)).collect();
+        Self { names, ops }
+    }
+}
+
+impl smp_nick::Names for ServerNames {
+    fn taken(&self, lower: &str) -> bool {
+        self.names.iter().any(|(_, n)| n.eq_ignore_ascii_case(lower)) || self.ops.iter().any(|n| n.eq_ignore_ascii_case(lower))
+    }
+    fn find(&self, name: &str) -> Option<(u128, String)> {
+        self.names.iter().find(|(_, n)| n.eq_ignore_ascii_case(name)).cloned()
+    }
+    fn name_of(&self, uuid: u128) -> Option<String> {
+        self.names.iter().find(|(u, _)| *u == uuid).map(|(_, n)| n.clone())
+    }
 }
 
 /// A player's sidebar lines as the game shows them.

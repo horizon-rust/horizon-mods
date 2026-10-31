@@ -18,7 +18,9 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change;
 - /money and /eco give * for an operator, then the /shop menu: a category, one item bought by a click and a stack by
   a shift-click, a stack of the player's own sold by clicking it, "Sell all" stopped by the daily limit (the rest
-  kept, the limit shown in the menu and in /worth, the day's sales in market.json), the close button.
+  kept, the limit shown in the menu and in /worth, the day's sales in market.json), the close button;
+- nicknames: refused ones (a player's name, too short, a bad character), one in the other's chat and Tab list,
+  /realname, someone else's taken, the cooldown, an operator taking it off.
 
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
 """
@@ -502,6 +504,44 @@ def presence(server, alex, steve):
     return r
 
 
+def nicks(alex, steve, out):
+    """Steve takes a nickname: refused ones first, then Rocky in Alex's chat and the Tab list, /realname, the
+    cooldown, and Alex (an operator) takes it off."""
+    r = {}
+    time.sleep(6)  # the spam guard's window from the step before
+    for line, error in (("/nick Alex", "Alex is a player's name."),
+                        ("/nick ab", "A nickname is 3 to 16 letters, digits or _."),
+                        ("/nick bad-name", "A nickname is 3 to 16 letters, digits or _.")):
+        r[line] = steve.say(line)
+        assert any(error in l for l in r[line]), r
+    steve.run("chat", "/nick Rocky")
+    time.sleep(3)  # made at the next second's tick
+    r["set"] = steve.chat()[-3:]
+    assert any("Steve now goes by Rocky." in l for l in r["set"]), r
+    steve.run("chat", "hello from rocky")
+    time.sleep(2)
+    r["chat"] = alex.chat()[-3:]
+    assert any("Rocky" in l and "hello from rocky" in l and "Steve" not in l for l in r["chat"]), r
+    alex.run("key", "tab", "down")
+    time.sleep(1)
+    alex.run("screenshot", str(Path(out).resolve() / "nick-tab.png"))
+    alex.run("key", "tab", "up")
+    r["realname"] = alex.say("/realname rocky")
+    assert any("Rocky is Steve." in l for l in r["realname"]), r
+    r["taken"] = alex.say("/nick rocky")
+    assert any("rocky is someone else's nickname." in l for l in r["taken"]), r
+    r["cooldown"] = steve.say("/nick Pebble")
+    assert any("wait 10 more minute(s)" in l for l in r["cooldown"]), r
+    alex.run("chat", "/nick Steve off")
+    time.sleep(3)
+    r["off"] = steve.chat()[-3:]
+    assert any("Steve goes by their name again." in l for l in r["off"]), r
+    steve.run("chat", "back to steve")
+    time.sleep(2)
+    assert any("Steve" in l and "back to steve" in l for l in alex.chat()[-3:]), alex.chat()[-3:]
+    return r
+
+
 def shop(server, alex):
     """Alex alone, op, in survival: /money and /eco give *, then the /shop menu: a category, buying one and a stack,
     selling a stack of hers, "Sell all" up to the daily limit, closing. Returns the coins it added, and the lines."""
@@ -658,8 +698,8 @@ def run(ctl, resources, out):
         time.sleep(2)
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
-        assert results["config_keys"] == ["board", "claims", "currency", "gambling", "market", "places", "presence",
-                                          "shop", "starting_balance"], config
+        assert results["config_keys"] == ["board", "claims", "currency", "gambling", "market", "nicks", "places",
+                                          "presence", "shop", "starting_balance"], config
         results["welcome"] = steve.chat()
         assert any("Welcome to the server, Steve!" in l for l in results["welcome"]), results["welcome"]
         assert any("1. Be respectful to everyone." in l for l in results["welcome"]), results["welcome"]
@@ -719,6 +759,7 @@ def run(ctl, resources, out):
         results["board"] = board(alex, steve, out)
         results["polish"] = polish(server, alex, steve, out)
         results["presence"] = presence(server, alex, steve)
+        results["nicks"] = nicks(alex, steve, out)
         results["coinflip"], alex_wins = coinflips(alex, steve)
         results["lottery"], alex_lotto = lottery(alex, steve, alex_wins)
         alex_after = 415 + (100 if alex_wins else -100) + (20 if alex_lotto else -30)

@@ -1,0 +1,23 @@
+id = "freecam"
+kind = "native-mod"
+name = "Freecam"
+summary = "Freecam mod ported for Horizon"
+description = "A rewrite for Horizon of the Freecam mod by the Freecam authors (https://github.com/MinecraftFreecam/Freecam, MIT; on Modrinth as freecam). Its licence notice is kept in the source."
+authors = ["hakergeniusz"]
+owners = ["hakergeniusz"]
+license = "MIT"
+source = "https://github.com/hakergeniusz/freecam"
+key = "RWR4cJC6Jj3EWGi26o29Rs3hAIPWqf8koFdXV4bBLF/Tm84QPfRAYjO5"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-10-31"
+game = "26.3"
+file = "freecam-0.1.0.hnmod"
+sha256 = "6314ed87d3b58ed0244bed388201c64bffb8deab4f5ff7beed2a3791b391a6da"
+signature = """
+untrusted comment: signature from rsign secret key
+RUR4cJC6Jj3EWN7yDLuEFss9Xir36oWeHI3yyIK+PlIffoXzHXcZ4eBAN/UcOwGpniH+lJl9uU1vzg8yRe9i6SKNMFhI6qbHkAQ=
+trusted comment: freecam 0.1.0 for Horizon (Minecraft 26.3), built from github.com/hakergeniusz/freecam commit 78d8f05
+6sfFvM54vZFE+02rwu0EJVbCnv5dJAJ7PDEWp64QnyEjlWYEnzXDzDAyLzKdZAfXwtvX+igaCS2KJKCk5UY5CA=="""
+changelog = "Release."

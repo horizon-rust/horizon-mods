@@ -1,16 +1,36 @@
 id = "eatinganimation"
 kind = "native-mod"
 name = "Eating Animation"
-summary = "Shows bitten frames for the food, milk and potion in your hand while you eat or drink them."
+summary = "While you eat food, or drink a potion or milk, the item in your hand shows its bitten frames."
 description = """
-Eating Animation for Horizon, a native mod, a port of Eating Animation by Theoness1.
-While you eat food or milk, or drink a potion, the item in your hand shows its bitten frames.
-The mod has no textures of its own. Build the frame pack from your own copy of the EatingAnimation download with `tools/make_frame_pack.py` in the source, and put it in Horizon's resource packs."""
+It is a port of [Eating Animation](https://github.com/Theoness1/EatingAnimation) for Horizon.
+
+While you eat food, or drink a potion or milk, the item in your hand shows its bitten frames.
+
+The frames come from a resource pack you build from your own copy of the EatingAnimation download with `tools/make_frame_pack.py`, and drop into Horizon's `resourcepacks/` folder.
+
+~~Or you can just download it from GitHub Releases...~~"""
 authors = ["soufi"]
 owners = ["soufied"]
 license = "MIT"
 source = "https://github.com/soufied/EatingAnimation-Horizon"
+icon = "https://raw.githubusercontent.com/soufied/EatingAnimation-Horizon/refs/heads/main/icons/eatinganimation.png"
 key = "RWT6eNq4e5WfVDA2lzOOi6XCm/+jJgilqT1+HUUM33ie5MCjcRfSg760"
+
+[[versions]]
+version = "0.1.1"
+published = "2026-10-31"
+game = "26.3"
+file = "eatinganimation-0.1.1.hnmod"
+sha256 = "3b4d7ce3c9791facc862da7727c2c7c71025cd9bb3ee4cbeaf40f48c72bf5cb0"
+signature = """
+untrusted comment: signature from minisign secret key
+RUT6eNq4e5WfVC2NLoRuU8m5JDlH1mh8dNmGbAZUj6bB4grd487xtihz4OLxxJRyO7jzQHrOz6nAPjcZjT/o1RIxebtX+A3tPg8=
+trusted comment: timestamp:1793419092\tfile:eatinganimation-0.1.1.hnmod\thashed
+OeN+0r/c6BVNO4b82/T9jp/Wh9iGpvL/B0enoxWiIB31W+7E2OmKWhceMaIZqc4w3N3gn3D8+sFrDICK55WoDQ=="""
+changelog = """
+dumped to v0.1.1
+added icon"""
 
 [[versions]]
 version = "0.1.0"

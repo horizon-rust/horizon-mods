@@ -14,7 +14,7 @@ authors = ["soufi"]
 owners = ["soufied"]
 license = "MIT"
 source = "https://github.com/soufied/EatingAnimation-Horizon"
-icon = "https://raw.githubusercontent.com/soufied/EatingAnimation-Horizon/refs/heads/main/icons/eatinganimation.png"
+icon = "icons/eatinganimation.png"
 key = "RWT6eNq4e5WfVDA2lzOOi6XCm/+jJgilqT1+HUUM33ie5MCjcRfSg760"
 
 [[versions]]

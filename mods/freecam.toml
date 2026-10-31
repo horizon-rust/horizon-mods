@@ -1,0 +1,40 @@
+id = "freecam"
+kind = "native-mod"
+name = "Freecam"
+summary = "Fly the camera freely while your player stays where it is, with an optional fair play mode."
+description = """
+Press **F4** to leave your body and fly the camera anywhere. Your player stays where it is and you see it from outside. Press **F4** again to snap back.
+
+**Controls while flying:**
+- **W A S D**: fly where you look
+- **Space / Shift**: up / down
+- **Ctrl**: 2.5x faster
+- **Mouse wheel**: change the speed
+
+**Settings** (Options > Mods > Freecam):
+- **Speed**: 2, 5, 10, 20, 40 or 80 blocks per second.
+- **Fair play**: the camera can't fly through blocks, so no peeking into caves or bases through walls. Glass, fences and doors stop it, grass and flowers don't.
+- **Allowed on servers**: turn it off to only use freecam in your own worlds.
+
+While flying, your player doesn't move, attack, mine or use items.
+
+Some servers don't allow freecam, so check their rules first."""
+authors = ["Lutziano888"]
+owners = ["Lutziano888"]
+license = "MIT"
+source = "https://github.com/Lutziano888/horizon-freecam"
+icon = "https://raw.githubusercontent.com/Lutziano888/horizon-freecam/main/assets/icon.png"
+
+[[versions]]
+version = "1.1.0"
+published = "2026-10-31"
+game = "26.3"
+file = "freecam-1.1.0.hnmod"
+sha256 = "217a986040833f060c8f3acf36e05c1b9f54ae919dbb1f8646fdf79cccdb4916"
+changelog = """
+First release.
+
+- F4 toggles freecam: fly the camera freely while your player stays where it is.
+- WASD to fly, Space/Shift up/down, Ctrl for 2.5x speed, mouse wheel changes the speed.
+- Fair play mode: the camera can't fly through blocks.
+- Settings: key, speed (2–80 blocks/s), fair play, allowed on servers."""

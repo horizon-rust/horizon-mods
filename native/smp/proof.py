@@ -430,6 +430,32 @@ def board(alex, steve, out):
     return r
 
 
+def polish(server, alex, steve, out):
+    """/back after a death, /playtime, /claim show."""
+    r = {}
+    _, died_at, _ = where(steve)
+    server.console("kill Steve")
+    time.sleep(2.5)
+    steve.run("respawn")
+    time.sleep(2)
+    r["died_at"], r["respawned_at"] = died_at, where(steve)[1]
+    r["back"] = steve.say("/back")
+    assert any("Teleporting in" in l for l in r["back"]), r
+    time.sleep(4)
+    r["back_reached"] = where(steve)[1]
+    assert near(r["back_reached"], died_at), r
+    assert any("where you died" in l for l in steve.chat()[-4:]), steve.chat()[-4:]
+    r["playtime"] = steve.say("/playtime")
+    assert any("You have played here for" in l for l in r["playtime"]), r
+    r["playtime_alex"] = steve.say("/playtime Alex")
+    assert any("Alex has played here for" in l for l in r["playtime_alex"]), r
+    r["show"] = alex.say("/claim show")
+    assert any("This chunk's border, for 10 s" in l for l in r["show"]), r
+    time.sleep(2)
+    alex.run("screenshot", str(Path(out).resolve() / "claim-show.png"))
+    return r
+
+
 def trades(server, alex, steve, port, ctl, resources, root):
     """Every way out of a trade, then one that goes through. Alex: 10 diamonds; Steve: 5 emeralds, 5 torches."""
     results = {}
@@ -587,6 +613,7 @@ def run(ctl, resources, out):
         results["claims"] = claims(server, alex, steve)
         results["world_guard"] = world_guard(server, alex, steve)
         results["board"] = board(alex, steve, out)
+        results["polish"] = polish(server, alex, steve, out)
         results["coinflip"], alex_wins = coinflips(alex, steve)
         results["lottery"], alex_lotto = lottery(alex, steve, alex_wins)
         alex_after = 415 + (100 if alex_wins else -100) + (20 if alex_lotto else -30)

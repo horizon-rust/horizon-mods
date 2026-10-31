@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.9.0"
+version = "0.10.0"
 priority = 100
 
 # The commit of horizon main it was tested on. It uses only the native hook points (hooks 44 in

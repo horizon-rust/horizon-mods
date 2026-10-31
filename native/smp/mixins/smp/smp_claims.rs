@@ -41,6 +41,23 @@ impl Default for Config {
 }
 
 /// Frames, stands, vehicles and the animals a player keeps: not monsters.
+/// Points along a chunk's four edges, every `step` blocks, at height `y`:
+/// where `/claim show` draws its border.
+pub fn border(cx: i32, cz: i32, y: f64, step: usize) -> Vec<[f64; 3]> {
+    let (x0, z0) = (f64::from(cx * 16), f64::from(cz * 16));
+    let mut points = Vec::new();
+    for i in (0..=16).step_by(step.max(1)) {
+        let t = f64::from(i);
+        points.push([x0 + t, y, z0]);
+        points.push([x0 + t, y, z0 + 16.0]);
+        if i != 0 && i != 16 {
+            points.push([x0, y, z0 + t]);
+            points.push([x0 + 16.0, y, z0 + t]);
+        }
+    }
+    points
+}
+
 const PROTECTED: &[&str] = &[
     "item_frame",
     "glow_item_frame",
@@ -205,6 +222,13 @@ impl Claims {
         if self.config.enabled && self.owners.get(dimension).is_some_and(|c| !c.is_empty()) {
             blocks.retain(|b| self.owner(dimension, b[0], b[2]).is_none());
         }
+    }
+
+    /// Whose land a block is to `who`: None when free, true when theirs or
+    /// trusted to them, false when someone else's.
+    pub fn relation(&self, dimension: &str, x: i32, z: i32, who: u128) -> Option<bool> {
+        let owner = self.owner(dimension, x, z)?;
+        Some(owner == who || self.trusts(owner, who))
     }
 
     /// Whether entities of type `kind` (`minecraft:cow`) are kept from
@@ -409,7 +433,7 @@ impl Claims {
                 }
             },
             _ => vec![Out::Error(
-                "Usage: /claim, /claim info, /unclaim, /claims, /trust <player>, /untrust <player>"
+                "Usage: /claim, /claim info, /claim show, /unclaim, /claims, /trust <player>, /untrust <player>"
                     .into(),
             )],
         })
@@ -456,6 +480,28 @@ mod tests {
     }
     fn name_of(u: u128) -> String {
         if u == A { "Alex" } else { "Steve" }.into()
+    }
+
+    #[test]
+    fn a_border_runs_along_the_chunks_edges() {
+        let points = border(1, -1, 70.0, 2);
+        // 9 points on each edge, the corners once.
+        assert_eq!(points.len(), 32);
+        assert!(points.contains(&[16.0, 70.0, -16.0]) && points.contains(&[32.0, 70.0, 0.0]));
+        assert!(
+            points
+                .iter()
+                .all(|p| p[0] == 16.0 || p[0] == 32.0 || p[2] == -16.0 || p[2] == 0.0)
+        );
+        let d = dir();
+        let mut c = Claims::open(&d, Config::default()).unwrap();
+        c.command(&player(A, 0), &at(8.0, 8.0), 0, &find, &name_of, "claim")
+            .unwrap();
+        let ow = "minecraft:overworld";
+        assert_eq!(c.relation(ow, 3, 3, A), Some(true));
+        assert_eq!(c.relation(ow, 3, 3, B), Some(false));
+        assert_eq!(c.relation(ow, 20, 3, B), None);
+        let _ = std::fs::remove_dir_all(d);
     }
 
     #[test]

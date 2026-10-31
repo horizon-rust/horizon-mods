@@ -1,0 +1,33 @@
+id = "server_pack_fixer"
+kind = "native-mod"
+name = "Server Pack & SMP Fixer"
+summary = "Helps playing multiplayer servers with heavy resource packs and custom textures: fixes bad-CRC textures, asset loading freezes, holograms, and chunk holes."
+description = """
+This mod helps when playing on multiplayer SMP servers with many resource packs, custom skins, and custom textures (such as HugoSMP or ItemsAdder/Oraxen servers). 
+
+It ensures custom textures, buttons, scoreboards, and holograms become visible and fixes timeouts while loading into the server. 
+
+Note: Heavy servers with dozens of packs can still feel laggy on the first join. If joining hangs on first connect, simply restart your client (close Horizon and open it again). Once the assets are cached, you should have a smooth experience!
+
+Features included:
+- Fixes obfuscated PNGs / bad chunk CRCs so "Loading assets" no longer freezes.
+- Resilient pack downloader with automatic retries and larger cache.
+- Fixes stretched GUI buttons, font holograms, and missing chunk holes."""
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/server-pack-fixer"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "server_pack_fixer-1.0.0.hnmod"
+sha256 = "821b0567629e3984da237d973db8e91c9ac23449f479a3b056e7c1ce24280d63"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTN2BaEm52EPb8m75oiXHgEjL+8nvdjPVFbm4uDAPc5854KC4XYX9EoW4L02su1F28dqKBeGHjlcvTTi6ZRIkHjwM=\r
+trusted comment: timestamp:1793453156\tfile:server_pack_fixer-1.0.0.hnmod\thashed\r
+zkK5Yb2J4aNnb4s+Fu0eGVZ4SsqtoWXui92HrfUCtU7Aa07I0IaYOvF3LHYoklsBERymWNkPN7Bh3tSc83cXCg=="""
+changelog = "Initial release for 26.3 Horizon. "

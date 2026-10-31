@@ -1,6 +1,10 @@
 //! The SMP's rules, as the bundle adds them to the game: each file is a
 //! module of `game` there and of this crate here, under the same name, so
 //! `super::smp_store` reaches the same code in both.
+#[path = "../mixins/smp/smp_board.rs"]
+pub mod smp_board;
+#[path = "../mixins/smp/smp_claims.rs"]
+pub mod smp_claims;
 #[path = "../mixins/smp/smp_economy.rs"]
 pub mod smp_economy;
 #[path = "../mixins/smp/smp_games.rs"]
@@ -9,6 +13,14 @@ pub mod smp_games;
 pub mod smp_lottery;
 #[path = "../mixins/smp/smp_market.rs"]
 pub mod smp_market;
+#[path = "../mixins/smp/smp_places.rs"]
+pub mod smp_places;
+#[path = "../mixins/smp/smp_presence.rs"]
+pub mod smp_presence;
+#[path = "../mixins/smp/smp_recipes.rs"]
+pub mod smp_recipes;
+#[path = "../mixins/smp/smp_shop.rs"]
+pub mod smp_shop;
 #[path = "../mixins/smp/smp_store.rs"]
 pub mod smp_store;
 #[path = "../mixins/smp/smp_trade.rs"]

@@ -1,0 +1,23 @@
+id = "dynamic_lights"
+kind = "native-mod"
+name = "Dynamic Lights"
+summary = "1:1 LambDynamicLights: handheld torches, lanterns, glowing items, dropped items, and glowing/burning entities illuminate their surroundings with water-sensitive"
+description = "A 1:1 native Rust port of LambDynamicLights for Horizon. Holding torches, lanterns, soul lanterns, glowstone, sea lanterns, shroomlights, lava buckets, blaze rods, glow ink sacs, or nether stars in your main hand or offhand smoothly illuminates the blocks and entities around you. Features authentic water-sensitive extinguishing (open-flame torches and campfires turn off underwater while lanterns, sea lanterns, glowstone, and shroomlights stay lit), dynamic lighting for dropped items and glowing/burning mobs (Blaze, Glow Squid, Magma Cube, Allay, Vex, swelling Creeper), and an L-key toggle."
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/dynamic-lights"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "dynamic_lights-1.0.0.hnmod"
+sha256 = "a2094d1bebafe5fce451debcf61345348a227bfe216f7d509284b5939f78fd7b"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTN/4L0gk0/eCHlpDto1P6pB5IGmrdpiN6dSVHl9abM/WLLBRDEtuThgX4lXj6nwfCBiRP3m90Sxvb6CdtlXelmwM=\r
+trusted comment: timestamp:1793444194\tfile:dynamic_lights-1.0.0.hnmod\thashed\r
+L+7ZlDA6FCwA8arKDsf3Yj3lmupO4tGI33oVroRQFGm1hqQNt6xZDIE1lLwtisD54ZJK03Tu41pImSbDcO+CCQ=="""
+changelog = "Initial Release for 26.3 Horizon. "

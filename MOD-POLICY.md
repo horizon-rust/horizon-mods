@@ -36,6 +36,21 @@ Submitting a project, through the form or a pull request, means you confirm that
 You alone are responsible for what you publish and for any claim about it. The Horizon project may refuse, hide or
 remove any project, at any time, without having to give a reason.
 
+## Licences reviewers can read
+
+Reviewers read a project's source before each version is listed; that is how they check it holds nothing harmful.
+They may only read source under a licence that lets them, so a new project, and every new version of a listed one,
+needs source under one of:
+
+- MIT, MIT-0, BSD-2-Clause, BSD-3-Clause, 0BSD, Apache-2.0, ISC, zlib, Unlicense or CC0-1.0;
+- or any licence, with a written grant from its authors that lets the Horizon reviewers read the source to review it
+  (say so in the pull request, with a link to the grant).
+
+Source under GPL, LGPL, MPL or all rights reserved, without such a grant, can't be reviewed, so it can't be listed or
+updated. The projects already listed under other licences when this rule was written (classic_zoom,
+distant_horizons, fly_speed, serverify) stay listed as they are; their next version needs a licence above or a
+grant. A port also has to follow promise 2 above.
+
 ## Copyright and takedowns
 
 If a project in this registry uses your work without your permission:

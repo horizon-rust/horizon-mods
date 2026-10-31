@@ -1,0 +1,23 @@
+id = "inventory_profiles"
+kind = "native-mod"
+name = "Inventory Profiles"
+summary = "R-key & UI sorting (Category, A-Z, Count, ID), Auto-Refill depleted stacks, Tool Break Protection, and Quick-Stack to chests."
+description = "A 1:1 native Rust port of Inventory Profiles Next & Inventory Sorter for Horizon. Press R or click the UI sort buttons to merge partial stacks and sort chests or your inventory using 4 selectable modes: Category (Creative Tab), Alphabetical (A-Z), Stack Count (High-Low), or Item ID. Includes automatic hand stack refilling when placing blocks or consuming items, Tool Break Protection that swaps out low-durability tools before they break, and G-key Quick-Stacking to move matching items into open containers."
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/inventory-profiles"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "inventory_profiles-1.0.0.hnmod"
+sha256 = "1e5d1c75d05230172820b5bc016d7d3ac792adf473de7dbfb84394d8b795a633"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTNzTcNlnhp0xG8ZqxNqwzpSnc+ghT4/m+aR0dga48gdD04aioDSIPK5DBUtd4i2Vf+e4r7LKX3zb6T90aDdYJjgI=\r
+trusted comment: timestamp:1793443789\tfile:inventory_profiles-1.0.0.hnmod\thashed\r
+RcTkkWUMpp4nRQ4uXRFCD4m67ir4J0y3lo2nhOVUgriLIMndinAsVjnNsrfAoJLvKN9DO5vT/xp2+oW1iW7xAQ=="""
+changelog = "Initial release for 26.3 Horizon. "

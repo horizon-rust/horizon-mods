@@ -3,10 +3,10 @@ id = "smp"
 version = "0.10.0"
 priority = 100
 
-# The commit of horizon main it was tested on. It uses only the native hook points (hooks 44 in
+# The commit of horizon main it was tested on. It uses only the native hook points (hooks 49 in
 # compatibility.json): it builds on any Horizon that has them.
 [compatibility]
-horizon_revision = "c13820ab8369b8ff431ea059e77baa36aac2b4a3"
+horizon_revision = "5272f3ad64bc68e1f80068a201f38d442ea01fbc"
 
 [[module]]
 id = "store"

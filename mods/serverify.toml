@@ -40,7 +40,7 @@ authors = ["Louchatfroff"]
 owners = ["Louchatfroff"]
 license = "GPL-3.0-only"
 source = "https://github.com/Louchatfroff/serverify"
-icon = "https://raw.githubusercontent.com/Louchatfroff/serverify/main/docs/logo.png"
+icon = "icons/serverify.png"
 
 [[versions]]
 version = "0.1.0"

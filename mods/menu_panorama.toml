@@ -4,9 +4,12 @@ repo = "form1t/menu-panorama"
 owners = ["form1t"]
 icon = "icons/menu_panorama.png"
 name = "Menu Panorama"
-summary = "Put your own photo or 360° panorama behind the main menu."
+summary = "Put your own wallpaper behind the main menu in Horizon — Minecraft 26.3, rewritten in Rust."
 description = """
-Menu Panorama replaces the six textures of the main-menu background with a picture you choose.
+Menu Panorama is a resource pack for **Horizon** — Minecraft: Java Edition 26.3, rewritten from scratch in **Rust**.
+
+It replaces the six textures of the main-menu background with a picture you choose. It is a plain resource
+pack, not a Java mod: no mod loader, no Java, and no code from the pack is executed. Horizon loads it natively.
 
 - **Any photo** in the `room` mode: the picture is shown whole on the four walls, with mirrored seams and soft colours above and below.
 - **A 360° equirectangular panorama** in the `360` mode: the sphere is cut into six cube faces, so the view stays seamless when the camera turns.
@@ -14,7 +17,7 @@ Menu Panorama replaces the six textures of the main-menu background with a pictu
 
 Build a pack in the browser with `panorama-maker.html`: drop an image, choose a face size, download the `.zip`. Everything runs locally; the picture never leaves the computer. `make_panorama.py` does the same from the command line.
 
-The pack only changes `assets/minecraft/textures/gui/title/background/panorama_0..5.png`; gameplay, sounds and other textures are untouched. `pack.mcmeta` declares formats 15–999, so the same file loads in Minecraft 1.21+ and in Horizon 26.3. A demo pack is attached to every release.
+The pack only changes `assets/minecraft/textures/gui/title/background/panorama_0..5.png`; gameplay, sounds and other textures are untouched. `pack.mcmeta` is made for Horizon 26.3 (resource format 97) and also declares formats 15–999, so the same file loads in Minecraft Java 1.21+. A demo pack is attached to every release.
 
 MIT licensed. Source, the browser generator and the CLI are in the repository.
 """

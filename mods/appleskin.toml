@@ -13,7 +13,7 @@ authors = ["soufi"]
 owners = ["soufied"]
 license = "MIT"
 source = "https://github.com/soufied/AppleSkin-Horizon"
-icon = "https://raw.githubusercontent.com/soufied/AppleSkin-Horizon/refs/heads/main/icons/appleskin.png"
+icon = "icons/appleskin.png"
 key = "RWT6eNq4e5WfVDA2lzOOi6XCm/+jJgilqT1+HUUM33ie5MCjcRfSg760"
 
 [[versions]]

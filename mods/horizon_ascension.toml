@@ -1,0 +1,16 @@
+id = "horizon_ascension"
+kind = "native-mod"
+name = "horizon-ascension"
+summary = 'it is a minecraft horizon mod inspired from the mod "God Wand" , which for now only includes one skill.'
+authors = ["Luffyreibaixaid"]
+owners = ["gf7301558-cmd"]
+license = "MIT"
+source = "https://github.com/gf7301558-cmd/horizon-ascension"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-10-31"
+game = "26.3"
+file = "horizon_ascension-0.1.0.hnmod"
+sha256 = "96d45958ec12a0d04af01ec9c6cdce8d3f868318bf92841641e150c37f68ea4d"
+changelog = "for now its a mod created by ChatGPT inspired from God Wand"

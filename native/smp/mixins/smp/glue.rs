@@ -1,6 +1,6 @@
 // The SMP in the server's game: its state for the open world, and the edges
 // between the game's types and the rules (smp_economy, smp_market,
-// smp_trade, smp_games). Added to
+// smp_trade, smp_games, smp_lottery). Added to
 // the game as `game::smp_glue`; the helpers (register.rs, command.rs,
 // tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs) call it from the
 // hook points.
@@ -10,6 +10,7 @@ use crate::game::{
     native_server::{NativeCommand, NativeServerPlayer},
     smp_economy::{self, Economy, Out, Player},
     smp_games::{self, Games},
+    smp_lottery::Lottery,
     native_menus::native_menu_inventory_slot,
     smp_market::{self, Bag, Market},
     smp_store,
@@ -25,7 +26,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.4.0";
+pub const VERSION: &str = "0.5.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -46,6 +47,7 @@ pub struct Smp {
     market: Market,
     trades: Trades<ItemStack>,
     games: Games,
+    lottery: Lottery,
 }
 
 static STATE: Mutex<Option<Smp>> = Mutex::new(None);
@@ -94,6 +96,7 @@ fn open(dir: PathBuf) -> Smp {
         },
         trades: Trades::default(),
         games: Games::new(config.gambling),
+        lottery: Lottery::default(),
     }
 }
 
@@ -142,6 +145,8 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "coinflip accept <player:word>",
         "coinflip cancel",
         "coinflip list",
+        "lottery",
+        "lottery buy <tickets:integer>",
     ] {
         commands.push(NativeCommand::new(usage));
     }
@@ -177,9 +182,17 @@ impl Bag for GameBag<'_, '_> {
     }
 }
 
-const COMMANDS: [&str; 10] = [
-    "balance", "bal", "pay", "baltop", "eco", "worth", "sell", "buy", "trade", "coinflip",
+const COMMANDS: [&str; 11] = [
+    "balance", "bal", "pay", "baltop", "eco", "worth", "sell", "buy", "trade", "coinflip", "lottery",
 ];
+
+/// A random number below `n` (n > 0), never the world's random: a fresh
+/// SipHash key (seeded from the system's randomness) over the time.
+fn below(n: u64) -> u64 {
+    use std::hash::BuildHasher;
+    let time = std::time::SystemTime::now();
+    std::collections::hash_map::RandomState::new().hash_one(time) % n.max(1)
+}
 
 /// A fair coin, never the world's random: a fresh SipHash key (seeded from
 /// the system's randomness) over the time.
@@ -235,6 +248,7 @@ pub(in crate::game) fn perform(
                     let named = |n: &str| online(n).map(|(u, name, _)| (u, name));
                     smp.games.command(e, &me, &named, now, &mut heads, line)
                 })
+                .or_else(|| smp.lottery.command(&smp.games.config, e, &me, now, line))
                 .unwrap_or_default()
         }
         Err(_) => vec![Out::Error(
@@ -474,6 +488,7 @@ fn show(game: &mut Game<'_>, out: Vec<Out>) {
             Out::Tell(uuid, s) => {
                 game.native_tell(uuid, Text::literal(s).with_color(text::GOLD));
             }
+            Out::All(s) => game.native_broadcast(Text::literal(s).with_color(text::GOLD)),
         }
     }
 }
@@ -511,6 +526,8 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         for uuid in gone {
             smp.games.left(e, uuid);
         }
+        let now = chrono::Utc::now().timestamp_millis();
+        out.extend(smp.lottery.tick(&smp.games.config, e, now, &mut below));
     }
     // Each trade's offers against the inventories now: a player gone or
     // dead ends it; a stack that changed leaves its offer.

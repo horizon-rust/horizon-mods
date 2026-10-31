@@ -1,0 +1,23 @@
+id = "chatheads"
+kind = "native-mod"
+name = "ChatHeads"
+summary = "A player's head left of every chat line they wrote."
+description = """
+Each chat line from a player gets their 8x8 skin face in the strip to its left, like the Chat Heads Java mod. Lines without a player (system messages, /me, wrapped continuations) stay as they are; the face fades with its line.
+
+Settings: Options > Mods > ChatHeads > Settings (on or off).
+
+Known limit: the chat's hit-test does not know about the 10 px indent, so clicking a link in chat lands 10 px left of its pixels."""
+authors = ["Domanffe"]
+owners = ["Domanffe"]
+license = "MIT"
+source = "https://github.com/Domanffe/chatheads"
+icon = "https://horizon-rust.github.io/horizon-mods/icons/chatheads.png"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-10-30"
+game = "26.3"
+file = "chatheads-0.1.0.hnmod"
+sha256 = "c20605c24e29a762b9aea85cba1b0cc7955955a40a031efae70a5b01e4e79df4"
+changelog = "First release: a native mod for Horizon 26.3. Every chat line from a player gets their 8x8 skin face in the strip to its left; system lines, /me and wrapped continuations get none. Settings in Options > Mods."

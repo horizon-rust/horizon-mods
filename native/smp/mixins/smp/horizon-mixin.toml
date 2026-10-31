@@ -1,0 +1,109 @@
+[mod]
+id = "smp"
+version = "0.4.0"
+priority = 100
+
+# The commit of horizon main it was tested on. It uses only the native hook points (hooks 10 in
+# compatibility.json): it builds on any Horizon that has them.
+[compatibility]
+horizon_revision = "f533c3af7d41d7ecc3b015a9fbb0dbf5eb64ae26"
+
+[[module]]
+id = "store"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_store"
+source = "smp_store.rs"
+
+[[module]]
+id = "economy"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_economy"
+source = "smp_economy.rs"
+
+[[module]]
+id = "market"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_market"
+source = "smp_market.rs"
+
+[[module]]
+id = "trade"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_trade"
+source = "smp_trade.rs"
+
+[[module]]
+id = "games"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_games"
+source = "smp_games.rs"
+
+[[module]]
+id = "glue"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_glue"
+source = "glue.rs"
+
+[[injection]]
+id = "register"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_register_commands"
+helper = "register.rs"
+bindings = [
+  { name = "commands", ty = "&mut Vec<crate::game::native_server::NativeCommand>", value = "&mut *commands" },
+]
+
+[[injection]]
+id = "command"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_perform_command"
+helper = "command.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "&crate::game::native_server::NativeServerPlayer", value = "player" },
+  { name = "command", ty = "&str", value = "command" },
+  { name = "ran", ty = "&mut bool", value = "&mut *ran" },
+]
+
+[[injection]]
+id = "tick"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_server_tick"
+helper = "tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "phase", ty = "crate::game::native_lifecycle::ServerTickPhase", value = "phase" },
+]
+
+[[injection]]
+id = "lifecycle"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_world_lifecycle"
+helper = "lifecycle.rs"
+bindings = [
+  { name = "phase", ty = "crate::game::native_lifecycle::WorldPhase", value = "phase" },
+]
+
+[[injection]]
+id = "menu_clicked"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_menu_clicked"
+helper = "menu_clicked.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "uuid", ty = "u128", value = "uuid" },
+  { name = "window", ty = "i32", value = "window" },
+  { name = "slot", ty = "i32", value = "slot" },
+  { name = "mode", ty = "i32", value = "mode" },
+]
+
+[[injection]]
+id = "menu_closed"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_menu_closed"
+helper = "menu_closed.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "uuid", ty = "u128", value = "uuid" },
+  { name = "window", ty = "i32", value = "window" },
+]

@@ -80,6 +80,9 @@ pub struct Economy {
     path: PathBuf,
     audit: Audit,
     dirty: bool,
+    /// Counts the changes to the accounts, so the sidebar knows when to
+    /// look again.
+    revision: u64,
     /// Milliseconds since 1970, for the log (the glue sets it each call).
     pub now: i64,
 }
@@ -97,6 +100,7 @@ impl Economy {
             path,
             audit: Audit::new(dir.join("audit.log")),
             dirty: false,
+            revision: 0,
             now: 0,
         };
         // Games the last run left undecided: their stakes go back.
@@ -107,6 +111,27 @@ impl Economy {
             }
         }
         Ok(economy)
+    }
+
+    fn touch(&mut self) {
+        self.dirty = true;
+        self.revision += 1;
+    }
+
+    /// Changes to the accounts so far (in this run).
+    pub fn revision(&self) -> u64 {
+        self.revision
+    }
+
+    /// Every account: UUID, name, balance.
+    pub fn accounts(&self) -> Vec<(u128, String, i64)> {
+        self.accounts
+            .accounts
+            .iter()
+            .filter_map(|(k, a)| {
+                Some((super::smp_store::parse_uuid(k)?, a.name.clone(), a.balance))
+            })
+            .collect()
     }
 
     /// Money `uuid` has held for a game.
@@ -139,7 +164,7 @@ impl Economy {
             .expect("checked")
             .balance -= amount;
         *self.accounts.held.entry(key).or_default() += amount;
-        self.dirty = true;
+        self.touch();
         Ok(())
     }
 
@@ -155,7 +180,7 @@ impl Economy {
         self.take_held(&key, amount);
         let account = self.accounts.accounts.entry(key).or_default();
         account.balance = account.balance.saturating_add(amount);
-        self.dirty = true;
+        self.touch();
         Ok(())
     }
 
@@ -187,7 +212,7 @@ impl Economy {
             .entry(uuid_string(winner))
             .or_default();
         account.balance = account.balance.saturating_add(prize);
-        self.dirty = true;
+        self.touch();
         Ok(())
     }
 
@@ -226,7 +251,7 @@ impl Economy {
             Some(a) if a.name == name => {}
             Some(a) => {
                 a.name = name.to_owned();
-                self.dirty = true;
+                self.touch();
             }
             None => {
                 let start = self.config.starting_balance.clamp(0, MAX_AMOUNT);
@@ -239,7 +264,7 @@ impl Economy {
                             balance: start,
                         },
                     );
-                    self.dirty = true;
+                    self.touch();
                 }
             }
         }
@@ -348,7 +373,7 @@ impl Economy {
             .get_mut(&uuid_string(to))
             .expect("checked")
             .balance = to_after;
-        self.dirty = true;
+        self.touch();
         Ok(())
     }
 
@@ -378,7 +403,7 @@ impl Economy {
             .get_mut(&key)
             .expect("checked")
             .balance = after;
-        self.dirty = true;
+        self.touch();
         Ok(after)
     }
 

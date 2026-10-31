@@ -300,10 +300,13 @@ def claims(server, alex, steve):
     time.sleep(3)
     block = lambda pos: json.dumps(steve.run("block", *pos))
     steve.run("interact", *lever)
+    time.sleep(0.5)
+    # The action bar fades after 3 s: read right after the click (a busy machine may take that long to break).
+    said = json.dumps(steve.run("messages", 5))
     steve.run("break", *dirt, "--timeout", 4, check=False)
     steve.run("place", *free, "--item", "minecraft:oak_planks", check=False)
     time.sleep(1.5)
-    r["refused"] = [block(lever), block(dirt), block(free), json.dumps(steve.run("messages", 5))]
+    r["refused"] = [block(lever), block(dirt), block(free), said + json.dumps(steve.run("messages", 5))]
     # Not broken (grass may spread onto the dirt meanwhile).
     assert "powered=true" not in r["refused"][0] and "minecraft:air" not in r["refused"][1], r
     assert "oak_planks" not in r["refused"][2], r
@@ -352,7 +355,7 @@ def world_guard(server, alex, steve):
     r["water"] = [block(x0 + 16, y, z0 + 8), block(x0 + 15, y, z0 + 8)]
     assert "water" in r["water"][0] and "water" not in r["water"][1], r
     r["pistons"] = [block(x0 + 8, y, z0 - 2), block(x0 + 8, y, z0 - 1), block(x0 + 12, y, z0 - 2)]
-    assert "extended=false" in r["pistons"][0] and "dirt" in r["pistons"][1], r
+    assert "extended=false" in r["pistons"][0] and ("dirt" in r["pistons"][1] or "grass_block" in r["pistons"][1]), r
     assert "extended=true" in r["pistons"][2], r
     # Steve's bucket on the chunk's ground: no water; then on the ground outside it.
     steve.run("look-at-block", x0 + 3, y - 1, z0 + 1, "up")
@@ -390,6 +393,40 @@ def world_guard(server, alex, steve):
     time.sleep(1)
     r["after_tnt"] = [inside(), block(x0 + 8, y - 1, z0 + 17)]
     assert r["after_tnt"][0] == r["before_tnt"] and "grass" not in r["after_tnt"][1], r
+    return r
+
+
+def board(alex, steve, out):
+    """The sidebar of the richest players and the Tab list; /sidebar off hides it, on shows it again."""
+    r = {}
+    side = lambda c: c.run("status").get("sidebar")
+    for _ in range(20):
+        r["sidebar"] = side(steve)
+        if r["sidebar"]:
+            break
+        time.sleep(0.5)
+    assert r["sidebar"]["objective"] == "horizon:native_sidebar" and r["sidebar"]["title"] == "Richest players", r
+    # Alex and Steve, a gap, then Steve's own line.
+    assert len(r["sidebar"]["scores"]) == 4, r
+    # Holders starting with '#' would be hidden from the sidebar (only the title would show).
+    assert not any(o.startswith("#") for o in r["sidebar"]["scores"]), r
+    steve.run("key", "tab", "down")
+    time.sleep(1)
+    steve.run("screenshot", str(Path(out).resolve() / "sidebar-and-tab.png"))
+    steve.run("key", "tab", "up")
+    r["off"] = steve.say("/sidebar off")
+    assert any("The sidebar is off" in l for l in r["off"]), r
+    time.sleep(1)
+    assert not side(steve), side(steve)
+    assert side(alex), "only Steve's is gone"
+    r["on"] = steve.say("/sidebar")
+    assert any("The sidebar is on" in l for l in r["on"]), r
+    for _ in range(10):
+        if side(steve):
+            break
+        time.sleep(0.5)
+    assert side(steve), "back within a second or two"
+    steve.say("/sidebar off")
     return r
 
 
@@ -496,7 +533,7 @@ def run(ctl, resources, out):
         time.sleep(2)
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
-        assert results["config_keys"] == ["claims", "currency", "gambling", "market", "places", "starting_balance"], config
+        assert results["config_keys"] == ["board", "claims", "currency", "gambling", "market", "places", "starting_balance"], config
         assert config["gambling"] == {"enabled": True, "min_bet": 10, "max_bet": 1000, "cooldown_seconds": 20,
                                       "offer_seconds": 60, "fee_percent": 0, "ticket_price": 10,
                                       "max_tickets": 100, "lottery_seconds": 30}, config
@@ -549,6 +586,7 @@ def run(ctl, resources, out):
         results["places"] = places(server, alex, steve)
         results["claims"] = claims(server, alex, steve)
         results["world_guard"] = world_guard(server, alex, steve)
+        results["board"] = board(alex, steve, out)
         results["coinflip"], alex_wins = coinflips(alex, steve)
         results["lottery"], alex_lotto = lottery(alex, steve, alex_wins)
         alex_after = 415 + (100 if alex_wins else -100) + (20 if alex_lotto else -30)
@@ -559,6 +597,8 @@ def run(ctl, resources, out):
         assert not any("panicked" in l or "teleport failed" in l for l in lines), lines[-40:]
         saved = json.loads((data / "places.json").read_text())
         assert sorted(saved["warps"]) == ["shop"] and saved["spawn"] and len(saved["homes"]) == 1, saved
+        saved = json.loads((data / "board.json").read_text())
+        assert len(saved["hidden"]) == 1, saved
         saved = json.loads((data / "claims.json").read_text())
         assert len(saved["chunks"]) == 1 and len(saved["trust"]) == 1, saved
         economy = json.loads((data / "economy.json").read_text())

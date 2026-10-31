@@ -55,11 +55,17 @@ pub fn write_json<T: serde::Serialize>(path: &Path, value: &T) -> Result<(), Str
 pub struct Audit {
     path: PathBuf,
     file: Option<File>,
+    /// Lines appended since the last sync.
+    unsynced: bool,
 }
 
 impl Audit {
     pub fn new(path: PathBuf) -> Self {
-        Self { path, file: None }
+        Self {
+            path,
+            file: None,
+            unsynced: false,
+        }
     }
     /// Appends one line; the change it records waits for it.
     pub fn append(&mut self, entry: &serde_json::Value) -> Result<(), String> {
@@ -79,12 +85,19 @@ impl Audit {
         }
         let file = self.file.as_mut().expect("opened above");
         file.write_all(line.as_bytes())
-            .map_err(|e| format!("{}: {e}", path.display()))
+            .map_err(|e| format!("{}: {e}", path.display()))?;
+        self.unsynced = true;
+        Ok(())
     }
-    /// Flushes what was appended to disk (once a tick, and when the world closes).
+    /// Flushes what was appended to disk (at the end of a tick that appended,
+    /// and when the world closes); nothing when nothing was appended, so a
+    /// quiet tick makes no system call.
     pub fn sync(&mut self) {
-        if let Some(f) = &self.file {
+        if self.unsynced
+            && let Some(f) = &self.file
+        {
             let _ = f.sync_data();
+            self.unsynced = false;
         }
     }
 }

@@ -18,8 +18,8 @@ and the launcher to have shipped first.
 
 **Who is responsible.** Except the projects marked Official (made by the Horizon project), everything here is made and
 owned by its own authors, not by the Horizon project or its maintainers. A listing is not an endorsement. See the
-[mod policy](MOD-POLICY.md): what authors promise when they submit (ports of other mods included) and how to have
-a project taken down.
+[mod policy](MOD-POLICY.md): what authors promise when they submit (ports of other mods included), the licences
+whose source reviewers can read, and how to have a project taken down.
 
 ## Submit
 
@@ -41,8 +41,9 @@ cargo install --git https://github.com/horizon-rust/horizon cargo-horizon-mod
 cargo horizon-mod check target/horizon-mod/my_mod.hmod
 ```
 
-**Updates** come the same way: the form adds a version to your entry. Only an entry's `owners` publish its updates
-without a reviewer's extra look. A published file never changes: publish a new version.
+**Updates** come the same way: the form adds a version to your entry, and a reviewer reads it before it is
+published. Only an entry's `owners` can add versions, and every version of a native mod is reviewed, owner or
+not: its code runs with the player's account permissions. A published file never changes: publish a new version.
 
 **Signing** is optional and recommended: put your [minisign](https://jedisct1.github.io/minisign/) public key in your
 entry, and every later version must be signed with it, so nobody else can publish an update in your name.

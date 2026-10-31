@@ -12,11 +12,10 @@ and confirm the native-code warning. A supported launcher downloads its own Rust
 and builds a separate game using Horizon Mixins. Requires Git and Horizon's platform build
 dependencies, and runs with your account's permissions.
 
-Tested against Horizon nightly `83f15fa276c44711276b6ceb5f0fe0c9c534dc66`
-(`nightly/build-2026-10-28-3`) with Horizon Mixins 0.5.0 at
-`0500ff24aa5933fca95a877ef41125353c4b4fe3`. The launcher builds these exact pinned revisions.
-Other Horizon revisions have not been validated. Ordinary Play does not compile mods;
-rebuild after changing the enabled native-mod combination.
+Each version is pinned to one Horizon Nightly and Horizon Mixins revision, named in its
+changelog; the launcher builds those exact revisions. Other Horizon revisions have not
+been validated. Ordinary Play does not compile mods; rebuild after changing the enabled
+native-mod combination.
 
 Use `/veinminer toggle`, `/veinminer on`, `/veinminer off` or `/veinminer status`.
 `/veinminer reload` requires operator permission. Survival mining only; install on the
@@ -37,3 +36,11 @@ game = "26.3"
 file = "veinminer-0.3.0.hnmod"
 sha256 = "ec308c02c65bad64043828a19ef6254d1eb9d422bb1123cd065cb9e6e7b126c8"
 changelog = "Native launcher bundle, pinned to nightly 83f15fa27 and Horizon Mixins 0.5.0."
+
+[[versions]]
+version = "0.3.2"
+published = "2026-10-31"
+game = "26.3"
+file = "veinminer-0.3.2.hnmod"
+sha256 = "31a4249da1b35972ae8b34201373c86352f4adc2f5cb3e015749d1fbfecf00a0"
+changelog = "Pinned to Nightly 2026-10-31 (d91cab6) and Horizon Mixins 4342a0b. Reads each level's height from the loaded world, so data-pack dimension heights are respected."

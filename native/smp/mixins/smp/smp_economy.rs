@@ -80,6 +80,9 @@ pub struct Economy {
     path: PathBuf,
     audit: Audit,
     dirty: bool,
+    /// Counts the changes to the accounts, so the sidebar knows when to
+    /// look again.
+    revision: u64,
     /// Milliseconds since 1970, for the log (the glue sets it each call).
     pub now: i64,
 }
@@ -97,6 +100,7 @@ impl Economy {
             path,
             audit: Audit::new(dir.join("audit.log")),
             dirty: false,
+            revision: 0,
             now: 0,
         };
         // Games the last run left undecided: their stakes go back.
@@ -107,6 +111,27 @@ impl Economy {
             }
         }
         Ok(economy)
+    }
+
+    fn touch(&mut self) {
+        self.dirty = true;
+        self.revision += 1;
+    }
+
+    /// Changes to the accounts so far (in this run).
+    pub fn revision(&self) -> u64 {
+        self.revision
+    }
+
+    /// Every account: UUID, name, balance.
+    pub fn accounts(&self) -> Vec<(u128, String, i64)> {
+        self.accounts
+            .accounts
+            .iter()
+            .filter_map(|(k, a)| {
+                Some((super::smp_store::parse_uuid(k)?, a.name.clone(), a.balance))
+            })
+            .collect()
     }
 
     /// Money `uuid` has held for a game.
@@ -139,7 +164,7 @@ impl Economy {
             .expect("checked")
             .balance -= amount;
         *self.accounts.held.entry(key).or_default() += amount;
-        self.dirty = true;
+        self.touch();
         Ok(())
     }
 
@@ -155,7 +180,7 @@ impl Economy {
         self.take_held(&key, amount);
         let account = self.accounts.accounts.entry(key).or_default();
         account.balance = account.balance.saturating_add(amount);
-        self.dirty = true;
+        self.touch();
         Ok(())
     }
 
@@ -187,7 +212,7 @@ impl Economy {
             .entry(uuid_string(winner))
             .or_default();
         account.balance = account.balance.saturating_add(prize);
-        self.dirty = true;
+        self.touch();
         Ok(())
     }
 
@@ -226,7 +251,7 @@ impl Economy {
             Some(a) if a.name == name => {}
             Some(a) => {
                 a.name = name.to_owned();
-                self.dirty = true;
+                self.touch();
             }
             None => {
                 let start = self.config.starting_balance.clamp(0, MAX_AMOUNT);
@@ -239,7 +264,7 @@ impl Economy {
                             balance: start,
                         },
                     );
-                    self.dirty = true;
+                    self.touch();
                 }
             }
         }
@@ -252,6 +277,15 @@ impl Economy {
             .iter()
             .find(|(_, a)| a.name.eq_ignore_ascii_case(name))
             .and_then(|(k, a)| Some((super::smp_store::parse_uuid(k)?, a)))
+    }
+
+    /// The name last seen of a player who has an account.
+    pub fn name_of(&self, uuid: u128) -> Option<&str> {
+        let a = self
+            .accounts
+            .accounts
+            .get(&super::smp_store::uuid_string(uuid))?;
+        Some(&a.name)
     }
 
     /// `1,250 coins`.
@@ -339,7 +373,7 @@ impl Economy {
             .get_mut(&uuid_string(to))
             .expect("checked")
             .balance = to_after;
-        self.dirty = true;
+        self.touch();
         Ok(())
     }
 
@@ -369,7 +403,7 @@ impl Economy {
             .get_mut(&key)
             .expect("checked")
             .balance = after;
-        self.dirty = true;
+        self.touch();
         Ok(after)
     }
 
@@ -392,18 +426,65 @@ impl Economy {
         all
     }
 
-    /// Runs `/balance`, `/bal`, `/pay`, `/baltop` or `/eco`; None for another
-    /// command.
-    pub fn command(&mut self, me: &Player, line: &str) -> Option<Vec<Out>> {
+    /// Runs `/balance`, `/bal`, `/pay`, `/baltop` or the operators' `/eco`
+    /// (and its other name `/money`); None for another command. `online`:
+    /// the players on, for `/eco give * <amount>`.
+    pub fn command(
+        &mut self,
+        me: &Player,
+        online: &[(u128, String)],
+        line: &str,
+    ) -> Option<Vec<Out>> {
         let words: Vec<&str> = line.split_whitespace().collect();
         let (&name, args) = words.split_first()?;
         Some(match name {
             "balance" | "bal" => self.balance_command(me, args),
             "pay" => self.pay(me, args),
             "baltop" => self.baltop(args),
-            "eco" => self.eco(me, args),
+            "eco" | "money" => match args {
+                ["give", "*", amount] => self.give_everyone(me, online, amount),
+                _ => self.eco(me, args),
+            },
             _ => return None,
         })
+    }
+
+    /// `/eco give * <amount>`: to every player on, each change logged.
+    fn give_everyone(&mut self, me: &Player, online: &[(u128, String)], amount: &str) -> Vec<Out> {
+        if me.level < 3 {
+            return vec![Out::Error("Only operators of level 3 may use /eco.".into())];
+        }
+        let Some(amount) = parse_amount(amount) else {
+            return vec![Out::Error(
+                "The amount must be a positive whole number.".into(),
+            )];
+        };
+        let by = uuid_string(me.uuid);
+        let mut out = Vec::new();
+        let mut given = 0;
+        for (uuid, name) in online {
+            self.seen(*uuid, name);
+            match self.adjust("eco_give", *uuid, amount, &by) {
+                Ok(_) => {
+                    given += 1;
+                    if *uuid != me.uuid {
+                        out.push(Out::Tell(
+                            *uuid,
+                            format!("An operator gave you {}.", self.money(amount)),
+                        ));
+                    }
+                }
+                Err(e) => out.push(Out::Error(format!("{name}: {e}"))),
+            }
+        }
+        out.insert(
+            0,
+            Out::Reply(format!(
+                "Gave {} to {given} player(s) on.",
+                self.money(amount)
+            )),
+        );
+        out
     }
 
     fn balance_command(&mut self, me: &Player, args: &[&str]) -> Vec<Out> {
@@ -474,7 +555,7 @@ impl Economy {
         }
         let [verb, who, amount] = args else {
             return vec![Out::Error(
-                "Usage: /eco give|take|set <player> <amount>".into(),
+                "Usage: /eco give|take|set <player> <amount>, /eco give * <amount>".into(),
             )];
         };
         let amount = match amount.parse::<i64>() {
@@ -495,13 +576,22 @@ impl Economy {
             "set" => amount - account.balance,
             _ => {
                 return vec![Out::Error(
-                    "Usage: /eco give|take|set <player> <amount>".into(),
+                    "Usage: /eco give|take|set <player> <amount>, /eco give * <amount>".into(),
                 )];
             }
         };
         let by = uuid_string(me.uuid);
         match self.adjust(&format!("eco_{verb}"), uuid, delta, &by) {
-            Ok(after) => vec![Out::Reply(format!("{name} now has {}.", self.money(after)))],
+            Ok(after) => {
+                let mut out = vec![Out::Reply(format!("{name} now has {}.", self.money(after)))];
+                if *verb == "give" && uuid != me.uuid && amount > 0 {
+                    out.push(Out::Tell(
+                        uuid,
+                        format!("An operator gave you {}.", self.money(amount)),
+                    ));
+                }
+                out
+            }
             Err(e) => vec![Out::Error(e)],
         }
     }
@@ -559,7 +649,9 @@ mod tests {
     #[test]
     fn pay_moves_money_and_tells_both() {
         let (mut e, dir) = economy("pay");
-        let out = e.command(&player(ALEX, "Alex", 0), "pay steve 30").unwrap();
+        let out = e
+            .command(&player(ALEX, "Alex", 0), &[], "pay steve 30")
+            .unwrap();
         assert_eq!(
             out,
             [
@@ -598,7 +690,7 @@ mod tests {
             ("pay Steve", "Usage: /pay <player> <amount>"),
         ] {
             assert_eq!(
-                e.command(&alex, line).unwrap(),
+                e.command(&alex, &[], line).unwrap(),
                 [Out::Error(error.into())],
                 "{line}"
             );
@@ -615,9 +707,10 @@ mod tests {
     #[test]
     fn balances_survive_a_restart_and_a_damaged_file_stops_the_economy() {
         let (mut e, dir) = economy("restart");
-        e.command(&player(ALEX, "Alex", 0), "pay Steve 1,000")
+        e.command(&player(ALEX, "Alex", 0), &[], "pay Steve 1,000")
             .unwrap();
-        e.command(&player(ALEX, "Alex", 0), "pay Steve 25").unwrap();
+        e.command(&player(ALEX, "Alex", 0), &[], "pay Steve 25")
+            .unwrap();
         e.save().unwrap();
         let again = Economy::open(&dir, Config::default()).unwrap();
         assert_eq!((again.balance(ALEX), again.balance(STEVE)), (75, 125));
@@ -627,24 +720,72 @@ mod tests {
     }
 
     #[test]
+    fn money_is_eco_and_give_star_pays_everyone_on() {
+        let (mut e, dir) = economy("money");
+        let op = player(ALEX, "Alex", 3);
+        assert_eq!(
+            e.command(&op, &[], "money give Steve 7").unwrap()[0],
+            Out::Reply("Steve now has 107 coins.".into())
+        );
+        let online = [
+            (ALEX, "Alex".to_owned()),
+            (STEVE, "Steve".to_owned()),
+            (99, "Newcomer".to_owned()),
+        ];
+        let out = e.command(&op, &online, "eco give * 1,000").unwrap();
+        assert_eq!(
+            out[0],
+            Out::Reply("Gave 1,000 coins to 3 player(s) on.".into()),
+            "{out:?}"
+        );
+        assert!(out.contains(&Out::Tell(99, "An operator gave you 1,000 coins.".into())));
+        assert!(
+            !out.iter()
+                .any(|o| matches!(o, Out::Tell(u, _) if *u == ALEX))
+        );
+        assert_eq!(
+            (e.balance(ALEX), e.balance(STEVE), e.balance(99)),
+            (1100, 1107, 1100)
+        );
+        let gives = log_lines(&dir)
+            .iter()
+            .filter(|l| l["kind"] == "eco_give")
+            .count();
+        assert_eq!(gives, 4);
+        assert_eq!(
+            e.command(&player(STEVE, "Steve", 0), &online, "money give * 5")
+                .unwrap(),
+            [Out::Error("Only operators of level 3 may use /eco.".into())]
+        );
+        assert!(matches!(
+            &e.command(&op, &online, "eco give * -5").unwrap()[0],
+            Out::Error(_)
+        ));
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
     fn eco_is_for_level_3_and_never_goes_below_zero() {
         let (mut e, dir) = economy("eco");
         let alex = player(ALEX, "Alex", 2);
         assert_eq!(
-            e.command(&alex, "eco give Steve 5").unwrap(),
+            e.command(&alex, &[], "eco give Steve 5").unwrap(),
             [Out::Error("Only operators of level 3 may use /eco.".into())]
         );
         let op = player(ALEX, "Alex", 3);
         assert_eq!(
-            e.command(&op, "eco give Steve 5").unwrap(),
-            [Out::Reply("Steve now has 105 coins.".into())]
+            e.command(&op, &[], "eco give Steve 5").unwrap(),
+            [
+                Out::Reply("Steve now has 105 coins.".into()),
+                Out::Tell(STEVE, "An operator gave you 5 coins.".into())
+            ]
         );
         assert_eq!(
-            e.command(&op, "eco take Steve 200").unwrap(),
+            e.command(&op, &[], "eco take Steve 200").unwrap(),
             [Out::Error("Only 105 coins there.".into())]
         );
         assert_eq!(
-            e.command(&op, "eco set Steve 1234567").unwrap(),
+            e.command(&op, &[], "eco set Steve 1234567").unwrap(),
             [Out::Reply("Steve now has 1,234,567 coins.".into())]
         );
         let log = log_lines(&dir);
@@ -659,12 +800,15 @@ mod tests {
         for i in 0..12u128 {
             e.seen(100 + i, &format!("P{i:02}"));
         }
-        e.command(&player(ALEX, "Alex", 0), "pay Steve 50").unwrap();
-        let first = e.command(&player(ALEX, "Alex", 0), "baltop").unwrap();
+        e.command(&player(ALEX, "Alex", 0), &[], "pay Steve 50")
+            .unwrap();
+        let first = e.command(&player(ALEX, "Alex", 0), &[], "baltop").unwrap();
         assert_eq!(first[0], Out::Reply("Richest players (1/2):".into()));
         assert_eq!(first[1], Out::Reply("1. Steve: 150 coins".into()));
         assert_eq!(first.len(), 11);
-        let last = e.command(&player(ALEX, "Alex", 0), "baltop 2").unwrap();
+        let last = e
+            .command(&player(ALEX, "Alex", 0), &[], "baltop 2")
+            .unwrap();
         assert_eq!(
             last.last().unwrap(),
             &Out::Reply("14. Alex: 50 coins".into())

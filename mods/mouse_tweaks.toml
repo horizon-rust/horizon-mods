@@ -1,0 +1,30 @@
+id = "mouse_tweaks"
+kind = "native-mod"
+name = "Mouse Tweaks"
+summary = "Convenient inventory handling: RMB drag deposit, Shift+LMB drag transfer, and scroll wheel item move."
+description = """
+Brings essential inventory and mouse handling enhancements to the Horizon Rust client.
+
+Features
+RMB Drag: Hold the right mouse button and drag across slots to deposit 1 item per slot evenly.
+Shift + LMB Drag: Hold Shift and drag the left mouse button across items of the same type to quickly transfer them between containers.
+Scroll Wheel Move: Scroll up or down over item slots to transfer items one by one.
+Fully toggleable in Options > Mods > Mouse Tweaks."""
+authors = ["CayMac"]
+owners = ["CayMac97"]
+license = "MIT"
+source = "https://github.com/CayMac97/mouse-tweaks"
+key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "mouse_tweaks-1.0.0.hnmod"
+sha256 = "8aefad82dee710928fda4844279ce6f98ab4703cf52d4cb7e127defbfadfa1e0"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUS411U2KXdTN3tKt3dDFlZ+tsFAjFDfGgtOdThIe0OTPM9Nx7Rt5nbsTcHdThW6C4uSUl2c/3c4v4CAvVt3Mt/f/ydz/I4s8gA=\r
+trusted comment: timestamp:1793439927\tfile:mouse_tweaks-1.0.0.hnmod\thashed\r
+q+b+I2vAw+Yok+Sm0iYLhAr8J83Z9tD9ME7MZzPk78cagjdRoMc3oOq/uaGYUf2i+DULci78mImhCLc3JoHeCA=="""
+changelog = "Initial release for Horizon 26.3."

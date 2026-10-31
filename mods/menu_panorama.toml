@@ -1,0 +1,38 @@
+id = "menu_panorama"
+kind = "resourcepack"
+name = "Menu Panorama"
+summary = "Put your own wallpaper behind the main menu in Horizon — Minecraft 26.3, rewritten in Rust."
+description = """
+Menu Panorama is a resource pack for **Horizon** — Minecraft: Java Edition 26.3, rewritten from scratch in **Rust**.
+
+It replaces the six textures of the main-menu background with a picture you choose. It is a plain resource pack, not a Java mod: no mod loader, no Java, and no code from the pack is executed. Horizon loads it natively.
+
+- **Any photo** in the `room` mode: the picture is shown whole on the four walls, with mirrored seams and soft colours above and below.
+- **A 360° equirectangular panorama** in the `360` mode: the sphere is cut into six cube faces, so the view stays seamless when the camera turns.
+- **Auto** picks the mode from the image's aspect ratio.
+
+Build a pack in the browser with `panorama-maker.html`: drop an image, choose a face size, download the `.zip`. Everything runs locally; the picture never leaves the computer. `make_panorama.py` does the same from the command line.
+
+The pack only changes `assets/minecraft/textures/gui/title/background/panorama_0..5.png`; gameplay, sounds and other textures are untouched. `pack.mcmeta` is made for Horizon 26.3 (resource format 97) and also declares formats 15–999, so the same file loads in Minecraft Java 1.21+. A demo pack is attached to every release.
+
+MIT licensed. Source, the browser generator and the CLI are in the repository."""
+authors = ["form1t"]
+owners = ["form1t"]
+license = "MIT"
+source = "https://github.com/form1t/menu-panorama"
+icon = "icons/menu_panorama.png"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-10-31"
+game = "26.3"
+file = "menu_panorama-1.0.0.zip"
+sha256 = "e0403b003e6c93dec683037202cebb47880025cfe21e2d8fc7818321ee362401"
+changelog = """
+First release.
+
+- Demo sunset pack: six 1024×1024 faces and a 128×128 icon.
+- `panorama-maker.html`: browser generator with drag & drop, auto/room/360 modes and 512/1024/2048 face sizes.
+- `make_panorama.py`: CLI with the same modes, preview output and `--description`.
+- `pack.mcmeta` for Horizon 26.3: resource format 97, `pack_format` 34, formats 15–999.
+- MIT licence."""

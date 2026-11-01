@@ -22,8 +22,9 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - a Treasury payment for an operator, then the /shop menu: a category, one item bought by a click and a stack by
   a shift-click, a stack of the player's own sold by clicking it, "Sell all" stopped by the daily limit (the rest
   kept, the limit shown in the menu and in /worth, the day's sales in market.json), the close button;
-- nicknames: refused ones (a player's name, too short, a bad character), one in the other's chat and Tab list,
-  /realname, someone else's taken, the cooldown, an operator taking it off.
+- nicknames, for operators only: a player can't pick one; an operator's refused ones (a player's name, too short, a
+  bad character), the one given in the other's chat and Tab list, /realname, someone else's taken, the player taking
+  it off.
 
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
 """
@@ -510,22 +511,24 @@ def presence(server, alex, steve):
 
 
 def nicks(server, alex, steve, out):
-    """Steve takes a nickname: refused ones first, then ~Rocky in Alex's chat and the Tab list, /realname, /pay by
-    nickname, the cooldown, and Alex (an operator) takes it off. The one an older version let through is gone."""
+    """Nicknames are for operators: Steve can't pick one; Alex (an operator) gives him one, refused ones first, then
+    ~Rocky in Alex's chat and the Tab list, /realname, /pay by nickname, and Steve takes it off himself. The one an
+    older version let through (a player's own pick) is gone."""
     r = {}
     r["purged"] = [l for l in server.lines if "taken off" in l]
-    assert any("nickname N0tch of" in l and "kept for the server" in l for l in r["purged"]), r
+    assert any("nickname N0tch of" in l and "for operators only" in l for l in r["purged"]), r
     time.sleep(6)  # the spam guard's window from the step before
-    r["usage"] = steve.say("/nick")
-    assert any("/nick <name> picks a nickname" in l for l in r["usage"]), r
-    for line, error in (("/nick Alex", "Alex looks like the name of another player."),
-                        ("/nick A1ex_", "A1ex_ looks like the name of another player."),
-                        ("/nick N0tch", "N0tch reads as \"notch\": that word is kept for the server."),
-                        ("/nick ab", "A nickname is 3 to 16 letters, digits or _.")):
+    for line in ("/nick", "/nick Rocky"):
         r[line] = steve.say(line)
+        assert any("Only operators set nicknames on this server." in l for l in r[line]), r
+    for line, error in (("/nick Steve Alex", "Alex looks like the name of another player."),
+                        ("/nick Steve A1ex_", "A1ex_ looks like the name of another player."),
+                        ("/nick Steve N0tch", "N0tch reads as \"notch\": that word is kept for the server."),
+                        ("/nick Steve ab", "A nickname is 3 to 16 letters, digits or _.")):
+        r[line] = alex.say(line)
         assert any(error in l for l in r[line]), r
     time.sleep(6)
-    steve.run("chat", "/nick Rocky")
+    alex.run("chat", "/nick Steve Rocky")
     time.sleep(3)  # made at the next second's tick
     r["set"] = steve.chat()[-3:]
     assert any("Steve now goes by ~Rocky." in l for l in r["set"]), r
@@ -551,10 +554,10 @@ def nicks(server, alex, steve, out):
     r["pay"] = alex.say("/pay Rocky 1")
     assert any("You paid 1 coins to Steve." in l for l in r["pay"]), r
     steve.say("/pay Alex 1")
-    r["cooldown"] = steve.say("/nick Pebble")
-    assert any("wait 10 more minute(s)" in l for l in r["cooldown"]), r
+    r["another"] = steve.say("/nick Pebble")
+    assert any("Only operators set nicknames on this server." in l for l in r["another"]), r
     time.sleep(6)
-    alex.run("chat", "/nick Steve off")
+    steve.run("chat", "/nick off")
     time.sleep(3)
     r["off"] = steve.chat()[-3:]
     assert any("Steve goes by their name again." in l for l in r["off"]), r

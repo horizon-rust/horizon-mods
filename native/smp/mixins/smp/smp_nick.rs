@@ -1,7 +1,11 @@
 // Nicknames: `/nick <name>` shows another name for you in chat and the Tab
 // list, always as `~name` so it never passes for a real name (hovering it
 // gives your real one); `/nick off` your name again; operators of level 3
-// `/nick <player> <name|off>`; anyone `/realname <nick>`. A nickname is 3 to
+// `/nick <player> <name|off>`; anyone `/realname <nick>`. With `ops_only`
+// (the default since SMP 0.22) only operators of level 3 pick nicknames,
+// for themselves or for a player; a player may still take off the one an
+// operator gave them, and the nicknames players picked themselves are taken
+// off when the server starts. A nickname is 3 to
 // 16 letters, digits or `_`, and once read without case, `_`, digits and
 // look-alikes (0 as o, 1 and i as l...) it may not be or contain a name the
 // server knows (anyone who played here, an operator, the Team in
@@ -29,6 +33,8 @@ pub const COMMANDS: [&str; 2] = ["nick", "realname"];
 #[serde(default)]
 pub struct Config {
     pub enabled: bool,
+    /// Only operators of level 3 set nicknames (their own, or a player's).
+    pub ops_only: bool,
     /// Between two changes of one's own nickname.
     pub cooldown_seconds: i64,
     /// The play a player needs here before their first nickname.
@@ -46,6 +52,7 @@ impl Default for Config {
         let list = |l: &[&str]| l.iter().map(|s| (*s).to_owned()).collect();
         Self {
             enabled: true,
+            ops_only: true,
             cooldown_seconds: 600,
             min_playtime_minutes: 60,
             protected: list(&[
@@ -109,13 +116,19 @@ fn looks_like(nick: &str, name: &str) -> bool {
     !name.is_empty() && (nick == name || (name.len() >= 4 && nick.contains(name)))
 }
 
-/// One player's nickname, and when they last changed it (ms).
+/// One player's nickname, when they last changed it (ms), and whether an
+/// operator gave it to them (it stays with `ops_only`).
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Nick {
     pub nick: Option<String>,
     pub changed: i64,
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub given: bool,
 }
+
+/// The level that sets nicknames with `ops_only`, and others' at any time.
+pub const OP_LEVEL: u8 = 3;
 
 /// `nicks.json`, by UUID.
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
@@ -144,6 +157,8 @@ pub trait Names {
     fn find(&self, name: &str) -> Option<(u128, String)>;
     /// A player's real name.
     fn name_of(&self, uuid: u128) -> Option<String>;
+    /// A player's operator level (`ops.json`; 0 when not an operator).
+    fn level(&self, uuid: u128) -> u8;
 }
 
 pub struct Nicks {
@@ -247,12 +262,20 @@ impl Nicks {
     }
 
     /// Takes off the nicknames that break today's rules (from an older
-    /// version): each one's UUID, nickname and reason, for the log.
+    /// version): each one's UUID, nickname and reason, for the log. With
+    /// `ops_only`, those a player who isn't an operator picked themselves.
     pub fn purge(&mut self, names: &dyn Names) -> Vec<(u128, String, String)> {
         let mut gone = Vec::new();
         for (uuid, nick) in self.all() {
             let real = names.name_of(uuid).unwrap_or_default();
-            if let Some(why) = self.refused(uuid, &real, &nick, names) {
+            let given = self
+                .file
+                .nicks
+                .get(&uuid_string(uuid))
+                .is_some_and(|n| n.given);
+            let not_op = (self.config.ops_only && names.level(uuid) < OP_LEVEL && !given)
+                .then(|| "nicknames are for operators only".to_owned());
+            if let Some(why) = not_op.or_else(|| self.refused(uuid, &real, &nick, names)) {
                 if let Some(n) = self.file.nicks.get_mut(&uuid_string(uuid)) {
                     n.nick = None;
                 }
@@ -314,14 +337,22 @@ impl Nicks {
             return Some(vec![Out::Error("Nicknames are off on this server.".into())]);
         }
         Some(match (name, args) {
-            ("nick", []) => vec![Out::Reply(match self.nick_of(me.uuid) {
-                Some(n) => {
-                    format!("You go by ~{n}. /nick off takes it off; /nick <name> picks another.")
-                }
-                None => {
-                    "/nick <name> picks a nickname (shown as ~name); /nick off takes it off.".into()
-                }
-            })],
+            ("nick", []) => {
+                let picks = !self.config.ops_only || me.level >= OP_LEVEL;
+                vec![Out::Reply(match (self.nick_of(me.uuid), picks) {
+                    (Some(n), true) => {
+                        format!(
+                            "You go by ~{n}. /nick off takes it off; /nick <name> picks another."
+                        )
+                    }
+                    (Some(n), false) => format!("You go by ~{n}. /nick off takes it off."),
+                    (None, true) => {
+                        "/nick <name> picks a nickname (shown as ~name); /nick off takes it off."
+                            .into()
+                    }
+                    (None, false) => "Only operators set nicknames on this server.".into(),
+                })]
+            }
             ("realname", [nick]) => match self
                 .owner(nick)
                 .and_then(|u| Some((u, self.nick_of(u)?.to_owned())))
@@ -333,9 +364,21 @@ impl Nicks {
                 None => vec![Out::Error(format!("Nobody goes by {nick}."))],
             },
             ("realname", _) => vec![Out::Error("Usage: /realname <nickname>".into())],
+            ("nick", [new])
+                if self.config.ops_only
+                    && me.level < OP_LEVEL
+                    && !new.eq_ignore_ascii_case("off") =>
+            {
+                vec![Out::Error(
+                    "Only operators set nicknames on this server.".into(),
+                )]
+            }
             ("nick", [new]) => {
                 let need = self.config.min_playtime_minutes;
-                if me.level < 3 && played_seconds < need * 60 && !new.eq_ignore_ascii_case("off") {
+                if me.level < OP_LEVEL
+                    && played_seconds < need * 60
+                    && !new.eq_ignore_ascii_case("off")
+                {
                     vec![Out::Error(format!(
                         "Nicknames come after {need} minutes of play here; you have played {} so far.",
                         played_seconds / 60
@@ -344,7 +387,7 @@ impl Nicks {
                     self.ask(me, me.uuid, &me.name, new, names, now, true)
                 }
             }
-            ("nick", [who, new]) if me.level >= 3 => match names.find(who) {
+            ("nick", [who, new]) if me.level >= OP_LEVEL => match names.find(who) {
                 Some((uuid, real)) => self.ask(me, uuid, &real, new, names, now, false),
                 None => vec![Out::Error(format!(
                     "No player named {who} has played here."
@@ -374,7 +417,7 @@ impl Nicks {
         let off = new.eq_ignore_ascii_case("off") || new == real;
         if own && let Some(n) = self.file.nicks.get(&uuid_string(uuid)) {
             let wait = n.changed + self.config.cooldown_seconds * 1000 - now;
-            if wait > 0 && me.level < 3 {
+            if wait > 0 && me.level < OP_LEVEL {
                 return vec![Out::Error(format!(
                     "You changed your nickname recently: wait {} more minute(s).",
                     (wait + 59_999) / 60_000
@@ -411,6 +454,8 @@ impl Nicks {
         let key = uuid_string(change.uuid);
         let entry = self.file.nicks.entry(key.clone()).or_default();
         entry.nick = change.nick.clone();
+        // An operator's gift to another player; one's own pick isn't.
+        entry.given = change.nick.is_some() && !change.own;
         if change.own {
             entry.changed = now;
         }
@@ -460,12 +505,30 @@ mod tests {
                 .find(|(u, _)| *u == uuid)
                 .map(|(_, n)| (*n).to_owned())
         }
+        fn level(&self, uuid: u128) -> u8 {
+            if uuid == OP { 4 } else { 0 }
+        }
+    }
+
+    /// An operator in `ops.json` (for `Known::level`).
+    const OP: u128 = 9;
+
+    /// Nicknames for everyone (the rules before `ops_only`).
+    fn open_to_all() -> Config {
+        Config {
+            ops_only: false,
+            ..Config::default()
+        }
     }
 
     fn setup(name: &str) -> (Nicks, std::path::PathBuf) {
+        setup_with(name, open_to_all())
+    }
+
+    fn setup_with(name: &str, config: Config) -> (Nicks, std::path::PathBuf) {
         let dir = std::env::temp_dir().join(format!("smp-nick-{name}-{}", std::process::id()));
         let _ = fs::remove_dir_all(&dir);
-        (Nicks::open(&dir, Config::default()).unwrap(), dir)
+        (Nicks::open(&dir, config).unwrap(), dir)
     }
 
     fn player(uuid: u128, name: &str, level: u8) -> Player {
@@ -646,7 +709,7 @@ mod tests {
         );
         assert_eq!(n.command(&alex, &k, HOUR, 601_000, "nick off").unwrap(), []);
         n.save().unwrap();
-        let mut again = Nicks::open(&dir, Config::default()).unwrap();
+        let mut again = Nicks::open(&dir, open_to_all()).unwrap();
         assert_eq!(
             again.nick_of(ALEX),
             Some("Sunny"),
@@ -671,6 +734,7 @@ mod tests {
                 Nick {
                     nick: Some(nick.into()),
                     changed: 5,
+                    given: false,
                 },
             );
         }
@@ -750,6 +814,62 @@ mod tests {
             [Out::Error("No player named Nobody has played here.".into())]
         );
         assert_eq!(n.command(&op, &k, 0, 10, "balance"), None);
+        fs::remove_dir_all(dir).ok();
+    }
+
+    #[test]
+    fn only_operators_set_nicknames_and_players_own_ones_go_on_load() {
+        let (mut n, dir) = setup_with("ops", Config::default());
+        let k = known();
+        let alex = player(ALEX, "Alex", 0);
+        let op = player(OP, "Boss", 4);
+        assert_eq!(
+            n.command(&alex, &k, 10 * HOUR, 0, "nick Sunny").unwrap(),
+            [Out::Error(
+                "Only operators set nicknames on this server.".into()
+            )]
+        );
+        assert!(
+            matches!(&n.command(&alex, &k, 0, 0, "nick").unwrap()[0], Out::Reply(r) if r == "Only operators set nicknames on this server.")
+        );
+        // An operator's own, and one an operator gives a player.
+        assert_eq!(n.command(&op, &k, 0, 0, "nick Chief").unwrap(), []);
+        assert_eq!(n.command(&op, &k, 0, 0, "nick Steve Rocky").unwrap(), []);
+        for c in std::mem::take(&mut n.pending) {
+            n.apply(&c, "x", 1);
+        }
+        // A nickname picked before the rule (not given), which goes.
+        n.file.nicks.insert(
+            uuid_string(ALEX),
+            Nick {
+                nick: Some("Sunny".into()),
+                changed: 5,
+                given: false,
+            },
+        );
+        // The player may take off the one given to them.
+        let steve = player(STEVE, "Steve", 0);
+        assert!(
+            matches!(&n.command(&steve, &k, 0, 9, "nick").unwrap()[0], Out::Reply(r) if r == "You go by ~Rocky. /nick off takes it off.")
+        );
+        n.save().unwrap();
+        let mut again = Nicks::open(&dir, Config::default()).unwrap();
+        let gone = again.purge(&k);
+        assert_eq!(gone.len(), 1);
+        assert_eq!((gone[0].0, gone[0].1.as_str()), (ALEX, "Sunny"));
+        assert_eq!(gone[0].2, "nicknames are for operators only");
+        let mut left = again.all();
+        left.sort();
+        assert_eq!(
+            left,
+            [(STEVE, "Rocky".to_owned()), (OP, "Chief".to_owned())]
+        );
+        assert_eq!(
+            again
+                .command(&steve, &k, 0, 10_000_000, "nick off")
+                .unwrap(),
+            []
+        );
         fs::remove_dir_all(dir).ok();
     }
 }

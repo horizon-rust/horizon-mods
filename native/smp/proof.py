@@ -25,6 +25,8 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - nicknames: refused ones (a player's name, too short, a bad character), one in the other's chat and Tab list,
   /realname, someone else's taken, the cooldown, an operator taking it off.
 
+The casino has its own proof (proof_casino.py): `SMP_PROOF=casino` runs it instead of this one.
+
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
 """
 import json
@@ -694,6 +696,13 @@ def trades(server, alex, steve, port, ctl, resources, root):
 
 
 def run(ctl, resources, out):
+    if os.environ.get("SMP_PROOF") == "casino":
+        # The casino's own proof (proof_casino.py), apart: it plays its games for a few minutes.
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("smp_proof_casino", Path(__file__).with_name("proof_casino.py"))
+        casino = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(casino)
+        return casino.run(ctl, resources, out)
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     game = Path(ctl).with_name("horizon-client")

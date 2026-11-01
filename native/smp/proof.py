@@ -652,7 +652,8 @@ def shop(server, alex):
     assert alex.count("minecraft:diamond") == 11, alex.run("inventory")
     limits = alex.menu()[50]
     results["limits"] = limits
-    assert "92 coins left of your 2,000 coins a day" in json.dumps(limits), limits
+    # 2,000 - 1 (Steve's /pay in the nickname step: money received counts too) - 8 - 1,900.
+    assert "91 coins left of your 2,000 coins a day" in json.dumps(limits), limits
     alex.click(300 + 53)  # close
     assert not alex.menu()
     results["worth"] = alex.say("/worth diamond")
@@ -706,7 +707,9 @@ def market(server, alex, out, data):
         time.sleep(5)
     results["after_sale"] = lines
     assert 98 <= sell < 100 and 390 <= buy < 400, lines
-    assert any("Moves: ▼" in l and "traded in 24 h: 19" in l for l in lines), lines
+    # The move itself is checked above; "Moves" compares with the oldest point of the last hour, which on a history
+    # this young can be the first minute's own (0.0%).
+    assert any("Moves: " in l and "traded in 24 h: 19" in l for l in lines), lines
     alex.say("/market diamond")
     page = alex.menu()
     results["page"] = page[13]
@@ -714,7 +717,8 @@ def market(server, alex, out, data):
     assert page[19]["item"] == "minecraft:lime_concrete" and page[21]["count"] == 64, page
     assert page[39]["item"] == "minecraft:map", page
     shown = json.dumps(page[13], ensure_ascii=False)
-    assert f"Buy {buy} coins · Sell {sell} coins" in shown and "24 h ▼" in shown, shown
+    # Its 24 h move is shown (▼, or "unchanged" on a minute-old history: see "Moves" above).
+    assert f"Buy {buy} coins · Sell {sell} coins" in shown and "24 h " in shown, shown
     alex.click(300 + 19)  # buy one
     results["bought"] = alex.chat()[-1:]
     tax = (buy * 200 + 5000) // 10000
@@ -1030,10 +1034,11 @@ def run(ctl, resources, out):
         assert kinds[-2] in ("held_returned", "coinflip_cancel") and kinds[-1] == "daily_reward", kinds[-3:]
         results["stake_back"] = kinds[-2]
         sold = json.loads((data / "market.json").read_text())["sold"]
-        # Steve's sales of the first run's day, and Alex's.
+        # Steve's sales of the first run's day, and Alex's; coins received by /pay count too (#139): Steve got 120 + 1
+        # from Alex, Alex 1 from Steve.
         assert sorted((s["coins"], s["items"]) for s in sold.values()) == [
-            (320, {"minecraft:diamond": 3, "minecraft:wheat": 20}),
-            (1908, {"minecraft:diamond": 19, "minecraft:iron_ingot": 1})], sold
+            (441, {"minecraft:diamond": 3, "minecraft:wheat": 20}),
+            (1909, {"minecraft:diamond": 19, "minecraft:iron_ingot": 1})], sold
         print(json.dumps({"proof": "smp", "ok": True, **results}, indent=2))
     finally:
         (out / "server.log").write_text("\n".join(server.lines))

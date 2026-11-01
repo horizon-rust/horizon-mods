@@ -8,7 +8,7 @@ Players install nothing: it speaks only what a stock Horizon client already show
 lines, vanilla chest menus the server fills with ordinary items (the trade menu); later sounds, titles, the action
 bar, boss bars and the sidebar).
 
-This version: the economy with its Treasury and taxes, the server market and its `/shop` menu, player trades, the coinflip, the lottery, places (spawn, homes, warps,
+This version: the economy with its Treasury and taxes, the auction house, the server market and its `/shop` menu, player trades, the coinflip, the lottery, places (spawn, homes, warps,
 teleport requests, the rules), land claims, and the scoreboard (a sidebar with your balance, playtime and the richest players, the Tab list's
 header and footer).
 
@@ -20,6 +20,11 @@ header and footer).
 | `/eco take <player> <amount> [reason]`, `/money take ...` | operators of level 3: a cheat's gains go into the Treasury, logged with the reason. Nobody gives or sets money (`/eco give` and `/eco set` say so) |
 | `/treasury`, `/treasury log` | the Treasury's balance, its income by tax and its spending (today and since it opened), its last movements |
 | `/treasury pay <player> <amount> <reason>` | operators of level 3: pays a player from the Treasury (an event prize, a bug refund, a grant), never more than it holds; everyone sees it |
+| `/ah` | the auction house: a chest menu of listings by category, cheapest a unit first; click one to buy it or bid; your listings (click to take one back) and your mail |
+| `/ah sell <price> [count]` | lists the stack in your hand (or part of it) at a fixed price, for `listing_hours` (48); the listing fee (1%, at least 1 coin) goes to the Treasury |
+| `/ah auction <start> [hours]` | auctions the stack in your hand from a starting bid, for 1 to 24 hours (12) |
+| `/ah bid <listing> <amount>`, `/ah buy <listing>` | bids (the money is held until someone bids more or it ends), buys a fixed-price listing |
+| `/ah cancel <listing>`, `/ah claim`, `/ah search <words>`, `/ah mine`, `/ah mail` | takes back a listing nobody bid on; gives you your mail; the menu on a search, your listings, your mail |
 | `/eco taxes`, `/taxes` | the tax code and your own bill on Monday; `/eco taxes pay` pays land tax you owe |
 | `/shop` | the market as a chest menu: categories, a click buys one, a shift-click 64, a click on a stack of yours sells it, "Sell all" |
 | `/worth [item]` | what the market pays and asks for an item (the one in your hand without a name), and what you may still sell today |
@@ -164,6 +169,22 @@ get in a bed; `presence.afk_announce` tells everyone instead of only them. A pla
 `presence.spam_commands` (8) of the SMP's commands in `presence.spam_seconds` (5); operators of level 3 aren't
 limited. All of it is looked at once a second.
 
+**The auction house.** Players sell to players: a listing is a fixed price or a timed auction. The listed items
+leave the seller's inventory at once; what doesn't sell, what an auction's winner gets, and what didn't fit in a
+buyer's inventory wait in the player's mail (`/ah claim`, or the menu's mail page; as much as fits, the rest stays).
+A purchase takes the whole listing: the listing leaves first, the items move, then the money (the seller gets the
+price less VAT, which goes to the Treasury); of two players who buy at once (the game runs every click on one
+thread), the second finds it gone. Bids wait in the `auction` pool: a higher bid gives the last one back at once,
+raising one's own only holds the difference, and a bid in the last `snipe_seconds` (60) moves the end back to
+60 seconds away. When an auction ends, the seller is paid (less VAT) and the items go to the winner's mail. Sellers
+and outbid players who are offline find a note when they come back. Everything (listings, bids, mail, notes) is
+written in `economy.json` with the balances, in one step: a crash can't keep the money and lose the items, or the
+reverse. Only plain items for now (not worn, named or enchanted); whole stacks with their enchantments wait for
+Horizon's `native_give_stack` to be stamped. Survival and adventure players only. `config.json`'s `auction`:
+`enabled`, `listing_fee_percent` (1), `max_listings` (8 a player), `listing_hours` (48), `auction_hours` (12),
+`auction_hours_max` (24), `bid_step_percent` (5: the smallest raise), `snipe_seconds` (60). Ended listings are
+looked at once a second (a pass over the open listings).
+
 **The Treasury and taxes.** Nobody can make money, operators included: money enters the game only through the daily
 reward and what the market buys from players (later, paid contracts, from the Treasury). Every tax, fee and house edge
 goes into the Treasury, a pool in `economy.json` that belongs to no player (not in `/baltop` or the sidebar), and
@@ -193,7 +214,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | File | Holds |
 |---|---|
 | `config.json` | `currency` (default `coins`), `starting_balance` (default 0), `market`: `enabled`, `items` (each item's `buy`, what the market asks, and `sell`, what it pays, 0 closing that side), `daily_sell_coins` (2000) and `daily_sell_items` (640), 0 for no limit; `shop`: `enabled`, `title`, `categories` (`name`, `icon`, `items`); written with the defaults the first time, and again when a newer version adds keys (your values kept) |
-| `economy.json` | balances by player UUID, with the name last seen; `held`: coinflip stakes and lottery tickets being decided; `pools`: the Treasury, its insurance fund and other system pools; `treasury`: its income and spending by kind and its last movements; `ext`: other parts' state written in the same step as the money (`tax`: the week collected, land tax owed) |
+| `economy.json` | balances by player UUID, with the name last seen; `held`: coinflip stakes and lottery tickets being decided; `pools`: the Treasury, its insurance fund and other system pools; `treasury`: its income and spending by kind and its last movements; `ext`: other parts' state written in the same step as the money (`tax`: the week collected, land tax owed; `auction`: the listings, bids, mail and notes) |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
 | `nicks.json` | each player's nickname and when they last changed it |
 | `market.json` | what each player sold today (coins and items), for the daily limits |
@@ -218,8 +239,8 @@ action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explos
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: fifteen modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: sixteen modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs`, `smp_auction.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`, `game::smp_auction`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |

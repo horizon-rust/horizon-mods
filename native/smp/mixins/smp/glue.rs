@@ -9,6 +9,7 @@
 
 use crate::game::{
     Game,
+    smp_auction::{self, AuctionHouse},
     native_server::{NativeCommand, NativeServerPlayer, NativeSidebar},
     smp_board::{self, Board, Line},
     smp_claims::{self, Claims},
@@ -35,7 +36,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.16.0";
+pub const VERSION: &str = "0.17.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -53,6 +54,7 @@ pub struct Config {
     pub presence: smp_presence::Config,
     pub nicks: smp_nick::Config,
     pub taxes: smp_tax::Config,
+    pub auction: smp_auction::Config,
 }
 
 /// The SMP of the open world.
@@ -62,6 +64,8 @@ pub struct Smp {
     economy: Result<Economy, String>,
     /// The tax code and its weekly collection (None with the economy off).
     taxes: Option<Taxes>,
+    /// The auction house (None with the economy off).
+    auction: Option<AuctionHouse>,
     market: Market,
     shop_config: smp_shop::Config,
     /// The `/shop` menus open.
@@ -142,6 +146,7 @@ fn open(dir: PathBuf) -> Smp {
         log::error!("[smp] the economy is off: {e}");
     }
     let taxes = economy.as_ref().ok().map(|e| Taxes::open(e, config.taxes));
+    let auction = economy.as_ref().ok().map(|e| AuctionHouse::open(e, config.auction));
     let places = Places::open(&dir, config.places);
     if let Err(e) = &places {
         log::error!("[smp] homes and warps are off: {e}");
@@ -179,6 +184,7 @@ fn open(dir: PathBuf) -> Smp {
         dir,
         economy,
         taxes,
+        auction,
         market,
         shop_config: config.shop,
         shop: Shop::default(),
@@ -215,6 +221,13 @@ fn save(smp: &mut Smp) {
     // The tax state is written with the balances, in the same file.
     if let (Some(t), Ok(e)) = (&mut smp.taxes, &mut smp.economy) {
         t.store(e);
+    }
+    // So are the auction house's listings, bids and mail.
+    if let (Some(a), Ok(e)) = (&mut smp.auction, &mut smp.economy) {
+        a.store(e);
+        for p in a.problems.drain(..) {
+            log::error!("[smp] {p}");
+        }
     }
     if let Ok(e) = &mut smp.economy
         && let Err(err) = e.save()
@@ -307,6 +320,16 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "taxes pay",
         "eco taxes",
         "eco taxes pay",
+        "ah",
+        "ah search <words:text>",
+        "ah sell <price:integer> [count:integer]",
+        "ah auction <start:integer> [hours:integer]",
+        "ah bid <listing:integer> <amount:integer>",
+        "ah buy <listing:integer>",
+        "ah cancel <listing:integer>",
+        "ah claim",
+        "ah mine",
+        "ah mail",
     ] {
         commands.push(NativeCommand::new(usage));
     }
@@ -350,9 +373,9 @@ impl Bag for GameBag<'_, '_> {
     }
 }
 
-const COMMANDS: [&str; 15] = [
+const COMMANDS: [&str; 16] = [
     "balance", "bal", "pay", "baltop", "eco", "money", "worth", "sell", "buy", "shop", "trade", "coinflip",
-    "lottery", "treasury", "taxes",
+    "lottery", "treasury", "taxes", "ah",
 ];
 
 /// The players on, as the places see them.
@@ -537,6 +560,8 @@ pub(in crate::game) fn perform(
         }
     } else if word == "shop" {
         open_shop(game, smp, &me)
+    } else if word == "ah" {
+        ah_command(game, smp, &me, trades, now, line)
     } else {
         match &mut smp.economy {
         Ok(e) => {
@@ -844,6 +869,10 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
         shop_clicked(game, smp, uuid, slot, mode == 1);
         return;
     }
+    if smp.auction.as_ref().is_some_and(|a| a.views.get(&uuid).is_some_and(|v| v.0 == Some(window))) {
+        ah_clicked(game, smp, uuid, slot);
+        return;
+    }
     let Some(t) = smp.trades.trade_of(uuid) else {
         return;
     };
@@ -878,6 +907,12 @@ pub(in crate::game) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32)
     let smp = guard.as_mut().expect("opened");
     if smp.shop.views.get(&uuid).is_some_and(|v| v.0 == Some(window)) {
         smp.shop.views.remove(&uuid);
+        return;
+    }
+    if let Some(a) = &mut smp.auction
+        && a.views.get(&uuid).is_some_and(|v| v.0 == Some(window))
+    {
+        a.views.remove(&uuid);
         return;
     }
     let Some(t) = smp.trades.trade_of(uuid) else {
@@ -1096,6 +1131,174 @@ fn shop_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32, shift
     tell(game, uuid, out);
 }
 
+/// `/ah ...`: the auction house's commands, or its menu.
+fn ah_command(game: &mut Game<'_>, smp: &mut Smp, me: &Player, trades: bool, now: i64, line: &str) -> Vec<Out> {
+    let (Ok(e), Some(a)) = (&mut smp.economy, &mut smp.auction) else {
+        return vec![Out::Error("The economy is off: its file can't be read (see the server log).".into())];
+    };
+    e.seen(me.uuid, &me.name);
+    let vat = smp.taxes.as_ref().map_or(0, |t| t.config.vat_percent);
+    let reply = {
+        let mut bag = GameBag(game);
+        a.command(e, me, trades, &mut bag, vat, now, line)
+    };
+    match reply {
+        Some(smp_auction::Reply::Out(out)) => out,
+        Some(smp_auction::Reply::Open(page)) => open_ah(game, smp, me.uuid, page),
+        None => Vec::new(),
+    }
+}
+
+/// The auction house's menu opens on `page`.
+fn open_ah(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, page: smp_auction::Page) -> Vec<Out> {
+    if smp.trades.trade_of(uuid).is_some() {
+        return vec![Out::Error("Finish or cancel your trade first.".into())];
+    }
+    let Some(a) = &mut smp.auction else {
+        return Vec::new();
+    };
+    a.views.insert(uuid, (None, page.clone()));
+    let items = ah_items(smp, uuid);
+    let window = game.native_open_menu(uuid, smp_auction::ROWS, Text::literal("Auction house"), items);
+    let a = smp.auction.as_mut().expect("checked");
+    match window {
+        Some(w) => {
+            a.views.insert(uuid, (Some(w), page));
+            Vec::new()
+        }
+        None => {
+            a.views.remove(&uuid);
+            vec![Out::Error("The auction house couldn't open.".into())]
+        }
+    }
+}
+
+/// An item stack of `count` (1 to 64) named `name`.
+fn named_stack(item: &str, count: u32, name: &str, color: &str) -> ItemStack {
+    let mut stack = button(item, name, color);
+    stack.count = count.clamp(1, 64);
+    stack
+}
+
+/// The auction house menu's cells as items.
+fn ah_items(smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
+    let Some(a) = &smp.auction else {
+        return Vec::new();
+    };
+    let economy = smp.economy.as_ref().ok();
+    let money = |n: i64| economy.map_or_else(|| n.to_string(), |e| e.money(n));
+    let now = chrono::Utc::now().timestamp_millis();
+    let cats = &smp.shop_config.categories;
+    a.layout(uuid, cats, now)
+        .into_iter()
+        .map(|cell| {
+            use smp_auction::Cell as C;
+            Some(match cell {
+                C::Empty => return None,
+                C::Filler => button("minecraft:gray_stained_glass_pane", " ", "gray"),
+                C::Category(icon, name, n) => button(&icon, &format!("{name} ({n} listings)"), "yellow"),
+                C::Listing(id) => {
+                    let l = a.listing(id)?;
+                    let color = if l.auction { "gold" } else { "white" };
+                    named_stack(&l.item, l.count, &a.label(l, now, &money), color)
+                }
+                C::Parcel(i) => {
+                    let p = a.parcel(uuid, i)?;
+                    let name = format!("Claim {} {} ({})", p.count, smp_shop::title(&p.item), p.why);
+                    named_stack(&p.item, p.count, &name, "green")
+                }
+                C::Confirm(id) => {
+                    let l = a.listing(id)?;
+                    button("minecraft:lime_concrete", &a.confirm_label(l, &money), "green")
+                }
+                C::Cancel => button("minecraft:red_stained_glass_pane", "Back", "red"),
+                C::Back => button("minecraft:arrow", "Back", "white"),
+                C::Prev => button("minecraft:arrow", "Previous page", "white"),
+                C::Next => button("minecraft:arrow", "Next page", "white"),
+                C::Mine(n) => button("minecraft:chest", &format!("Your listings ({n}): click one to take it back"), "aqua"),
+                C::Mail(n) => button("minecraft:barrel", &format!("Your mail ({n} parcels)"), "aqua"),
+                C::ClaimAll => button("minecraft:hopper", "Claim everything", "green"),
+                C::Balance => {
+                    let b = economy.map_or(0, |e| e.balance(uuid));
+                    button("minecraft:gold_ingot", &format!("Balance: {}", money(b)), "gold")
+                }
+                C::Help => button("minecraft:book", smp_auction::HELP_TEXT, "white"),
+                C::Close => button("minecraft:barrier", "Close", "red"),
+            })
+        })
+        .collect()
+}
+
+/// A click in a player's auction house menu: a page, or a purchase, a bid,
+/// a withdrawal, a claim; then the menu is drawn again.
+fn ah_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32) {
+    use smp_auction::Click;
+    let Some(p) = game.native_server_players().into_iter().find(|p| p.uuid == uuid) else {
+        return;
+    };
+    // Clicks on the player's own inventory do nothing here.
+    let Ok(slot) = usize::try_from(slot) else {
+        return;
+    };
+    if slot >= smp_auction::SIZE {
+        return;
+    }
+    let me = Player {
+        uuid,
+        name: p.name.clone(),
+        level: p.permission,
+    };
+    let now = chrono::Utc::now().timestamp_millis();
+    let cats = smp.shop_config.categories.clone();
+    let vat = smp.taxes.as_ref().map_or(0, |t| t.config.vat_percent);
+    let (Ok(e), Some(a)) = (&mut smp.economy, &mut smp.auction) else {
+        return;
+    };
+    let click = a.click(uuid, &cats, slot, now);
+    if matches!(click, Click::Buy(_) | Click::Bid(_)) && !matches!(p.game_mode, 0 | 2) {
+        let why = "The auction house trades only with players in survival or adventure mode.";
+        tell(game, uuid, vec![Out::Error(why.into())]);
+        return;
+    }
+    e.now = now;
+    e.seen(uuid, &me.name);
+    let mut bag = MenuBag {
+        game: &mut *game,
+        uuid,
+        name: me.name.clone(),
+    };
+    let out = match click {
+        Click::Nothing => return,
+        Click::Close => {
+            a.views.remove(&uuid);
+            game.native_close_menu(uuid);
+            return;
+        }
+        Click::Redraw => Vec::new(),
+        Click::Buy(id) => a.buy(e, &me, &mut bag, id, vat, now),
+        Click::Bid(id) => a.bid(e, &me, id, None, now),
+        Click::Withdraw(id) => {
+            let mut out = a.withdraw(&me, id);
+            if !matches!(out.first(), Some(Out::Error(_))) {
+                out.extend(a.claim(uuid, &mut bag, None));
+            }
+            out
+        }
+        Click::Claim(i) => a.claim(uuid, &mut bag, Some(i)),
+        Click::ClaimAll => a.claim(uuid, &mut bag, None),
+    };
+    // After a purchase or a bid, back to the list it came from.
+    if !out.is_empty()
+        && let Some(v) = a.views.get_mut(&uuid)
+        && let smp_auction::Page::Confirm(_, back) = &v.1
+    {
+        v.1 = (**back).clone();
+    }
+    let items = ah_items(smp, uuid);
+    game.native_set_menu_items(uuid, items);
+    tell(game, uuid, out);
+}
+
 /// What a menu click answers, to the player who clicked (no command's
 /// feedback there).
 fn tell(game: &mut Game<'_>, uuid: u128, out: Vec<Out>) {
@@ -1191,6 +1394,12 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             smp.games.left(e, uuid);
         }
         out.extend(smp.lottery.tick(&smp.games.config, e, now, &mut below));
+        // The auction house: notes for who came on, listings that ended.
+        if let Some(a) = &mut smp.auction {
+            let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
+            let vat = smp.taxes.as_ref().map_or(0, |t| t.config.vat_percent);
+            out.extend(a.tick(e, &on, vat, now));
+        }
         // Monday's taxes: an O(1) check each second, the work once a week.
         if let Some(t) = &mut smp.taxes
             && t.due(now)

@@ -10,6 +10,7 @@
 use crate::game::{
     Game,
     smp_auction::{self, AuctionHouse},
+    smp_bank::{self, Bank},
     native_server::{NativeCommand, NativeServerPlayer, NativeSidebar},
     smp_board::{self, Board, Line},
     smp_claims::{self, Claims},
@@ -36,7 +37,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.18.0";
+pub const VERSION: &str = "0.19.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -55,6 +56,7 @@ pub struct Config {
     pub nicks: smp_nick::Config,
     pub taxes: smp_tax::Config,
     pub auction: smp_auction::Config,
+    pub bank: smp_bank::Config,
 }
 
 /// The SMP of the open world.
@@ -66,6 +68,8 @@ pub struct Smp {
     taxes: Option<Taxes>,
     /// The auction house (None with the economy off).
     auction: Option<AuctionHouse>,
+    /// Savings and their interest (None with the economy off).
+    bank: Option<Bank>,
     market: Market,
     shop_config: smp_shop::Config,
     /// The `/shop` menus open.
@@ -147,6 +151,7 @@ fn open(dir: PathBuf) -> Smp {
     }
     let taxes = economy.as_ref().ok().map(|e| Taxes::open(e, config.taxes));
     let auction = economy.as_ref().ok().map(|e| AuctionHouse::open(e, config.auction));
+    let bank = economy.as_ref().ok().map(|e| Bank::open(e, config.bank));
     let places = Places::open(&dir, config.places);
     if let Err(e) = &places {
         log::error!("[smp] homes and warps are off: {e}");
@@ -185,6 +190,7 @@ fn open(dir: PathBuf) -> Smp {
         economy,
         taxes,
         auction,
+        bank,
         market,
         shop_config: config.shop,
         shop: Shop::default(),
@@ -221,6 +227,10 @@ fn save(smp: &mut Smp) {
     // The tax state is written with the balances, in the same file.
     if let (Some(t), Ok(e)) = (&mut smp.taxes, &mut smp.economy) {
         t.store(e);
+    }
+    // And the bank's accounts.
+    if let (Some(b), Ok(e)) = (&mut smp.bank, &mut smp.economy) {
+        b.store(e);
     }
     // So are the auction house's listings, bids and mail.
     if let (Some(a), Ok(e)) = (&mut smp.auction, &mut smp.economy) {
@@ -330,6 +340,9 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "ah claim",
         "ah mine",
         "ah mail",
+        "bank",
+        "bank deposit <amount:word>",
+        "bank withdraw <amount:word>",
     ] {
         commands.push(NativeCommand::new(usage));
     }
@@ -373,9 +386,9 @@ impl Bag for GameBag<'_, '_> {
     }
 }
 
-const COMMANDS: [&str; 16] = [
+const COMMANDS: [&str; 17] = [
     "balance", "bal", "pay", "baltop", "eco", "money", "worth", "sell", "buy", "shop", "trade", "coinflip",
-    "lottery", "treasury", "taxes", "ah",
+    "lottery", "treasury", "taxes", "ah", "bank",
 ];
 
 /// The players on, as the places see them.
@@ -580,9 +593,17 @@ pub(in crate::game) fn perform(
             let on: Vec<(u128, String)> = players.iter().map(|p| (p.uuid, p.name.clone())).collect();
             let mut bag = GameBag(game);
             let my_chunks = smp.claims.as_ref().map_or(0, |c| c.held(me.uuid));
+            // The wealth tax counts bank savings (`/eco taxes` shows the bill).
+            if let (Some(t), Some(b)) = (&mut smp.taxes, &smp.bank)
+                && matches!(word, "eco" | "taxes")
+            {
+                t.savings = b.savings();
+            }
             let taxes = smp.taxes.as_mut();
+            let bank = smp.bank.as_mut();
             taxes
                 .and_then(|t| t.command(e, &me, my_chunks, line))
+                .or_else(|| bank.and_then(|b| b.command(e, &me, line)))
                 .or_else(|| e.command(&me, &on, line))
                 .or_else(|| smp.market.command(e, &me, trades, &mut bag, line))
                 .or_else(|| {
@@ -1430,10 +1451,17 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             let vat = smp.taxes.as_ref().map_or(0, |t| t.config.vat_percent);
             out.extend(a.tick(e, &on, vat, now));
         }
+        // The bank's interest: an O(1) check each second, the work once a day.
+        if let Some(b) = &mut smp.bank {
+            out.extend(b.tick(e, now));
+        }
         // Monday's taxes: an O(1) check each second, the work once a week.
         if let Some(t) = &mut smp.taxes
             && t.due(now)
         {
+            if let Some(b) = &smp.bank {
+                t.savings = b.savings();
+            }
             let chunks = smp.claims.as_ref().map(|c| c.counts()).unwrap_or_default();
             out.extend(t.collect(e, &chunks, now));
         }

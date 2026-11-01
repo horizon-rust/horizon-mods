@@ -82,6 +82,9 @@ pub struct Taxes {
     pub config: Config,
     pub state: State,
     dirty: bool,
+    /// What each player has in the bank (the glue sets it): the wealth tax
+    /// counts it with the balance, so saving doesn't hide wealth.
+    pub savings: HashMap<u128, i64>,
 }
 
 /// `12d 3h`, `3h 05m`, `4m`.
@@ -113,6 +116,7 @@ impl Taxes {
             config,
             state,
             dirty,
+            savings: HashMap::new(),
         }
     }
 
@@ -229,7 +233,8 @@ impl Taxes {
             }
         }
         for (uuid, _, balance) in economy.accounts() {
-            let bill = self.wealth_bill(balance).min(balance);
+            let saved = self.savings.get(&uuid).copied().unwrap_or(0);
+            let bill = self.wealth_bill(balance.saturating_add(saved)).min(balance);
             if bill > 0
                 && economy
                     .to_pool("wealth_tax", uuid, TREASURY, bill, "")
@@ -415,7 +420,8 @@ impl Taxes {
             .collect();
         let next = week_start(self.state.week + 1) - economy.now;
         let land = self.land_bill(chunks);
-        let wealth_bill = self.wealth_bill(economy.balance(me.uuid));
+        let saved = self.savings.get(&me.uuid).copied().unwrap_or(0);
+        let wealth_bill = self.wealth_bill(economy.balance(me.uuid).saturating_add(saved));
         let mut out = vec![
             Out::Reply("Taxes: all of them go to the Treasury (/treasury), which pays grants, prizes and refunds.".into()),
             Out::Reply(format!(
@@ -427,7 +433,7 @@ impl Taxes {
                 economy.money(c.land_tax_per_chunk),
                 c.land_free_chunks
             )),
-            Out::Reply(format!("Wealth tax, weekly, on your balance: {}.", wealth.join(", "))),
+            Out::Reply(format!("Wealth tax, weekly, on your balance and bank savings: {}.", wealth.join(", "))),
             Out::Reply("Games of chance: the house's fee goes to the Treasury.".into()),
         ];
         if !c.enabled {
@@ -533,6 +539,7 @@ mod tests {
             config: Config::default(),
             state: State::default(),
             dirty: false,
+            savings: HashMap::new(),
         };
         assert_eq!(t.land_bill(4), 0);
         assert_eq!(t.land_bill(16), 60);
@@ -542,6 +549,16 @@ mod tests {
         assert_eq!(t.wealth_bill(300_000), 3_000);
         // 1% of 200k + 2% of 750k + 3% of 1M.
         assert_eq!(t.wealth_bill(2_000_000), 2_000 + 15_000 + 30_000);
+    }
+
+    #[test]
+    fn bank_savings_count_for_the_wealth_tax() {
+        let (mut e, mut t, _dir) = setup("savings");
+        // Alex: 1,000 in the wallet, 59,000 saved: taxed on 60,000.
+        t.savings.insert(ALEX, 59_000);
+        let now = MONDAY;
+        t.collect(&mut e, &HashMap::new(), now);
+        assert_eq!(e.balance(ALEX), 900);
     }
 
     #[test]

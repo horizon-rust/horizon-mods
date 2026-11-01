@@ -358,6 +358,32 @@ impl Market {
             .then(|| cap.saturating_sub(self.sold(uuid, now).items.get(id).copied().unwrap_or(0)))
     }
 
+    /// Whether `uuid` may be paid `amount` by another player now (`/pay`):
+    /// money received counts toward the same daily limit as selling to the
+    /// market, so selling on alts and paying it all to a main doesn't get
+    /// past it. Err: what they may still receive today.
+    pub fn may_receive(&self, uuid: u128, amount: i64, now: i64) -> Result<(), i64> {
+        match self.coins_left(uuid, now) {
+            Some(left) if amount > left => Err(left),
+            _ => Ok(()),
+        }
+    }
+
+    /// Counts `coins` paid to `uuid` (`/pay`) against today's limit.
+    pub fn count_received(&mut self, uuid: u128, now: i64, coins: i64) {
+        let day = now.div_euclid(DAY_MS);
+        let s = self.ledger.sold.entry(uuid_string(uuid)).or_default();
+        if s.day != day {
+            *s = Sold {
+                day,
+                ..Sold::default()
+            };
+        }
+        s.coins = s.coins.saturating_add(coins.max(0));
+        self.ledger.sold.retain(|_, s| s.day == day);
+        self.dirty = true;
+    }
+
     /// Counts a sale against today's limits.
     fn count_sale(&mut self, uuid: u128, now: i64, id: &str, n: u32, coins: i64) {
         let day = now.div_euclid(DAY_MS);
@@ -737,6 +763,34 @@ mod tests {
             held: None,
             room,
         }
+    }
+
+    #[test]
+    fn money_received_by_pay_counts_toward_the_daily_selling_limit() {
+        let config = Config {
+            daily_sell_coins: 250,
+            ..Config::default()
+        };
+        let (_e, mut m, _me, _dir) = setup_with("received", config);
+        let now = 1_793_577_600_000;
+        // An alt pays the main 200: fine, and it counts.
+        assert_eq!(m.may_receive(ALEX, 200, now), Ok(()));
+        m.count_received(ALEX, now, 200);
+        assert_eq!(m.coins_left(ALEX, now), Some(50));
+        // A second alt's 100 is refused: 50 left today, for sales or payments.
+        assert_eq!(m.may_receive(ALEX, 100, now), Err(50));
+        assert_eq!(m.may_receive(ALEX, 50, now), Ok(()));
+        // The next day the limit is whole again.
+        assert_eq!(m.may_receive(ALEX, 250, now + DAY_MS), Ok(()));
+        // No limit configured: anything goes.
+        let (_e, m, _me, _dir) = setup_with(
+            "unlimited",
+            Config {
+                daily_sell_coins: 0,
+                ..Config::default()
+            },
+        );
+        assert_eq!(m.may_receive(ALEX, 1_000_000, now), Ok(()));
     }
 
     #[test]

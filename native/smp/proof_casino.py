@@ -107,15 +107,24 @@ def roulette(alex, out):
     r["bet"] = alex.name_at(48)
     pictures = []
     alex.quick(53)
-    for _ in range(12):
-        time.sleep(0.3)
-        pictures.append(tuple(alex.cells().get(s) for s in range(18)))
-    alex.shot(out, "roulette-spin.png")
+    alex.wait_name(53, "turns", 10)
+    shot, started = False, time.time()
+    end = time.time() + 30
+    # Until the wheel stops: each picture the menu shows, and the result's title or action bar.
+    while time.time() < end:
+        cells = alex.cells()
+        if "SPIN" in cells.get(53, ("", ""))[1]:
+            break
+        pictures.append(tuple(cells.get(s) for s in range(18)))
+        if not shot:
+            alex.shot(out, "roulette-spin.png")
+            shot = True
     r["pictures"] = len(set(pictures))
+    r["samples"], r["spin_seconds"] = len(pictures), round(time.time() - started, 1)
     assert r["pictures"] >= 3, "the wheel didn't turn"
-    alex.wait_name(53, "SPIN")
     r["result"] = alex.name_at(40)
     r["shown"] = shown(alex)
+    assert r["shown"], "no title or action bar for the result"
     alex.shot(out, "roulette-result.png")
     # A second spin, the menu closed at once: paid all the same.
     time.sleep(2.5)

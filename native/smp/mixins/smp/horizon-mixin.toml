@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.22.0"
+version = "0.23.0"
 priority = 100
 
 # The commit of horizon main it was tested on. It uses only the native hook points (hooks 62 in
@@ -85,6 +85,42 @@ id = "lottery"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_lottery"
 source = "smp_lottery.rs"
+
+[[module]]
+id = "casino"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_casino"
+source = "smp_casino.rs"
+
+[[module]]
+id = "casino_roulette"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_casino_roulette"
+source = "smp_casino_roulette.rs"
+
+[[module]]
+id = "casino_slots"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_casino_slots"
+source = "smp_casino_slots.rs"
+
+[[module]]
+id = "casino_crash"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_casino_crash"
+source = "smp_casino_crash.rs"
+
+[[module]]
+id = "casino_blackjack"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_casino_blackjack"
+source = "smp_casino_blackjack.rs"
+
+[[module]]
+id = "casino_glue"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_casino_glue"
+source = "casino_glue.rs"
 
 [[module]]
 id = "nick"

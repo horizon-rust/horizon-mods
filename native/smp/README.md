@@ -20,6 +20,7 @@ header and footer).
 | `/eco take <player> <amount> [reason]`, `/money take ...` | operators of level 3: a cheat's gains go into the Treasury, logged with the reason. Nobody gives or sets money (`/eco give` and `/eco set` say so) |
 | `/treasury`, `/treasury log` | the Treasury's balance, its income by tax and its spending (today and since it opened), its last movements |
 | `/treasury pay <player> <amount> <reason>` | operators of level 3: pays a player from the Treasury (an event prize, a bug refund, a grant), never more than it holds; everyone sees it |
+| `/eco stats` | the money supply and where it sits, what the server made and destroyed today, taxes and fees, how evenly money is spread |
 | `/bank`, `/bank deposit <amount\|all>`, `/bank withdraw <amount\|all>` | your savings, which earn a small interest from the Treasury each night |
 | `/ah` | the auction house: a chest menu of listings by category, cheapest a unit first; click one to buy it or bid; your listings (click to take one back) and your mail |
 | `/ah sell <price> [count]` | lists the stack in your hand (or part of it) at a fixed price, for `listing_hours` (48); the listing fee (1%, at least 1 coin) goes to the Treasury |
@@ -220,6 +221,17 @@ those who keep coins out of circulation. Interest stays saved (logged as `bank_i
 are `bank_deposit` and `bank_withdraw`. No loans: their collateral (items) can't be held safely here, and a loan
 without it is free money for an alt that never pays back. Savings are kept in `economy.json` (`ext.bank`).
 
+**The report.** `/eco stats` (anyone) shows the money supply (wallets, savings and money held, the Treasury, the
+insurance fund, each pool), what the server made today (market sales, the daily reward) and destroyed (market
+purchases, operators' `/eco take`), the day's taxes and fees, and how evenly money is spread (Gini over players
+with money, the richest ten's share). At 00:00 UTC everyone reads the day before in one line (`report.daily_report`).
+A snapshot of each day is kept 60 days (`report.history_days`) in `economy.json` (`ext.report`). Once a minute
+`world/horizon-smp/web/economy.json` (`report.web_json`) is written off the tick thread for the site's /hub:
+`{"schema": 1, "generated": <ms>, "currency", "today", "pools", "minted_today", "burned_today", "treasury": {balance,
+insurance, income, spent, income_today, spent_today, log}, "taxes": {rates, last_collection}, "days": [...],
+"daily_report": "<yesterday's line>"}`. The server's Discord relay posts only chat, joins, leaves and deaths: the
+daily line reaches Discord through whoever reads that file (Kira).
+
 Other parts reach the pools through `Economy::to_pool`, `from_pool`, `pool_move` and `settle_pool` (a bet against a
 pool: the stake goes in, the payout comes out, never more than the pool holds), each one audit line.
 
@@ -259,7 +271,7 @@ action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explos
 | File | What it is |
 |---|---|
 | `mixins/smp/horizon-mixin.toml` | The bundle: sixteen modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs`, `smp_auction.rs`, `smp_bank.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`, `game::smp_auction`, `game::smp_bank`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs`, `smp_auction.rs`, `smp_bank.rs`, `smp_report.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`, `game::smp_auction`, `game::smp_bank`, `game::smp_report`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |

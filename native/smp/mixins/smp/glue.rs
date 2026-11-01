@@ -11,6 +11,7 @@ use crate::game::{
     Game,
     smp_auction::{self, AuctionHouse},
     smp_bank::{self, Bank},
+    smp_report::{self, Report},
     native_server::{NativeCommand, NativeServerPlayer, NativeSidebar},
     smp_board::{self, Board, Line},
     smp_claims::{self, Claims},
@@ -37,7 +38,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.19.0";
+pub const VERSION: &str = "0.20.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -57,6 +58,7 @@ pub struct Config {
     pub taxes: smp_tax::Config,
     pub auction: smp_auction::Config,
     pub bank: smp_bank::Config,
+    pub report: smp_report::Config,
 }
 
 /// The SMP of the open world.
@@ -70,6 +72,8 @@ pub struct Smp {
     auction: Option<AuctionHouse>,
     /// Savings and their interest (None with the economy off).
     bank: Option<Bank>,
+    /// `/eco stats`, the daily report, `web/economy.json`.
+    report: Option<Report>,
     market: Market,
     shop_config: smp_shop::Config,
     /// The `/shop` menus open.
@@ -152,6 +156,7 @@ fn open(dir: PathBuf) -> Smp {
     let taxes = economy.as_ref().ok().map(|e| Taxes::open(e, config.taxes));
     let auction = economy.as_ref().ok().map(|e| AuctionHouse::open(e, config.auction));
     let bank = economy.as_ref().ok().map(|e| Bank::open(e, config.bank));
+    let report = economy.as_ref().ok().map(|e| Report::open(e, config.report));
     let places = Places::open(&dir, config.places);
     if let Err(e) = &places {
         log::error!("[smp] homes and warps are off: {e}");
@@ -191,6 +196,7 @@ fn open(dir: PathBuf) -> Smp {
         taxes,
         auction,
         bank,
+        report,
         market,
         shop_config: config.shop,
         shop: Shop::default(),
@@ -231,6 +237,9 @@ fn save(smp: &mut Smp) {
     // And the bank's accounts.
     if let (Some(b), Ok(e)) = (&mut smp.bank, &mut smp.economy) {
         b.store(e);
+    }
+    if let (Some(r), Ok(e)) = (&mut smp.report, &mut smp.economy) {
+        r.store(e);
     }
     // So are the auction house's listings, bids and mail.
     if let (Some(a), Ok(e)) = (&mut smp.auction, &mut smp.economy) {
@@ -343,6 +352,8 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "bank",
         "bank deposit <amount:word>",
         "bank withdraw <amount:word>",
+        "eco stats",
+        "money stats",
     ] {
         commands.push(NativeCommand::new(usage));
     }
@@ -601,8 +612,13 @@ pub(in crate::game) fn perform(
             }
             let taxes = smp.taxes.as_mut();
             let bank = smp.bank.as_mut();
+            let report = smp.report.as_ref();
             taxes
                 .and_then(|t| t.command(e, &me, my_chunks, line))
+                .or_else(|| {
+                    let savings = bank.as_ref().map(|b| b.savings()).filter(|_| line.ends_with("stats")).unwrap_or_default();
+                    report.and_then(|r| r.command(e, &savings, line))
+                })
                 .or_else(|| bank.and_then(|b| b.command(e, &me, line)))
                 .or_else(|| e.command(&me, &on, line))
                 .or_else(|| smp.market.command(e, &me, trades, &mut bag, line))
@@ -1454,6 +1470,28 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         // The bank's interest: an O(1) check each second, the work once a day.
         if let Some(b) = &mut smp.bank {
             out.extend(b.tick(e, now));
+        }
+        // The daily report and, once a minute, web/economy.json (written off
+        // the tick thread).
+        if let Some(r) = &mut smp.report
+            && r.due(now)
+        {
+            let savings = smp.bank.as_ref().map(|b| b.savings()).unwrap_or_default();
+            let (o, web) = r.tick(e, &savings, now);
+            out.extend(o);
+            if web {
+                let taxes = smp.taxes.as_ref().map_or(serde_json::Value::Null, |t| {
+                    serde_json::json!({"rates": t.config, "last_collection": t.state.last})
+                });
+                let doc = r.web(e, &savings, taxes, now);
+                let path = smp.dir.join("web").join("economy.json");
+                std::thread::spawn(move || {
+                    let made = path.parent().map_or(Ok(()), std::fs::create_dir_all);
+                    if let Err(err) = made.map_err(|e| e.to_string()).and_then(|()| smp_store::write_json(&path, &doc)) {
+                        log::warn!("[smp] web/economy.json: {err}");
+                    }
+                });
+            }
         }
         // Monday's taxes: an O(1) check each second, the work once a week.
         if let Some(t) = &mut smp.taxes

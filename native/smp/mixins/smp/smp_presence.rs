@@ -25,6 +25,9 @@ pub struct Config {
     pub welcome: Vec<String>,
     /// Paid once a day (UTC) to each player who is on; 0: none.
     pub daily_reward: i64,
+    /// Minutes of play (moving, not AFK) a day before the reward: an alt
+    /// that only logs in gets nothing.
+    pub reward_after_minutes: i64,
     /// Minutes without a move, a turn or a command before a player is AFK;
     /// 0: only `/afk`.
     pub afk_minutes: i64,
@@ -45,6 +48,7 @@ impl Default for Config {
                 "Set a home with /sethome, claim your land with /claim, see the richest with /baltop.".into(),
             ],
             daily_reward: 50,
+            reward_after_minutes: 10,
             afk_minutes: 5,
             afk_announce: false,
             spam_commands: 8,
@@ -91,6 +95,9 @@ pub struct Presence {
     afk: HashSet<u128>,
     /// Each player's last commands (ms), for the limit.
     recent: HashMap<u128, VecDeque<i64>>,
+    /// Seconds each player was active today (UTC day), toward the reward;
+    /// not kept over a restart.
+    played_today: HashMap<u128, (String, i64)>,
 }
 
 impl Presence {
@@ -115,6 +122,7 @@ impl Presence {
             on: HashMap::new(),
             afk: HashSet::new(),
             recent: HashMap::new(),
+            played_today: HashMap::new(),
         })
     }
 
@@ -195,11 +203,27 @@ impl Presence {
                 out.push(self.away(p.uuid, &p.name, &mut acts));
             }
         }
-        // Each player's first second on today, or the day turning while on.
+        // Once a player has been active long enough today (moved or ran a
+        // command in the last minute, each second counts).
         if self.config.daily_reward > 0 {
+            let need = self.config.reward_after_minutes.max(0) * 60;
             for p in players {
                 let key = smp_store::uuid_string(p.uuid);
-                if self.data.rewarded.get(&key).map(String::as_str) != Some(today) {
+                if self.data.rewarded.get(&key).map(String::as_str) == Some(today) {
+                    continue;
+                }
+                let active = self.on.get(&p.uuid).is_some_and(|(_, t)| now - t < 60_000);
+                let day = self
+                    .played_today
+                    .entry(p.uuid)
+                    .or_insert_with(|| (today.to_owned(), 0));
+                if day.0 != today {
+                    *day = (today.to_owned(), 0);
+                }
+                if active {
+                    day.1 += 1;
+                }
+                if day.1 >= need {
                     self.data.rewarded.insert(key, today.to_owned());
                     self.dirty = true;
                     acts.push(Act::Reward(p.uuid));
@@ -333,6 +357,7 @@ mod tests {
     #[test]
     fn the_daily_reward_comes_once_a_day() {
         let (mut p, _) = open(vec![]);
+        p.config.reward_after_minutes = 0;
         let (_, acts) = p.tick(&[seen(A, 0.0)], "2026-10-31", 0, &[]);
         assert_eq!(acts, vec![Act::Reward(A)]);
         p.tick(&[], "2026-10-31", 1_000, &[]);
@@ -341,6 +366,37 @@ mod tests {
         // Midnight with the player on.
         let (_, acts) = p.tick(&[seen(A, 0.0)], "2026-11-01", 3_000, &[]);
         assert_eq!(acts, vec![Act::Reward(A)]);
+    }
+
+    #[test]
+    fn the_daily_reward_needs_ten_minutes_of_play_so_logging_in_alts_get_nothing() {
+        let (mut p, _) = open(vec![A, B]);
+        let mut x = 0.0;
+        let mut rewarded = Vec::new();
+        for s in 0..700 {
+            x += 1.0;
+            // Alex walks; Steve (an alt) stands still after logging in.
+            let (_, acts) = p.tick(&[seen(A, x), seen(B, 0.0)], "2026-10-31", s * 1000, &[]);
+            rewarded.extend(acts.into_iter().filter_map(|a| match a {
+                Act::Reward(u) => Some((u, s)),
+                _ => None,
+            }));
+        }
+        // Alex: rewarded on his 600th second of play. Steve's first minute
+        // counts, then nothing.
+        assert_eq!(rewarded, vec![(A, 599)]);
+        // Leaving and coming back the same day: the count goes on.
+        let (mut q, _) = open(vec![A]);
+        for s in 0..300 {
+            q.tick(&[seen(A, s as f64)], "2026-10-31", s * 1000, &[]);
+        }
+        q.tick(&[], "2026-10-31", 400_000, &[]);
+        let mut got = false;
+        for s in 0..302 {
+            let (_, acts) = q.tick(&[seen(A, s as f64)], "2026-10-31", 500_000 + s * 1000, &[]);
+            got |= acts.contains(&Act::Reward(A));
+        }
+        assert!(got);
     }
 
     #[test]

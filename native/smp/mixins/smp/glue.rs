@@ -36,7 +36,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.17.0";
+pub const VERSION: &str = "0.18.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -552,7 +552,18 @@ pub(in crate::game) fn perform(
             )],
         }
     } else if smp_places::COMMANDS.contains(&word) {
+        // A teleport's fee is paid when it happens; refused now when the
+        // player can't pay it.
+        let short = match (&smp.places, &smp.economy) {
+            (Ok(p), Ok(e)) if p.fee(line) > e.balance(me.uuid) => Some(format!(
+                "This teleport costs {} (to the Treasury); you have {}.",
+                e.money(p.fee(line)),
+                e.money(e.balance(me.uuid))
+            )),
+            _ => None,
+        };
         match &mut smp.places {
+            Ok(_) if short.is_some() => vec![Out::Error(short.expect("checked"))],
             Ok(p) => p.command(&me, &bodies(&players), now, line).unwrap_or_default(),
             Err(_) => vec![Out::Error(
                 "Homes and warps are off: their file can't be read (see the server log).".into(),
@@ -1362,17 +1373,36 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         let (o, go) = p.tick(&bodies(&players), now);
         out.extend(o);
         for t in go {
+            // The fee, to the Treasury, only for a teleport made; without
+            // the money (spent during the warmup) it is called off.
+            let economy = smp.economy.as_mut().ok().filter(|_| t.fee > 0);
+            if let Some(e) = &economy
+                && e.balance(t.uuid) < t.fee
+            {
+                p.call_off(&t);
+                let why = format!("Teleport called off: it costs {}.", e.money(t.fee));
+                out.push(Out::Tell(t.uuid, why));
+                continue;
+            }
             // `.3`: a whole number would be a block's centre to `tp`.
             let line = format!(
                 "execute in {} run tp {} {:.3} {:.3} {:.3}",
                 t.to.dimension, t.name, t.to.x, t.to.y, t.to.z
             );
-            out.push(if game.native_run_command(&line) {
-                Out::Tell(t.uuid, t.done)
-            } else {
+            if !game.native_run_command(&line) {
                 log::warn!("[smp] a teleport failed: {line}");
-                Out::Tell(t.uuid, "The teleport failed.".into())
-            });
+                p.call_off(&t);
+                out.push(Out::Tell(t.uuid, "The teleport failed.".into()));
+                continue;
+            }
+            let mut done = t.done.clone();
+            if let Some(e) = economy {
+                match e.to_pool("travel_fee", t.uuid, smp_economy::TREASURY, t.fee, &t.what) {
+                    Ok(()) => done = format!("{done} Fee: {}.", e.money(t.fee)),
+                    Err(err) => log::warn!("[smp] travel fee: {err}"),
+                }
+            }
+            out.push(Out::Tell(t.uuid, done));
         }
     }
     if let Ok(e) = &mut smp.economy

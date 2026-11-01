@@ -506,34 +506,51 @@ def presence(server, alex, steve):
     return r
 
 
-def nicks(alex, steve, out):
-    """Steve takes a nickname: refused ones first, then Rocky in Alex's chat and the Tab list, /realname, the
-    cooldown, and Alex (an operator) takes it off."""
+def nicks(server, alex, steve, out):
+    """Steve takes a nickname: refused ones first, then ~Rocky in Alex's chat and the Tab list, /realname, /pay by
+    nickname, the cooldown, and Alex (an operator) takes it off. The one an older version let through is gone."""
     r = {}
+    r["purged"] = [l for l in server.lines if "taken off" in l]
+    assert any("nickname N0tch of" in l and "kept for the server" in l for l in r["purged"]), r
     time.sleep(6)  # the spam guard's window from the step before
-    for line, error in (("/nick Alex", "Alex is a player's name."),
-                        ("/nick ab", "A nickname is 3 to 16 letters, digits or _."),
-                        ("/nick bad-name", "A nickname is 3 to 16 letters, digits or _.")):
+    r["usage"] = steve.say("/nick")
+    assert any("/nick <name> picks a nickname" in l for l in r["usage"]), r
+    for line, error in (("/nick Alex", "Alex looks like the name of another player."),
+                        ("/nick A1ex_", "A1ex_ looks like the name of another player."),
+                        ("/nick N0tch", "N0tch reads as \"notch\": that word is kept for the server."),
+                        ("/nick ab", "A nickname is 3 to 16 letters, digits or _.")):
         r[line] = steve.say(line)
         assert any(error in l for l in r[line]), r
+    time.sleep(6)
     steve.run("chat", "/nick Rocky")
     time.sleep(3)  # made at the next second's tick
     r["set"] = steve.chat()[-3:]
-    assert any("Steve now goes by Rocky." in l for l in r["set"]), r
+    assert any("Steve now goes by ~Rocky." in l for l in r["set"]), r
     steve.run("chat", "hello from rocky")
     time.sleep(2)
     r["chat"] = alex.chat()[-3:]
-    assert any("Rocky" in l and "hello from rocky" in l and "Steve" not in l for l in r["chat"]), r
+    assert any("~Rocky" in l and "hello from rocky" in l and "Steve" not in l for l in r["chat"]), r
+    if os.environ.get("SMP_PROOF_MSG_NICK"):
+        # An engine whose player arguments take nicknames (horizon fix/commands-take-nicknames).
+        alex.run("chat", "/msg Rocky psst")
+        time.sleep(2)
+        r["msg"] = steve.chat()[-3:]
+        assert any("whispers to you: psst" in l for l in r["msg"]), r
     alex.run("key", "tab", "down")
     time.sleep(1)
     alex.run("screenshot", str(Path(out).resolve() / "nick-tab.png"))
     alex.run("key", "tab", "up")
-    r["realname"] = alex.say("/realname rocky")
-    assert any("Rocky is Steve." in l for l in r["realname"]), r
-    r["taken"] = alex.say("/nick rocky")
-    assert any("rocky is someone else's nickname." in l for l in r["taken"]), r
+    r["realname"] = alex.say("/realname ~rocky")
+    assert any("~Rocky is Steve." in l for l in r["realname"]), r
+    r["taken"] = alex.say("/nick R0cky")
+    assert any("R0cky looks like the name of another player." in l for l in r["taken"]), r
+    # A nickname where a command names a player; paid back so the sums stay.
+    r["pay"] = alex.say("/pay Rocky 1")
+    assert any("You paid 1 coins to Steve." in l for l in r["pay"]), r
+    steve.say("/pay Alex 1")
     r["cooldown"] = steve.say("/nick Pebble")
     assert any("wait 10 more minute(s)" in l for l in r["cooldown"]), r
+    time.sleep(6)
     alex.run("chat", "/nick Steve off")
     time.sleep(3)
     r["off"] = steve.chat()[-3:]
@@ -690,7 +707,12 @@ def run(ctl, resources, out):
                                                                          "lottery_seconds": 30},
                                                       "places": {"warmup_seconds": 2, "cooldown_seconds": 0},
                                                       # Paid once, after the restart, not to change the sums.
-                                                      "presence": {"daily_reward": 0}}))
+                                                      "presence": {"daily_reward": 0},
+                                                      # Steve plays a few minutes before his nickname.
+                                                      "nicks": {"min_playtime_minutes": 1}}))
+        # A nickname an older version let through, taken off at the first start.
+        (data / "nicks.json").write_text(json.dumps({"nicks": {"00000000-0000-0000-0000-00000000abcd": {
+            "nick": "N0tch", "changed": 0}}}))
         server.start()
         # No monster may end a step early: a slime once killed Steve on the flat world.
         for line in ("difficulty peaceful", "gamerule spawn_monsters false", "kill @e[type=minecraft:slime]"):
@@ -761,7 +783,7 @@ def run(ctl, resources, out):
         results["board"] = board(alex, steve, out)
         results["polish"] = polish(server, alex, steve, out)
         results["presence"] = presence(server, alex, steve)
-        results["nicks"] = nicks(alex, steve, out)
+        results["nicks"] = nicks(server, alex, steve, out)
         results["coinflip"], alex_wins = coinflips(alex, steve)
         results["lottery"], alex_lotto = lottery(alex, steve, alex_wins)
         alex_after = 415 + (100 if alex_wins else -100) + (20 if alex_lotto else -30)
@@ -785,7 +807,7 @@ def run(ctl, resources, out):
         results["audit"] = [a["kind"] for a in audit]
         assert results["audit"] == ["open", "open", "eco_give", "pay", "sell 20 minecraft:wheat",
                                     "sell 3 minecraft:diamond", "buy 5 minecraft:torch", "trade", "trade_failed",
-                                    "trade", "trade_money", "coinflip_stake", "coinflip_stake", "coinflip_win",
+                                    "trade", "trade_money", "pay", "pay", "coinflip_stake", "coinflip_stake", "coinflip_win",
                                     "coinflip_stake", "lottery_ticket", "lottery_ticket", "lottery_win"] + (
                                     ["coinflip_cancel"] * (held == 0)), results["audit"]
         swap = [a for a in audit if a["kind"] == "trade"][-1]

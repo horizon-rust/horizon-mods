@@ -34,7 +34,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.14.0";
+pub const VERSION: &str = "0.15.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -152,9 +152,20 @@ fn open(dir: PathBuf) -> Smp {
     // Players the economy knows were here before: no first-join welcome.
     let known = economy.as_ref().map(|e| e.accounts().into_iter().map(|a| a.0).collect()).unwrap_or_else(|_| Vec::new());
     let presence = Presence::open(&dir, config.presence, known);
-    let nicks = Nicks::open(&dir, config.nicks);
+    let mut nicks = Nicks::open(&dir, config.nicks);
     if let Err(e) = &nicks {
         log::error!("[smp] nicknames are off: {e}");
+    }
+    // Nicknames an older version let through that today's rules refuse.
+    if let Ok(n) = &mut nicks {
+        let names = ServerNames::read(dir.parent().unwrap_or(&dir), economy.as_ref().ok());
+        for (uuid, nick, why) in n.purge(&names) {
+            let real = names.name_of(uuid).unwrap_or_else(|| smp_store::uuid_string(uuid));
+            log::warn!("[smp] nickname {nick} of {real} taken off: {why}");
+        }
+        if let Err(e) = n.save() {
+            log::error!("[smp] {e}");
+        }
     }
     if let Err(e) = &presence {
         log::error!("[smp] welcomes, daily rewards and AFK are off: {e}");
@@ -415,10 +426,24 @@ pub(in crate::game) fn perform(
             }
         }
     }
+    // A nickname where a command names a player: the player's name.
+    let names_a_player = matches!(word, "pay" | "tpa" | "trade" | "playtime" | "tpaccept" | "tpdeny" | "eco" | "money");
+    let resolved = smp.nicks.as_ref().ok().filter(|_| names_a_player).and_then(|n| {
+        let accounts = smp.economy.as_ref().map(|e| e.accounts()).unwrap_or_default();
+        let is_name = |w: &str| players.iter().any(|p| p.name.eq_ignore_ascii_case(w)) || accounts.iter().any(|a| a.1.eq_ignore_ascii_case(w));
+        let name_of = |u: u128| {
+            players.iter().find(|p| p.uuid == u).map(|p| p.name.clone()).or_else(|| accounts.iter().find(|a| a.0 == u).map(|a| a.1.clone()))
+        };
+        n.resolve(line, &is_name, &name_of)
+    });
+    let line = resolved.as_deref().unwrap_or(line);
     let out = if smp_nick::COMMANDS.contains(&word) {
         let names = ServerNames::read(&dir, smp.economy.as_ref().ok());
         match &mut smp.nicks {
-            Ok(n) => n.command(&me, &names, now, line).unwrap_or_default(),
+            Ok(n) => {
+                let played = smp.places.as_ref().map_or(0, |p| p.played_seconds(me.uuid));
+                n.command(&me, &names, played, now, line).unwrap_or_default()
+            }
             Err(_) => vec![Out::Error("Nicknames are off: nicks.json can't be read (see the server log).".into())],
         }
     } else if smp_presence::COMMANDS.contains(&word) {
@@ -1243,7 +1268,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 .as_ref()
                 .ok()
                 .and_then(|n| n.nick_of(uuid))
-                .map(str::to_owned)
+                .map(|n| format!("~{n}"))
                 .or_else(|| players.iter().find(|p| p.uuid == uuid).map(|p| p.name.clone()))
                 .unwrap_or_default(),
             played_seconds: places.as_ref().map_or(0, |p| p.played_seconds(uuid)),
@@ -1273,7 +1298,8 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 continue;
             }
             out.extend(nicks.apply(&change, &real, now));
-            if game.native_set_nickname(change.uuid, change.nick.as_deref()) {
+            let shown = change.nick.as_ref().map(|n| format!("~{n}"));
+            if game.native_set_nickname(change.uuid, shown.as_deref()) {
                 smp.nicks_shown.insert(change.uuid);
             } else {
                 smp.nicks_shown.remove(&change.uuid);
@@ -1282,7 +1308,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         for p in &players {
             if !smp.nicks_shown.contains(&p.uuid)
                 && let Some(nick) = nicks.nick_of(p.uuid)
-                && game.native_set_nickname(p.uuid, Some(nick))
+                && game.native_set_nickname(p.uuid, Some(&format!("~{nick}")))
             {
                 smp.nicks_shown.insert(p.uuid);
             }
@@ -1348,8 +1374,8 @@ impl ServerNames {
 }
 
 impl smp_nick::Names for ServerNames {
-    fn taken(&self, lower: &str) -> bool {
-        self.names.iter().any(|(_, n)| n.eq_ignore_ascii_case(lower)) || self.ops.iter().any(|n| n.eq_ignore_ascii_case(lower))
+    fn known(&self) -> Vec<(Option<u128>, String)> {
+        self.names.iter().map(|(u, n)| (Some(*u), n.clone())).chain(self.ops.iter().map(|n| (None, n.clone()))).collect()
     }
     fn find(&self, name: &str) -> Option<(u128, String)> {
         self.names.iter().find(|(_, n)| n.eq_ignore_ascii_case(name)).cloned()

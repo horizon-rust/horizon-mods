@@ -1,0 +1,33 @@
+id = "minelights"
+kind = "native-mod"
+name = "MineLights"
+summary = "MineLights is a Minecraft mod that brings RGB lighting integrations to Minecraft Java Edition and Horizon."
+description = """
+MineLights is a Minecraft Fabric, Quilt, Forge, NeoForge and Horizon mod that brings your world to life with dynamic RGB lighting effects for your peripherals. Effects respond to your environment, weather and player status; keyboard lighting can also display health, hunger, experience and a compass.
+
+Configure MineLights through Horizon's Mods menu. OpenRGB devices and Yeelight bulbs can connect directly. Other supported RGB devices use [MineLights Server](https://github.com/megabytesme/MineLights-Server).
+
+MineLights connects to local RGB services and may discover Yeelight bulbs on the local network. On Windows, its enabled-by-default server option can download MineLights Server from GitHub and launch it when needed. The settings include controls for this behaviour and for restarting or updating the server.
+
+This is the Horizon port of [MineLights](https://github.com/megabytesme/MineLights), by MegaBytesMe. As a native mod, it is built into the game and runs with the player's account permissions.
+"""
+authors = ["MegaBytesMe"]
+owners = ["megabytesme"]
+license = "CC-BY-NC-SA-4.0"
+source = "https://github.com/megabytesme/MineLights/tree/814483164be9d249c4bc29deb5528905f29c34dd/horizon"
+icon = "https://raw.githubusercontent.com/megabytesme/MineLights/master/assets/icon.png"
+key = "RWQXM9P921f9AnO4kAKnVMu+2UdAr6BeAdM70P6PjbT7xxxmJbVb/qlN"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-01"
+game = "26.3"
+file = "minelights-0.1.0.hnmod"
+sha256 = "0b12b1a3094f39d7c36135fa4800c7cff7754415097896288e4cc12c49697ed6"
+signature = """
+untrusted comment: signature from minisign secret key
+RUQXM9P921f9AmH+azTAaO/EDU0hBKnY4aOHoLA6qbcvZmitA8jV7kT0vQ1X2Cprc0bxDpLvLK6rJF5Tk5UhhZSC2oRTl+A99wU=
+trusted comment: MineLights Horizon native mod 0.1.0
+/TprNG2Mb7e2LVN+hBzI348OIqO/cfW3zfjmnOXO/O4Hwxf15M3TYQ4izCq3sYzhpTVVxjVgvkOFPB7FaOcaAQ==
+"""
+changelog = "Initial Horizon release of MineLights for Minecraft 26.3."

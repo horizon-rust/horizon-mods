@@ -13,9 +13,9 @@ A huge starship you fly yourself, with a large walkable interior that moves with
 
 **What it does as a native mod.** It is compiled into the game with no sandbox. It changes the game's rendering, ticking and chunk loading for the ship and portals, and registers a thread-exit callback in builds made with MinGW so the allocator frees finished threads' memory.
 
-**What it does not do.** It adds no network access of its own beyond the game's own, and it reads no accounts or files outside the game's data. It holds no Minecraft code or assets.
+**What it does not do.** It adds no network access of its own beyond the game's own, and it reads no accounts or files outside the game's data. It keeps the ship in the world's own folder (`astral_cruiser/ship.json`). It holds no Minecraft code or assets.
 
-Weapons can damage what they hit. Portals can hang in the air, so a player on foot falls if there is no ground at the exit, including into the End's void.
+Weapons hurt the mobs they hit. With blasting turned on in the control panel (off by default), the nose guns and beams also blow up the blocks they hit. Portals can hang in the air, so a player on foot falls if there is no ground at the exit, including into the End's void.
 
 Built for this Horizon commit only: `68ac6f647e7022b2c696e81863d7cface28c9416`."""
 authors = ["repositorykreml1n"]

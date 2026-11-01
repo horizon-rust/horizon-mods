@@ -1,0 +1,20 @@
+id = "customhud"
+kind = "native-mod"
+repo = "sonoFrangu/CustomHUD-Horizon"
+name = "Beautiful Day Counter"
+summary = "A lightweight day counter, clock and day/night cycle bar for the HUD, with an in-game settings screen."
+description = """
+Beautiful Day Counter for Horizon, a native mod.
+
+Shows the current survival day, an in-game clock and a color-shifting bar that follows the day/night cycle, without changing gameplay. It is a port of the author's own Fabric/NeoForge mod [CustomHUD](https://github.com/sonoFrangu/CustomHUD), with the same HUD and the same settings screen.
+
+- Day counter with the game mode icon; a golden apple or totem, a rainbow counter and a sound on milestone days (50, 100, 365, every 100).
+- 12-hour or 24-hour clock; the clock icon turns into a bed when you can sleep.
+- Day/night bar with four color themes (Classic, Pastel, Colorblind, Mono), night marks, countdown to night or day, moon phase.
+- Top or bottom placement, size, opacity, offsets, optional background; vanilla boss bars move below the HUD when it is at the top.
+- Settings screen opened with H (or from Options > Mods): Elements, Look and Behavior, with tooltips.
+- English, Italian, German, Spanish, French and Portuguese."""
+authors = ["SCARABOCCHIO100"]
+owners = ["sonoFrangu"]
+license = "MIT"
+icon = "icons/customhud.png"

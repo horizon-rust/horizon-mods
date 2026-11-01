@@ -16,6 +16,7 @@
 // turns the icons and effects into menus, packets and commands. Added to the
 // game as `game::smp_casino`; also a module of this crate, for its tests.
 
+use super::smp_casino_crash::{self as crash, Crash};
 use super::smp_casino_roulette::{self as roulette, Roulette};
 use super::smp_casino_slots::{self as slots, Slots};
 use super::smp_economy::{Economy, Out, Player, TREASURY};
@@ -55,6 +56,9 @@ pub struct Config {
     /// A win of at least this many times the stake is a jackpot: fireworks,
     /// everyone told, and the Discord bridge.
     pub jackpot_multiple: i64,
+    /// Crash: the house's edge, and the highest multiplier a flight reaches.
+    pub crash_edge_percent: i64,
+    pub crash_max: i64,
 }
 
 impl Default for Config {
@@ -68,6 +72,8 @@ impl Default for Config {
             float: 20_000,
             announce_profit: 5000,
             jackpot_multiple: 50,
+            crash_edge_percent: 4,
+            crash_max: 100,
         }
     }
 }
@@ -77,6 +83,7 @@ impl Default for Config {
 pub enum Game {
     Roulette,
     Slots,
+    Crash,
 }
 
 impl Game {
@@ -84,12 +91,14 @@ impl Game {
         match self {
             Game::Roulette => "roulette",
             Game::Slots => "slots",
+            Game::Crash => "crash",
         }
     }
     pub fn title(self) -> &'static str {
         match self {
             Game::Roulette => "Roulette",
             Game::Slots => "Slots",
+            Game::Crash => "Crash",
         }
     }
 }
@@ -276,6 +285,17 @@ pub enum Fx {
     Show(u128),
     /// The player's casino menu opens again on its (new) view.
     Open(u128),
+    /// The crash's boss bar: its line, its colour when it changes, its fill
+    /// (0 to 100).
+    Boss {
+        text: String,
+        color: Option<Color>,
+        value: u32,
+    },
+    /// Who sees the boss bar (by name), when that changes.
+    BossPlayers(Vec<String>),
+    /// The boss bar goes away.
+    BossHide,
 }
 
 /// What a player's casino menu shows.
@@ -286,6 +306,7 @@ pub enum View {
     /// Roulette's single numbers, to bet on one.
     RouletteNumbers,
     Slots,
+    Crash,
 }
 
 impl View {
@@ -294,6 +315,7 @@ impl View {
             View::Lobby => "Casino",
             View::Roulette | View::RouletteNumbers => "Casino · Roulette",
             View::Slots => "Casino · Slots",
+            View::Crash => "Casino · Crash",
         }
     }
 }
@@ -311,6 +333,8 @@ pub struct Seat {
     pub roulette: roulette::Table,
     /// The slot machine: where its reels stand.
     pub slots: slots::Machine,
+    /// Crash: the automatic cash-out the next bet takes (hundredths, 0: none).
+    pub crash_auto: u32,
     /// The frame last shown, so a menu is sent again only when it changed.
     pub shown: Option<i64>,
 }
@@ -383,13 +407,20 @@ pub struct Casino {
     pub seats: HashMap<u128, Seat>,
     pub roulette: Roulette,
     pub slots: Slots,
+    pub crash: Crash,
+    /// The draws' random.
+    pub rng: Rng,
     /// When each player's last round ended, for the cooldown.
     ended: HashMap<u128, i64>,
+    /// The boss bar as last sent: its frame, colour and players; None when
+    /// hidden (and, at the start, a leftover of the last run to take away).
+    boss: Option<(i64, Color, Vec<u128>)>,
+    boss_reset: bool,
 }
 
 pub const COMMANDS: [&str; 1] = ["casino"];
 
-const USAGE: &str = "Usage: /casino [help|top|stats|roulette|slots]";
+const USAGE: &str = "Usage: /casino [help|top|stats|roulette|slots|crash]";
 
 impl Casino {
     /// The casino of the world in `dir`; an unreadable `casino.json` is
@@ -415,7 +446,11 @@ impl Casino {
             seats: HashMap::new(),
             roulette: Roulette::default(),
             slots: Slots::default(),
+            crash: Crash::default(),
+            rng: Rng::from_os(),
             ended: HashMap::new(),
+            boss: None,
+            boss_reset: true,
         };
         (casino, problem)
     }
@@ -431,12 +466,12 @@ impl Casino {
 
     /// Whether anything moves: the tick then comes back within a frame.
     pub fn animating(&self) -> bool {
-        self.roulette.busy() || self.slots.busy()
+        self.roulette.busy() || self.slots.busy() || self.crash.busy()
     }
 
     /// Whether `uuid` has a round being decided, in any game.
     pub fn playing(&self, uuid: u128) -> bool {
-        self.roulette.playing(uuid) || self.slots.playing(uuid)
+        self.roulette.playing(uuid) || self.slots.playing(uuid) || self.crash.playing(uuid)
     }
 
     fn today(&mut self, now: i64) {
@@ -543,11 +578,7 @@ impl Casino {
             Ok(paid) => paid,
             Err(e) => {
                 // Not decided: the stake goes back (or at the next start).
-                let _ = economy.release("casino_void", to, stake.amount);
-                if let Some(day) = self.ledger.players.get_mut(&uuid_string(to)) {
-                    day.wagered -= stake.amount;
-                }
-                self.dirty = true;
+                self.void(economy, stake);
                 return vec![Fx::Out(Out::Tell(
                     to,
                     format!("The round couldn't be paid ({e}): your bet was given back."),
@@ -716,6 +747,7 @@ impl Casino {
             [] => (Vec::new(), Some(View::Lobby)),
             ["roulette"] => (Vec::new(), Some(View::Roulette)),
             ["slots"] => (Vec::new(), Some(View::Slots)),
+            ["crash"] => (Vec::new(), Some(View::Crash)),
             ["help"] => (
                 self.help(economy).into_iter().map(Out::Reply).collect(),
                 None,
@@ -764,6 +796,7 @@ impl Casino {
         ];
         lines.extend(roulette::HELP.iter().map(|s| s.to_string()));
         lines.extend(slots::HELP.iter().map(|s| s.to_string()));
+        lines.extend(crash::HELP.iter().map(|s| s.to_string()));
         lines
     }
 
@@ -777,6 +810,7 @@ impl Casino {
             stake,
             roulette: roulette::Table::default(),
             slots: slots::Machine::default(),
+            crash_auto: 0,
             shown: None,
         });
         seat.view = view;
@@ -821,6 +855,11 @@ impl Casino {
                 self.slots.layout(&mut cells, uuid, seat, now);
                 self.bar(&mut cells, economy, seat, uuid, now);
             }
+            View::Crash => {
+                self.crash
+                    .layout(&mut cells, uuid, seat, now, self.config.crash_max);
+                self.bar(&mut cells, economy, seat, uuid, now);
+            }
         }
         cells
     }
@@ -832,27 +871,9 @@ impl Casino {
             }
         }
         cells[4] = icon("minecraft:gold_block", "The Casino", Color::Gold);
-        cells[20] = icon(
-            "minecraft:red_concrete",
-            "Roulette: European, one zero (house edge 2.7%)",
-            Color::Red,
-        );
-        cells[22] = icon(
-            "minecraft:nether_star",
-            "Slots: 3 reels, top prize 500x (94.2% paid back)",
-            Color::Aqua,
-        );
-        cells[24] = icon(
-            "minecraft:book",
-            "Odds and rules (/casino help)",
-            Color::White,
-        );
-        cells[30] = icon(
-            "minecraft:sunflower",
-            "Coinflip, player against player: /coinflip <amount>",
-            Color::Yellow,
-        );
-        cells[32] = icon("minecraft:paper", "Lottery: /lottery", Color::Yellow);
+        for (slot, item, name, color) in LOBBY {
+            cells[slot] = icon(item, name, color);
+        }
         let day = self.day(uuid, now);
         cells[38] = icon(
             "minecraft:clock",
@@ -962,7 +983,6 @@ impl Casino {
         slot: usize,
         shift: bool,
         now: i64,
-        rng: &mut Rng,
     ) -> Vec<Fx> {
         let Some(seat) = self.seats.get_mut(&uuid) else {
             return Vec::new();
@@ -1011,9 +1031,10 @@ impl Casino {
         match view {
             View::Lobby => {
                 let to = match slot {
-                    20 => View::Roulette,
-                    22 => View::Slots,
-                    24 => {
+                    19 => View::Roulette,
+                    21 => View::Slots,
+                    23 => View::Crash,
+                    31 => {
                         let lines = self.help(economy);
                         return lines
                             .into_iter()
@@ -1036,9 +1057,10 @@ impl Casino {
                 match roulette::click(seat, slot) {
                     roulette::Click::Nothing => Vec::new(),
                     roulette::Click::Show => vec![Fx::Show(uuid)],
-                    roulette::Click::Spin => self.spin(economy, uuid, now, rng),
+                    roulette::Click::Spin => self.spin(economy, uuid, now),
                 }
             }
+            View::Crash => self.crash_click(economy, uuid, slot, now),
             View::Slots => {
                 if slot != 53 || self.slots.playing(uuid) {
                     return Vec::new();
@@ -1051,7 +1073,7 @@ impl Casino {
                         color: Color::Red,
                     }],
                     Ok(stake) => {
-                        self.slots.pull(stake, now, rng);
+                        self.slots.pull(stake, now, &mut self.rng);
                         if let Some(seat) = self.seats.get_mut(&uuid) {
                             seat.shown = Some(0);
                         }
@@ -1070,7 +1092,222 @@ impl Casino {
         }
     }
 
-    fn spin(&mut self, economy: &mut Economy, uuid: u128, now: i64, rng: &mut Rng) -> Vec<Fx> {
+    fn crash_click(&mut self, economy: &mut Economy, uuid: u128, slot: usize, now: i64) -> Vec<Fx> {
+        let Some(seat) = self.seats.get_mut(&uuid) else {
+            return Vec::new();
+        };
+        if slot == 42 {
+            let i = crash::AUTOS
+                .iter()
+                .position(|a| *a == seat.crash_auto)
+                .unwrap_or(0);
+            seat.crash_auto = crash::AUTOS[(i + 1) % crash::AUTOS.len()];
+            return vec![Fx::Show(uuid)];
+        }
+        if slot != 53 {
+            return Vec::new();
+        }
+        if self.crash.playing(uuid) {
+            return match self.crash.cash_out(uuid, now) {
+                Some((bet, h)) => self.crash_paid(economy, &bet, h, now),
+                None => Vec::new(),
+            };
+        }
+        if !self.crash.open() {
+            return vec![Fx::Bar {
+                to: uuid,
+                text: "Wait for the next round.".into(),
+                color: Color::Yellow,
+            }];
+        }
+        let (name, amount, auto) = (seat.name.clone(), seat.stake, seat.crash_auto);
+        match self.bet(economy, uuid, &name, Game::Crash, amount, now) {
+            Err(e) => vec![Fx::Bar {
+                to: uuid,
+                text: e,
+                color: Color::Red,
+            }],
+            Ok(stake) => {
+                self.crash.join(stake, auto, now);
+                vec![
+                    Fx::Show(uuid),
+                    Fx::Sound {
+                        to: uuid,
+                        sound: "minecraft:block.note_block.pling",
+                        volume: 0.6,
+                        pitch: 1.2,
+                    },
+                ]
+            }
+        }
+    }
+
+    /// A crash bet cashed out at `h` hundredths.
+    fn crash_paid(&mut self, economy: &mut Economy, bet: &crash::Bet, h: u32, now: i64) -> Vec<Fx> {
+        let payout = bet.stake.amount.saturating_mul(i64::from(h)) / 100;
+        let what = format!("Crash: cashed out at {}", crash::times(h));
+        let mut fx = self.settle(economy, &bet.stake, payout, &what, now);
+        fx.push(Fx::Show(bet.stake.uuid));
+        fx
+    }
+
+    /// A held bet given back, the round not played (its player left first).
+    fn void(&mut self, economy: &mut Economy, stake: &Stake) {
+        let _ = economy.release("casino_void", stake.uuid, stake.amount);
+        if let Some(day) = self.ledger.players.get_mut(&uuid_string(stake.uuid)) {
+            day.wagered -= stake.amount;
+            day.rounds = day.rounds.saturating_sub(1);
+        }
+        self.dirty = true;
+    }
+
+    /// The players on (once a second): a crash bet of one who left is
+    /// cashed out now (in flight) or given back (before it).
+    pub fn gone(&mut self, economy: &mut Economy, online: &[u128], now: i64) -> Vec<Fx> {
+        let away: Vec<u128> = self
+            .crash
+            .bets
+            .iter()
+            .map(|b| b.stake.uuid)
+            .filter(|u| !online.contains(u))
+            .collect();
+        let mut fx = Vec::new();
+        for uuid in away {
+            if let Some((bet, h)) = self.crash.cash_out(uuid, now) {
+                fx.extend(self.crash_paid(economy, &bet, h, now));
+            } else if let Some(bet) = self.crash.withdraw(uuid) {
+                self.void(economy, &bet.stake);
+            }
+        }
+        self.seats.retain(|u, _| online.contains(u));
+        fx
+    }
+
+    /// The crash round's step: take-off, automatic cash-outs, the crash, its
+    /// pictures and the boss bar.
+    fn crash_tick(&mut self, economy: &mut Economy, now: i64) -> Vec<Fx> {
+        let mut fx = Vec::new();
+        if self.boss_reset {
+            self.boss_reset = false;
+            fx.push(Fx::BossHide);
+        }
+        if !self.crash.busy() && self.boss.is_none() {
+            return fx;
+        }
+        let (edge, max) = (self.config.crash_edge_percent, self.config.crash_max);
+        let step = self.crash.step(now, &mut self.rng, edge, max);
+        let watching = |seats: &HashMap<u128, Seat>| -> Vec<u128> {
+            seats
+                .iter()
+                .filter(|(_, s)| s.view == View::Crash && s.window.is_some())
+                .map(|(u, _)| *u)
+                .collect()
+        };
+        if step.took_off {
+            for u in self
+                .crash
+                .bets
+                .iter()
+                .map(|b| b.stake.uuid)
+                .chain(watching(&self.seats))
+                .collect::<Vec<_>>()
+            {
+                fx.push(Fx::Sound {
+                    to: u,
+                    sound: "minecraft:entity.firework_rocket.launch",
+                    volume: 0.8,
+                    pitch: 1.0,
+                });
+            }
+        }
+        for (bet, h) in step.cashed {
+            fx.extend(self.crash_paid(economy, &bet, h, now));
+        }
+        if let Some((h, lost)) = step.crashed {
+            for bet in lost {
+                let what = format!("Crashed at {}", crash::times(h));
+                fx.push(Fx::Title {
+                    to: bet.stake.uuid,
+                    title: "CRASHED".into(),
+                    subtitle: what.clone(),
+                    color: Color::Red,
+                });
+                fx.extend(self.settle(economy, &bet.stake, 0, &what, now));
+            }
+            for u in watching(&self.seats) {
+                fx.push(Fx::Sound {
+                    to: u,
+                    sound: "minecraft:entity.generic.explode",
+                    volume: 0.5,
+                    pitch: 1.2,
+                });
+            }
+        }
+        // The pictures: the menus watching, the boss bar, the bettors' action bar.
+        let frame = self.crash.frame(now);
+        if self.boss.as_ref().map(|b| b.0) == Some(frame) {
+            return fx;
+        }
+        for (u, seat) in &mut self.seats {
+            if seat.view == View::Crash && seat.shown != Some(frame) {
+                seat.shown = Some(frame);
+                fx.push(Fx::Show(*u));
+            }
+        }
+        match self.crash.boss(now, max) {
+            None => {
+                self.boss = None;
+                fx.push(Fx::BossHide);
+            }
+            Some((text, color, value)) => {
+                let mut to: Vec<u128> = self.crash.bets.iter().map(|b| b.stake.uuid).collect();
+                to.extend(watching(&self.seats));
+                to.sort_unstable();
+                to.dedup();
+                let (last_color, last_to) = match &self.boss {
+                    Some((_, c, t)) => (Some(*c), Some(t.clone())),
+                    None => (None, None),
+                };
+                if last_to.as_ref() != Some(&to) {
+                    let names = to
+                        .iter()
+                        .filter_map(|u| {
+                            self.seats.get(u).map(|s| s.name.clone()).or_else(|| {
+                                self.crash
+                                    .bets
+                                    .iter()
+                                    .find(|b| b.stake.uuid == *u)
+                                    .map(|b| b.stake.name.clone())
+                            })
+                        })
+                        .collect();
+                    fx.push(Fx::BossPlayers(names));
+                }
+                if let Some(h) = self.crash.now_multiple(now) {
+                    for b in &self.crash.bets {
+                        fx.push(Fx::Bar {
+                            to: b.stake.uuid,
+                            text: format!(
+                                "Crash {}: cash out for {} (/casino crash)",
+                                crash::times(h),
+                                b.stake.amount * i64::from(h) / 100
+                            ),
+                            color: Color::Green,
+                        });
+                    }
+                }
+                fx.push(Fx::Boss {
+                    text,
+                    color: (last_color != Some(color)).then_some(color),
+                    value,
+                });
+                self.boss = Some((frame, color, to));
+            }
+        }
+        fx
+    }
+
+    fn spin(&mut self, economy: &mut Economy, uuid: u128, now: i64) -> Vec<Fx> {
         let Some(seat) = self.seats.get(&uuid) else {
             return Vec::new();
         };
@@ -1089,7 +1326,7 @@ impl Casino {
                 color: Color::Red,
             }],
             Ok(stake) => {
-                self.roulette.spin(stake, bet, from, now, rng);
+                self.roulette.spin(stake, bet, from, now, &mut self.rng);
                 if let Some(seat) = self.seats.get_mut(&uuid) {
                     seat.shown = Some(0);
                 }
@@ -1130,6 +1367,7 @@ impl Casino {
             fx.extend(self.settle(economy, &pull.stake, payout, &what, now));
             fx.push(Fx::Show(pull.stake.uuid));
         }
+        fx.extend(self.crash_tick(economy, now));
         // A new picture for each menu watching its round, 5 a second at most.
         for (uuid, seat) in &mut self.seats {
             let (frame, sound, pitch) = match seat.view {
@@ -1163,6 +1401,41 @@ impl Casino {
         fx
     }
 }
+
+/// The lobby's games and lines: slot, item, name, colour.
+const LOBBY: [(usize, &str, &str, Color); 6] = [
+    (
+        19,
+        "minecraft:red_concrete",
+        "Roulette: European, one zero (house edge 2.7%)",
+        Color::Red,
+    ),
+    (
+        21,
+        "minecraft:nether_star",
+        "Slots: 3 reels, top prize 500x (94.2% paid back)",
+        Color::Aqua,
+    ),
+    (
+        23,
+        "minecraft:firework_rocket",
+        "Crash: cash out before it crashes (96% paid back)",
+        Color::Green,
+    ),
+    (
+        29,
+        "minecraft:sunflower",
+        "Coinflip, player against player: /coinflip <amount>",
+        Color::Yellow,
+    ),
+    (
+        31,
+        "minecraft:book",
+        "Odds and rules (/casino help)",
+        Color::White,
+    ),
+    (33, "minecraft:paper", "Lottery: /lottery", Color::Yellow),
+];
 
 /// The stakes `-`/`+` step through: 10, 25, 50, 100, 250...
 fn step(stake: i64, up: bool) -> i64 {

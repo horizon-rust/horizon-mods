@@ -273,11 +273,10 @@ mod tests {
     fn a_pull_is_paid_once_and_frames_stay_at_5_a_second() {
         let (mut e, mut c, dir) = setup("slots", 100_000);
         let before = money(&e);
-        let mut rng = Rng::from_os();
         c.sit(A, "Alex", View::Slots);
         c.seats.get_mut(&A).unwrap().window = Some(5);
-        c.click(&mut e, A, 53, false, 0, &mut rng);
-        c.click(&mut e, A, 53, false, 30, &mut rng);
+        c.click(&mut e, A, 53, false, 0);
+        c.click(&mut e, A, 53, false, 30);
         assert_eq!(e.held(A), 10, "the double click pulled once");
         let mut shows = 0;
         for t in (0..FRAMES * FRAME_MS).step_by(50) {

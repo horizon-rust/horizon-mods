@@ -5,6 +5,8 @@
 pub mod smp_board;
 #[path = "../mixins/smp/smp_casino.rs"]
 pub mod smp_casino;
+#[path = "../mixins/smp/smp_casino_crash.rs"]
+pub mod smp_casino_crash;
 #[path = "../mixins/smp/smp_casino_roulette.rs"]
 pub mod smp_casino_roulette;
 #[path = "../mixins/smp/smp_casino_slots.rs"]

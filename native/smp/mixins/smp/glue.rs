@@ -72,9 +72,8 @@ pub struct Smp {
     trades: Trades<ItemStack>,
     games: Games,
     lottery: Lottery,
-    /// The casino's menus and rounds, and the random its draws come from.
+    /// The casino's menus and rounds.
     casino: Casino,
-    rng: smp_casino::Rng,
     /// An error when `places.json` can't be read: the commands say so.
     places: Result<Places, String>,
     /// An error when `claims.json` can't be read: nothing is guarded then,
@@ -196,7 +195,6 @@ fn open(dir: PathBuf) -> Smp {
         games: Games::new(config.gambling),
         lottery: Lottery::default(),
         casino,
-        rng: smp_casino::Rng::from_os(),
         places,
         claims,
         board,
@@ -296,6 +294,7 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "casino stats",
         "casino roulette",
         "casino slots",
+        "casino crash",
         "spawn",
         "home [name:word]",
         "sethome [name:word]",
@@ -877,7 +876,7 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
         let Ok(economy) = &mut smp.economy else {
             return;
         };
-        let commands = smp_casino_glue::clicked(game, &mut smp.casino, economy, &mut smp.rng, uuid, slot, mode == 1);
+        let commands = smp_casino_glue::clicked(game, &mut smp.casino, economy, uuid, slot, mode == 1);
         if smp.casino.animating() {
             BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
         }
@@ -1403,7 +1402,9 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         && (n % 20 == 0 || smp.casino.animating())
     {
         e.now = now;
-        casino = smp_casino_glue::tick(game, &mut smp.casino, e, now);
+        let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
+        let online = (n % 20 == 0).then_some(&on[..]);
+        casino = smp_casino_glue::tick(game, &mut smp.casino, e, now, online);
     }
     let title = smp.board.as_ref().map(|b| b.config.title.clone()).unwrap_or_default();
     let busy = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty())

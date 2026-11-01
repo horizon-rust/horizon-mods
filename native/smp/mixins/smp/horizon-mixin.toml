@@ -81,6 +81,12 @@ name = "smp_casino_slots"
 source = "smp_casino_slots.rs"
 
 [[module]]
+id = "casino_crash"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_casino_crash"
+source = "smp_casino_crash.rs"
+
+[[module]]
 id = "casino_glue"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_casino_glue"

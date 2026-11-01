@@ -457,22 +457,21 @@ mod tests {
     fn a_spin_through_the_menu_pays_once_even_when_the_menu_closes() {
         let (mut e, mut c, dir) = setup("roulette", 50_000);
         let before = money(&e);
-        let mut rng = Rng::from_os();
         c.sit(A, "Alex", View::Roulette);
         c.seats.get_mut(&A).unwrap().window = Some(3);
         assert!(
-            c.click(&mut e, A, 53, false, 0, &mut rng)
+            c.click(&mut e, A, 53, false, 0)
                 .iter()
                 .any(|f| matches!(f, Fx::Bar { .. })),
             "no bet yet"
         );
-        c.click(&mut e, A, 49, false, 0, &mut rng);
+        c.click(&mut e, A, 49, false, 0);
         assert_eq!(c.seats[&A].stake, 25);
-        c.click(&mut e, A, 18, false, 0, &mut rng);
+        c.click(&mut e, A, 18, false, 0);
         assert_eq!(c.seats[&A].roulette.bet, Some(Bet::Red));
-        c.click(&mut e, A, 53, false, 0, &mut rng);
+        c.click(&mut e, A, 53, false, 0);
         // A double click: the second spin is refused, nothing more held.
-        c.click(&mut e, A, 53, false, 50, &mut rng);
+        c.click(&mut e, A, 53, false, 50);
         assert_eq!(e.held(A), 25);
         // Frames: one picture per 200 ms, not per tick.
         let shows = |fx: &[Fx]| fx.iter().filter(|f| matches!(f, Fx::Show(A))).count();

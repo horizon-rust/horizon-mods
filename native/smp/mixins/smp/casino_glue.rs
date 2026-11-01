@@ -9,7 +9,7 @@
 use crate::game::{
     Game,
     native_server::NativeServerPlayer,
-    smp_casino::{self, Casino, Color, Fx, Icon, Rng},
+    smp_casino::{self, Casino, Color, Fx, Icon},
     smp_economy::{Economy, Out, Player},
 };
 use horizon_client::{
@@ -17,6 +17,12 @@ use horizon_client::{
     lan::data::component_nbt,
     text::{self, Text},
 };
+
+/// The crash's boss bar, made once a run (on its first use).
+static BOSS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+use std::sync::atomic::Ordering::Relaxed;
+const BOSS_ID: &str = "smp:casino_crash";
+const BOSS_TAG: &str = "smp_casino_crash";
 
 fn color(c: Color) -> u32 {
     match c {
@@ -97,7 +103,6 @@ pub(in crate::game) fn clicked(
     game: &mut Game<'_>,
     casino: &mut Casino,
     economy: &mut Economy,
-    rng: &mut Rng,
     uuid: u128,
     slot: i32,
     shift: bool,
@@ -110,14 +115,24 @@ pub(in crate::game) fn clicked(
     }
     let now = chrono::Utc::now().timestamp_millis();
     economy.now = now;
-    let fx = casino.click(economy, uuid, slot, shift, now, rng);
+    let fx = casino.click(economy, uuid, slot, shift, now);
     apply(game, casino, economy, fx, now)
 }
 
 /// The casino's share of the server's tick: frames, rounds that end, the
 /// pot's hourly sweep. The console commands, for after the lock.
-pub(in crate::game) fn tick(game: &mut Game<'_>, casino: &mut Casino, economy: &mut Economy, now: i64) -> Vec<String> {
-    let fx = casino.tick(economy, now);
+pub(in crate::game) fn tick(
+    game: &mut Game<'_>,
+    casino: &mut Casino,
+    economy: &mut Economy,
+    now: i64,
+    online: Option<&[u128]>,
+) -> Vec<String> {
+    let mut fx = casino.tick(economy, now);
+    // Once a second: crash bets of players who left.
+    if let Some(online) = online {
+        fx.extend(casino.gone(economy, online, now));
+    }
     if fx.is_empty() {
         return Vec::new();
     }
@@ -195,6 +210,41 @@ fn apply(game: &mut Game<'_>, casino: &mut Casino, economy: &Economy, fx: Vec<Fx
             Fx::Open(uuid) => {
                 shown.push(uuid);
                 open(game, casino, economy, uuid, now);
+            }
+            Fx::Boss { text: line, color: c, value } => {
+                if !BOSS.swap(true, Relaxed) {
+                    commands.push(format!("bossbar add {BOSS_ID} \"\""));
+                    commands.push(format!("bossbar set {BOSS_ID} max 100"));
+                }
+                let name = serde_json::json!({ "text": line, "color": "white" });
+                let colour = c.map(|c| match c {
+                    Color::Green => "green",
+                    Color::Red => "red",
+                    _ => "yellow",
+                });
+                commands.push(format!("bossbar set {BOSS_ID} name {name}"));
+                commands.push(format!("bossbar set {BOSS_ID} value {value}"));
+                if let Some(colour) = colour {
+                    commands.push(format!("bossbar set {BOSS_ID} color {colour}"));
+                }
+            }
+            Fx::BossPlayers(names) => {
+                if !BOSS.swap(true, Relaxed) {
+                    commands.push(format!("bossbar add {BOSS_ID} \"\""));
+                    commands.push(format!("bossbar set {BOSS_ID} max 100"));
+                }
+                commands.push(format!("tag @a remove {BOSS_TAG}"));
+                for name in names {
+                    commands.push(format!("tag {name} add {BOSS_TAG}"));
+                }
+                commands.push(format!("bossbar set {BOSS_ID} players @a[tag={BOSS_TAG}]"));
+                commands.push(format!("bossbar set {BOSS_ID} visible true"));
+            }
+            Fx::BossHide => {
+                // Taken away whole: a restart then shows no leftover.
+                BOSS.store(false, Relaxed);
+                commands.push(format!("bossbar remove {BOSS_ID}"));
+                commands.push(format!("tag @a remove {BOSS_TAG}"));
             }
         }
     }

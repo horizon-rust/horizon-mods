@@ -17,6 +17,7 @@
 // game as `game::smp_casino`; also a module of this crate, for its tests.
 
 use super::smp_casino_roulette::{self as roulette, Roulette};
+use super::smp_casino_slots::{self as slots, Slots};
 use super::smp_economy::{Economy, Out, Player, TREASURY};
 use super::smp_store::{read_json, uuid_string, write_json};
 use serde::{Deserialize, Serialize};
@@ -75,17 +76,20 @@ impl Default for Config {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum Game {
     Roulette,
+    Slots,
 }
 
 impl Game {
     pub fn id(self) -> &'static str {
         match self {
             Game::Roulette => "roulette",
+            Game::Slots => "slots",
         }
     }
     pub fn title(self) -> &'static str {
         match self {
             Game::Roulette => "Roulette",
+            Game::Slots => "Slots",
         }
     }
 }
@@ -281,6 +285,7 @@ pub enum View {
     Roulette,
     /// Roulette's single numbers, to bet on one.
     RouletteNumbers,
+    Slots,
 }
 
 impl View {
@@ -288,6 +293,7 @@ impl View {
         match self {
             View::Lobby => "Casino",
             View::Roulette | View::RouletteNumbers => "Casino · Roulette",
+            View::Slots => "Casino · Slots",
         }
     }
 }
@@ -303,6 +309,8 @@ pub struct Seat {
     pub stake: i64,
     /// Roulette's table: the bet chosen and where the wheel stands.
     pub roulette: roulette::Table,
+    /// The slot machine: where its reels stand.
+    pub slots: slots::Machine,
     /// The frame last shown, so a menu is sent again only when it changed.
     pub shown: Option<i64>,
 }
@@ -374,13 +382,14 @@ pub struct Casino {
     dirty: bool,
     pub seats: HashMap<u128, Seat>,
     pub roulette: Roulette,
+    pub slots: Slots,
     /// When each player's last round ended, for the cooldown.
     ended: HashMap<u128, i64>,
 }
 
 pub const COMMANDS: [&str; 1] = ["casino"];
 
-const USAGE: &str = "Usage: /casino [help|top|stats|roulette]";
+const USAGE: &str = "Usage: /casino [help|top|stats|roulette|slots]";
 
 impl Casino {
     /// The casino of the world in `dir`; an unreadable `casino.json` is
@@ -405,6 +414,7 @@ impl Casino {
             dirty: false,
             seats: HashMap::new(),
             roulette: Roulette::default(),
+            slots: Slots::default(),
             ended: HashMap::new(),
         };
         (casino, problem)
@@ -421,12 +431,12 @@ impl Casino {
 
     /// Whether anything moves: the tick then comes back within a frame.
     pub fn animating(&self) -> bool {
-        self.roulette.busy()
+        self.roulette.busy() || self.slots.busy()
     }
 
     /// Whether `uuid` has a round being decided, in any game.
     pub fn playing(&self, uuid: u128) -> bool {
-        self.roulette.playing(uuid)
+        self.roulette.playing(uuid) || self.slots.playing(uuid)
     }
 
     fn today(&mut self, now: i64) {
@@ -705,6 +715,7 @@ impl Casino {
         Some(match words[1..] {
             [] => (Vec::new(), Some(View::Lobby)),
             ["roulette"] => (Vec::new(), Some(View::Roulette)),
+            ["slots"] => (Vec::new(), Some(View::Slots)),
             ["help"] => (
                 self.help(economy).into_iter().map(Out::Reply).collect(),
                 None,
@@ -752,6 +763,7 @@ impl Casino {
             ),
         ];
         lines.extend(roulette::HELP.iter().map(|s| s.to_string()));
+        lines.extend(slots::HELP.iter().map(|s| s.to_string()));
         lines
     }
 
@@ -764,6 +776,7 @@ impl Casino {
             name: name.to_owned(),
             stake,
             roulette: roulette::Table::default(),
+            slots: slots::Machine::default(),
             shown: None,
         });
         seat.view = view;
@@ -804,6 +817,10 @@ impl Casino {
                 self.roulette.layout(&mut cells, uuid, seat, now);
                 self.bar(&mut cells, economy, seat, uuid, now);
             }
+            View::Slots => {
+                self.slots.layout(&mut cells, uuid, seat, now);
+                self.bar(&mut cells, economy, seat, uuid, now);
+            }
         }
         cells
     }
@@ -819,6 +836,11 @@ impl Casino {
             "minecraft:red_concrete",
             "Roulette: European, one zero (house edge 2.7%)",
             Color::Red,
+        );
+        cells[22] = icon(
+            "minecraft:nether_star",
+            "Slots: 3 reels, top prize 500x (94.2% paid back)",
+            Color::Aqua,
         );
         cells[24] = icon(
             "minecraft:book",
@@ -990,6 +1012,7 @@ impl Casino {
             View::Lobby => {
                 let to = match slot {
                     20 => View::Roulette,
+                    22 => View::Slots,
                     24 => {
                         let lines = self.help(economy);
                         return lines
@@ -1014,6 +1037,34 @@ impl Casino {
                     roulette::Click::Nothing => Vec::new(),
                     roulette::Click::Show => vec![Fx::Show(uuid)],
                     roulette::Click::Spin => self.spin(economy, uuid, now, rng),
+                }
+            }
+            View::Slots => {
+                if slot != 53 || self.slots.playing(uuid) {
+                    return Vec::new();
+                }
+                let (name, amount) = (seat.name.clone(), seat.stake);
+                match self.bet(economy, uuid, &name, Game::Slots, amount, now) {
+                    Err(e) => vec![Fx::Bar {
+                        to: uuid,
+                        text: e,
+                        color: Color::Red,
+                    }],
+                    Ok(stake) => {
+                        self.slots.pull(stake, now, rng);
+                        if let Some(seat) = self.seats.get_mut(&uuid) {
+                            seat.shown = Some(0);
+                        }
+                        vec![
+                            Fx::Show(uuid),
+                            Fx::Sound {
+                                to: uuid,
+                                sound: "minecraft:block.lever.click",
+                                volume: 0.8,
+                                pitch: 0.8,
+                            },
+                        ]
+                    }
                 }
             }
         }
@@ -1068,21 +1119,39 @@ impl Casino {
             fx.extend(self.settle(economy, &spin.stake, payout, &what, now));
             fx.push(Fx::Show(spin.stake.uuid));
         }
-        // A new picture for each menu watching a spin, 5 a second at most.
-        for (uuid, seat) in &mut self.seats {
-            if !matches!(seat.view, View::Roulette) {
-                continue;
+        for pull in self.slots.ended(now) {
+            let payout = pull.stake.amount * slots::multiple(slots::line(pull.stops));
+            if let Some(seat) = self.seats.get_mut(&pull.stake.uuid) {
+                seat.slots.stops = pull.stops;
+                seat.slots.last = Some(payout > 0);
+                seat.shown = None;
             }
-            if let Some(frame) = self.roulette.frame(*uuid, now)
-                && seat.shown != Some(frame)
-            {
+            let what = slots::line_name(pull.stops);
+            fx.extend(self.settle(economy, &pull.stake, payout, &what, now));
+            fx.push(Fx::Show(pull.stake.uuid));
+        }
+        // A new picture for each menu watching its round, 5 a second at most.
+        for (uuid, seat) in &mut self.seats {
+            let (frame, sound, pitch) = match seat.view {
+                View::Roulette => match self.roulette.frame(*uuid, now) {
+                    Some(f) => (f, "minecraft:block.note_block.hat", 0.8 + f as f32 * 0.03),
+                    None => continue,
+                },
+                View::Slots => match self.slots.frame(*uuid, now) {
+                    Some((f, true)) => (f, "minecraft:block.note_block.basedrum", 1.0),
+                    Some((f, false)) => (f, "minecraft:block.note_block.hat", 1.4),
+                    None => continue,
+                },
+                _ => continue,
+            };
+            if seat.shown != Some(frame) {
                 seat.shown = Some(frame);
                 fx.push(Fx::Show(*uuid));
                 fx.push(Fx::Sound {
                     to: *uuid,
-                    sound: "minecraft:block.note_block.hat",
+                    sound,
                     volume: 0.5,
-                    pitch: 0.8 + frame as f32 * 0.03,
+                    pitch,
                 });
             }
         }

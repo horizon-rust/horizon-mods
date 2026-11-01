@@ -295,6 +295,7 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "casino top",
         "casino stats",
         "casino roulette",
+        "casino slots",
         "spawn",
         "home [name:word]",
         "sethome [name:word]",

@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.26.0"
+version = "0.27.0"
 priority = 100
 
 # The commit of horizon it was tested on: it needs horizon#6106 (merged at 975c07d): native_inventory,
@@ -67,6 +67,12 @@ id = "jobs"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_jobs"
 source = "smp_jobs.rs"
+
+[[module]]
+id = "futures"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_futures"
+source = "smp_futures.rs"
 
 [[module]]
 id = "bank"

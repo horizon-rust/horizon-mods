@@ -21,6 +21,7 @@ header and footer).
 | `/treasury`, `/treasury log` | the Treasury's balance, its income by tax and its spending (today and since it opened), its last movements |
 | `/treasury pay <player> <amount> <reason>` | operators of level 3: pays a player from the Treasury (an event prize, a bug refund, a grant), never more than it holds; everyone sees it |
 | `/jobs`, `/jobs deliver <n>` | the day's contracts: deliver items the state asks for, paid from the Treasury |
+| `/futures`, `/futures long\|short <item> <margin> [leverage]`, `/futures close <n>`, `/futures info <item>`, `/futures list` | perpetual futures on the market's prices: a chest menu of your positions (profit green, loss red, liquidation price), leverage up to 10x |
 | `/eco stats` | the money supply and where it sits, what the server made and destroyed today, taxes and fees, how evenly money is spread |
 | `/bank`, `/bank deposit <amount\|all>`, `/bank withdraw <amount\|all>` | your savings, which earn a small interest from the Treasury each night |
 | `/ah` | the auction house: a chest menu of listings by category, cheapest a unit first; click one to buy it or bid; your listings (click to take one back) and your mail |
@@ -309,6 +310,23 @@ at most `budget_percent` (10) of the Treasury when posted (an empty Treasury pos
 command with the items pays. The board is kept in `economy.json` (`ext.jobs`): a restart neither posts twice nor
 loses a delivery.
 
+**Futures.** `/futures long|short <item> <margin> [leverage]` opens a perpetual position on an item's market price:
+its size is margin × leverage at the mark, in items. The mark is the market's 10-minute average of the mid
+(`Market::mark_price`/`twap`), never the last trade, so one player can't move it in one go; an item needs 5 minutes of
+prices first. Leverage: 2x for any traded item, +1x per `volume_per_leverage` (500) items the market traded in 24 h,
+up to `max_leverage` (10x). The liquidation price is shown when it opens and in the menu. Each minute (the market's
+price timer, never per tick) positions are marked: one whose equity falls to `maintenance_percent` (5%) of its size
+is liquidated, online or not, and its whole margin goes to the insurance fund (the player is told when back; a
+margin of `announce_margin` (1,000) or more is told to everyone). A player never loses more than the margin: a move
+past it is the fund's (counted as `gaps`). The house is every trade's other side through the insurance fund (part of
+the Treasury): profits come out of it, losses go in, and a position that would raise the house's net exposure past
+what the fund could pay in a `stress_percent` (30%) move is refused. Fees `fee_percent` (0.2%) of the size, to open
+and to close, go to the Treasury. Funding, each hour: the side with more open interest pays the fund up to
+`funding_percent_hour` (0.05%) of its size, in proportion to the imbalance, from its margins. Caps: `max_player_item`
+(20,000 coins of size on one item) and `max_player_total` (50,000), open interest on an item at most
+`max_item_volume_days` (3) days of its market volume. Positions and their margins (the `futures` pool) are in
+`economy.json` (`ext.futures`), written with the money: a restart keeps them and never liquidates twice.
+
 **The report.** `/eco stats` (anyone) shows the money supply (wallets, savings and money held, the Treasury, the
 insurance fund, each pool), what the server made today (market sales, the daily reward) and destroyed (market
 purchases, operators' `/eco take`), the day's taxes and fees, and how evenly money is spread (Gini over players
@@ -363,7 +381,7 @@ action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explos
 | File | What it is |
 |---|---|
 | `mixins/smp/horizon-mixin.toml` | The bundle: twenty-eight modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs`, `smp_auction.rs`, `smp_bank.rs`, `smp_report.rs`, `smp_jobs.rs`, `smp_market_prices.rs`, `smp_market_menu.rs`, `smp_market_chart.rs`, `smp_invsee.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`, `game::smp_auction`, `game::smp_bank`, `game::smp_report`, `game::smp_jobs`, `game::smp_market_prices`, `game::smp_market_menu`, `game::smp_market_chart`, `game::smp_invsee`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs`, `smp_auction.rs`, `smp_bank.rs`, `smp_report.rs`, `smp_jobs.rs`, `smp_market_prices.rs`, `smp_market_menu.rs`, `smp_market_chart.rs`, `smp_invsee.rs`, `smp_futures.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`, `game::smp_auction`, `game::smp_bank`, `game::smp_report`, `game::smp_jobs`, `game::smp_market_prices`, `game::smp_market_menu`, `game::smp_market_chart`, `game::smp_invsee`, `game::smp_futures`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `mixins/smp/smp_casino.rs`, `smp_casino_roulette.rs`, `smp_casino_slots.rs`, `smp_casino_crash.rs`, `smp_casino_blackjack.rs` | The casino's rules, menus and effects (`game::smp_casino*`) |

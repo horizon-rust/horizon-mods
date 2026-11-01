@@ -39,6 +39,8 @@ header and footer).
 | `/trade cancel` | ends your trade, or withdraws your request |
 | `/coinflip <amount> [player]` | stakes an amount for anyone (or one player) to match; off unless `gambling.enabled` |
 | `/lottery`, `/lottery buy <tickets>` | the pot, your tickets and the time to the draw; buys tickets (off unless `gambling.enabled`) |
+| `/casino`, `/casino roulette\|slots\|crash\|blackjack` | the casino's lobby menu, or a game's table (needs `gambling.enabled` and `casino.enabled`) |
+| `/casino help`, `/casino top`, `/casino stats` | every game's odds and house edge and the limits; today's biggest wins; what you bet, won and may still lose today |
 | `/coinflip accept <player>`, `/coinflip cancel`, `/coinflip list` | takes an offer (a fair coin decides, the winner gets both stakes), withdraws yours, lists those waiting |
 | `/spawn` | to the server's spawn; `/setspawn` (operators of level 3) sets it where you stand |
 | `/home [name]`, `/sethome [name]`, `/delhome [name]`, `/homes` | your homes (`home` when unnamed): go, set or move one where you stand, delete, list |
@@ -135,6 +137,31 @@ the system, never the world's random. Only the in-game currency is staked and wo
 from a round's first ticket to its draw). Tickets are held like coinflip stakes; at the draw one ticket is picked at
 random among all sold (more tickets, more chances), its owner gets the pot (less `fee_percent`), and everyone hears
 it. A round with a single player, or one the server stopped with, gives every ticket back.
+
+**The casino.** On with `gambling.enabled` (and `casino.enabled`, true by default). Every game is a chest menu any
+stock client can play, animated by changing its items at most 5 times a second for each open menu (and only while a
+round moves), with note-block sounds, titles and the action bar for results, fireworks and a line for everyone on a
+jackpot:
+
+- European roulette: one zero, red/black, odd/even, 1-18/19-36 pay 1 to 1, dozens and columns 2 to 1, a number 35 to
+  1; house edge 2.70% on every bet. The wheel turns and slows down on the drawn pocket.
+- Slots: 3 reels of 32 stops with item symbols, one payline, a published paytable (three Nether Stars 500x down to
+  three Berries 6x, two Berries 2x); 94.2% paid back (house edge 5.8%), one pull in 4.5 pays.
+- Crash: one shared round; bet in the 10 s before take-off, then cash out (or set an automatic cash-out) before it
+  crashes. P(crash at x or more) = 96% / x, capped at 100x: 96% paid back whatever you do. Each player in the round
+  sees the multiplier in their own boss bar and the action bar.
+- Blackjack: 6 decks shuffled each hand, the dealer stands on all 17s and peeks, blackjack pays 3 to 2, double on the
+  first two cards, no split; about 1% house edge with basic strategy.
+
+Every draw is made by the server (ChaCha20 keyed from the system) before the animation starts. Bets go from `min_bet`
+10 to `max_bet` 1000; a player may lose at most `daily_loss_cap` (10,000) a day (UTC, all games together), and
+`cooldown_ms` (2000) passes between the end of a round and their next bet. A bet is held like a coinflip stake;
+closing the menu or leaving never loses a round: a spin or a pull ends and is paid, a blackjack hand stands, a crash
+bet is cashed out when its player leaves in flight (or given back before take-off). Wins are paid from the casino's
+pot (`economy.json`'s pool `casino`), never with new money: a win larger than the pot is paid up to it. Once an hour
+the pot above `float` (20,000) goes to the Treasury (`casino_profit`); below it, the Treasury tops it up with what it
+holds (`casino_float`). A win of `jackpot_multiple` (50) times the stake, or of `announce_profit` (5000) coins, is
+told to everyone. Settings in `config.json`'s `casino`, also `crash_edge_percent` (4) and `crash_max` (100).
 
 **Places.** A teleport waits `warmup_seconds` (3) in `config.json`'s `places`; a player who moves or is hurt meanwhile
 stays where they are, and `cooldown_seconds` (10) passes between two of one player's teleports. `/tpa` takes the
@@ -265,6 +292,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `market.json` | what each player sold today (coins and items), for the daily limits |
 | `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |
+| `casino.json` | the day's ledger: each player's bets, wins and rounds today (the daily loss cap), the day's biggest wins, each game's totals, the pot's last sweep |
 | `claims.json` | each claimed chunk (`<dimension> <chunk x> <chunk z>`) with its owner, and whom each owner trusts |
 | `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `grant`, `land_tax`...), `amount`, `from`/`to` with their balance before, `by` for an operator, `to_pool`/`from_pool` with `pool_before` and `reason` for a pool's movement; a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
 
@@ -284,11 +312,14 @@ action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explos
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: sixteen modules and the HEAD hooks |
+| `mixins/smp/horizon-mixin.toml` | The bundle: twenty-five modules and the HEAD hooks |
 | `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs`, `smp_auction.rs`, `smp_bank.rs`, `smp_report.rs`, `smp_jobs.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`, `game::smp_auction`, `game::smp_bank`, `game::smp_report`, `game::smp_jobs`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
+| `mixins/smp/smp_casino.rs`, `smp_casino_roulette.rs`, `smp_casino_slots.rs`, `smp_casino_crash.rs`, `smp_casino_blackjack.rs` | The casino's rules, menus and effects (`game::smp_casino*`) |
+| `mixins/smp/casino_glue.rs` | The casino's effects for a stock client: menu items, sounds, titles, fireworks, boss bars (`game::smp_casino_glue`) |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |
+| `proof_casino.py` | The casino's proof (`SMP_PROOF=casino`): both clients play every game through the menus |
 
 ## Build and prove
 

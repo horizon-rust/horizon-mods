@@ -414,6 +414,7 @@ impl Economy {
 
     /// A payment from `pool` to `uuid` (a grant, a refund, a payout),
     /// logged as `kind`: never more than the pool holds.
+    #[allow(dead_code)] // the casino, the auction house and the futures
     pub fn from_pool(
         &mut self,
         kind: &str,
@@ -471,6 +472,7 @@ impl Economy {
 
     /// Moves `amount` from one pool to another (the casino's profit to the
     /// Treasury), logged as `kind`; an Err when `from` holds less.
+    #[allow(dead_code)] // the casino, the auction house and the futures
     pub fn pool_move(
         &mut self,
         kind: &str,
@@ -510,6 +512,7 @@ impl Economy {
     /// A bet against a pool decided: `uuid`'s held `stake` goes into
     /// `pool`, then `payout` (at most what the pool then holds) comes out
     /// to them; one log line. What was paid. Never makes money.
+    #[allow(dead_code)] // the casino, the auction house and the futures
     pub fn settle_pool(
         &mut self,
         kind: &str,

@@ -3,7 +3,10 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 
 - the economy opens an account for each player (config.json written with its defaults, then economy.json);
 - /balance, /pay (the payer's answer and the payee's line), refused payments (too much, to oneself, unknown name);
-- /baltop; /eco is refused below level 3 and works for an operator (made one from the server's console);
+- the Treasury: an operator (made one from the server's console) pays a player from it with a reason (/treasury pay),
+  which everyone sees in /treasury and /treasury log; /eco give is refused to everyone (nobody can make money), and a
+  non-operator can't pay from the Treasury; /eco taxes explains the tax code;
+- /baltop;
 - the commands are in each player's command tree (the chat box's suggestions);
 - the market (Steve in survival, items given from the console): /worth, /sell <item>, /sell hand, /buy, with the
   items gone from or in his inventory as his client sees it; a creative player can't sell;
@@ -16,7 +19,7 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - the lottery: two players' tickets held, one drawn after `lottery_seconds`, the winner announced to everyone and paid
   the pot;
 - after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change;
-- /money and /eco give * for an operator, then the /shop menu: a category, one item bought by a click and a stack by
+- a Treasury payment for an operator, then the /shop menu: a category, one item bought by a click and a stack by
   a shift-click, a stack of the player's own sold by clicking it, "Sell all" stopped by the daily limit (the rest
   kept, the limit shown in the menu and in /worth, the day's sales in market.json), the close button;
 - nicknames: refused ones (a player's name, too short, a bad character), one in the other's chat and Tab list,
@@ -562,16 +565,16 @@ def nicks(server, alex, steve, out):
 
 
 def shop(server, alex):
-    """Alex alone, op, in survival: /money and /eco give *, then the /shop menu: a category, buying one and a stack,
+    """Alex alone, op, in survival: paid from the Treasury (/eco give refused), then the /shop menu: a category, buying one and a stack,
     selling a stack of hers, "Sell all" up to the daily limit, closing. Returns the coins it added, and the lines."""
     results = {}
     # Only what the step gives her: "Sell all" would sell the rest too.
     server.console("clear Alex")
     time.sleep(1)
-    results["money"] = alex.say("/money give Alex 2000")
-    assert any("Alex now has" in l for l in results["money"]), results
-    results["everyone"] = alex.say("/eco give * 10")
-    assert any("Gave 10 coins to 1 player(s) on." in l for l in results["everyone"]), results
+    results["money"] = alex.say("/treasury pay Alex 2010 proof: shop funds")
+    assert any("The Treasury paid 2,010 coins to Alex: proof: shop funds (by Alex)." in l for l in results["money"]), results
+    results["no_printing"] = alex.say("/eco give Alex 10")
+    assert any("Nobody can make money" in l for l in results["no_printing"]), results
     assert alex.count("minecraft:iron_ingot") == 0
     alex.say("/shop")
     menu = alex.menu()
@@ -710,6 +713,8 @@ def run(ctl, resources, out):
                                                       "presence": {"daily_reward": 0},
                                                       # Steve plays a few minutes before his nickname.
                                                       "nicks": {"min_playtime_minutes": 1}}))
+        # A Treasury with money, the only place operators may pay from (nobody can make money).
+        (data / "economy.json").write_text(json.dumps({"accounts": {}, "pools": {"treasury": 5000}}))
         # A nickname an older version let through, taken off at the first start.
         (data / "nicks.json").write_text(json.dumps({"nicks": {"00000000-0000-0000-0000-00000000abcd": {
             "nick": "N0tch", "changed": 0}}}))
@@ -723,7 +728,7 @@ def run(ctl, resources, out):
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
         assert results["config_keys"] == ["board", "claims", "currency", "gambling", "market", "nicks", "places",
-                                          "presence", "shop", "starting_balance"], config
+                                          "presence", "shop", "starting_balance", "taxes"], config
         results["welcome"] = steve.chat()
         assert any("Welcome to the server, Steve!" in l for l in results["welcome"]), results["welcome"]
         assert any("1. Be respectful to everyone." in l for l in results["welcome"]), results["welcome"]
@@ -734,7 +739,9 @@ def run(ctl, resources, out):
         assert config["market"]["items"]["minecraft:diamond"] == {"buy": 400, "sell": 100}, config
         server.console("op Alex")
         time.sleep(1)
-        alex.say("/eco give Alex 500")
+        results["grant"] = alex.say("/treasury pay Alex 500 proof funding")
+        assert any("The Treasury paid 500 coins to Alex: proof funding (by Alex). Treasury: 4,500 coins." in l
+                   for l in results["grant"]), results
         results["balance"] = alex.say("/balance")
         assert any("Balance: 500 coins" in l for l in results["balance"]), results
         results["pay"] = alex.say("/pay Steve 120")
@@ -747,6 +754,15 @@ def run(ctl, resources, out):
             assert any(error in l for l in lines), results["refused"]
         results["eco_refused"] = steve.say("/eco give Steve 1000")
         assert not any("now has" in l for l in results["eco_refused"]), results
+        results["treasury_refused"] = steve.say("/treasury pay Steve 1000 because")
+        assert not any("The Treasury paid" in l for l in results["treasury_refused"]), results
+        results["treasury"] = steve.say("/treasury")
+        assert any("Treasury: 4,500 coins" in l for l in results["treasury"]), results
+        assert any("grant 500 coins" in l for l in results["treasury"]), results
+        results["treasury_log"] = steve.say("/treasury log")
+        assert any("-500 coins grant (Alex): proof funding, by Alex" in l for l in results["treasury_log"]), results
+        results["taxes"] = steve.say("/eco taxes")
+        assert any("Land tax, weekly: 5 coins a claimed chunk past your first 4." in l for l in results["taxes"]), results
         results["baltop"] = steve.say("/baltop")
         assert any("1. Alex: 380 coins" in l for l in results["baltop"]), results
         assert any("2. Steve: 120 coins" in l for l in results["baltop"]), results
@@ -805,7 +821,7 @@ def run(ctl, resources, out):
         assert balances["Alex"] == alex_after and sum(balances.values()) + held == 815, economy
         audit = [json.loads(l) for l in (data / "audit.log").read_text().splitlines()]
         results["audit"] = [a["kind"] for a in audit]
-        assert results["audit"] == ["open", "open", "eco_give", "pay", "sell 20 minecraft:wheat",
+        assert results["audit"] == ["open", "open", "grant", "pay", "sell 20 minecraft:wheat",
                                     "sell 3 minecraft:diamond", "buy 5 minecraft:torch", "trade", "trade_failed",
                                     "trade", "trade_money", "pay", "pay", "coinflip_stake", "coinflip_stake", "coinflip_win",
                                     "coinflip_stake", "lottery_ticket", "lottery_ticket", "lottery_win"] + (
@@ -832,8 +848,10 @@ def run(ctl, resources, out):
         economy = json.loads((data / "economy.json").read_text())
         total = sum(a["balance"] for a in economy["accounts"].values())
         assert "held" not in economy and total == 815 + 7 + added, economy
+        # Every coin an operator gave came out of the Treasury.
+        assert economy["pools"]["treasury"] == 5000 - 500 - 2010, economy["pools"]
         kinds = [json.loads(l)["kind"] for l in (data / "audit.log").read_text().splitlines()]
-        shop_kinds = ["eco_give", "eco_give", "buy 1 minecraft:iron_ingot", "buy 64 minecraft:cobblestone",
+        shop_kinds = ["grant", "buy 1 minecraft:iron_ingot", "buy 64 minecraft:cobblestone",
                       "sell 1 minecraft:iron_ingot", "sell 19 minecraft:diamond"]
         assert kinds[-len(shop_kinds):] == shop_kinds, kinds[-8:]
         kinds = kinds[:-len(shop_kinds)]

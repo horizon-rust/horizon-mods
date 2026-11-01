@@ -271,8 +271,17 @@ impl Claims {
         Err(Some(format!("This land is claimed by {}.", name_of(owner))))
     }
 
+    /// How many chunks each owner holds (the weekly land tax), one pass.
+    pub fn counts(&self) -> std::collections::HashMap<u128, usize> {
+        let mut out = std::collections::HashMap::new();
+        for &u in self.owners.values().flat_map(|c| c.values()) {
+            *out.entry(u).or_default() += 1;
+        }
+        out
+    }
+
     /// How many chunks `uuid` holds.
-    fn held(&self, uuid: u128) -> usize {
+    pub fn held(&self, uuid: u128) -> usize {
         self.owners
             .values()
             .flat_map(|c| c.values())

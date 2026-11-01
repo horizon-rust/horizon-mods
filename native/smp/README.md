@@ -8,7 +8,7 @@ Players install nothing: it speaks only what a stock Horizon client already show
 lines, vanilla chest menus the server fills with ordinary items (the trade menu); later sounds, titles, the action
 bar, boss bars and the sidebar).
 
-This version: the economy, the server market and its `/shop` menu, player trades, the coinflip, the lottery, places (spawn, homes, warps,
+This version: the economy with its Treasury and taxes, the server market and its `/shop` menu, player trades, the coinflip, the lottery, places (spawn, homes, warps,
 teleport requests, the rules), land claims, and the scoreboard (a sidebar with your balance, playtime and the richest players, the Tab list's
 header and footer).
 
@@ -17,8 +17,10 @@ header and footer).
 | `/balance [player]`, `/bal` | your balance, or another player's |
 | `/pay <player> <amount>` | gives money to a player who has an account (anyone who has played since the mod was on) |
 | `/baltop [page]` | the richest players, 10 a page |
-| `/eco give\|take\|set <player> <amount>`, `/money ...` | operators of level 3: corrections, logged (`/money` is the same command); the player given money is told |
-| `/eco give * <amount>` | operators of level 3: to every player on, one logged change each |
+| `/eco take <player> <amount> [reason]`, `/money take ...` | operators of level 3: a cheat's gains go into the Treasury, logged with the reason. Nobody gives or sets money (`/eco give` and `/eco set` say so) |
+| `/treasury`, `/treasury log` | the Treasury's balance, its income by tax and its spending (today and since it opened), its last movements |
+| `/treasury pay <player> <amount> <reason>` | operators of level 3: pays a player from the Treasury (an event prize, a bug refund, a grant), never more than it holds; everyone sees it |
+| `/eco taxes`, `/taxes` | the tax code and your own bill on Monday; `/eco taxes pay` pays land tax you owe |
 | `/shop` | the market as a chest menu: categories, a click buys one, a shift-click 64, a click on a stack of yours sells it, "Sell all" |
 | `/worth [item]` | what the market pays and asks for an item (the one in your hand without a name), and what you may still sell today |
 | `/sell hand [count]`, `/sell <item> [count]`, `/sell all` | sells to the market: the stack in your hand, an item, or everything it buys |
@@ -162,6 +164,25 @@ get in a bed; `presence.afk_announce` tells everyone instead of only them. A pla
 `presence.spam_commands` (8) of the SMP's commands in `presence.spam_seconds` (5); operators of level 3 aren't
 limited. All of it is looked at once a second.
 
+**The Treasury and taxes.** Nobody can make money, operators included: money enters the game only through the daily
+reward and what the market buys from players (later, paid contracts, from the Treasury). Every tax, fee and house edge
+goes into the Treasury, a pool in `economy.json` that belongs to no player (not in `/baltop` or the sidebar), and
+operators pay only from it (`/treasury pay`, with a reason everyone sees, logged as `grant`). A refund for a bug is
+such a payment, never new money. `/treasury` shows its balance, its income by kind and its spending; `/treasury log`
+its last 50 movements. The tax code (`config.json`'s `taxes`):
+- VAT (`vat_percent`, 5): on sales between players (the auction house, next), paid by the seller from the price.
+- Land tax, every Monday 00:00 UTC: `land_tax_per_chunk` (5 coins) a week per claimed chunk past the first
+  `land_free_chunks` (4). What a player can't pay is owed: no new claim until it's paid (`/eco taxes pay`, or the
+  next Monday's collection). Nothing is ever unclaimed for it.
+- Wealth tax, every Monday: `wealth_brackets` `[from, percent]`, by default 1% of a balance's part above 50,000,
+  2% above 250,000 and 3% above 1,000,000 a week. On 2026-11-01 the richest player held 11,804 coins: nobody pays it
+  yet; it keeps fortunes from growing without bound as the economy does.
+- Games of chance: the coinflip's and the lottery's `fee_percent` goes to the Treasury.
+The week's collection is looked at once a second (one comparison) and runs once a week; a restart never collects
+twice (the week collected is kept with the balances). `enabled: false` turns the weekly taxes off.
+Other parts reach the pools through `Economy::to_pool`, `from_pool`, `pool_move` and `settle_pool` (a bet against a
+pool: the stake goes in, the payout comes out, never more than the pool holds), each one audit line.
+
 The currency is earned in game only: it can't be bought with real money or cashed out (Mojang's usage guidelines).
 
 ## Data
@@ -172,14 +193,14 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | File | Holds |
 |---|---|
 | `config.json` | `currency` (default `coins`), `starting_balance` (default 0), `market`: `enabled`, `items` (each item's `buy`, what the market asks, and `sell`, what it pays, 0 closing that side), `daily_sell_coins` (2000) and `daily_sell_items` (640), 0 for no limit; `shop`: `enabled`, `title`, `categories` (`name`, `icon`, `items`); written with the defaults the first time, and again when a newer version adds keys (your values kept) |
-| `economy.json` | balances by player UUID, with the name last seen, and `held`: coinflip stakes and lottery tickets being decided |
+| `economy.json` | balances by player UUID, with the name last seen; `held`: coinflip stakes and lottery tickets being decided; `pools`: the Treasury, its insurance fund and other system pools; `treasury`: its income and spending by kind and its last movements; `ext`: other parts' state written in the same step as the money (`tax`: the week collected, land tax owed) |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
 | `nicks.json` | each player's nickname and when they last changed it |
 | `market.json` | what each player sold today (coins and items), for the daily limits |
 | `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |
 | `claims.json` | each claimed chunk (`<dimension> <chunk x> <chunk z>`) with its owner, and whom each owner trusts |
-| `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `eco_give`...), `amount`, `from`/`to` with their balance before, `by` for an operator; a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
+| `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `grant`, `land_tax`...), `amount`, `from`/`to` with their balance before, `by` for an operator, `to_pool`/`from_pool` with `pool_before` and `reason` for a pool's movement; a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
 
 `economy.json` is written whole to a temporary file, flushed and renamed over the old one, at most once a server tick
 and when the world closes: a crash leaves the old file or the new one. If it can't be read, the economy stays off (the
@@ -197,8 +218,8 @@ action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explos
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: fourteen modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: fifteen modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |

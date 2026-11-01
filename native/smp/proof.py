@@ -733,7 +733,7 @@ def run(ctl, resources, out):
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
         assert results["config_keys"] == ["auction", "bank", "board", "claims", "currency", "gambling", "market", "nicks",
-                                          "places", "presence", "shop", "starting_balance", "taxes"], config
+                                          "places", "presence", "report", "shop", "starting_balance", "taxes"], config
         results["welcome"] = steve.chat()
         assert any("Welcome to the server, Steve!" in l for l in results["welcome"]), results["welcome"]
         assert any("1. Be respectful to everyone." in l for l in results["welcome"]), results["welcome"]

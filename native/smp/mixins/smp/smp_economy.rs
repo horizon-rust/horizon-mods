@@ -73,6 +73,9 @@ pub struct Treasury {
     pub day: i64,
     pub income_today: BTreeMap<String, i64>,
     pub spent_today: BTreeMap<String, i64>,
+    /// The day before `day`'s, kept for the daily report.
+    pub income_yesterday: BTreeMap<String, i64>,
+    pub spent_yesterday: BTreeMap<String, i64>,
     /// The latest movements, newest last (at most `LOG`).
     pub log: Vec<Movement>,
 }
@@ -105,6 +108,40 @@ pub struct Accounts {
     /// What went into and out of the Treasury pool, for `/treasury`.
     #[serde(default)]
     pub treasury: Treasury,
+    /// Money made and destroyed by the server (`adjust`: market sales and
+    /// purchases, the daily reward), by kind, for `/eco stats`.
+    #[serde(default)]
+    pub flows: Flows,
+}
+
+/// Money the server made (`minted`) or took out of the game (`burned`),
+/// today and the day before, by kind (the audit kind's first word).
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Flows {
+    pub day: i64,
+    pub minted: BTreeMap<String, i64>,
+    pub burned: BTreeMap<String, i64>,
+    pub minted_yesterday: BTreeMap<String, i64>,
+    pub burned_yesterday: BTreeMap<String, i64>,
+}
+
+impl Flows {
+    /// Starts `day` (moving the last one to yesterday's when it was the day
+    /// before).
+    pub fn roll(&mut self, day: i64) {
+        if self.day == day {
+            return;
+        }
+        let next = self.day + 1 == day;
+        self.minted_yesterday = std::mem::take(&mut self.minted);
+        self.burned_yesterday = std::mem::take(&mut self.burned);
+        if !next {
+            self.minted_yesterday.clear();
+            self.burned_yesterday.clear();
+        }
+        self.day = day;
+    }
 }
 
 /// The state's pool: taxes, fees and house edges in; grants out.
@@ -190,6 +227,22 @@ impl Economy {
                 Some((super::smp_store::parse_uuid(k)?, a.name.clone(), a.balance))
             })
             .collect()
+    }
+
+    /// Money the server made and destroyed, by kind (rolled to `now`'s day).
+    pub fn flows(&mut self) -> &Flows {
+        self.accounts.flows.roll(self.now.div_euclid(DAY_MS));
+        &self.accounts.flows
+    }
+
+    /// All the money held for games.
+    pub fn held_total(&self) -> i64 {
+        self.accounts.held.values().sum()
+    }
+
+    /// Every pool, by name.
+    pub fn pools(&self) -> &BTreeMap<String, i64> {
+        &self.accounts.pools
     }
 
     /// Money `uuid` has held for a game.
@@ -332,9 +385,14 @@ impl Economy {
             .unwrap_or_else(|| by.to_owned());
         let t = &mut self.accounts.treasury;
         if t.day != day {
+            let next = t.day + 1 == day;
+            t.income_yesterday = std::mem::take(&mut t.income_today);
+            t.spent_yesterday = std::mem::take(&mut t.spent_today);
+            if !next {
+                t.income_yesterday.clear();
+                t.spent_yesterday.clear();
+            }
             t.day = day;
-            t.income_today.clear();
-            t.spent_today.clear();
         }
         let (all, today) = if amount > 0 {
             (&mut t.income, &mut t.income_today)
@@ -733,6 +791,15 @@ impl Economy {
             .get_mut(&key)
             .expect("checked")
             .balance = after;
+        let flows = &mut self.accounts.flows;
+        flows.roll(self.now.div_euclid(DAY_MS));
+        let family = kind.split(' ').next().unwrap_or(kind).to_owned();
+        let map = if delta >= 0 {
+            &mut flows.minted
+        } else {
+            &mut flows.burned
+        };
+        *map.entry(family).or_default() += delta.abs();
         self.touch();
         Ok(after)
     }

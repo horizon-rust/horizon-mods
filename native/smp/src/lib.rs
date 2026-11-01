@@ -25,6 +25,8 @@ pub mod smp_places;
 pub mod smp_presence;
 #[path = "../mixins/smp/smp_recipes.rs"]
 pub mod smp_recipes;
+#[path = "../mixins/smp/smp_report.rs"]
+pub mod smp_report;
 #[path = "../mixins/smp/smp_shop.rs"]
 pub mod smp_shop;
 #[path = "../mixins/smp/smp_store.rs"]

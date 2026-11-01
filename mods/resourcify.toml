@@ -1,0 +1,29 @@
+id = "resourcify"
+kind = "native-mod"
+name = "Resourcify"
+summary = "Find and install Modrinth resource packs from the Resource Packs screen."
+description = """
+Adds a + button to the Resource Packs screen. It opens a browser for Modrinth's resource packs.
+
+- Search while you type, sort by relevance, downloads, newest or updated.
+- Show only packs for this game version, or all versions.
+- Pick a version and press Install: the file is downloaded from Modrinth's own server, checked against its SHA-1
+  and saved in your resourcepacks folder.
+
+Only resource packs, only Modrinth, only search and install.
+
+Inspired by [Resourcify](https://modrinth.com/mod/resourcify) by DeDiamondPro (LGPL-3.0). This is a clean-room
+version for Horizon, written from Modrinth's public API; it contains none of its code or assets. The icon is my own."""
+authors = ["tariksabanuz"]
+owners = ["tariksabanuz"]
+license = "MIT"
+source = "https://github.com/tariksabanuz/ResourcifyHorizon"
+icon = "icons/resourcify.png"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-01"
+game = "26.3"
+file = "resourcify-0.1.0.hnmod"
+sha256 = "789447fb454864af2a711ad8204f395331248d70dba570016b248766b959a2a2"
+changelog = "First release: the + button on the Resource Packs screen with Modrinth search, versions and install."

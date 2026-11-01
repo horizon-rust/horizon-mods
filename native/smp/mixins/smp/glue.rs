@@ -43,7 +43,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.28.0";
+pub const VERSION: &str = "0.29.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -1411,13 +1411,14 @@ fn change_line(label: &str, change: Option<f64>) -> (String, &'static str) {
 
 /// An item's prices and moves, as lore lines.
 fn price_lines(smp: &Smp, id: &str, now: i64) -> Vec<(String, &'static str)> {
-    let money = |n: i64| smp.economy.as_ref().map_or_else(|_| n.to_string(), |e| e.money(n));
-    let p = smp.market.price(id);
+    let each = smp.market.each(id);
+    let each = smp.economy.as_ref().map_or_else(|_| format!("{each:.2}"), |e| smp_market::each_money(e, each));
+    let p = smp.market.base(id);
     let mut lines = Vec::new();
     match (p.buy > 0, p.sell > 0) {
-        (true, true) => lines.push((format!("Buy {} · Sell {}", money(p.buy), money(p.sell)), "gold")),
-        (true, false) => lines.push((format!("Buy {} (the market doesn't buy it)", money(p.buy)), "gold")),
-        (false, true) => lines.push((format!("Sell {} (the market doesn't sell it)", money(p.sell)), "gold")),
+        (true, true) => lines.push((format!("Price: {each} each, to buy or sell"), "gold")),
+        (true, false) => lines.push((format!("Price: {each} each (the market doesn't buy it)"), "gold")),
+        (false, true) => lines.push((format!("Price: {each} each (the market doesn't sell it)"), "gold")),
         (false, false) => {}
     }
     lines.push(change_line("1 h", smp.market.change(id, now, 60)));
@@ -1451,7 +1452,7 @@ fn market_items(smp: &Smp, uuid: u128, now: i64) -> Vec<Option<ItemStack>> {
                 C::Detail(id) => {
                     let mut lines = price_lines(smp, &id, now);
                     let base = smp.market.base(&id);
-                    lines.push((format!("Base: buy {} · sell {}", money(base.buy), money(base.sell)), "gray"));
+                    lines.push((format!("Base price: {}", money(base.buy.max(base.sell))), "gray"));
                     lines.push((format!("Tax: {}% to the Treasury", smp.market.config.dynamic.tax_percent), "gray"));
                     if let Some(left) = smp.market.items_left(uuid, now, &id) {
                         lines.push((format!("You may still sell {left} today"), "gray"));
@@ -1459,21 +1460,20 @@ fn market_items(smp: &Smp, uuid: u128, now: i64) -> Vec<Option<ItemStack>> {
                     with_lore(button(&id, &name(&id), "white"), &lines)
                 }
                 C::Buy(id, n) => {
-                    let cost = smp.market.price(&id).buy.saturating_mul(i64::from(n));
-                    let mut b = button(
-                        "minecraft:lime_concrete",
-                        &format!("Buy {n} for {} + {} tax", money(cost), money(tax(cost))),
-                        "green",
+                    // What these n cost now, the price moving as they go.
+                    let cost = smp.market.value(&id, n, true).0;
+                    let mut b = with_lore(
+                        button("minecraft:lime_concrete", &format!("Buy {n} for {}", money(cost)), "green"),
+                        &[(format!("Tax {}%: +{}", smp.market.config.dynamic.tax_percent, money(tax(cost))), "gray")],
                     );
                     b.count = n;
                     b
                 }
                 C::Sell(id, n) => {
-                    let gets = smp.market.price(&id).sell.saturating_mul(i64::from(n));
-                    let mut b = button(
-                        "minecraft:red_concrete",
-                        &format!("Sell {n} for {} − {} tax", money(gets), money(tax(gets))),
-                        "red",
+                    let gets = smp.market.value(&id, n, false).0;
+                    let mut b = with_lore(
+                        button("minecraft:red_concrete", &format!("Sell {n} for {}", money(gets)), "red"),
+                        &[(format!("Tax {}%: −{}", smp.market.config.dynamic.tax_percent, money(tax(gets))), "gray")],
                     );
                     b.count = n;
                     b

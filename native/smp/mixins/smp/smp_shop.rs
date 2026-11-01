@@ -405,7 +405,7 @@ mod tests {
         let cells = shop.layout(&config, &market, ALEX);
         assert_eq!(
             cells[0],
-            Cell::Item("minecraft:coal".into(), Price { buy: 8, sell: 2 })
+            Cell::Item("minecraft:coal".into(), Price { buy: 4, sell: 4 })
         );
         assert_eq!(cells[BACK], Cell::Back);
         assert_eq!(

@@ -1,23 +1,27 @@
-// The market's moving prices (smp_market's `dynamic`): each item has a base
-// price (config.json's buy and sell), a factor that scales both, and a
-// history. Players' sales push the factor down and purchases push it up, by
-// an elasticity per item (rare, dear items move faster than common ones);
-// the factor drifts back toward 1 (mean reversion) and stays within
-// `min_factor`..`max_factor`. Prices change only on the minute timer, never
-// per trade or per tick. Manipulation: one trade moves the price at most
-// `max_trade_impact_percent`, one player's trades on an item at most
-// `max_player_impact_percent` a minute, the whole minute at most
-// `max_minute_move_percent`; and every item's buy price is at least its sale
-// price times `max_factor / min_factor`, so no buy at any time and sale at any
-// other time can earn money (`validate`), whoever trades and however the
-// price was pushed. The history: one point a minute for 24 h, one an hour
-// for 30 days (`market_prices.json`), the time-weighted mean for futures
-// (`twap`, `mark_price`), the day's movers and news (`summary`), the web's
-// JSON (`web`). No game types. Added to the game as
-// `game::smp_market_prices`; also a module of this crate, for its tests.
+// The market's moving prices (smp_market's `dynamic`): each item has one
+// base price (config.json's `buy`, the same as its `sell` when the market
+// trades it both ways), a factor that scales it, and a history. A purchase
+// pushes the factor up and a sale down, at once, by an elasticity per item
+// (rare, dear items move faster than common ones). A trade of n items costs
+// the area under the price along the way it moves the price (`fill`): the
+// same curve both ways, so a sale exactly retraces a purchase, and a round
+// trip earns nothing but the tax, whoever trades and however the price was
+// pushed. Within a minute the price moves at most `max_minute_move_percent`
+// from where the minute began: the rest of a trade waits for the next minute
+// (never priced flat: buying slowly while the price drifts back, then
+// dumping at a flat edge, would earn). At `min_factor`..`max_factor` the
+// price stops and a trade goes at that bound, the least the market ever pays
+// or the most it ever asks. Between trades the factor drifts back toward
+// 1 (mean reversion). Items made of one another (`smp_recipes`) share one
+// factor, with an elasticity by value, so crafting can't beat the market. The
+// history: one point a minute for 24 h, one an hour for 30 days
+// (`market_prices.json`), the time-weighted mean for futures (`twap`,
+// `mark_price`), the day's movers and news (`summary`). No game types. Added
+// to the game as `game::smp_market_prices`; also a module of this crate, for
+// its tests.
 
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 pub const MINUTE_MS: i64 = 60_000;
 pub const HOUR_MS: i64 = 3_600_000;
@@ -34,8 +38,11 @@ pub struct Dynamic {
     pub max_factor: f64,
     /// How long the factor takes to come halfway back to 1.
     pub half_life_hours: f64,
+    /// Unused since 0.29 (trades move the price at once, along one curve):
+    /// kept so older configs read the same.
     pub max_trade_impact_percent: f64,
     pub max_player_impact_percent: f64,
+    /// How far the price may move within one minute (either way).
     pub max_minute_move_percent: f64,
     /// The share of each trade that goes to the Treasury (a money sink for
     /// the players, shown on the receipt).
@@ -101,13 +108,6 @@ impl Dynamic {
         self.depth.retain(|_, v| v.is_finite() && *v > 0.0);
     }
 
-    /// The buy price an item needs so no round trip earns: its sale price
-    /// times `max_factor / min_factor`, rounded up.
-    pub fn least_buy(&self, sell: i64) -> i64 {
-        let need = sell as f64 * self.max_factor / self.min_factor;
-        (need - 1e-9).ceil() as i64
-    }
-
     /// The tax on `amount` coins (rounded to the nearest coin).
     pub fn tax(&self, amount: i64) -> i64 {
         let bp = (self.tax_percent * 100.0).round() as i64;
@@ -150,7 +150,9 @@ pub enum Span {
     Hour,
 }
 
-/// What the market asks and pays for one now, and the mid.
+/// The price of one now (`mid`), and what one costs to buy and one brings
+/// when sold, in whole coins (the price moves a little as a trade goes, and
+/// coins round against the trader).
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Quote {
     pub mid: f64,
@@ -165,8 +167,10 @@ pub struct Track {
     pub factor: f64,
     pub minutes: Vec<Point>,
     pub hours: Vec<Point>,
-    /// This minute's push (natural log of the factor), volume, sales.
-    pub flow: f64,
+    /// The log of the factor when this minute began (the minute's band is
+    /// around it).
+    pub open: f64,
+    /// This minute's volume and sales.
     pub volume: u32,
     pub sold: u32,
     /// The hour being summed.
@@ -190,9 +194,27 @@ pub struct Book {
     pub taxes: i64,
     /// The last daily summary's lines (for the web page and Kira).
     pub last_summary: Vec<String>,
-    /// Each player's push this minute on an item (not kept).
-    #[serde(skip)]
-    pub pushed: HashMap<(u128, String), f64>,
+}
+
+/// What `value` coins of a purchase cost in whole coins (rounded up; a
+/// hundredth of a coin forgiven, so a whole price stays whole).
+pub fn to_pay(value: f64) -> i64 {
+    (value - 0.01).ceil().max(0.0) as i64
+}
+
+/// What `value` coins of a sale bring in whole coins (rounded down).
+pub fn to_get(value: f64) -> i64 {
+    (value + 0.01).floor().max(0.0) as i64
+}
+
+/// One price for an item the market both buys and sells at `buy` and `sell`
+/// (before 0.29 they differed): their geometric mean, whole, at least 1.
+pub fn one_price(buy: i64, sell: i64) -> i64 {
+    match (buy > 0, sell > 0) {
+        (true, true) => ((buy as f64 * sell as f64).sqrt().round() as i64).max(1),
+        (true, false) => buy,
+        _ => sell.max(0),
+    }
 }
 
 /// The base mid price of an item priced `buy` and `sell`.
@@ -219,22 +241,31 @@ impl Book {
             .map_or(1.0, |t| if t.factor > 0.0 { t.factor } else { 1.0 })
     }
 
-    /// The prices now of an item based at `buy` and `sell`.
-    pub fn quote(&self, id: &str, buy: i64, sell: i64) -> Quote {
-        let f = self.factor(id);
+    /// The price now of an item based at `mid` (one unit moving its log
+    /// factor `delta`): one, and what one costs and brings.
+    pub fn quote(&self, config: &Dynamic, id: &str, mid: f64, delta: f64) -> Quote {
         Quote {
-            mid: base_mid(buy, sell) * f,
-            buy: if buy > 0 {
-                ((buy as f64 * f) - 1e-9).ceil().max(1.0) as i64
-            } else {
-                0
-            },
-            sell: if sell > 0 {
-                (sell as f64 * f + 1e-9).floor() as i64
-            } else {
-                0
-            },
+            mid: mid * self.factor(id),
+            buy: to_pay(self.one(config, id, mid, delta, true)),
+            sell: to_get(self.one(config, id, mid, delta, false)),
         }
+    }
+
+    /// One unit's value now along the curve (within the bounds; the
+    /// minute's band aside, so a side the band has closed still shows what
+    /// its next one goes for).
+    fn one(&self, config: &Dynamic, id: &str, mid: f64, delta: f64, buy: bool) -> f64 {
+        let s0 = self.factor(id).ln();
+        let s1 = if buy {
+            (s0 + delta).min(config.max_factor.ln().max(s0))
+        } else {
+            (s0 - delta).max(config.min_factor.ln().min(s0))
+        };
+        if delta <= 0.0 || s1 == s0 {
+            return mid * s0.exp();
+        }
+        mid / delta * (s1.exp() - s0.exp()).abs()
+            + (1.0 - (s1 - s0).abs() / delta).max(0.0) * mid * s1.exp()
     }
 
     /// Items that move `id` (based at `mid`) by 1%.
@@ -246,37 +277,108 @@ impl Book {
             .unwrap_or_else(|| (400.0 / mid.max(0.01)).clamp(2.0, 400.0))
     }
 
-    /// A trade: `n` of `id` (based at `mid`) bought (`buy`) or sold by
-    /// `uuid`. It pushes this minute's flow within the caps. The push made
-    /// (log of the factor), for tests.
+    /// How far one of `id` (based at `mid`) moves the log of its factor.
+    pub fn unit_move(config: &Dynamic, id: &str, mid: f64) -> f64 {
+        0.01 / Self::depth(config, id, mid)
+    }
+
+    /// What `n` of `id` (based at `mid`, each moving the log factor by
+    /// `delta`) are worth bought (`buy`) or sold now: the area under the
+    /// price as the trade moves it, exactly, so the same items sold back
+    /// retrace it. At a bound the price stops and the rest goes at it; past
+    /// this minute's band the rest isn't traded. The value, the log factor
+    /// after, and how many of the `n` go.
+    pub fn fill(
+        &self,
+        config: &Dynamic,
+        id: &str,
+        mid: f64,
+        delta: f64,
+        n: u32,
+        buy: bool,
+    ) -> (f64, f64, u32) {
+        let s0 = self.factor(id).ln();
+        let open = self.items.get(id).map_or(0.0, |t| t.open);
+        let band = config.max_minute_move_percent / 100.0;
+        let sign = if buy { 1.0 } else { -1.0 };
+        // How far this minute still lets it go, and where the bound is.
+        let edge = sign * (open + sign * band - s0);
+        let bound = if buy {
+            config.max_factor.ln() - s0
+        } else {
+            s0 - config.min_factor.ln()
+        };
+        if delta <= 0.0 {
+            return (f64::from(n) * mid * s0.exp(), s0, n);
+        }
+        let mut done = n;
+        if edge < bound {
+            // The band comes first: as many as fit in it.
+            let fit = (edge.max(0.0) / delta + 1e-9).floor();
+            if fit < f64::from(n) {
+                done = fit as u32;
+            }
+        }
+        let reach = (f64::from(done) * delta).min(bound.max(0.0));
+        let s1 = s0 + sign * reach;
+        let curve = mid / delta * (s1.exp() - s0.exp()).abs();
+        let flat = (f64::from(done) - reach / delta).max(0.0) * mid * s1.exp();
+        (curve + flat, s1, done)
+    }
+
+    /// A trade of `n` of `id` (based at `mid`, `delta` a unit) now: its
+    /// value (`fill`), the factor moved at once for `id` and every item in
+    /// `family` (the items it is made of or into), the volume counted.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "one trade's facts, read in one place"
+    )]
     pub fn trade(
         &mut self,
         config: &Dynamic,
-        uuid: u128,
         id: &str,
+        family: &[String],
         mid: f64,
+        delta: f64,
         n: u32,
         buy: bool,
     ) -> f64 {
-        let depth = Self::depth(config, id, mid);
-        let want = (f64::from(n) * 0.01 / depth).min(config.max_trade_impact_percent / 100.0);
-        let cap = config.max_player_impact_percent / 100.0;
-        let used = self.pushed.entry((uuid, id.to_owned())).or_default();
-        let push = want.min((cap - *used).max(0.0));
-        *used += push;
+        let (value, s1, n) = self.fill(config, id, mid, delta, n, buy);
+        let factor = s1.exp();
+        self.track(id).factor = factor;
+        for other in family {
+            self.track(other).factor = factor;
+        }
         let t = self.track(id);
-        t.flow += if buy { push } else { -push };
         t.volume = t.volume.saturating_add(n);
         t.hour_volume = t.hour_volume.saturating_add(n);
         if !buy {
             t.sold = t.sold.saturating_add(n);
             t.hour_sold = t.hour_sold.saturating_add(n);
         }
-        push
+        value
     }
 
-    /// The minute timer: every minute since the last one, each item's flow
-    /// applied (capped), the factor drawn back toward 1 and kept in bounds,
+    /// Items made of one another share one factor: each family's takes the
+    /// first member's that has one (after a config adds a family).
+    pub fn link(&mut self, families: &[Vec<String>]) {
+        for f in families {
+            let Some((factor, open)) = f
+                .iter()
+                .find_map(|id| self.items.get(id).map(|t| (t.factor, t.open)))
+            else {
+                continue;
+            };
+            for id in f {
+                let t = self.track(id);
+                t.factor = factor;
+                t.open = open;
+            }
+        }
+    }
+
+    /// The minute timer: every minute since the last one, each item's
+    /// factor drawn back toward 1 and kept in bounds, the minute's band set,
     /// a point written (and an hour's at each hour). `mids`: the items
     /// traded, with their base mid. Whether a minute passed.
     pub fn tick(&mut self, config: &Dynamic, mids: &BTreeMap<String, f64>, now: i64) -> bool {
@@ -292,15 +394,13 @@ impl Book {
         // covers it), its point at the last minute.
         let gap = ((minute - self.minute) / MINUTE_MS).max(1) as f64;
         let decay = 0.5f64.powf(gap / (config.half_life_hours * 60.0));
-        let max_move = config.max_minute_move_percent / 100.0;
         let (lo, hi) = (config.min_factor.ln(), config.max_factor.ln());
         let closed = self.minute;
         for (id, mid) in mids {
             let t = self.track(id);
-            let mut log = t.factor.max(1e-9).ln() + t.flow.clamp(-max_move, max_move);
-            log *= decay;
-            t.factor = log.clamp(lo, hi).exp();
-            t.flow = 0.0;
+            let log = (t.factor.max(1e-9).ln() * decay).clamp(lo, hi);
+            t.factor = log.exp();
+            t.open = log;
             let p = Point {
                 t: closed,
                 price: mid * t.factor,
@@ -327,7 +427,6 @@ impl Book {
         }
         // Items no longer traded go.
         self.items.retain(|id, _| mids.contains_key(id));
-        self.pushed.clear();
         self.minute = minute;
         // Purchases past the round-trip window go.
         let since = now - config.round_trip_hours * HOUR_MS;
@@ -561,46 +660,129 @@ mod tests {
         b
     }
 
-    #[test]
-    fn sales_lower_and_purchases_raise_the_price_at_the_next_minute_only() {
-        let c = Dynamic::default();
-        let mut b = book();
-        b.trade(&c, 1, "minecraft:diamond", 250.0, 1, false);
-        assert_eq!(b.factor("minecraft:diamond"), 1.0, "not before the minute");
-        b.tick(&c, &mids(), T0 + MINUTE_MS);
-        let f = b.factor("minecraft:diamond");
-        assert!(f < 1.0 && f > 0.99, "{f}");
-        b.trade(&c, 1, "minecraft:diamond", 250.0, 1, true);
-        b.trade(&c, 1, "minecraft:diamond", 250.0, 1, true);
-        b.tick(&c, &mids(), T0 + 2 * MINUTE_MS);
-        assert!(b.factor("minecraft:diamond") > f);
-        // Wheat is deep: 64 move it far less than one diamond.
-        b.trade(&c, 2, "minecraft:wheat", 2.0, 64, false);
-        b.tick(&c, &mids(), T0 + 3 * MINUTE_MS);
-        assert!(1.0 - b.factor("minecraft:wheat") < 0.004);
+    const D: &str = "minecraft:diamond";
+
+    /// One diamond's move (based at 250: 0.5%).
+    fn delta() -> f64 {
+        Book::unit_move(&Dynamic::default(), D, 250.0)
+    }
+
+    /// Buys or sells `n` diamonds (as many as the minute allows): the coins
+    /// paid (negative) or received, and how many.
+    fn deal(b: &mut Book, n: u32, buy: bool) -> (i64, u32) {
+        let done = b.fill(&Dynamic::default(), D, 250.0, delta(), n, buy).2;
+        let v = b.trade(&Dynamic::default(), D, &[], 250.0, delta(), n, buy);
+        (if buy { -to_pay(v) } else { to_get(v) }, done)
     }
 
     #[test]
-    fn one_trade_and_one_player_move_the_price_at_most_two_percent_a_minute() {
+    fn purchases_raise_and_sales_lower_the_price_at_once_along_one_curve() {
         let c = Dynamic::default();
         let mut b = book();
-        assert!((b.trade(&c, 1, "minecraft:diamond", 250.0, 640, false) - 0.02).abs() < 1e-12);
-        // Many small trades by the same player: nothing more this minute.
-        for _ in 0..50 {
-            assert_eq!(b.trade(&c, 1, "minecraft:diamond", 250.0, 1, false), 0.0);
+        let q = b.quote(&c, D, 250.0, delta());
+        // One price; one diamond moves it 0.5%, so one costs and brings the
+        // price give or take a quarter of a percent.
+        assert_eq!((q.mid, q.buy, q.sell), (250.0, 251, 249));
+        assert_eq!(deal(&mut b, 1, false), (249, 1));
+        assert!((b.factor(D) - (-0.005f64).exp()).abs() < 1e-12, "at once");
+        assert_eq!(deal(&mut b, 1, true), (-250, 1));
+        assert!((b.factor(D) - 1.0).abs() < 1e-12, "and back");
+        // Wheat is deep: 64 move it far less than one diamond.
+        let w = Book::unit_move(&c, "minecraft:wheat", 2.0);
+        b.trade(&c, "minecraft:wheat", &[], 2.0, w, 64, false);
+        assert!(1.0 - b.factor("minecraft:wheat") < 0.004);
+        // Its family moves with it.
+        let fam = vec!["minecraft:hay_block".to_string()];
+        b.trade(&c, "minecraft:wheat", &fam, 2.0, w, 64, true);
+        assert_eq!(b.factor("minecraft:hay_block"), b.factor("minecraft:wheat"));
+    }
+
+    #[test]
+    fn a_round_trip_earns_nothing_but_the_tax_for_1_64_and_past_the_band() {
+        let c = Dynamic::default();
+        // 1, 64, and 2,000 (far past the minute's 5% band: only what fits
+        // goes, and the same count comes back).
+        for n in [1u32, 64, 2000] {
+            for first_buy in [true, false] {
+                let mut b = book();
+                let (a, done) = deal(&mut b, n, first_buy);
+                let (z, back) = deal(&mut b, done, !first_buy);
+                assert_eq!(back, done);
+                let net = a + z - c.tax(a.abs()) - c.tax(z.abs());
+                assert!(a + z <= 0, "{n} {first_buy}: {a} {z}");
+                assert!(net < 0, "{n} {first_buy}: {net}");
+                // Within the band the curve is retraced exactly: only the
+                // rounding of whole coins (at most 2) and the tax remain.
+                if n <= 8 {
+                    assert!(a + z >= -2, "{n} {first_buy}: {a} {z}");
+                }
+            }
         }
-        b.tick(&c, &mids(), T0 + MINUTE_MS);
-        let f = b.factor("minecraft:diamond");
-        assert!(
-            (f - (-0.02 * 0.5f64.powf(1.0 / 360.0)).exp()).abs() < 1e-6,
-            "{f}"
+        // Two players: one pumps, the other sells into it: together they
+        // lose, whatever the split.
+        let mut b = book();
+        let paid = -deal(&mut b, 9, true).0;
+        let got = deal(&mut b, 9, false).0;
+        assert!(got <= paid, "{got} {paid}");
+    }
+
+    #[test]
+    fn whatever_the_trades_and_the_drift_items_back_where_they_were_cost_money() {
+        let mut b = book();
+        let mut seed = 7u64;
+        let mut rand = |m: u64| {
+            seed = seed
+                .wrapping_mul(6364136223846793005)
+                .wrapping_add(1442695040888963407);
+            (seed >> 33) % m
+        };
+        let (mut coins, mut held, mut now) = (0i64, 0i64, T0);
+        for step in 0..5_000 {
+            let n = 1 + rand(200) as u32;
+            let buy = held < i64::from(n) || (held < 2_000 && rand(2) == 0);
+            let (c, n) = deal(&mut b, n, buy);
+            coins += c;
+            held += if buy { i64::from(n) } else { -i64::from(n) };
+            if step % 7 == 0 {
+                now += MINUTE_MS * (1 + rand(30) as i64);
+                b.tick(&Dynamic::default(), &mids(), now);
+            }
+        }
+        // Back to no items: sold at the end, a minute at a time.
+        while held > 0 {
+            let (c, n) = deal(&mut b, held as u32, false);
+            coins += c;
+            held -= i64::from(n);
+            now += MINUTE_MS;
+            b.tick(&Dynamic::default(), &mids(), now);
+        }
+        assert!(coins <= 0, "{coins}");
+    }
+
+    #[test]
+    fn a_minute_moves_the_price_at_most_five_percent_and_the_rest_waits() {
+        let c = Dynamic::default();
+        let mut b = book();
+        // 0.5% a diamond: 10 fit in the minute's 5%, the other 630 wait.
+        let (v, s1, done) = b.fill(&c, D, 250.0, delta(), 640, false);
+        assert_eq!(done, 10);
+        assert!((s1 + 0.05).abs() < 1e-9, "{s1}");
+        let curve = 250.0 / delta() * (1.0 - (-0.05f64).exp());
+        assert!((v - curve).abs() < 1e-6, "{v}");
+        b.trade(&c, D, &[], 250.0, delta(), 640, false);
+        assert_eq!(
+            b.fill(&c, D, 250.0, delta(), 5, false).2,
+            0,
+            "no more this minute"
         );
-        // Ten players at once: the minute moves at most 5%.
-        for p in 10..20 {
-            b.trade(&c, p, "minecraft:diamond", 250.0, 640, false);
-        }
-        b.tick(&c, &mids(), T0 + 2 * MINUTE_MS);
-        assert!(b.factor("minecraft:diamond") / f > (-0.0501f64).exp());
+        assert!(
+            b.fill(&c, D, 250.0, delta(), 5, true).2 == 5,
+            "buying back is fine"
+        );
+        // The next minute's band starts where this one ended (drift aside).
+        b.tick(&c, &mids(), T0 + MINUTE_MS);
+        b.trade(&c, D, &[], 250.0, delta(), 640, false);
+        assert!(b.factor(D) < (-0.099f64).exp());
     }
 
     #[test]
@@ -608,17 +790,18 @@ mod tests {
         let c = Dynamic::default();
         let mut b = book();
         for m in 1..=600 {
-            for p in 0..20 {
-                b.trade(&c, p, "minecraft:diamond", 250.0, 640, true);
-            }
+            b.trade(&c, D, &[], 250.0, delta(), 640, true);
+            // At the bound the rest goes at it: the most it ever asks.
             b.tick(&c, &mids(), T0 + m * MINUTE_MS);
             assert!(b.factor("minecraft:diamond") <= c.max_factor + 1e-9);
         }
-        assert!((b.factor("minecraft:diamond") - c.max_factor).abs() < 1e-6);
+        // At the bound (less a minute's drift).
+        let top = b.factor("minecraft:diamond");
+        assert!((top - c.max_factor).abs() < 0.01, "{top}");
         // Six hours of quiet: halfway back (in the log).
         b.tick(&c, &mids(), T0 + 600 * MINUTE_MS + 6 * HOUR_MS);
         let f = b.factor("minecraft:diamond");
-        assert!((f.ln() - c.max_factor.ln() / 2.0).abs() < 1e-6, "{f}");
+        assert!((f.ln() - top.ln() / 2.0).abs() < 1e-6, "{f}");
     }
 
     #[test]
@@ -627,12 +810,12 @@ mod tests {
         let mut b = book();
         assert_eq!(b.mark_price("minecraft:diamond", T0), None);
         for m in 1..=12 {
-            b.trade(&c, m as u128, "minecraft:diamond", 250.0, 2, true);
+            b.trade(&c, D, &[], 250.0, delta(), 2, true);
             b.tick(&c, &mids(), T0 + m * MINUTE_MS);
         }
         let now = T0 + 12 * MINUTE_MS;
         let mark = b.mark_price("minecraft:diamond", now).unwrap();
-        let spot = b.quote("minecraft:diamond", 400, 100).mid;
+        let spot = b.quote(&c, D, 250.0, delta()).mid;
         assert!(mark as f64 <= spot && mark > 250, "{mark} {spot}");
         assert_eq!(b.volume("minecraft:diamond", now, 24), 24);
         assert_eq!(b.history("minecraft:diamond", Span::Minute).len(), 12);
@@ -655,7 +838,8 @@ mod tests {
             let n = if h < 24 { 100 } else { 200 };
             for m in 0..60 {
                 if m == 0 {
-                    b.trade(&c, 1, "minecraft:wheat", 2.0, n, false);
+                    let w = Book::unit_move(&c, "minecraft:wheat", 2.0);
+                    b.trade(&c, "minecraft:wheat", &[], 2.0, w, n, false);
                 }
                 now += MINUTE_MS;
                 b.tick(&c, &mids(), now);
@@ -703,7 +887,12 @@ mod tests {
         assert_eq!(c.tax(100), 2);
         assert_eq!(c.tax(25), 1);
         assert_eq!(c.tax(24), 0);
-        assert_eq!(c.least_buy(3), 8);
-        assert_eq!(c.least_buy(1), 3);
+        // One price from the old two: their geometric mean, whole.
+        assert_eq!(one_price(400, 100), 200);
+        assert_eq!(one_price(30, 8), 15);
+        assert_eq!(one_price(2, 1), 1);
+        assert_eq!((one_price(5, 0), one_price(0, 1)), (5, 1));
+        assert_eq!((to_pay(250.004), to_get(249.996)), (250, 250));
+        assert_eq!((to_pay(1.94), to_get(1.94)), (2, 1));
     }
 }

@@ -18,11 +18,19 @@ use horizon_client::{
     text::{self, Text},
 };
 
-/// The crash's boss bar, made once a run (on its first use).
-static BOSS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-use std::sync::atomic::Ordering::Relaxed;
-const BOSS_ID: &str = "smp:casino_crash";
-const BOSS_TAG: &str = "smp_casino_crash";
+/// The crash's boss bars: one a player (a bar's players can't be a list of
+/// names, and tags don't reach a server's players), `smp:casino_crash_<i>`
+/// for the name in `bars[i]`, and the colour they all have.
+static BARS: std::sync::Mutex<(Vec<Option<String>>, &str)> =
+    std::sync::Mutex::new((Vec::new(), "yellow"));
+/// The most bars at once; each taken off at the first hide of a run,
+/// whatever it held (a run before may have left one).
+const MAX_BARS: usize = 32;
+static CLEARED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+fn bar_id(i: usize) -> String {
+    format!("smp:casino_crash_{i}")
+}
 
 fn color(c: Color) -> u32 {
     match c {
@@ -259,39 +267,65 @@ fn apply(
                 color: c,
                 value,
             } => {
-                if !BOSS.swap(true, Relaxed) {
-                    commands.push(format!("bossbar add {BOSS_ID} \"\""));
-                    commands.push(format!("bossbar set {BOSS_ID} max 100"));
+                let mut bars = BARS.lock().unwrap_or_else(|e| e.into_inner());
+                if let Some(c) = c {
+                    bars.1 = match c {
+                        Color::Green => "green",
+                        Color::Red => "red",
+                        _ => "yellow",
+                    };
                 }
                 let name = serde_json::json!({ "text": line, "color": "white" });
-                let colour = c.map(|c| match c {
-                    Color::Green => "green",
-                    Color::Red => "red",
-                    _ => "yellow",
-                });
-                commands.push(format!("bossbar set {BOSS_ID} name {name}"));
-                commands.push(format!("bossbar set {BOSS_ID} value {value}"));
-                if let Some(colour) = colour {
-                    commands.push(format!("bossbar set {BOSS_ID} color {colour}"));
+                for (i, _) in bars.0.iter().enumerate().filter(|(_, b)| b.is_some()) {
+                    let id = bar_id(i);
+                    commands.push(format!("bossbar set {id} name {name}"));
+                    commands.push(format!("bossbar set {id} value {value}"));
+                    if c.is_some() {
+                        commands.push(format!("bossbar set {id} color {}", bars.1));
+                    }
                 }
             }
             Fx::BossPlayers(names) => {
-                if !BOSS.swap(true, Relaxed) {
-                    commands.push(format!("bossbar add {BOSS_ID} \"\""));
-                    commands.push(format!("bossbar set {BOSS_ID} max 100"));
+                let mut bars = BARS.lock().unwrap_or_else(|e| e.into_inner());
+                let colour = bars.1;
+                for (i, bar) in bars.0.iter_mut().enumerate() {
+                    if bar.as_ref().is_some_and(|n| !names.contains(n)) {
+                        *bar = None;
+                        commands.push(format!("bossbar remove {}", bar_id(i)));
+                    }
                 }
-                commands.push(format!("tag @a remove {BOSS_TAG}"));
                 for name in names {
-                    commands.push(format!("tag {name} add {BOSS_TAG}"));
+                    if bars.0.iter().any(|b| b.as_ref() == Some(&name)) {
+                        continue;
+                    }
+                    let i = match bars.0.iter().position(Option::is_none) {
+                        Some(i) => i,
+                        None if bars.0.len() < MAX_BARS => {
+                            bars.0.push(None);
+                            bars.0.len() - 1
+                        }
+                        None => continue,
+                    };
+                    let id = bar_id(i);
+                    commands.push(format!("bossbar add {id} \"\""));
+                    commands.push(format!("bossbar set {id} max 100"));
+                    commands.push(format!("bossbar set {id} color {colour}"));
+                    commands.push(format!("bossbar set {id} players {name}"));
+                    bars.0[i] = Some(name);
                 }
-                commands.push(format!("bossbar set {BOSS_ID} players @a[tag={BOSS_TAG}]"));
-                commands.push(format!("bossbar set {BOSS_ID} visible true"));
             }
             Fx::BossHide => {
-                // Taken away whole: a restart then shows no leftover.
-                BOSS.store(false, Relaxed);
-                commands.push(format!("bossbar remove {BOSS_ID}"));
-                commands.push(format!("tag @a remove {BOSS_TAG}"));
+                // Every bar taken off.
+                let mut bars = BARS.lock().unwrap_or_else(|e| e.into_inner());
+                let all = !CLEARED.swap(true, std::sync::atomic::Ordering::Relaxed);
+                let n = if all { MAX_BARS } else { bars.0.len() };
+                for i in 0..n {
+                    if all || bars.0[i].is_some() {
+                        commands.push(format!("bossbar remove {}", bar_id(i)));
+                    }
+                }
+                bars.0.clear();
+                bars.1 = "yellow";
             }
         }
     }

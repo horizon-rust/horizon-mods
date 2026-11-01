@@ -41,7 +41,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.24.0";
+pub const VERSION: &str = "0.25.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -1797,6 +1797,29 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         }
     }
     show(game, out);
+}
+
+/// One line in the SMP's audit log (`/invsee`'s moves), outside a command:
+/// an Err when the log can't be written, or the economy is off.
+pub(in crate::game) fn audit(dir: &std::path::Path, entry: serde_json::Value) -> Result<(), String> {
+    let mut guard = state(dir.join(smp_store::DIR));
+    let smp = guard.as_mut().expect("opened");
+    match &mut smp.economy {
+        Ok(e) => e.record(entry),
+        Err(_) => Err("the audit log is off (economy.json can't be read)".into()),
+    }
+}
+
+/// A player who has played here, by name (any case): online first, then
+/// the economy's accounts and `usercache.json`.
+pub(in crate::game) fn find_player(game: &Game<'_>, name: &str) -> Option<(u128, String)> {
+    if let Some(p) = game.native_server_players().into_iter().find(|p| p.name.eq_ignore_ascii_case(name)) {
+        return Some((p.uuid, p.name));
+    }
+    let dir = game.native_world_dir()?;
+    let guard = state(dir.join(smp_store::DIR));
+    let economy = guard.as_ref().and_then(|s| s.economy.as_ref().ok());
+    ServerNames::read(&dir, economy).find(name)
 }
 
 /// The names a nickname may not copy: the economy's accounts, the server's

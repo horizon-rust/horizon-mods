@@ -6,6 +6,9 @@ fn smp_perform_command(
     ran: &mut bool,
 ) {
     if !*ran {
+        crate::game::smp_invsee_glue::perform(game, player, command, ran);
+    }
+    if !*ran {
         crate::game::smp_glue::perform(game, player, command, ran);
     }
 }

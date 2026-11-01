@@ -1,0 +1,34 @@
+id = "basic_hud"
+kind = "native-mod"
+name = "The Basic HUD"
+summary = "Effect timers, potions, golden apples and totems carried, totems used by each player, and armour, elytra and shield durability."
+description = """
+A small HUD box in a corner of the screen.
+
+## What it shows
+
+- Active effects with their time left. Potion effects are pinned by default; any other effect can be pinned on the mod's settings page, or all of them shown at once.
+- Potions of each kind, golden apples, enchanted golden apples and totems in your inventory.
+- Totems each player has used, above that player's name. Your own count is in the box.
+- Durability of worn armour, elytra and a held shield.
+
+The count of a player's totems resets when they die or when you leave the world.
+
+## What it does not do
+
+- It builds on one Horizon commit only, 68ac6f6 (Minecraft 26.3). Counting totems and writing above a player have no hook point, so it hooks two of the game's own functions (totem_event, name_tag_geometry). The rest uses hook points but reads the game's internal data.
+- It knows only what the client is told: a totem used out of your sight is not counted.
+- Its own texts are in English. Effect and item names follow the game's language.
+- Tested on Windows in single player and over LAN with two clients, not on a dedicated server."""
+authors = ["repositorykreml1n"]
+owners = ["repositorykreml1n"]
+license = "MIT"
+source = "https://github.com/repositorykreml1n/the-basic-hud"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-01"
+game = "26.3"
+file = "basic_hud-0.1.0.hnmod"
+sha256 = "fe2c5d9da681b4f575bff867df70d6e2f61614b0215a206fb7a0c3b0027db994"
+changelog = "First release."

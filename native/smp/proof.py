@@ -2,7 +2,7 @@
 Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat and from the files the server wrote:
 
 - the economy opens an account for each player (config.json written with its defaults, then economy.json);
-- /balance, /pay (the payer's answer and the payee's line), refused payments (too much, to oneself, unknown name);
+- /balance, /pay (the payer's answer and the payee's line), refused payments (too much, past what the payee may receive today, to oneself, unknown name);
 - the Treasury: an operator (made one from the server's console) pays a player from it with a reason (/treasury pay),
   which everyone sees in /treasury and /treasury log; /eco give is refused to everyone (nobody can make money), and a
   non-operator can't pay from the Treasury; /eco taxes explains the tax code;
@@ -22,6 +22,13 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - a Treasury payment for an operator, then the /shop menu: a category, one item bought by a click and a stack by
   a shift-click, a stack of the player's own sold by clicking it, "Sell all" stopped by the daily limit (the rest
   kept, the limit shown in the menu and in /worth, the day's sales in market.json), the close button;
+- after the restart, prices moving: a purchase and a sale taxed (receipts, the Treasury), an item bought can't be sold
+  back while one found can, the minute timer moving diamond down after a sale and up after a purchase, /market's item
+  page buying, the 24 h chart given as a map and drawn in the player's hand (market-chart.png), web/market.json, and
+  market_prices.json written when the world closes;
+- the web pages (web/market.json, web/economy.json) sent gzipped with the token to a stand-in for Kira;
+- /invsee: an operator takes a stack from an offline player's saved inventory, logged before the move and summed up in
+  staff.log;
 - nicknames, for operators only: a player can't pick one; an operator's refused ones (a player's name, too short, a
   bad character), the one given in the other's chat and Tab list, /realname, someone else's taken, the player taking
   it off.
@@ -30,9 +37,12 @@ The casino has its own proof (proof_casino.py): `SMP_PROOF=casino` runs it inste
 
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
 """
+import gzip
+import http.server
 import json
 import math
 import os
+import re
 import shutil
 import socket
 import subprocess
@@ -46,6 +56,29 @@ PROPERTIES = {
     "view-distance": "4", "simulation-distance": "4", "generate-structures": "false", "enable-command-block": "false",
     "difficulty": "peaceful", "spawn-monsters": "false",
 }
+
+
+class Receiver:
+    """Stands in for Kira's POST /smp/ingest/<name>: keeps what the server sends (its path, bearer, unzipped body)."""
+
+    def __init__(self):
+        got = self.got = []
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_POST(self):
+                body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
+                if self.headers.get("Content-Encoding") == "gzip":
+                    body = gzip.decompress(body)
+                got.append((self.path, self.headers.get("Authorization"), json.loads(body)))
+                self.send_response(200)
+                self.end_headers()
+
+            def log_message(self, *a):
+                pass
+
+        self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self.url = f"http://127.0.0.1:{self.server.server_address[1]}/smp/ingest"
+        threading.Thread(target=self.server.serve_forever, daemon=True).start()
 
 
 def free_port():
@@ -591,33 +624,127 @@ def shop(server, alex):
     alex.click(300 + 2)  # one iron ingot
     assert alex.count("minecraft:iron_ingot") == 1, alex.run("inventory")
     results["bought"] = alex.chat()[-2:]
-    assert any("Bought 1 iron ingot for 30 coins." in l for l in results["bought"]), results
+    assert any("Bought 1 iron ingot for 30 coins + 1 coins tax (2%)." in l for l in results["bought"]), results
     alex.click(300 + 45)  # back
     alex.click(300 + 14)  # Building
     alex.run("click-slot", 300 + 0, "shift")  # a stack of cobblestone
     time.sleep(1)
     assert alex.count("minecraft:cobblestone") == 64, alex.run("inventory")
-    # Her own stack of iron, clicked: sold.
+    # Her own stack of iron, clicked: the ingot she just bought stays (no buying to sell back), one she found sells.
+    alex.click(alex.slot_of("minecraft:iron_ingot"))
+    results["round_trip"] = alex.chat()[-1:]
+    assert any("You bought 1 iron ingot from the market in the last 24 h" in l for l in results["round_trip"]), results
+    server.console("give Alex minecraft:iron_ingot 1")
+    time.sleep(2)
     alex.click(alex.slot_of("minecraft:iron_ingot"))
     results["sold"] = alex.chat()[-2:]
     assert any("Sold 1 iron ingot for 8 coins." in l for l in results["sold"]), results
-    assert alex.count("minecraft:iron_ingot") == 0
+    assert any("1 iron ingot kept: bought from the market in the last 24 h." in l for l in results["sold"]), results
+    assert alex.count("minecraft:iron_ingot") == 1
     # Sell all, up to the 2,000 coins a day: 19 of 30 diamonds (8 coins earned already).
     server.console("give Alex minecraft:diamond 30")
     time.sleep(2)
     alex.click(300 + 49)
     results["sell_all"] = alex.chat()[-3:]
-    assert any("Sold 19 diamond for 1,900 coins." in l for l in results["sell_all"]), results
+    assert any("Sold 19 diamond for 1,900 coins, tax 38 coins (2%): +1,862 coins." in l
+               for l in results["sell_all"]), results
     assert any("11 diamond kept: today's selling limit." in l for l in results["sell_all"]), results
     assert alex.count("minecraft:diamond") == 11, alex.run("inventory")
     limits = alex.menu()[50]
     results["limits"] = limits
-    assert "92 coins left of your 2,000 coins a day" in json.dumps(limits), limits
+    # 2,000 - 1 (Steve's /pay in the nickname step: money received counts too) - 8 - 1,900.
+    assert "91 coins left of your 2,000 coins a day" in json.dumps(limits), limits
     alex.click(300 + 53)  # close
     assert not alex.menu()
     results["worth"] = alex.say("/worth diamond")
     assert any("You may sell 621 more diamond today." in l for l in results["worth"]), results
-    return 2000 + 10 - 30 - 64 + 8 + 1900, results
+    # The tax: 1 on the iron, 1 on the cobblestone, 38 on the diamonds, to the Treasury.
+    return 2000 + 10 - 30 - 1 - 64 - 1 + 8 + 1900 - 38, results
+
+
+def invsee(alex, data):
+    """Alex, an operator, opens offline Steve's inventory (his saved file): his 5 torches are there; a click takes
+    them whole into hers, logged before the move (audit.log) and summed up in staff.log when she closes it."""
+    results = {}
+    before = alex.count("minecraft:torch")
+    alex.say("/invsee Steve")
+    time.sleep(2)
+    menu = alex.menu()
+    results["info"] = menu.get(49)
+    assert menu.get(49, {}).get("item") == "minecraft:player_head" and "offline" in json.dumps(menu[49]), menu
+    torch = next(slot for slot, e in menu.items() if e["item"] == "minecraft:torch" and slot < 36)
+    assert menu[torch]["count"] == 5, menu
+    alex.click(300 + torch)
+    time.sleep(2)
+    assert alex.count("minecraft:torch") == before + 5, alex.run("inventory")
+    assert all(e["item"] != "minecraft:torch" for slot, e in alex.menu().items() if slot < 41), alex.menu()
+    alex.click(300 + 53)  # close
+    time.sleep(1)
+    staff = (data / "staff.log").read_text()
+    results["staff"] = staff.strip().splitlines()[-1]
+    assert "Steve" in staff and "5 torch" in staff, staff
+    return results
+
+
+def market(server, alex, out, data):
+    """After the shop, prices moving: the minute timer moves diamond down after her sale, /market's item page buys
+    one and the price climbs back the next minute, the 24 h chart comes as a map drawn in her hand, and
+    web/market.json has it all. Returns what she spent, and the lines."""
+    results = {}
+
+    def worth():
+        lines = alex.say("/worth diamond")
+        line = next(l for l in lines if "diamond: the market pays" in l)
+        sell, buy = (int(x.replace(",", "")) for x in re.findall(r"([\d,]+) coins each", line))
+        return sell, buy, lines
+
+    # Her 19 diamonds pushed the price down at the next minute (at most 2% for one trade).
+    deadline = time.time() + 90
+    while True:
+        sell, buy, lines = worth()
+        if sell < 100 or time.time() > deadline:
+            break
+        time.sleep(5)
+    results["after_sale"] = lines
+    assert 98 <= sell < 100 and 390 <= buy < 400, lines
+    # The move itself is checked above; "Moves" compares with the oldest point of the last hour, which on a history
+    # this young can be the first minute's own (0.0%).
+    assert any("Moves: " in l and "traded in 24 h: 19" in l for l in lines), lines
+    alex.say("/market diamond")
+    page = alex.menu()
+    results["page"] = page[13]
+    assert page[13]["item"] == "minecraft:diamond" and page[48]["item"] == "minecraft:gold_ingot", page
+    assert page[19]["item"] == "minecraft:lime_concrete" and page[21]["count"] == 64, page
+    assert page[39]["item"] == "minecraft:map", page
+    shown = json.dumps(page[13], ensure_ascii=False)
+    # Its 24 h move is shown (▼, or "unchanged" on a minute-old history: see "Moves" above).
+    assert f"Buy {buy} coins · Sell {sell} coins" in shown and "24 h " in shown, shown
+    alex.click(300 + 19)  # buy one
+    results["bought"] = alex.chat()[-1:]
+    tax = (buy * 200 + 5000) // 10000
+    assert any(f"Bought 1 diamond for {buy} coins + {tax} coins tax (2%)." in l for l in results["bought"]), results
+    alex.click(300 + 39)  # the 24 h chart
+    assert alex.count("minecraft:filled_map") == 1, alex.run("inventory")
+    alex.click(300 + 53)  # close
+    alex.run("select", "minecraft:filled_map")
+    time.sleep(2)
+    alex.run("screenshot", str(Path(out).resolve() / "market-chart.png"))
+    # Her purchase pushes it back up at the next minute.
+    deadline = time.time() + 90
+    while True:
+        sell2, buy2, lines = worth()
+        if buy2 > buy or time.time() > deadline:
+            break
+        time.sleep(5)
+    results["after_buy"] = lines
+    assert buy2 > buy, (buy, lines)
+    doc = json.loads((data / "web" / "market.json").read_text())
+    diamond = next(i for i in doc["items"] if i["id"] == "minecraft:diamond")
+    results["web"] = {k: diamond[k] for k in ("buy", "sell", "mid", "change_1h", "volume_24h", "category")}
+    assert doc["schema"] == 1 and doc["moving"] and diamond["category"] == "Mining", results["web"]
+    assert diamond["volume_24h"] == 20 and diamond["day"]["price"], results["web"]
+    results["tax"] = tax
+    return buy + tax, results
 
 
 def trades(server, alex, steve, port, ctl, resources, root):
@@ -729,7 +856,13 @@ def run(ctl, resources, out):
                                                       # Paid once, after the restart, not to change the sums.
                                                       "presence": {"daily_reward": 0, "reward_after_minutes": 0},
                                                       # Steve plays a few minutes before his nickname.
-                                                      "nicks": {"min_playtime_minutes": 1}}))
+                                                      "nicks": {"min_playtime_minutes": 1},
+                                                      # Fixed prices, no tax, for the first run's sums; the
+                                                      # moving market is on after the restart.
+                                                      "market": {"dynamic": {"enabled": False}},
+                                                      # The casino's pot takes no float from the Treasury here (its
+                                                      # own proof, proof_casino.py, covers it): the sums stay.
+                                                      "casino": {"float": 0}}))
         # A Treasury with money, the only place operators may pay from (nobody can make money).
         (data / "economy.json").write_text(json.dumps({"accounts": {}, "pools": {"treasury": 5000}}))
         # A nickname an older version let through, taken off at the first start.
@@ -746,7 +879,7 @@ def run(ctl, resources, out):
         results["config_keys"] = sorted(config)
         assert results["config_keys"] == ["auction", "bank", "board", "casino", "claims", "currency", "gambling", "jobs",
                                           "market", "nicks", "places", "presence", "report", "shop",
-                                          "starting_balance", "taxes"], config
+                                          "starting_balance", "taxes", "web"], config
         results["welcome"] = steve.chat()
         assert any("Welcome to the server, Steve!" in l for l in results["welcome"]), results["welcome"]
         assert any("1. Be respectful to everyone." in l for l in results["welcome"]), results["welcome"]
@@ -766,8 +899,13 @@ def run(ctl, resources, out):
         assert any("You paid 120 coins to Steve. Balance: 380 coins" in l for l in results["pay"]), results
         results["paid"] = steve.chat()[-3:]
         assert any("Alex paid you 120 coins." in l for l in results["paid"]), results
-        results["refused"] = [alex.say(l) for l in ("/pay Steve 9999", "/pay Alex 1", "/pay Nobody 1")]
-        for lines, error in zip(results["refused"], ("You only have 380 coins.", "You can't pay yourself.",
+        # 9999 is past what Steve may still receive today (2,000 a day, 120 received): money paid counts toward the
+        # same daily limit as selling, so alts can't sell for a main past it.
+        results["refused"] = [alex.say(l) for l in ("/pay Steve 1500", "/pay Steve 9999", "/pay Alex 1",
+                                                    "/pay Nobody 1")]
+        for lines, error in zip(results["refused"], ("You only have 380 coins.",
+                                                     "Steve can only receive 1,880 coins more today",
+                                                     "You can't pay yourself.",
                                                      "No player named Nobody has an account.")):
             assert any(error in l for l in lines), results["refused"]
         results["eco_refused"] = steve.say("/eco give Steve 1000")
@@ -851,6 +989,10 @@ def run(ctl, resources, out):
         # The daily reward, on: Alex gets it when she joins again.
         config = json.loads((data / "config.json").read_text())
         config["presence"]["daily_reward"] = 7
+        config["market"]["dynamic"]["enabled"] = True
+        # The web pages go to the website through Kira: here to a stand-in, with a token.
+        receiver = Receiver()
+        config["web"] = {"url": receiver.url, "token": "proof-token"}
         (data / "config.json").write_text(json.dumps(config))
         server.start()
         alex = Client(ctl, resources, "Alex2", root)
@@ -861,25 +1003,42 @@ def run(ctl, resources, out):
         assert any("Daily reward: 7 coins." in l for l in alex.chat()), alex.chat()
         assert not any("joined for the first time" in l for l in alex.chat()), alex.chat()
         added, results["shop"] = shop(server, alex)
+        spent, results["market"] = market(server, alex, out, data)
+        results["invsee"] = invsee(alex, data)
+        sent = {path: (auth, doc) for path, auth, doc in receiver.got}
+        results["pushed"] = sorted(sent)
+        assert {"/smp/ingest/market.json", "/smp/ingest/economy.json"} <= set(sent), receiver.got[:2]
+        assert all(auth == "Bearer proof-token" for auth, _ in sent.values()), [a for a, _ in sent.values()]
+        assert sent["/smp/ingest/market.json"][1]["schema"] == 1 and sent["/smp/ingest/market.json"][1]["items"]
+        receiver.server.shutdown()
+        added -= spent
         alex.quit()
         server.stop()
+        book = json.loads((data / "market_prices.json").read_text())
+        assert book["items"]["minecraft:diamond"]["minutes"], "the prices' history is written when the world closes"
         economy = json.loads((data / "economy.json").read_text())
         total = sum(a["balance"] for a in economy["accounts"].values())
         assert "held" not in economy and total == 815 + 7 + added, economy
         # Every coin an operator gave came out of the Treasury.
-        assert economy["pools"]["treasury"] == 5000 - 500 - 2010, economy["pools"]
-        kinds = [json.loads(l)["kind"] for l in (data / "audit.log").read_text().splitlines()]
-        shop_kinds = ["grant", "buy 1 minecraft:iron_ingot", "buy 64 minecraft:cobblestone",
-                      "sell 1 minecraft:iron_ingot", "sell 19 minecraft:diamond"]
+        # The market's tax went in: 40 in the shop, and on her diamond.
+        assert economy["pools"]["treasury"] == 5000 - 500 - 2010 + 40 + results["market"]["tax"], economy["pools"]
+        audit = [json.loads(l) for l in (data / "audit.log").read_text().splitlines()]
+        took = [a for a in audit if a["kind"] == "invsee_take"]
+        assert [(a["item"], a["count"], a["inventory"]) for a in took] == [("minecraft:torch", 5, "inventory")], took
+        kinds = [a["kind"] for a in audit if not a["kind"].startswith("invsee_")]
+        shop_kinds = ["grant", "buy 1 minecraft:iron_ingot", "market_tax", "buy 64 minecraft:cobblestone", "market_tax",
+                      "sell 1 minecraft:iron_ingot", "sell 19 minecraft:diamond", "market_tax",
+                      "buy 1 minecraft:diamond", "market_tax"]
         assert kinds[-len(shop_kinds):] == shop_kinds, kinds[-8:]
         kinds = kinds[:-len(shop_kinds)]
         assert kinds[-2] in ("held_returned", "coinflip_cancel") and kinds[-1] == "daily_reward", kinds[-3:]
         results["stake_back"] = kinds[-2]
         sold = json.loads((data / "market.json").read_text())["sold"]
-        # Steve's sales of the first run's day, and Alex's.
+        # Steve's sales of the first run's day, and Alex's; coins received by /pay count too (#139): Steve got 120 + 1
+        # from Alex, Alex 1 from Steve.
         assert sorted((s["coins"], s["items"]) for s in sold.values()) == [
-            (320, {"minecraft:diamond": 3, "minecraft:wheat": 20}),
-            (1908, {"minecraft:diamond": 19, "minecraft:iron_ingot": 1})], sold
+            (441, {"minecraft:diamond": 3, "minecraft:wheat": 20}),
+            (1909, {"minecraft:diamond": 19, "minecraft:iron_ingot": 1})], sold
         print(json.dumps({"proof": "smp", "ok": True, **results}, indent=2))
     finally:
         (out / "server.log").write_text("\n".join(server.lines))

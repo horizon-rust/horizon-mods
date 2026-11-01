@@ -1688,6 +1688,71 @@ pub(crate) mod tests {
         assert!(counts.iter().all(|c| (800..1200).contains(c)), "{counts:?}");
     }
 
+    /// The server's cost while 20 players play at once (8 at slots, 6 at
+    /// roulette, 6 in one crash round), each starting a new round as soon as
+    /// the last ends: the casino's step every tick (50 ms) for 60 s, with
+    /// the menu's cells built for each picture shown. Prints the time a
+    /// tick. `cargo test --release -- --ignored --nocapture twenty_players`.
+    #[test]
+    #[ignore]
+    fn twenty_players_playing_cost_per_tick() {
+        let (mut e, mut c, dir) = setup("cost", 1_000_000);
+        c.config.cooldown_ms = 0;
+        c.config.daily_loss_cap = i64::MAX / 4;
+        let players: Vec<u128> = (100..120).collect();
+        for (i, u) in players.iter().enumerate() {
+            e.seen(*u, &format!("P{i}"));
+            e.adjust("eco_give", *u, 1_000_000_000, "test").unwrap();
+            let view = match i {
+                0..8 => View::Slots,
+                8..14 => View::Roulette,
+                _ => View::Crash,
+            };
+            c.sit(*u, &format!("P{i}"), view);
+            c.seats.get_mut(u).unwrap().window = Some(i as i32 + 1);
+            if view == View::Roulette {
+                c.click(&mut e, *u, 18, false, 0);
+            }
+        }
+        let (mut total, mut worst, mut shows, mut ticks) = (
+            std::time::Duration::ZERO,
+            std::time::Duration::ZERO,
+            0u64,
+            0u64,
+        );
+        let mut now = 0;
+        while now < 60_000 {
+            let t = std::time::Instant::now();
+            for u in &players {
+                if !c.playing(*u) {
+                    let fx = c.click(&mut e, *u, 53, false, now);
+                    shows += fx.iter().filter(|f| matches!(f, Fx::Show(_))).count() as u64;
+                }
+            }
+            let fx = c.tick(&mut e, now);
+            for f in &fx {
+                if let Fx::Show(u) = f {
+                    std::hint::black_box(c.layout(&e, *u, now));
+                    shows += 1;
+                }
+            }
+            let took = t.elapsed();
+            total += took;
+            worst = worst.max(took);
+            ticks += 1;
+            now += 50;
+        }
+        let money_now = e.balance(A) + e.balance(B);
+        assert!(money_now > 0);
+        println!(
+            "20 players playing: {:.1} µs a tick on average, {:.1} µs at worst, {:.1} pictures a second for 20 menus",
+            total.as_secs_f64() * 1e6 / ticks as f64,
+            worst.as_secs_f64() * 1e6,
+            shows as f64 / 60.0
+        );
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
     #[test]
     fn stake_steps() {
         assert_eq!(step(10, true), 25);

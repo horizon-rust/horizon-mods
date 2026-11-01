@@ -13,6 +13,8 @@ pub mod smp_claims;
 pub mod smp_economy;
 #[path = "../mixins/smp/smp_games.rs"]
 pub mod smp_games;
+#[path = "../mixins/smp/smp_jobs.rs"]
+pub mod smp_jobs;
 #[path = "../mixins/smp/smp_lottery.rs"]
 pub mod smp_lottery;
 #[path = "../mixins/smp/smp_market.rs"]

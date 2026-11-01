@@ -708,9 +708,14 @@ def run(ctl, resources, out):
         data.mkdir(parents=True)
         (data / "config.json").write_text(json.dumps({"gambling": {"enabled": True, "cooldown_seconds": 20,
                                                                          "lottery_seconds": 30},
-                                                      "places": {"warmup_seconds": 2, "cooldown_seconds": 0},
+                                                      # Free teleports and an instant reward: the sums below
+                                                      # stay as they were (fees and the reward's delay have
+                                                      # unit tests).
+                                                      "places": {"warmup_seconds": 2, "cooldown_seconds": 0,
+                                                                 "fees": {"spawn": 0, "home": 0, "warp": 0,
+                                                                          "back": 0, "tpa": 0}},
                                                       # Paid once, after the restart, not to change the sums.
-                                                      "presence": {"daily_reward": 0},
+                                                      "presence": {"daily_reward": 0, "reward_after_minutes": 0},
                                                       # Steve plays a few minutes before his nickname.
                                                       "nicks": {"min_playtime_minutes": 1}}))
         # A Treasury with money, the only place operators may pay from (nobody can make money).
@@ -727,8 +732,8 @@ def run(ctl, resources, out):
         time.sleep(2)
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
-        assert results["config_keys"] == ["board", "claims", "currency", "gambling", "market", "nicks", "places",
-                                          "presence", "shop", "starting_balance", "taxes"], config
+        assert results["config_keys"] == ["auction", "board", "claims", "currency", "gambling", "market", "nicks",
+                                          "places", "presence", "shop", "starting_balance", "taxes"], config
         results["welcome"] = steve.chat()
         assert any("Welcome to the server, Steve!" in l for l in results["welcome"]), results["welcome"]
         assert any("1. Be respectful to everyone." in l for l in results["welcome"]), results["welcome"]

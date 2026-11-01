@@ -136,7 +136,10 @@ stays where they are, and `cooldown_seconds` (10) passes between two of one play
 asker to where the other player is when the warmup ends. Homes grow with the time played on the server since the mod
 was on (`homes`: `[hours, homes]`, by default 1 home, 2 from 5 hours, 3 from 20, 5 from 100). `rules` holds `/rules`'
 lines. Teleports are vanilla's `tp`, run as the server (`execute in <level> run tp`), so they cross levels and land
-as any teleport does.
+as any teleport does. Teleports cost a fee to the Treasury (`places.fees`: `spawn` 0, `home` 5, `warp` 10, `back` 10,
+`tpa` 10, paid by the one who moves), logged as `travel_fee`. It is checked when the command runs and paid when the
+teleport happens: one called off (moved, hurt, the money spent meanwhile) costs nothing and leaves `/back` and the
+cooldown as they were. The spawn stays free so a lost or new player can always get back.
 
 **Claims.** In a claimed chunk, only its owner, the players they trust and operators of level 3 break blocks or right
 click blocks: doors, chests, levers, buttons, placing a block, a bucket or flint on a block. Anyone else's click does
@@ -162,8 +165,11 @@ list. A server that kept 0.13's defaults (`Richest players`, the top 10) gets th
 sidebar uses one scoreboard objective of its own (`horizon:native_sidebar`) and leaves the world's scoreboard alone.
 
 **Presence.** A player's first join is announced to everyone (`presence.first_join`, empty for none) and they read
-`presence.welcome` and the rules. Each player gets `presence.daily_reward` (50) once a day (UTC) for being on, logged
-as `daily_reward` (0 turns it off). A player who hasn't moved, turned or run a command for `presence.afk_minutes` (5),
+`presence.welcome` and the rules. Each player gets `presence.daily_reward` (50) once a day (UTC) after
+`presence.reward_after_minutes` (10) of play that day, logged as `daily_reward` (0 turns it off). Only seconds with a
+move, a turn or a command in the minute before count, so an alt that logs in and stands still gets nothing (on
+2026-11-01, 1,242 players got the reward; 323 of them had played 10 minutes in all). The count isn't kept over a
+restart. A player who hasn't moved, turned or run a command for `presence.afk_minutes` (5),
 or typed `/afk`, is AFK: they don't count for sleeping (vanilla's `players_sleeping_percentage`) until they move or
 get in a bed; `presence.afk_announce` tells everyone instead of only them. A player runs at most
 `presence.spam_commands` (8) of the SMP's commands in `presence.spam_seconds` (5); operators of level 3 aren't

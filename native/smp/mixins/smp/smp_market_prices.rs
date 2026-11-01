@@ -1,0 +1,709 @@
+// The market's moving prices (smp_market's `dynamic`): each item has a base
+// price (config.json's buy and sell), a factor that scales both, and a
+// history. Players' sales push the factor down and purchases push it up, by
+// an elasticity per item (rare, dear items move faster than common ones);
+// the factor drifts back toward 1 (mean reversion) and stays within
+// `min_factor`..`max_factor`. Prices change only on the minute timer, never
+// per trade or per tick. Manipulation: one trade moves the price at most
+// `max_trade_impact_percent`, one player's trades on an item at most
+// `max_player_impact_percent` a minute, the whole minute at most
+// `max_minute_move_percent`; and every item's buy price is at least its sale
+// price times `max_factor / min_factor`, so no buy at any time and sale at any
+// other time can earn money (`validate`), whoever trades and however the
+// price was pushed. The history: one point a minute for 24 h, one an hour
+// for 30 days (`market_prices.json`), the time-weighted mean for futures
+// (`twap`, `mark_price`), the day's movers and news (`summary`), the web's
+// JSON (`web`). No game types. Added to the game as
+// `game::smp_market_prices`; also a module of this crate, for its tests.
+
+use serde::{Deserialize, Serialize};
+use std::collections::{BTreeMap, HashMap};
+
+pub const MINUTE_MS: i64 = 60_000;
+pub const HOUR_MS: i64 = 3_600_000;
+/// Points kept: a day of minutes, 30 days of hours.
+pub const MINUTES: usize = 1440;
+pub const HOURS: usize = 720;
+
+/// `config.json`'s `market.dynamic`.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Dynamic {
+    pub enabled: bool,
+    pub min_factor: f64,
+    pub max_factor: f64,
+    /// How long the factor takes to come halfway back to 1.
+    pub half_life_hours: f64,
+    pub max_trade_impact_percent: f64,
+    pub max_player_impact_percent: f64,
+    pub max_minute_move_percent: f64,
+    /// The share of each trade that goes to the Treasury (a money sink for
+    /// the players, shown on the receipt).
+    pub tax_percent: f64,
+    /// What a player bought from the market can't be sold back to it for
+    /// this long (that many of that item).
+    pub round_trip_hours: i64,
+    /// Items that move the price 1%, by item (else from its price: dear
+    /// items move faster).
+    pub depth: BTreeMap<String, f64>,
+    /// A day's supply change that makes news, and the least volume for it.
+    pub news_percent: f64,
+    pub news_min_volume: u64,
+}
+
+impl Default for Dynamic {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            min_factor: 0.6,
+            max_factor: 1.6,
+            half_life_hours: 6.0,
+            max_trade_impact_percent: 2.0,
+            max_player_impact_percent: 2.0,
+            max_minute_move_percent: 5.0,
+            tax_percent: 2.0,
+            round_trip_hours: 24,
+            depth: BTreeMap::new(),
+            news_percent: 30.0,
+            news_min_volume: 64,
+        }
+    }
+}
+
+impl Dynamic {
+    /// Its numbers made sane: factors around 1, caps positive.
+    pub fn validate(&mut self) {
+        let ok = |v: f64, lo: f64, hi: f64, d: f64| if v.is_finite() { v.clamp(lo, hi) } else { d };
+        let d = Dynamic::default();
+        self.min_factor = ok(self.min_factor, 0.05, 1.0, d.min_factor);
+        self.max_factor = ok(self.max_factor, 1.0, 20.0, d.max_factor);
+        self.half_life_hours = ok(self.half_life_hours, 0.1, 24.0 * 30.0, d.half_life_hours);
+        self.max_trade_impact_percent = ok(
+            self.max_trade_impact_percent,
+            0.0,
+            50.0,
+            d.max_trade_impact_percent,
+        );
+        self.max_player_impact_percent = ok(
+            self.max_player_impact_percent,
+            0.0,
+            50.0,
+            d.max_player_impact_percent,
+        );
+        self.max_minute_move_percent = ok(
+            self.max_minute_move_percent,
+            0.0,
+            50.0,
+            d.max_minute_move_percent,
+        );
+        self.tax_percent = ok(self.tax_percent, 0.0, 50.0, d.tax_percent);
+        self.round_trip_hours = self.round_trip_hours.clamp(0, 24 * 30);
+        self.depth.retain(|_, v| v.is_finite() && *v > 0.0);
+    }
+
+    /// The buy price an item needs so no round trip earns: its sale price
+    /// times `max_factor / min_factor`, rounded up.
+    pub fn least_buy(&self, sell: i64) -> i64 {
+        let need = sell as f64 * self.max_factor / self.min_factor;
+        (need - 1e-9).ceil() as i64
+    }
+
+    /// The tax on `amount` coins (rounded to the nearest coin).
+    pub fn tax(&self, amount: i64) -> i64 {
+        let bp = (self.tax_percent * 100.0).round() as i64;
+        (amount.saturating_mul(bp) + 5_000) / 10_000
+    }
+}
+
+/// One point of history: its start (ms), the mid price then, the items
+/// traded (both sides) and the items players sold.
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(from = "(i64, f64, u32, u32)", into = "(i64, f64, u32, u32)")]
+pub struct Point {
+    pub t: i64,
+    pub price: f64,
+    pub volume: u32,
+    pub sold: u32,
+}
+
+impl From<(i64, f64, u32, u32)> for Point {
+    fn from((t, price, volume, sold): (i64, f64, u32, u32)) -> Self {
+        Self {
+            t,
+            price,
+            volume,
+            sold,
+        }
+    }
+}
+
+impl From<Point> for (i64, f64, u32, u32) {
+    fn from(p: Point) -> Self {
+        (p.t, (p.price * 100.0).round() / 100.0, p.volume, p.sold)
+    }
+}
+
+/// Which history.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Span {
+    Minute,
+    Hour,
+}
+
+/// What the market asks and pays for one now, and the mid.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Quote {
+    pub mid: f64,
+    pub buy: i64,
+    pub sell: i64,
+}
+
+/// One item's moving price.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Track {
+    pub factor: f64,
+    pub minutes: Vec<Point>,
+    pub hours: Vec<Point>,
+    /// This minute's push (natural log of the factor), volume, sales.
+    pub flow: f64,
+    pub volume: u32,
+    pub sold: u32,
+    /// The hour being summed.
+    pub hour_volume: u32,
+    pub hour_sold: u32,
+}
+
+/// `market_prices.json`.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Book {
+    pub items: BTreeMap<String, Track>,
+    /// The start of the minute the flows are for.
+    pub minute: i64,
+    /// The UTC day the last summary was for.
+    pub summary_day: i64,
+    /// What each player bought (item, when, how many), for the round-trip
+    /// rule.
+    pub bought: BTreeMap<String, Vec<(String, i64, u32)>>,
+    /// The Treasury's take so far (display).
+    pub taxes: i64,
+    /// The last daily summary's lines (for the web page and Kira).
+    pub last_summary: Vec<String>,
+    /// Each player's push this minute on an item (not kept).
+    #[serde(skip)]
+    pub pushed: HashMap<(u128, String), f64>,
+}
+
+/// The base mid price of an item priced `buy` and `sell`.
+pub fn base_mid(buy: i64, sell: i64) -> f64 {
+    match (buy > 0, sell > 0) {
+        (true, true) => (buy + sell) as f64 / 2.0,
+        (true, false) => buy as f64,
+        _ => sell as f64,
+    }
+}
+
+impl Book {
+    fn track(&mut self, id: &str) -> &mut Track {
+        self.items.entry(id.to_owned()).or_insert_with(|| Track {
+            factor: 1.0,
+            ..Track::default()
+        })
+    }
+
+    /// The factor now (1 for an item never traded).
+    pub fn factor(&self, id: &str) -> f64 {
+        self.items
+            .get(id)
+            .map_or(1.0, |t| if t.factor > 0.0 { t.factor } else { 1.0 })
+    }
+
+    /// The prices now of an item based at `buy` and `sell`.
+    pub fn quote(&self, id: &str, buy: i64, sell: i64) -> Quote {
+        let f = self.factor(id);
+        Quote {
+            mid: base_mid(buy, sell) * f,
+            buy: if buy > 0 {
+                ((buy as f64 * f) - 1e-9).ceil().max(1.0) as i64
+            } else {
+                0
+            },
+            sell: if sell > 0 {
+                (sell as f64 * f + 1e-9).floor() as i64
+            } else {
+                0
+            },
+        }
+    }
+
+    /// Items that move `id` (based at `mid`) by 1%.
+    pub fn depth(config: &Dynamic, id: &str, mid: f64) -> f64 {
+        config
+            .depth
+            .get(id)
+            .copied()
+            .unwrap_or_else(|| (400.0 / mid.max(0.01)).clamp(2.0, 400.0))
+    }
+
+    /// A trade: `n` of `id` (based at `mid`) bought (`buy`) or sold by
+    /// `uuid`. It pushes this minute's flow within the caps. The push made
+    /// (log of the factor), for tests.
+    pub fn trade(
+        &mut self,
+        config: &Dynamic,
+        uuid: u128,
+        id: &str,
+        mid: f64,
+        n: u32,
+        buy: bool,
+    ) -> f64 {
+        let depth = Self::depth(config, id, mid);
+        let want = (f64::from(n) * 0.01 / depth).min(config.max_trade_impact_percent / 100.0);
+        let cap = config.max_player_impact_percent / 100.0;
+        let used = self.pushed.entry((uuid, id.to_owned())).or_default();
+        let push = want.min((cap - *used).max(0.0));
+        *used += push;
+        let t = self.track(id);
+        t.flow += if buy { push } else { -push };
+        t.volume = t.volume.saturating_add(n);
+        t.hour_volume = t.hour_volume.saturating_add(n);
+        if !buy {
+            t.sold = t.sold.saturating_add(n);
+            t.hour_sold = t.hour_sold.saturating_add(n);
+        }
+        push
+    }
+
+    /// The minute timer: every minute since the last one, each item's flow
+    /// applied (capped), the factor drawn back toward 1 and kept in bounds,
+    /// a point written (and an hour's at each hour). `mids`: the items
+    /// traded, with their base mid. Whether a minute passed.
+    pub fn tick(&mut self, config: &Dynamic, mids: &BTreeMap<String, f64>, now: i64) -> bool {
+        let minute = now.div_euclid(MINUTE_MS) * MINUTE_MS;
+        if self.minute == 0 {
+            self.minute = minute;
+            return false;
+        }
+        if minute <= self.minute {
+            return false;
+        }
+        // After a long stop, one step for the whole gap (the reversion
+        // covers it), its point at the last minute.
+        let gap = ((minute - self.minute) / MINUTE_MS).max(1) as f64;
+        let decay = 0.5f64.powf(gap / (config.half_life_hours * 60.0));
+        let max_move = config.max_minute_move_percent / 100.0;
+        let (lo, hi) = (config.min_factor.ln(), config.max_factor.ln());
+        let closed = self.minute;
+        for (id, mid) in mids {
+            let t = self.track(id);
+            let mut log = t.factor.max(1e-9).ln() + t.flow.clamp(-max_move, max_move);
+            log *= decay;
+            t.factor = log.clamp(lo, hi).exp();
+            t.flow = 0.0;
+            let p = Point {
+                t: closed,
+                price: mid * t.factor,
+                volume: std::mem::take(&mut t.volume),
+                sold: std::mem::take(&mut t.sold),
+            };
+            t.minutes.push(p);
+            if t.minutes.len() > MINUTES {
+                let extra = t.minutes.len() - MINUTES;
+                t.minutes.drain(..extra);
+            }
+            if minute.div_euclid(HOUR_MS) != closed.div_euclid(HOUR_MS) {
+                t.hours.push(Point {
+                    t: closed.div_euclid(HOUR_MS) * HOUR_MS,
+                    price: p.price,
+                    volume: std::mem::take(&mut t.hour_volume),
+                    sold: std::mem::take(&mut t.hour_sold),
+                });
+                if t.hours.len() > HOURS {
+                    let extra = t.hours.len() - HOURS;
+                    t.hours.drain(..extra);
+                }
+            }
+        }
+        // Items no longer traded go.
+        self.items.retain(|id, _| mids.contains_key(id));
+        self.pushed.clear();
+        self.minute = minute;
+        // Purchases past the round-trip window go.
+        let since = now - config.round_trip_hours * HOUR_MS;
+        for v in self.bought.values_mut() {
+            v.retain(|(_, t, _)| *t > since);
+        }
+        self.bought.retain(|_, v| !v.is_empty());
+        true
+    }
+
+    /// `uuid` bought `n` of `id` at `now`.
+    pub fn bought(&mut self, uuid: &str, id: &str, n: u32, now: i64) {
+        self.bought
+            .entry(uuid.to_owned())
+            .or_default()
+            .push((id.to_owned(), now, n));
+    }
+
+    /// How many of `id` `uuid` bought within the round-trip window.
+    pub fn recently_bought(&self, config: &Dynamic, uuid: &str, id: &str, now: i64) -> u32 {
+        let since = now - config.round_trip_hours * HOUR_MS;
+        self.bought.get(uuid).map_or(0, |v| {
+            v.iter()
+                .filter(|(i, t, _)| i == id && *t > since)
+                .map(|e| e.2)
+                .sum()
+        })
+    }
+
+    pub fn history(&self, id: &str, span: Span) -> &[Point] {
+        match self.items.get(id) {
+            Some(t) => match span {
+                Span::Minute => &t.minutes,
+                Span::Hour => &t.hours,
+            },
+            None => &[],
+        }
+    }
+
+    #[allow(
+        dead_code,
+        reason = "read by the futures (smp-econ), not the market itself"
+    )]
+    /// The minute points of `id` within the last `minutes` minutes.
+    fn recent(&self, id: &str, minutes: u32, now: i64) -> impl Iterator<Item = &Point> {
+        let since = now - i64::from(minutes) * MINUTE_MS;
+        self.items
+            .get(id)
+            .into_iter()
+            .flat_map(move |t| t.minutes.iter().rev().take_while(move |p| p.t >= since))
+    }
+
+    #[allow(
+        dead_code,
+        reason = "read by the futures (smp-econ), not the market itself"
+    )]
+    /// The time-weighted mean mid over the last `minutes` complete minutes
+    /// (each point is one minute); None without a point there.
+    pub fn twap(&self, id: &str, minutes: u32, now: i64) -> Option<f64> {
+        let (n, sum) = self
+            .recent(id, minutes, now)
+            .fold((0u32, 0.0), |(n, s), p| (n + 1, s + p.price));
+        (n > 0).then(|| sum / f64::from(n))
+    }
+
+    #[allow(
+        dead_code,
+        reason = "read by the futures (smp-econ), not the market itself"
+    )]
+    /// The 10-minute TWAP, rounded, from at least 5 points: a mark price
+    /// one player can't move much.
+    pub fn mark_price(&self, id: &str, now: i64) -> Option<i64> {
+        let n = self.recent(id, 10, now).count();
+        (n >= 5)
+            .then(|| self.twap(id, 10, now))
+            .flatten()
+            .map(|p| p.round() as i64)
+    }
+
+    /// Items of `id` traded in the last `hours` (minutes for a day, hours
+    /// beyond).
+    pub fn volume(&self, id: &str, now: i64, hours: u32) -> u64 {
+        let Some(t) = self.items.get(id) else {
+            return 0;
+        };
+        let since = now - i64::from(hours) * HOUR_MS;
+        let live = u64::from(t.volume);
+        if hours <= 24 {
+            return live
+                + t.minutes
+                    .iter()
+                    .rev()
+                    .take_while(|p| p.t >= since)
+                    .map(|p| u64::from(p.volume))
+                    .sum::<u64>();
+        }
+        live + u64::from(t.hour_volume)
+            + t.hours
+                .iter()
+                .rev()
+                .take_while(|p| p.t >= since)
+                .map(|p| u64::from(p.volume))
+                .sum::<u64>()
+    }
+
+    /// Items players sold of `id` between `from` and `to` (hours, then
+    /// minutes not yet in an hour).
+    fn sold_between(&self, id: &str, from: i64, to: i64) -> u64 {
+        let Some(t) = self.items.get(id) else {
+            return 0;
+        };
+        let hours: u64 = t
+            .hours
+            .iter()
+            .filter(|p| p.t >= from && p.t < to)
+            .map(|p| u64::from(p.sold))
+            .sum();
+        let last_hour = t.hours.last().map_or(i64::MIN, |p| p.t + HOUR_MS);
+        let minutes: u64 = t
+            .minutes
+            .iter()
+            .filter(|p| p.t >= from.max(last_hour) && p.t < to)
+            .map(|p| u64::from(p.sold))
+            .sum();
+        hours + minutes
+    }
+
+    /// The change of `id`'s mid over the last `minutes`, in percent (None
+    /// without a point that old).
+    pub fn change(&self, id: &str, now: i64, minutes: u32, mid_now: f64) -> Option<f64> {
+        let t = self.items.get(id)?;
+        let at = now - i64::from(minutes) * MINUTE_MS;
+        let then = if minutes <= MINUTES as u32 {
+            t.minutes.iter().find(|p| p.t >= at)?
+        } else {
+            t.hours.iter().find(|p| p.t >= at)?
+        };
+        (then.price > 0.0).then(|| (mid_now / then.price - 1.0) * 100.0)
+    }
+
+    /// The day's movers and news, for the chat and Discord: the three
+    /// biggest risers and fallers over 24 h (at least 1%), then supply
+    /// changes of at least `news_percent` (today's sales against the day
+    /// before's, both busy enough). `names`: each item's display name and
+    /// mid now.
+    pub fn summary(
+        &self,
+        config: &Dynamic,
+        items: &[(String, String, f64)],
+        now: i64,
+    ) -> Vec<String> {
+        let mut moves: Vec<(f64, &str)> = items
+            .iter()
+            .filter_map(|(id, name, mid)| {
+                Some((self.change(id, now, 24 * 60, *mid)?, name.as_str()))
+            })
+            .filter(|(c, _)| c.abs() >= 1.0)
+            .collect();
+        moves.sort_by(|a, b| b.0.total_cmp(&a.0));
+        let mut lines = Vec::new();
+        let fmt = |v: &[(f64, &str)]| {
+            v.iter()
+                .map(|(c, n)| format!("{n} {}", arrow(*c)))
+                .collect::<Vec<_>>()
+                .join(", ")
+        };
+        let up: Vec<_> = moves
+            .iter()
+            .filter(|m| m.0 > 0.0)
+            .take(3)
+            .copied()
+            .collect();
+        let down: Vec<_> = moves
+            .iter()
+            .rev()
+            .filter(|m| m.0 < 0.0)
+            .take(3)
+            .copied()
+            .collect();
+        if !up.is_empty() {
+            lines.push(format!("Market today: up {}", fmt(&up)));
+        }
+        if !down.is_empty() {
+            lines.push(format!("Market today: down {}", fmt(&down)));
+        }
+        let day = 24 * HOUR_MS;
+        for (id, name, _) in items {
+            let today = self.sold_between(id, now - day, now + 1);
+            let before = self.sold_between(id, now - 2 * day, now - day);
+            if today.max(before) < config.news_min_volume || before == 0 {
+                continue;
+            }
+            let c = (today as f64 / before as f64 - 1.0) * 100.0;
+            if c.abs() >= config.news_percent {
+                let how = if c > 0.0 { "up" } else { "down" };
+                lines.push(format!(
+                    "News: {name} supply {how} {:.0}% today ({today} sold, {before} the day before).",
+                    c.abs()
+                ));
+            }
+        }
+        lines
+    }
+}
+
+/// `▲ 2.4%` or `▼ 1.0%`.
+pub fn arrow(change: f64) -> String {
+    if change >= 0.0 {
+        format!("▲ {change:.1}%")
+    } else {
+        format!("▼ {:.1}%", -change)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const T0: i64 = 1_800_000_000_000;
+
+    fn mids() -> BTreeMap<String, f64> {
+        [("minecraft:diamond", 250.0), ("minecraft:wheat", 2.0)]
+            .iter()
+            .map(|(k, v)| (k.to_string(), *v))
+            .collect()
+    }
+
+    fn book() -> Book {
+        let mut b = Book::default();
+        b.tick(&Dynamic::default(), &mids(), T0);
+        b
+    }
+
+    #[test]
+    fn sales_lower_and_purchases_raise_the_price_at_the_next_minute_only() {
+        let c = Dynamic::default();
+        let mut b = book();
+        b.trade(&c, 1, "minecraft:diamond", 250.0, 1, false);
+        assert_eq!(b.factor("minecraft:diamond"), 1.0, "not before the minute");
+        b.tick(&c, &mids(), T0 + MINUTE_MS);
+        let f = b.factor("minecraft:diamond");
+        assert!(f < 1.0 && f > 0.99, "{f}");
+        b.trade(&c, 1, "minecraft:diamond", 250.0, 1, true);
+        b.trade(&c, 1, "minecraft:diamond", 250.0, 1, true);
+        b.tick(&c, &mids(), T0 + 2 * MINUTE_MS);
+        assert!(b.factor("minecraft:diamond") > f);
+        // Wheat is deep: 64 move it far less than one diamond.
+        b.trade(&c, 2, "minecraft:wheat", 2.0, 64, false);
+        b.tick(&c, &mids(), T0 + 3 * MINUTE_MS);
+        assert!(1.0 - b.factor("minecraft:wheat") < 0.004);
+    }
+
+    #[test]
+    fn one_trade_and_one_player_move_the_price_at_most_two_percent_a_minute() {
+        let c = Dynamic::default();
+        let mut b = book();
+        assert!((b.trade(&c, 1, "minecraft:diamond", 250.0, 640, false) - 0.02).abs() < 1e-12);
+        // Many small trades by the same player: nothing more this minute.
+        for _ in 0..50 {
+            assert_eq!(b.trade(&c, 1, "minecraft:diamond", 250.0, 1, false), 0.0);
+        }
+        b.tick(&c, &mids(), T0 + MINUTE_MS);
+        let f = b.factor("minecraft:diamond");
+        assert!(
+            (f - (-0.02 * 0.5f64.powf(1.0 / 360.0)).exp()).abs() < 1e-6,
+            "{f}"
+        );
+        // Ten players at once: the minute moves at most 5%.
+        for p in 10..20 {
+            b.trade(&c, p, "minecraft:diamond", 250.0, 640, false);
+        }
+        b.tick(&c, &mids(), T0 + 2 * MINUTE_MS);
+        assert!(b.factor("minecraft:diamond") / f > (-0.0501f64).exp());
+    }
+
+    #[test]
+    fn the_price_drifts_back_and_stays_in_bounds() {
+        let c = Dynamic::default();
+        let mut b = book();
+        for m in 1..=600 {
+            for p in 0..20 {
+                b.trade(&c, p, "minecraft:diamond", 250.0, 640, true);
+            }
+            b.tick(&c, &mids(), T0 + m * MINUTE_MS);
+            assert!(b.factor("minecraft:diamond") <= c.max_factor + 1e-9);
+        }
+        assert!((b.factor("minecraft:diamond") - c.max_factor).abs() < 1e-6);
+        // Six hours of quiet: halfway back (in the log).
+        b.tick(&c, &mids(), T0 + 600 * MINUTE_MS + 6 * HOUR_MS);
+        let f = b.factor("minecraft:diamond");
+        assert!((f.ln() - c.max_factor.ln() / 2.0).abs() < 1e-6, "{f}");
+    }
+
+    #[test]
+    fn twap_mark_price_volume_and_history() {
+        let c = Dynamic::default();
+        let mut b = book();
+        assert_eq!(b.mark_price("minecraft:diamond", T0), None);
+        for m in 1..=12 {
+            b.trade(&c, m as u128, "minecraft:diamond", 250.0, 2, true);
+            b.tick(&c, &mids(), T0 + m * MINUTE_MS);
+        }
+        let now = T0 + 12 * MINUTE_MS;
+        let mark = b.mark_price("minecraft:diamond", now).unwrap();
+        let spot = b.quote("minecraft:diamond", 400, 100).mid;
+        assert!(mark as f64 <= spot && mark > 250, "{mark} {spot}");
+        assert_eq!(b.volume("minecraft:diamond", now, 24), 24);
+        assert_eq!(b.history("minecraft:diamond", Span::Minute).len(), 12);
+        let h = b.history("minecraft:diamond", Span::Minute);
+        assert!(h.windows(2).all(|w| w[1].t == w[0].t + MINUTE_MS));
+        // A point written and read back keeps its numbers.
+        let json = serde_json::to_string(&b).unwrap();
+        let back: Book = serde_json::from_str(&json).unwrap();
+        assert_eq!(back.history("minecraft:diamond", Span::Minute).len(), 12);
+        assert!((back.factor("minecraft:diamond") - b.factor("minecraft:diamond")).abs() < 1e-12);
+    }
+
+    #[test]
+    fn hours_are_summed_and_the_day_makes_news() {
+        let c = Dynamic::default();
+        let mut b = book();
+        let mut now = T0;
+        // Yesterday 100 wheat an hour; today 200.
+        for h in 0..48 {
+            let n = if h < 24 { 100 } else { 200 };
+            for m in 0..60 {
+                if m == 0 {
+                    b.trade(&c, 1, "minecraft:wheat", 2.0, n, false);
+                }
+                now += MINUTE_MS;
+                b.tick(&c, &mids(), now);
+            }
+        }
+        assert!(b.history("minecraft:wheat", Span::Hour).len() >= 47);
+        let lines = b.summary(
+            &c,
+            &[(
+                "minecraft:wheat".into(),
+                "Wheat".into(),
+                2.0 * b.factor("minecraft:wheat"),
+            )],
+            now,
+        );
+        assert!(
+            lines
+                .iter()
+                .any(|l| l.starts_with("News: Wheat supply up 100% today")),
+            "{lines:?}"
+        );
+        assert!(
+            lines
+                .iter()
+                .any(|l| l.starts_with("Market today: down Wheat ▼")),
+            "{lines:?}"
+        );
+    }
+
+    #[test]
+    fn the_round_trip_window_and_the_tax() {
+        let c = Dynamic::default();
+        let mut b = book();
+        b.bought("u", "minecraft:diamond", 5, T0);
+        assert_eq!(
+            b.recently_bought(&c, "u", "minecraft:diamond", T0 + HOUR_MS),
+            5
+        );
+        b.tick(&c, &mids(), T0 + 25 * HOUR_MS);
+        assert_eq!(
+            b.recently_bought(&c, "u", "minecraft:diamond", T0 + 25 * HOUR_MS),
+            0
+        );
+        assert!(b.bought.is_empty());
+        assert_eq!(c.tax(100), 2);
+        assert_eq!(c.tax(25), 1);
+        assert_eq!(c.tax(24), 0);
+        assert_eq!(c.least_buy(3), 8);
+        assert_eq!(c.least_buy(1), 3);
+    }
+}

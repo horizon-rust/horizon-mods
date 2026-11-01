@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.25.0"
+version = "0.26.0"
 priority = 100
 
 # The commit of horizon it was tested on: it needs horizon#6106 (merged at 975c07d): native_inventory,
@@ -25,6 +25,24 @@ id = "market"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_market"
 source = "smp_market.rs"
+
+[[module]]
+id = "market_prices"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_market_prices"
+source = "smp_market_prices.rs"
+
+[[module]]
+id = "market_chart"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_market_chart"
+source = "smp_market_chart.rs"
+
+[[module]]
+id = "market_menu"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_market_menu"
+source = "smp_market_menu.rs"
 
 [[module]]
 id = "recipes"

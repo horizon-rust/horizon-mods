@@ -51,6 +51,14 @@ pub fn write_json<T: serde::Serialize>(path: &Path, value: &T) -> Result<(), Str
     write_atomic(path, &bytes).map_err(|e| format!("{}: {e}", path.display()))
 }
 
+/// `value` as compact JSON in `path`, atomically (large files: the
+/// market's prices and the web pages).
+pub fn write_json_compact<T: serde::Serialize>(path: &Path, value: &T) -> Result<(), String> {
+    let mut bytes = serde_json::to_vec(value).map_err(|e| e.to_string())?;
+    bytes.push(b'\n');
+    write_atomic(path, &bytes).map_err(|e| format!("{}: {e}", path.display()))
+}
+
 /// The audit log: `audit.log`, one JSON object a line.
 pub struct Audit {
     path: PathBuf,

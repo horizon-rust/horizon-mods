@@ -31,6 +31,12 @@ pub mod smp_jobs;
 pub mod smp_lottery;
 #[path = "../mixins/smp/smp_market.rs"]
 pub mod smp_market;
+#[path = "../mixins/smp/smp_market_chart.rs"]
+pub mod smp_market_chart;
+#[path = "../mixins/smp/smp_market_menu.rs"]
+pub mod smp_market_menu;
+#[path = "../mixins/smp/smp_market_prices.rs"]
+pub mod smp_market_prices;
 #[path = "../mixins/smp/smp_nick.rs"]
 pub mod smp_nick;
 #[path = "../mixins/smp/smp_places.rs"]

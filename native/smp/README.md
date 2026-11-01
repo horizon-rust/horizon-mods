@@ -30,6 +30,7 @@ header and footer).
 | `/ah cancel <listing>`, `/ah claim`, `/ah search <words>`, `/ah mine`, `/ah mail` | takes back a listing nobody bid on; gives you your mail; the menu on a search, your listings, your mail |
 | `/eco taxes`, `/taxes` | the tax code and your own bill on Monday; `/eco taxes pay` pays land tax you owe |
 | `/shop` | the market as a chest menu: categories, a click buys one, a shift-click 64, a click on a stack of yours sells it, "Sell all" |
+| `/market [item]` | the moving market as a chest menu: categories, each item's prices, its move over 1 h and 24 h and its volume; an item's page buys or sells 1, 16 or 64, sells all you carry, and gives its price chart as a map |
 | `/worth [item]` | what the market pays and asks for an item (the one in your hand without a name), and what you may still sell today |
 | `/sell hand [count]`, `/sell <item> [count]`, `/sell all` | sells to the market: the stack in your hand, an item, or everything it buys |
 | `/buy <item> [count]` | buys from the market, only what fits in your inventory |
@@ -72,6 +73,11 @@ money and the room before anything moves.
   and an item the market would buy for more than that isn't bought. The tests walk every vanilla recipe
   (`SMP_VANILLA_DATA=<.local/horizon-client/26.3/data/minecraft> cargo test`); the server checks the iron, gold,
   copper, diamond, emerald, coal, redstone, lapis, wheat, wood and food chains at each start.
+- With prices moving (below), every item's `buy` is at least its `sell` times `max_factor / min_factor`
+  (1.6 / 0.6), raised at load when it isn't: the most the market ever pays for an item is below the least it ever
+  asks, at any two moments, so buying low and selling high on the market's own prices never pays (a test pumps and
+  dumps every item for 2,000 minutes, another is a whale pushing diamond up for two hours and selling into it). The
+  recipe chains are checked at the worst factors too.
 - Each player sells at most `daily_sell_coins` (2,000 coins) and `daily_sell_items` (640 of each item) a UTC day,
   `/worth` and the shop show what is left, and `market.json` keeps the day's count across restarts.
 - Money received with `/pay` counts toward the receiver's same `daily_sell_coins`: selling up to the limit on alts
@@ -124,6 +130,32 @@ the real name stays everywhere else: the server's log, the anticheat, selectors,
 player's name. The player's profile (name, UUID) never changes.
 `config.json`'s `nicks`: `enabled`, `ops_only` (true), `cooldown_seconds` (600), `min_playtime_minutes` (60), `protected` (the Team's
 names), `reserved` (the words above).
+
+**Moving prices** (`market.dynamic`, on by default since 0.26). Each item has its base price (`items`) and a factor
+that supply and demand move: what players sell pushes it down, what they buy pushes it up, by `count × 1% / depth`,
+where the depth follows the item's rarity (400 / its mid price, between 2 and 400: a diamond moves 50 times faster per
+item than cobblestone; `depth` overrides it per item). Prices move only on a timer, once a minute, never per trade:
+one trade moves at most `max_trade_impact_percent` (2%), one player's trades on one item at most
+`max_player_impact_percent` (2%) a minute, and all of them `max_minute_move_percent` (5%) a minute. Between trades
+the factor goes back to 1 with a half-life of `half_life_hours` (6), and it stays within `min_factor` (0.6) and
+`max_factor` (1.6). The market makes the spread: it asks `ceil(buy × factor)` and pays `floor(sell × factor)`. A
+`tax_percent` (2%) of each sale and purchase goes to the Treasury, shown on the receipt ("Sold 3 diamond for 300
+coins, tax 6 coins (2%): +294 coins."). Items a player bought from the market in the last `round_trip_hours` (24)
+can't be sold back to it. History: one point a minute for 24 hours and one an hour for 30 days (the mid price, the
+items traded and those sold), in `market_prices.json`, written by a thread every 5 minutes and when the world closes.
+At the first minute of each UTC day, the day's three biggest risers and fallers (at least 1%) and news from real
+activity ("Diamond supply up 40% today", sales against the day before's, at least `news_percent` and
+`news_min_volume`) go to everyone's chat and to `web/market.json` for Kira to post. `enabled: false` keeps the
+fixed prices of 0.23. For other mods (the futures): `Market::spot`, `twap(id, minutes, now)`, `mark_price(id, now)`
+(the 10-minute TWAP from at least 5 points), `volume(id, now, hours)`, `history(id, Span)`.
+
+**`/market`.** A 6-row chest menu: the shop's categories and the day's movers; a category's items, each with its buy
+and sell price, its change over 1 h and 24 h (green ▲, red ▼) and what was traded in 24 h; an item's page with its
+base price, the tax and what you may still sell today, buttons to buy or sell 1, 16 and 64 (the price and tax on
+them), sell all of it you carry, and the price chart over 24 hours or 7 days, given as a filled map (128 × 128,
+drawn by the server: the curve green when it rose, red when it fell, the price, the change, the low and high). A
+chart map is drawn again each minute for whoever carries it, and once a minute the open menus follow the prices.
+`/market <item>` opens the item's page. `/worth` adds the item's moves and volume.
 
 **The shop.** `/shop` opens a 6-row chest menu on the market's prices: the categories of `config.json`'s `shop` (an
 item in none goes under "Other"), each item named with its prices. A click buys one, a shift-click 64; a click on a
@@ -300,12 +332,14 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 
 | File | Holds |
 |---|---|
-| `config.json` | `currency` (default `coins`), `starting_balance` (default 0), `market`: `enabled`, `items` (each item's `buy`, what the market asks, and `sell`, what it pays, 0 closing that side), `daily_sell_coins` (2000) and `daily_sell_items` (640), 0 for no limit; `shop`: `enabled`, `title`, `categories` (`name`, `icon`, `items`); written with the defaults the first time, and again when a newer version adds keys (your values kept) |
+| `config.json` | `currency` (default `coins`), `starting_balance` (default 0), `market`: `enabled`, `items` (each item's `buy`, what the market asks, and `sell`, what it pays, 0 closing that side), `daily_sell_coins` (2000) and `daily_sell_items` (640), 0 for no limit; `shop`: `enabled`, `title`, `categories` (`name`, `icon`, `items`); `web`: `url` (Kira's `/smp/ingest`) and `token` (empty: nothing is sent), where the pages of `web/` go; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
 | `economy.json` | balances by player UUID, with the name last seen; `held`: coinflip stakes and lottery tickets being decided; `pools`: the Treasury, its insurance fund and other system pools; `treasury`: its income and spending by kind and its last movements; `ext`: other parts' state written in the same step as the money (`tax`: the week collected, land tax owed; `auction`: the listings, bids, mail and notes) |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
 | `nicks.json` | each player's nickname and when they last changed it |
 | `staff.log` | one line per `/invsee` or `/endersee` menu in which something moved: who, whose, what was taken and put |
 | `market.json` | what each player sold today (coins and items), for the daily limits |
+| `market_prices.json` | each item's price factor and history (minutes for 24 h, hours for 30 days: `[time, mid, traded, sold]`), what each player bought in the last day (no selling it back), the day's summary |
+| `web/market.json` | for the website (`/hub/market`, through Kira), written by a thread each minute prices move: `schema` 1, `generated`, `currency`, `tax_percent`, `taxes_collected`, `daily_summary` (`day`, `lines`), `items` (`id`, `name`, `category`, `buy`, `sell`, `mid`, `base`, `change_1h`, `change_24h`, `volume_24h`, `day`: 5-minute points, `month`: hours, each `{step, t, price, volume}`). When `web.token` is set, the same thread POSTs each page of `web/` that changed (gzipped, `Authorization: Bearer <token>`) to `<web.url>/<name>`: Kira keeps the last one and serves it to the site; the server needs no inbound access and Kira no key to it |
 | `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |
 | `casino.json` | the day's ledger: each player's bets, wins and rounds today (the daily loss cap), the day's biggest wins, each game's totals, the pot's last sweep |
@@ -328,8 +362,8 @@ action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explos
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: twenty-five modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs`, `smp_auction.rs`, `smp_bank.rs`, `smp_report.rs`, `smp_jobs.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`, `game::smp_auction`, `game::smp_bank`, `game::smp_report`, `game::smp_jobs`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: twenty-eight modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs`, `smp_auction.rs`, `smp_bank.rs`, `smp_report.rs`, `smp_jobs.rs`, `smp_market_prices.rs`, `smp_market_menu.rs`, `smp_market_chart.rs`, `smp_invsee.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`, `game::smp_auction`, `game::smp_bank`, `game::smp_report`, `game::smp_jobs`, `game::smp_market_prices`, `game::smp_market_menu`, `game::smp_market_chart`, `game::smp_invsee`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `mixins/smp/smp_casino.rs`, `smp_casino_roulette.rs`, `smp_casino_slots.rs`, `smp_casino_crash.rs`, `smp_casino_blackjack.rs` | The casino's rules, menus and effects (`game::smp_casino*`) |

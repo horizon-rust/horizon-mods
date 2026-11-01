@@ -328,6 +328,9 @@ pub struct Market {
     pub warnings: Vec<String>,
     /// Each item made of or into others: those others (`families`).
     family: BTreeMap<String, Vec<String>>,
+    /// Items whose history `open` scaled to their one price, by how much
+    /// (for the futures' entries).
+    pub rebased: BTreeMap<String, f64>,
 }
 
 /// The market's items made of one another (by `smp_recipes::chains`), in
@@ -372,6 +375,13 @@ impl Market {
     /// starts the day's counts from nothing (they only limit, never hold
     /// money).
     pub fn open(dir: &std::path::Path, mut config: Config) -> (Self, Vec<String>) {
+        let mids = |c: &Config| -> BTreeMap<String, f64> {
+            c.items
+                .iter()
+                .map(|(id, p)| (id.clone(), base_mid(p.buy, p.sell)))
+                .collect()
+        };
+        let before = mids(&config);
         let mut problems: Vec<String> = validate(&mut config)
             .into_iter()
             .map(|l| format!("market: {l}"))
@@ -381,10 +391,17 @@ impl Market {
             problems.push(format!("{e}: today's sale limits start again"));
             Ledger::default()
         });
-        let book = read_json(&dir.join("market_prices.json")).unwrap_or_else(|e| {
+        let mut book: Book = read_json(&dir.join("market_prices.json")).unwrap_or_else(|e| {
             problems.push(format!("{e}: prices start again from their base"));
             Book::default()
         });
+        let rebased = book.settle(&before, &mids(&config));
+        if !rebased.is_empty() {
+            problems.push(format!(
+                "market: the price history of {} items scaled to their one price",
+                rebased.len()
+            ));
+        }
         let mut market = Self {
             config,
             ledger,
@@ -392,9 +409,10 @@ impl Market {
             dirty: false,
             book,
             book_written: 0,
-            book_dirty: false,
+            book_dirty: !rebased.is_empty(),
             warnings: Vec::new(),
             family: BTreeMap::new(),
+            rebased,
         };
         market.link();
         (market, problems)
@@ -413,6 +431,7 @@ impl Market {
             book_dirty: false,
             warnings: Vec::new(),
             family: BTreeMap::new(),
+            rebased: BTreeMap::new(),
         };
         m.link();
         m
@@ -1928,6 +1947,44 @@ mod tests {
             "{out:?}"
         );
         fs::remove_dir_all(dir).ok();
+    }
+
+    #[test]
+    fn a_history_from_before_one_price_is_scaled_to_it_once() {
+        // 0.27's book: diamond at 1.1 times its old mid of 250 (buy 400,
+        // sell 100), the minute band never set.
+        let dir = std::env::temp_dir().join(format!("smp-one-price-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let old = r#"{"items":{"minecraft:diamond":{"factor":1.1,"minutes":[[0,275.0,3,1]],"hours":[[0,250.0,9,4]]}}}"#;
+        std::fs::write(dir.join("market_prices.json"), old).unwrap();
+        let mut c = Config::default();
+        c.items.insert(
+            "minecraft:diamond".into(),
+            Price {
+                buy: 400,
+                sell: 100,
+            },
+        );
+        let (m, log) = Market::open(&dir, c.clone());
+        let t = &m.book.items["minecraft:diamond"];
+        // Now quoted in the one price, 200: 1.1 times it, no cliff.
+        assert!((t.minutes[0].price - 220.0).abs() < 1e-9, "{:?}", t.minutes);
+        assert!((t.hours[0].price - 200.0).abs() < 1e-9, "{:?}", t.hours);
+        assert!((t.open - 1.1f64.ln()).abs() < 1e-12);
+        assert!(
+            log.iter().any(|l| l.contains("history of 1 items")),
+            "{log:?}"
+        );
+        // Written and opened again (the config still says 400/100): once.
+        std::fs::write(
+            dir.join("market_prices.json"),
+            serde_json::to_string(&m.book).unwrap(),
+        )
+        .unwrap();
+        let (m, log) = Market::open(&dir, c);
+        assert!((m.book.items["minecraft:diamond"].minutes[0].price - 220.0).abs() < 1e-9);
+        assert!(!log.iter().any(|l| l.contains("history")), "{log:?}");
+        std::fs::remove_dir_all(&dir).ok();
     }
 
     #[test]

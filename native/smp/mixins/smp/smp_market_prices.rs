@@ -194,6 +194,8 @@ pub struct Book {
     pub taxes: i64,
     /// The last daily summary's lines (for the web page and Kira).
     pub last_summary: Vec<String>,
+    /// The base price each item's history is quoted in (since 0.29).
+    pub bases: BTreeMap<String, f64>,
 }
 
 /// What `value` coins of a purchase cost in whole coins (rounded up; a
@@ -361,6 +363,38 @@ impl Book {
 
     /// Items made of one another share one factor: each family's takes the
     /// first member's that has one (after a config adds a family).
+    /// At load: each minute's band opens where its price is, and a book
+    /// from before 0.29 (no `bases`), whose history is quoted in the old
+    /// mid of buy and sell (`old`), gets it scaled to the one price of now
+    /// (`bases`), so the charts, the moves and the futures' TWAP see no
+    /// cliff. The items it scaled, by how much.
+    pub fn settle(
+        &mut self,
+        old: &BTreeMap<String, f64>,
+        bases: &BTreeMap<String, f64>,
+    ) -> BTreeMap<String, f64> {
+        let mut scaled = BTreeMap::new();
+        if self.bases.is_empty() {
+            for (id, t) in self.items.iter_mut() {
+                let (Some(&was), Some(&now)) = (old.get(id), bases.get(id)) else {
+                    continue;
+                };
+                if was > 0.0 && now > 0.0 && (now / was - 1.0).abs() > 1e-9 {
+                    let k = now / was;
+                    for p in t.minutes.iter_mut().chain(t.hours.iter_mut()) {
+                        p.price *= k;
+                    }
+                    scaled.insert(id.clone(), k);
+                }
+            }
+        }
+        for t in self.items.values_mut() {
+            t.open = if t.factor > 0.0 { t.factor.ln() } else { 0.0 };
+        }
+        self.bases = bases.clone();
+        scaled
+    }
+
     pub fn link(&mut self, families: &[Vec<String>]) {
         for f in families {
             let Some((factor, open)) = f

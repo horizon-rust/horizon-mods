@@ -199,7 +199,11 @@ fn open(dir: PathBuf) -> Smp {
     let bank = economy.as_ref().ok().map(|e| Bank::open(e, config.bank));
     let report = economy.as_ref().ok().map(|e| Report::open(e, config.report));
     let jobs = economy.as_ref().ok().map(|e| Jobs::open(e, config.jobs));
-    let futures = economy.as_ref().ok().map(|e| Futures::open(e, config.futures));
+    let futures = economy.as_ref().ok().map(|e| {
+        let mut f = Futures::open(e, config.futures);
+        f.rebase(&market.rebased);
+        f
+    });
     let places = Places::open(&dir, config.places);
     if let Err(e) = &places {
         log::error!("[smp] homes and warps are off: {e}");

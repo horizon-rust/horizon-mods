@@ -1,0 +1,22 @@
+id = "killc"
+kind = "native-mod"
+repo = "Vakarux12/KillC"
+owners = ["Vakarux12"]
+key = "RWS5u/7lEyKbzVHC6uMJRlhM/N7vzKp5fZe2LCDUlHsDK4lvPupxJbqQ"
+name = "KillC"
+summary = "/killc, /killc <player> and /suicide, with an optional random respawn near (0, 0)."
+description = """
+A Horizon port of [adasjusk's KillC](https://github.com/adasjusk/KillC), the kill command plugin for Paper, Folia, Velocity and Fabric.
+
+- `/killc` and `/suicide` kill you.
+- `/killc <player>` kills another player (operator level 2).
+- After a death in the Overworld, players respawn at a random surface spot within `randomSpawnRadius` of (0, 0).
+- Config: `config/killc.json` (`enabled`, `useRandomSpawn`, `randomSpawnRadius`), the same file as the Fabric build.
+
+Vanilla keeps `/kill`. Runs where the world is hosted: single player and worlds opened to LAN (Horizon's dedicated server cannot build native mods yet). Native mods run with the player's account permissions and are not sandboxed.
+
+Source: `horizon/` in https://github.com/Vakarux12/KillC, a fork of the original. CC-BY-SA-4.0, the original's licence, with a grant for Horizon's reviewers in `horizon/REVIEW-GRANT.md`.
+"""
+authors = ["adasjusk", "Vakarux12"]
+license = "CC-BY-SA-4.0"
+source = "https://github.com/Vakarux12/KillC/tree/main/horizon"

@@ -422,7 +422,7 @@ mod tests {
 
     #[test]
     fn the_wheel_slows_down_and_lands_on_the_drawn_pocket() {
-        let mut rng = Rng::from_os();
+        let mut rng = Rng::from_seed([3; 32]);
         for from in [0, 5, 36] {
             for _ in 0..50 {
                 let mut r = Roulette::default();
@@ -484,7 +484,7 @@ mod tests {
         assert_eq!(shows(&c.tick(&mut e, 260)), 0);
         assert_eq!(shows(&c.tick(&mut e, 400)), 1);
         // The menu closes mid-spin: the round still ends and is paid, once.
-        assert!(c.closed(A, 3));
+        assert!(c.closed(A, 3, 0));
         let n = WHEEL[c.roulette.rounds[0].stop];
         c.tick(&mut e, 3999);
         assert_eq!(e.held(A), 25, "not before the wheel stops");
@@ -505,25 +505,22 @@ mod tests {
         let (mut e, mut c, dir) = setup("edge", 1_000_000_000);
         c.config.daily_loss_cap = i64::MAX / 4;
         c.config.cooldown_ms = 0;
-        let mut rng = Rng::from_os();
+        let mut rng = Rng::from_seed([3; 32]);
         let mut now = 0;
         for i in 0..20_000 {
             if e.balance(A) < 100 {
                 e.adjust("eco_give", A, 1_000_000, "test").unwrap();
             }
             let stake = c.bet(&mut e, A, "Alex", Game::Roulette, 10, now).unwrap();
-            let bet = if i % 2 == 0 {
-                Bet::Red
-            } else {
-                Bet::Number((i % 37) as u8)
-            };
+            // Even-money bets: little spread, so 20,000 spins show the edge.
+            let bet = if i % 2 == 0 { Bet::Red } else { Bet::Odd };
             c.roulette.spin(stake, bet, 0, now, &mut rng);
             now += FRAMES * FRAME_MS;
             c.tick(&mut e, now);
         }
         let t = &c.ledger.totals["roulette"];
         let rtp = t.paid as f64 / t.wagered as f64;
-        assert!((0.90..1.04).contains(&rtp), "{rtp}");
+        assert!((0.94..1.0).contains(&rtp), "{rtp}");
         std::fs::remove_dir_all(dir).unwrap();
     }
 }

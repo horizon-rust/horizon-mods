@@ -16,6 +16,7 @@
 // turns the icons and effects into menus, packets and commands. Added to the
 // game as `game::smp_casino`; also a module of this crate, for its tests.
 
+use super::smp_casino_blackjack::{self as bj, Blackjack};
 use super::smp_casino_crash::{self as crash, Crash};
 use super::smp_casino_roulette::{self as roulette, Roulette};
 use super::smp_casino_slots::{self as slots, Slots};
@@ -84,6 +85,7 @@ pub enum Game {
     Roulette,
     Slots,
     Crash,
+    Blackjack,
 }
 
 impl Game {
@@ -92,6 +94,7 @@ impl Game {
             Game::Roulette => "roulette",
             Game::Slots => "slots",
             Game::Crash => "crash",
+            Game::Blackjack => "blackjack",
         }
     }
     pub fn title(self) -> &'static str {
@@ -99,6 +102,7 @@ impl Game {
             Game::Roulette => "Roulette",
             Game::Slots => "Slots",
             Game::Crash => "Crash",
+            Game::Blackjack => "Blackjack",
         }
     }
 }
@@ -212,7 +216,6 @@ pub enum Color {
     Green,
     Red,
     Aqua,
-    Purple,
 }
 
 impl Color {
@@ -226,7 +229,6 @@ impl Color {
             Color::Green => "green",
             Color::Red => "red",
             Color::Aqua => "aqua",
-            Color::Purple => "light_purple",
         }
     }
 }
@@ -307,6 +309,7 @@ pub enum View {
     RouletteNumbers,
     Slots,
     Crash,
+    Blackjack,
 }
 
 impl View {
@@ -316,6 +319,7 @@ impl View {
             View::Roulette | View::RouletteNumbers => "Casino · Roulette",
             View::Slots => "Casino · Slots",
             View::Crash => "Casino · Crash",
+            View::Blackjack => "Casino · Blackjack",
         }
     }
 }
@@ -335,6 +339,8 @@ pub struct Seat {
     pub slots: slots::Machine,
     /// Crash: the automatic cash-out the next bet takes (hundredths, 0: none).
     pub crash_auto: u32,
+    /// Blackjack: the last hand, shown until the next.
+    pub blackjack: bj::Table,
     /// The frame last shown, so a menu is sent again only when it changed.
     pub shown: Option<i64>,
 }
@@ -408,6 +414,7 @@ pub struct Casino {
     pub roulette: Roulette,
     pub slots: Slots,
     pub crash: Crash,
+    pub blackjack: Blackjack,
     /// The draws' random.
     pub rng: Rng,
     /// When each player's last round ended, for the cooldown.
@@ -418,9 +425,7 @@ pub struct Casino {
     boss_reset: bool,
 }
 
-pub const COMMANDS: [&str; 1] = ["casino"];
-
-const USAGE: &str = "Usage: /casino [help|top|stats|roulette|slots|crash]";
+const USAGE: &str = "Usage: /casino [help|top|stats|roulette|slots|crash|blackjack]";
 
 impl Casino {
     /// The casino of the world in `dir`; an unreadable `casino.json` is
@@ -447,6 +452,7 @@ impl Casino {
             roulette: Roulette::default(),
             slots: Slots::default(),
             crash: Crash::default(),
+            blackjack: Blackjack::default(),
             rng: Rng::from_os(),
             ended: HashMap::new(),
             boss: None,
@@ -466,12 +472,15 @@ impl Casino {
 
     /// Whether anything moves: the tick then comes back within a frame.
     pub fn animating(&self) -> bool {
-        self.roulette.busy() || self.slots.busy() || self.crash.busy()
+        self.roulette.busy() || self.slots.busy() || self.crash.busy() || self.blackjack.busy()
     }
 
     /// Whether `uuid` has a round being decided, in any game.
     pub fn playing(&self, uuid: u128) -> bool {
-        self.roulette.playing(uuid) || self.slots.playing(uuid) || self.crash.playing(uuid)
+        self.roulette.playing(uuid)
+            || self.slots.playing(uuid)
+            || self.crash.playing(uuid)
+            || self.blackjack.playing(uuid)
     }
 
     fn today(&mut self, now: i64) {
@@ -748,6 +757,7 @@ impl Casino {
             ["roulette"] => (Vec::new(), Some(View::Roulette)),
             ["slots"] => (Vec::new(), Some(View::Slots)),
             ["crash"] => (Vec::new(), Some(View::Crash)),
+            ["blackjack"] => (Vec::new(), Some(View::Blackjack)),
             ["help"] => (
                 self.help(economy).into_iter().map(Out::Reply).collect(),
                 None,
@@ -797,6 +807,7 @@ impl Casino {
         lines.extend(roulette::HELP.iter().map(|s| s.to_string()));
         lines.extend(slots::HELP.iter().map(|s| s.to_string()));
         lines.extend(crash::HELP.iter().map(|s| s.to_string()));
+        lines.extend(bj::HELP.iter().map(|s| s.to_string()));
         lines
     }
 
@@ -811,6 +822,7 @@ impl Casino {
             roulette: roulette::Table::default(),
             slots: slots::Machine::default(),
             crash_auto: 0,
+            blackjack: bj::Table::default(),
             shown: None,
         });
         seat.view = view;
@@ -820,13 +832,15 @@ impl Casino {
 
     /// The menu `window` closed: the seat goes; rounds still being decided
     /// carry on and are paid all the same.
-    pub fn closed(&mut self, uuid: u128, window: i32) -> bool {
+    pub fn closed(&mut self, uuid: u128, window: i32, now: i64) -> bool {
         if self
             .seats
             .get(&uuid)
             .is_some_and(|s| s.window == Some(window))
         {
             self.seats.remove(&uuid);
+            // A blackjack hand stands; the dealer plays it out.
+            self.blackjack.stand(uuid, now);
             return true;
         }
         false
@@ -858,6 +872,10 @@ impl Casino {
             View::Crash => {
                 self.crash
                     .layout(&mut cells, uuid, seat, now, self.config.crash_max);
+                self.bar(&mut cells, economy, seat, uuid, now);
+            }
+            View::Blackjack => {
+                self.blackjack.layout(&mut cells, uuid, seat);
                 self.bar(&mut cells, economy, seat, uuid, now);
             }
         }
@@ -1034,6 +1052,7 @@ impl Casino {
                     19 => View::Roulette,
                     21 => View::Slots,
                     23 => View::Crash,
+                    25 => View::Blackjack,
                     31 => {
                         let lines = self.help(economy);
                         return lines
@@ -1061,6 +1080,7 @@ impl Casino {
                 }
             }
             View::Crash => self.crash_click(economy, uuid, slot, now),
+            View::Blackjack => self.blackjack_click(economy, uuid, slot, now),
             View::Slots => {
                 if slot != 53 || self.slots.playing(uuid) {
                     return Vec::new();
@@ -1142,6 +1162,116 @@ impl Casino {
         }
     }
 
+    fn blackjack_click(
+        &mut self,
+        economy: &mut Economy,
+        uuid: u128,
+        slot: usize,
+        now: i64,
+    ) -> Vec<Fx> {
+        let card = Fx::Sound {
+            to: uuid,
+            sound: "minecraft:item.book.page_turn",
+            volume: 0.8,
+            pitch: 1.0,
+        };
+        let done = match slot {
+            53 => {
+                if self.blackjack.playing(uuid) {
+                    return Vec::new();
+                }
+                let Some(seat) = self.seats.get(&uuid) else {
+                    return Vec::new();
+                };
+                let (name, amount) = (seat.name.clone(), seat.stake);
+                match self.bet(economy, uuid, &name, Game::Blackjack, amount, now) {
+                    Err(e) => {
+                        return vec![Fx::Bar {
+                            to: uuid,
+                            text: e,
+                            color: Color::Red,
+                        }];
+                    }
+                    Ok(stake) => self.blackjack.deal(stake, now, &mut self.rng),
+                }
+            }
+            38 => self.blackjack.hit(uuid, now, &mut self.rng),
+            40 => {
+                self.blackjack.stand(uuid, now);
+                None
+            }
+            42 => {
+                if !self.blackjack.may_double(uuid) {
+                    return Vec::new();
+                }
+                let extra = self
+                    .blackjack
+                    .hands
+                    .iter()
+                    .find(|h| h.stake.uuid == uuid)
+                    .map_or(0, |h| h.stake.amount);
+                if let Err(e) = self.raise(economy, uuid, extra, now) {
+                    return vec![Fx::Bar {
+                        to: uuid,
+                        text: e,
+                        color: Color::Red,
+                    }];
+                }
+                self.blackjack.doubled(uuid, extra, now, &mut self.rng)
+            }
+            _ => return Vec::new(),
+        };
+        let mut fx = vec![card, Fx::Show(uuid)];
+        if let Some(d) = done {
+            fx.extend(self.blackjack_paid(economy, d, now));
+        }
+        fx
+    }
+
+    /// A bet already in play raised by `extra` (a double): the same limits,
+    /// held the same way.
+    fn raise(
+        &mut self,
+        economy: &mut Economy,
+        uuid: u128,
+        extra: i64,
+        now: i64,
+    ) -> Result<(), String> {
+        let left = self.loss_left(uuid, now);
+        if extra > left {
+            return Err(format!(
+                "Daily loss limit: you may lose {} more today.",
+                economy.money(left)
+            ));
+        }
+        economy.hold("casino_bet", uuid, extra)?;
+        self.today(now);
+        self.ledger
+            .players
+            .entry(uuid_string(uuid))
+            .or_default()
+            .wagered += extra;
+        self.dirty = true;
+        Ok(())
+    }
+
+    fn blackjack_paid(&mut self, economy: &mut Economy, d: bj::Done, now: i64) -> Vec<Fx> {
+        let uuid = d.hand.stake.uuid;
+        let payout = d.end.payout(d.hand.stake.amount);
+        let what = format!(
+            "{}: you {}, the dealer {}",
+            bj::end_line(d.end),
+            bj::total(&d.hand.player).0,
+            bj::total(&d.hand.dealer).0
+        );
+        if let Some(seat) = self.seats.get_mut(&uuid) {
+            seat.blackjack.last = Some((d.hand.player.clone(), d.hand.dealer.clone(), d.end));
+        }
+        let mut fx = self.settle(economy, &d.hand.stake, payout, &what, now);
+        fx.push(Fx::Show(uuid));
+        fx
+    }
+
     /// A crash bet cashed out at `h` hundredths.
     fn crash_paid(&mut self, economy: &mut Economy, bet: &crash::Bet, h: u32, now: i64) -> Vec<Fx> {
         let payout = bet.stake.amount.saturating_mul(i64::from(h)) / 100;
@@ -1178,6 +1308,16 @@ impl Casino {
             } else if let Some(bet) = self.crash.withdraw(uuid) {
                 self.void(economy, &bet.stake);
             }
+        }
+        let away: Vec<u128> = self
+            .blackjack
+            .hands
+            .iter()
+            .map(|h| h.stake.uuid)
+            .filter(|u| !online.contains(u))
+            .collect();
+        for uuid in away {
+            self.blackjack.stand(uuid, now);
         }
         self.seats.retain(|u, _| online.contains(u));
         fx
@@ -1368,6 +1508,19 @@ impl Casino {
             fx.push(Fx::Show(pull.stake.uuid));
         }
         fx.extend(self.crash_tick(economy, now));
+        let (done, changed) = self.blackjack.step(now, &mut self.rng);
+        for uuid in changed {
+            fx.push(Fx::Show(uuid));
+            fx.push(Fx::Sound {
+                to: uuid,
+                sound: "minecraft:item.book.page_turn",
+                volume: 0.8,
+                pitch: 1.0,
+            });
+        }
+        for d in done {
+            fx.extend(self.blackjack_paid(economy, d, now));
+        }
         // A new picture for each menu watching its round, 5 a second at most.
         for (uuid, seat) in &mut self.seats {
             let (frame, sound, pitch) = match seat.view {
@@ -1403,7 +1556,7 @@ impl Casino {
 }
 
 /// The lobby's games and lines: slot, item, name, colour.
-const LOBBY: [(usize, &str, &str, Color); 6] = [
+const LOBBY: [(usize, &str, &str, Color); 7] = [
     (
         19,
         "minecraft:red_concrete",
@@ -1423,6 +1576,12 @@ const LOBBY: [(usize, &str, &str, Color); 6] = [
         Color::Green,
     ),
     (
+        25,
+        "minecraft:paper",
+        "Blackjack: dealer stands on 17, blackjack pays 3 to 2",
+        Color::White,
+    ),
+    (
         29,
         "minecraft:sunflower",
         "Coinflip, player against player: /coinflip <amount>",
@@ -1434,7 +1593,7 @@ const LOBBY: [(usize, &str, &str, Color); 6] = [
         "Odds and rules (/casino help)",
         Color::White,
     ),
-    (33, "minecraft:paper", "Lottery: /lottery", Color::Yellow),
+    (33, "minecraft:name_tag", "Lottery: /lottery", Color::Yellow),
 ];
 
 /// The stakes `-`/`+` step through: 10, 25, 50, 100, 250...
@@ -1480,7 +1639,8 @@ pub(crate) mod tests {
         }
         let (mut c, problem) = Casino::open(&dir, Config::default(), true);
         assert!(problem.is_none());
-        // No sweep in the tests unless asked.
+        // Draws the same every run; no sweep unless asked.
+        c.rng = Rng::from_seed([7; 32]);
         c.ledger.last_sweep = i64::MAX / 2;
         (e, c, dir)
     }
@@ -1519,9 +1679,10 @@ pub(crate) mod tests {
         let mut a = Rng::from_os();
         let mut b = Rng::from_os();
         assert_ne!(a.next_u64(), b.next_u64(), "two seeds");
+        let mut seeded = Rng::from_seed([1; 32]);
         let mut counts = [0u32; 37];
         for _ in 0..37_000 {
-            counts[a.below(37) as usize] += 1;
+            counts[seeded.below(37) as usize] += 1;
         }
         // Each pocket ~1000; a fair draw stays well inside 800..1200.
         assert!(counts.iter().all(|c| (800..1200).contains(c)), "{counts:?}");

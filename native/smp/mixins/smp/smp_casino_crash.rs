@@ -3,8 +3,8 @@
 // 27 s) until it crashes; whoever cashes out first gets their bet times the
 // multiplier at that moment, and the others lose it. The crash point is
 // drawn when the flight starts, P(crash >= x) = (100% - edge) / x, so with
-// the 4% edge any way of playing gets back 96% on average. An instant crash
-// at 1.00x happens 4% of the time, and the flight never goes past the cap
+// the 4% edge any way of playing gets back 96% on average. A crash at
+// 1.00x happens about 5% of the time, and the flight never goes past the cap
 // (100x). A player may set an automatic cash-out before the flight. Leaving
 // the server mid-flight cashes out at that moment, and closing the menu
 // doesn't (/casino crash opens it again). Every menu, the boss bar and the
@@ -392,7 +392,7 @@ mod tests {
 
     #[test]
     fn crash_points_follow_96_over_x() {
-        let mut rng = Rng::from_os();
+        let mut rng = Rng::from_seed([3; 32]);
         let n = 200_000;
         let points: Vec<u32> = (0..n).map(|_| draw(&mut rng, 4, 100)).collect();
         let share = |x: u32| points.iter().filter(|p| **p >= x).count() as f64 / n as f64;
@@ -409,20 +409,21 @@ mod tests {
             );
         }
         let instant = points.iter().filter(|p| **p == 100).count() as f64 / n as f64;
-        assert!((instant - 0.04).abs() < 0.01, "{instant}");
+        // Below 1.01x, shown as 1.00x: 1 - 96/101.
+        assert!((instant - 0.0495).abs() < 0.005, "{instant}");
         assert!(points.iter().all(|p| (100..=10_000).contains(p)));
     }
 
     #[test]
     fn a_round_cashes_out_by_hand_and_by_itself_then_crashes() {
-        let mut rng = Rng::from_os();
+        let mut rng = Rng::from_seed([3; 32]);
         let mut c = Crash::default();
         c.join(stake(A, 100), 0, 0);
         c.join(stake(B, 100), 150, 1000);
         assert_eq!(c.phase, Phase::Betting { ends: BETTING_MS });
         assert!(c.cash_out(A, 5000).is_none(), "not before the flight");
-        // Force a crash at 3.00x.
-        c.step(BETTING_MS, &mut rng, 4, 100);
+        // A crash at 3.00x.
+
         c.phase = Phase::Flying {
             started: BETTING_MS,
             crash: 300,
@@ -473,7 +474,7 @@ mod tests {
             "cashed out at 1.00x"
         );
         // Closing the menu doesn't cash out.
-        assert!(c.closed(A, 7));
+        assert!(c.closed(A, 7, 0));
         let mut t = BETTING_MS;
         while t <= crash_at + SHOWN_MS {
             c.tick(&mut e, t);
@@ -525,7 +526,7 @@ mod tests {
 
     #[test]
     fn playing_any_way_pays_back_about_96_percent() {
-        let mut rng = Rng::from_os();
+        let mut rng = Rng::from_seed([3; 32]);
         let n = 100_000;
         for target in [110u32, 200, 500, 2000] {
             let mut back = 0i64;

@@ -295,6 +295,7 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "casino roulette",
         "casino slots",
         "casino crash",
+        "casino blackjack",
         "spawn",
         "home [name:word]",
         "sethome [name:word]",
@@ -923,7 +924,7 @@ pub(in crate::game) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32)
         return;
     }
     // A round under way carries on and is paid all the same.
-    if smp.casino.closed(uuid, window) {
+    if smp.casino.closed(uuid, window, chrono::Utc::now().timestamp_millis()) {
         return;
     }
     let Some(t) = smp.trades.trade_of(uuid) else {

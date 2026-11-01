@@ -1,23 +1,28 @@
 id = "speak"
 kind = "native-mod"
 name = "Speak."
-summary = "Proximity voice chat: hold a key to talk, groups to reach further."
+summary = "Proximity voice chat: hold a key to talk, nearby players hear you."
 description = """
-Speak. is a proximity voice chat for Horizon: hold a key to talk and the players near you hear you, or join a group to talk across distance.
+Speak. is a proximity voice chat for Horizon: hold a key to talk and the players near you hear you.
 
-- Hold the key (V by default) to talk; players nearby hear you based on in-game distance.
-- Push to talk or voice activation mode, switchable in settings.
-- Whispering shortens the distance for quiet conversation.
-- Password protected groups let you talk to players outside your vicinity.
-- Configurable voice distance, mic sensitivity, and per-player volume.
-- Individual player volume adjustment.
-- Talking players are shown above their heads in a GUI overlay.
-- Commands: /speak invite <player>, /speak group <name>, /speak leave, /speak whisper, /speak pt, /speak vox.
-- Settings page: Options > Mods > Speak. > Settings.
+- Hold the key (V by default) to transmit; let go to stop.
+- The server mixes each voice packet to the players within range, by in-game position and dimension.
+- Whispering carries a shorter distance, for quiet conversation.
+- Settings page: Options > Mods > Speak. > Settings — mode (push to talk / voice activation), voice distance, whisper distance, mic sensitivity, volume.
+- Turn the mouse wheel while transmitting to nudge the output volume.
+- Commands: /speak, /speak invite <player>, /speak group <name>, /speak leave, /speak whisper, /speak pt, /speak vox.
 
-Built as a Horizon native mod with horizon-mixins, on Horizon's native hook points.
-Install it on the launcher's Mods page, then press Build there. Native mods run with
-the player's account permissions and are not sandboxed.
+What is real and what is stubbed: the transport is real — the window sends a mic packet each tick
+while the key is held, the server mixes by proximity and sends sound packets to the players in
+range, over Horizon's mod message channel (speak:voice), which vanilla clients simply don't carry.
+The audio codec is a stub: the packets are framed but carry no sound bytes yet, because Horizon
+has no audio capture hook and no codec crate in its lock. Until one is wired in, voice activation,
+groups and the talking indicator are pending; the /speak group and invite commands answer but do
+not yet form groups.
+
+Built as a Horizon native mod with horizon-mixins, on Horizon's native hook points. Install it on
+the launcher's Mods page, then press Build there. Native mods run with the player's account
+permissions and are not sandboxed.
 
 Authored by wxund. Source: https://github.com/wxundup/speak
 """
@@ -31,5 +36,5 @@ version = "0.1.0"
 published = "2026-11-01"
 game = "26.3"
 file = "speak-0.1.0.hnmod"
-sha256 = "a075c0990e7432c9214931e01fbb693c227ae348e99d9ee01325f32ff99dff18"
-changelog = "Fix build: WorldPhase enum variants carry different payloads, so they can't be combined with or-patterns in world_lifecycle.rs. Handle each variant separately."
+sha256 = "2206ec46594326902732c65e968b1a76194118a539b39123cd278e5cfa288424"
+changelog = "First release. Push to talk with a bound key, a settings page, /speak commands, and a proximity-routed voice pipeline over the mod message channel; the packet framing is ready for codec bytes, which are stubbed until Horizon offers an audio source to native mods. Verified: the bundle applies and the whole game cargo checks on the pinned Horizon commit with -D warnings."

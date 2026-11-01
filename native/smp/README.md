@@ -73,6 +73,9 @@ money and the room before anything moves.
   copper, diamond, emerald, coal, redstone, lapis, wheat, wood and food chains at each start.
 - Each player sells at most `daily_sell_coins` (2,000 coins) and `daily_sell_items` (640 of each item) a UTC day,
   `/worth` and the shop show what is left, and `market.json` keeps the day's count across restarts.
+- Money received with `/pay` counts toward the receiver's same `daily_sell_coins`: selling up to the limit on alts
+  and paying it all to a main is refused once the main's limit is reached ("can only receive N more today").
+  Trades (`/trade`) and auction house sales are not counted.
 - Amounts are checked: no price above 1,000,000,000,000, no sum that overflows.
 - The coinflip and the lottery give the winner the stakes (less `fee_percent`, 0 by default): they move money
   between players and never make any.

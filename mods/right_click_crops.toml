@@ -1,0 +1,50 @@
+id = "right_click_crops"
+kind = "native-mod"
+name = "Right-Click Crops"
+summary = "Right-click harvest for 16 plant families, with replanting and individual settings."
+description = """
+Harvest mature plants with a right-click, replant crops, and keep your garden growing.
+
+### Features
+- Supports 16 plant families.
+- Replants crops using one planting item from the harvest, or from your inventory.
+- Keeps the base of tall plants and the stems of pumpkins and melons.
+- Lets you enable or disable each plant separately in **Options > Mods > Right-Click Crops > Settings**.
+
+### Supported plants
+Wheat, carrots, potatoes, beetroot, nether wart, cocoa, torchflower, pitcher crop, sugar cane, cactus, bamboo, kelp, twisting vines, weeping vines, pumpkin and melon.
+
+### Good to know
+- Harvesting works in survival, one targeted plant at a time.
+- Without a suitable planting item, the crop is harvested but not replanted.
+- Torchflower needs spare seeds; pitcher crop needs spare pitcher pods.
+- Twisting and weeping vines can drop nothing when harvested by hand. Use shears for guaranteed drops.
+- Bone meal, ordinary breaking and planting, sweet berries and glow berries keep their normal behaviour.
+
+### Compatibility
+Last checked on **November 1, 2026**, for Minecraft 26.3. The release is pinned to Horizon Nightly 2026-10-31 (`9d979ca`), where single-player and LAN were tested. A compilation-only check also passed on the newest Nightly available on that date (`d91cab6`); gameplay on that newer revision was not tested.
+
+This is a native mod: install only if you trust its source and accept the launcher's native-code warning.
+
+[Watch the demo](https://youtu.be/kll-qvj5s54) · [Harvesting guide](https://github.com/AyanoKaito/horizon-right-click-crops/blob/main/docs/harvesting.md)
+"""
+authors = ["AyanoKaito"]
+owners = ["AyanoKaito"]
+license = "MIT"
+source = "https://github.com/AyanoKaito/horizon-right-click-crops"
+icon = "icons/right_click_crops.png"
+key = "RWRwbuaByP5mM4VUm4kZEQVPiuw+3IEVJ7CZcEHIjY5fPKf9lhQKUZRy"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-01"
+game = "26.3"
+file = "right_click_crops-1.0.0.hnmod"
+sha256 = "681ce896c50dd041132900e7bbab71167f133b3f3862f86e8b1a0cac52754b97"
+signature = """
+untrusted comment: signature from minisign secret key
+RURwbuaByP5mM4x8HGWHv/S/WlHPsmamRwsi70PTq7E5u4uJ7wyNzNT4rwpR/vGA9V2H6w9yLhmF1CPtS1grEfWorPixnk6efAw=
+trusted comment: timestamp:1793523764\tfile:right_click_crops-1.0.0.hnmod\thashed
+seiWz0D/X34FIKhiE1yfZc2uAkkSGuwAnTHbGrK63sHg+HdL+EgqEkzaxNgJTiMOdnf/iIdSkDVVwuF+Od/SCQ==
+"""
+changelog = "First public release: right-click harvesting for 16 plant families, ordinary Horizon loot, paid replanting, retained bases and stems, and individual plant settings. Validated in single-player and for LAN host and guest."

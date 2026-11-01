@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.18.0"
+version = "0.19.0"
 priority = 100
 
 # The commit of horizon main it was tested on. It uses only the native hook points (hooks 62 in
@@ -37,6 +37,12 @@ id = "shop"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_shop"
 source = "smp_shop.rs"
+
+[[module]]
+id = "bank"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_bank"
+source = "smp_bank.rs"
 
 [[module]]
 id = "auction"

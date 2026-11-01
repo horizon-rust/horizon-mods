@@ -8,7 +8,7 @@ Players install nothing: it speaks only what a stock Horizon client already show
 lines, vanilla chest menus the server fills with ordinary items (the trade menu); later sounds, titles, the action
 bar, boss bars and the sidebar).
 
-This version: the economy with its Treasury and taxes, the auction house, the server market and its `/shop` menu, player trades, the coinflip, the lottery, places (spawn, homes, warps,
+This version: the economy with its Treasury and taxes, the auction house, the bank, the server market and its `/shop` menu, player trades, the coinflip, the lottery, places (spawn, homes, warps,
 teleport requests, the rules), land claims, and the scoreboard (a sidebar with your balance, playtime and the richest players, the Tab list's
 header and footer).
 
@@ -20,6 +20,7 @@ header and footer).
 | `/eco take <player> <amount> [reason]`, `/money take ...` | operators of level 3: a cheat's gains go into the Treasury, logged with the reason. Nobody gives or sets money (`/eco give` and `/eco set` say so) |
 | `/treasury`, `/treasury log` | the Treasury's balance, its income by tax and its spending (today and since it opened), its last movements |
 | `/treasury pay <player> <amount> <reason>` | operators of level 3: pays a player from the Treasury (an event prize, a bug refund, a grant), never more than it holds; everyone sees it |
+| `/bank`, `/bank deposit <amount\|all>`, `/bank withdraw <amount\|all>` | your savings, which earn a small interest from the Treasury each night |
 | `/ah` | the auction house: a chest menu of listings by category, cheapest a unit first; click one to buy it or bid; your listings (click to take one back) and your mail |
 | `/ah sell <price> [count]` | lists the stack in your hand (or part of it) at a fixed price, for `listing_hours` (48); the listing fee (1%, at least 1 coin) goes to the Treasury |
 | `/ah auction <start> [hours]` | auctions the stack in your hand from a starting bid, for 1 to 24 hours (12) |
@@ -202,11 +203,23 @@ its last 50 movements. The tax code (`config.json`'s `taxes`):
   `land_free_chunks` (4). What a player can't pay is owed: no new claim until it's paid (`/eco taxes pay`, or the
   next Monday's collection). Nothing is ever unclaimed for it.
 - Wealth tax, every Monday: `wealth_brackets` `[from, percent]`, by default 1% of a balance's part above 50,000,
-  2% above 250,000 and 3% above 1,000,000 a week. On 2026-11-01 the richest player held 11,804 coins: nobody pays it
+  2% above 250,000 and 3% above 1,000,000 a week, on the balance and bank savings together (paid from the
+  balance). On 2026-11-01 the richest player held 11,804 coins: nobody pays it
   yet; it keeps fortunes from growing without bound as the economy does.
 - Games of chance: the coinflip's and the lottery's `fee_percent` goes to the Treasury.
 The week's collection is looked at once a second (one comparison) and runs once a week; a restart never collects
 twice (the week collected is kept with the balances). `enabled: false` turns the weekly taxes off.
+
+**The bank.** `/bank` shows your savings; `/bank deposit <amount|all>` and `/bank withdraw <amount|all>` move coins
+between your wallet and the bank (the `bank` pool), free and at any time. Interest (`bank.daily_basis_points`, 10:
+0.1% a day) is paid at 00:00 UTC from the Treasury, on the lowest amount saved since the last payment (a deposit made
+just before midnight earns nothing that night), on at most `max_interest_on` (10,000) coins of an account; a player
+saves at most `max_deposit` (25,000). One night's interest for everyone is at most `max_treasury_percent` (5) of the
+Treasury, shared out pro rata when that's short: the bank never makes money, it hands back part of the taxes to
+those who keep coins out of circulation. Interest stays saved (logged as `bank_interest`); deposits and withdrawals
+are `bank_deposit` and `bank_withdraw`. No loans: their collateral (items) can't be held safely here, and a loan
+without it is free money for an alt that never pays back. Savings are kept in `economy.json` (`ext.bank`).
+
 Other parts reach the pools through `Economy::to_pool`, `from_pool`, `pool_move` and `settle_pool` (a bet against a
 pool: the stake goes in, the payout comes out, never more than the pool holds), each one audit line.
 
@@ -246,7 +259,7 @@ action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explos
 | File | What it is |
 |---|---|
 | `mixins/smp/horizon-mixin.toml` | The bundle: sixteen modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs`, `smp_auction.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`, `game::smp_auction`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_tax.rs`, `smp_auction.rs`, `smp_bank.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_tax`, `game::smp_auction`, `game::smp_bank`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |

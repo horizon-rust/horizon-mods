@@ -202,7 +202,8 @@ jackpot:
   first two cards, no split; about 1% house edge with basic strategy.
 
 Every draw is made by the server (ChaCha20 keyed from the system) before the animation starts. Bets go from `min_bet`
-10 to `max_bet` 1000; a player may lose at most `daily_loss_cap` (10,000) a day (UTC, all games together), and
+10 to `max_bet` 1000; a player may lose at most `daily_loss_cap` (10,000) a day (UTC, all games together) and win at most
+`daily_win_cap` (10,000) net (once reached, no new bet until 00:00 UTC; the round that crosses it is paid in full), and
 `cooldown_ms` (2000) passes between the end of a round and their next bet. A bet is held like a coinflip stake;
 closing the menu or leaving never loses a round: a spin or a pull ends and is paid, a blackjack hand stands, a crash
 bet is cashed out when its player leaves in flight (or given back before take-off). Wins are paid from the casino's

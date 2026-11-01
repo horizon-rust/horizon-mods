@@ -504,6 +504,7 @@ mod tests {
     fn many_spins_keep_about_the_house_edge() {
         let (mut e, mut c, dir) = setup("edge", 1_000_000_000);
         c.config.daily_loss_cap = i64::MAX / 4;
+        c.config.daily_win_cap = i64::MAX / 4;
         c.config.cooldown_ms = 0;
         let mut rng = Rng::from_seed([3; 32]);
         let mut now = 0;

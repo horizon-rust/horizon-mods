@@ -221,7 +221,7 @@ def run(ctl, resources, out):
             assert any("The Treasury paid" in l for l in alex.say(f"/treasury pay {who} 3000 casino proof"))
         results["help"] = alex.say("/casino help")
         text = "\n".join(results["help"])
-        for want in ("bets 10 coins to 1,000 coins", "pot (20,000 coins now)", "European", "94.2%", "96%", "3:2"):
+        for want in ("bets 10 coins to 1,000 coins", "pot (20,000 coins now)", "European", "94.2%", "96%", "3 to 2"):
             assert want in text, (want, results["help"])
         alex.say("/casino")
         assert alex.title() == "Casino", alex.title()

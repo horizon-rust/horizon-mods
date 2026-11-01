@@ -52,7 +52,7 @@ header and footer).
 | `/claim show` | draws the border of the chunk you stand in for 10 s, for you only: green yours or a trusting owner's, red someone else's, white free |
 | `/claims` | your chunks, how many you may hold, and who you trust |
 | `/trust <player>`, `/untrust <player>` | lets a player (or no longer) build and use things on all your land |
-| `/nick <name>`, `/nick off`, `/nick` | another name for you in chat and the Tab list, shown as `~name` (hovering it gives your real one); one change every 10 minutes, after an hour of play; `/nick` alone says how to take it off |
+| `/nick <name>`, `/nick off`, `/nick` | operators of level 3 (with `ops_only`, the default): another name for you in chat and the Tab list, shown as `~name` (hovering it gives your real one); `/nick off` (anyone with a nickname) takes it off; `/nick` alone says how |
 | `/nick <player> <name\|off>` | operators of level 3: sets or takes off a player's nickname |
 | `/realname <nick>` | who goes by that nickname |
 | `/sidebar off`, `/sidebar on`, `/sidebar` | hides the scoreboard sidebar for you (remembered), shows it again |
@@ -91,7 +91,9 @@ A `config.json` still holding the 18 prices of versions 0.1 to 0.11, never edite
 0.12.0; edited prices are kept. Only items that stack to 64 belong in the market: a shift-click buys 64, and what
 doesn't fit falls at the player's feet for them.
 
-**Nicknames.** 3 to 16 letters, digits or `_`, shown with a `~` in front (`~Rocky`) so a nickname never passes for
+**Nicknames.** With `ops_only` (the default since 0.22) only operators of level 3 set nicknames: their own, or a
+player's with `/nick <player> <name>`; a player may take off the one given to them (`/nick off`). At each start, a
+nickname a player who isn't an operator picked themselves is taken off and logged (`for operators only`). 3 to 16 letters, digits or `_`, shown with a `~` in front (`~Rocky`) so a nickname never passes for
 a real name. Names are compared case-insensitively with `_` dropped and look-alikes folded (`0`→o, `1`/`i`→l, `3`→e,
 `4`→a, `5`→s, `7`→t, `8`→b, `9`→g). Refused: a nickname equal to, or containing (from 4 letters), the name of anyone
 who has played here (the economy's accounts and `usercache.json`), an operator (`ops.json`), the Team (`protected`)
@@ -103,7 +105,7 @@ second. The nickname shows in chat (messages, `/me`, `/msg`) and the Tab list, a
 the real name stays everywhere else: the server's log, the anticheat, selectors, the Discord bridge. `/pay`, `/tpa`,
 `/trade`, `/playtime`, `/tpaccept`, `/tpdeny` and `/eco` take a nickname (with or without `~`) wherever they take a
 player's name. The player's profile (name, UUID) never changes.
-`config.json`'s `nicks`: `enabled`, `cooldown_seconds` (600), `min_playtime_minutes` (60), `protected` (the Team's
+`config.json`'s `nicks`: `enabled`, `ops_only` (true), `cooldown_seconds` (600), `min_playtime_minutes` (60), `protected` (the Team's
 names), `reserved` (the words above).
 
 **The shop.** `/shop` opens a 6-row chest menu on the market's prices: the categories of `config.json`'s `shop` (an

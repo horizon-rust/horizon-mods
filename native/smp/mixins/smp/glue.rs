@@ -39,7 +39,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.21.0";
+pub const VERSION: &str = "0.22.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -1712,6 +1712,8 @@ struct ServerNames {
     /// (UUID, real name), and whether an operator.
     names: Vec<(u128, String)>,
     ops: Vec<String>,
+    /// Operators by UUID, with their level.
+    levels: Vec<(u128, u8)>,
 }
 
 impl ServerNames {
@@ -1733,8 +1735,16 @@ impl ServerNames {
                 names.push((uuid, name.to_owned()));
             }
         }
-        let ops = list("ops.json").iter().filter_map(|e| e["name"].as_str().map(str::to_owned)).collect();
-        Self { names, ops }
+        let ops_file = list("ops.json");
+        let ops = ops_file.iter().filter_map(|e| e["name"].as_str().map(str::to_owned)).collect();
+        let levels = ops_file
+            .iter()
+            .filter_map(|e| {
+                let uuid = e["uuid"].as_str().and_then(smp_store::parse_uuid)?;
+                Some((uuid, e["level"].as_u64().unwrap_or(4).min(4) as u8))
+            })
+            .collect();
+        Self { names, ops, levels }
     }
 }
 
@@ -1747,6 +1757,9 @@ impl smp_nick::Names for ServerNames {
     }
     fn name_of(&self, uuid: u128) -> Option<String> {
         self.names.iter().find(|(u, _)| *u == uuid).map(|(_, n)| n.clone())
+    }
+    fn level(&self, uuid: u128) -> u8 {
+        self.levels.iter().find(|(u, _)| *u == uuid).map_or(0, |(_, l)| *l)
     }
 }
 

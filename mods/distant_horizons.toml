@@ -12,7 +12,7 @@ An unofficial Rust port of [Distant Horizons](https://gitlab.com/distant-horizon
 
 Settings: Options > Mods > Distant Horizons. In chat: `/dh` for status, `/dh distance 512`, `/dh quality high`, `/dh debug on` and more (Tab completes them).
 
-Native source mod: enable Settings → Game → Native mods (experimental), choose Build and confirm the native-code warning. The launcher downloads its own Rust and builds a separate game (10–30 minutes the first time). It runs with your account's permissions.
+Native source mod: install it on the launcher's Mods page, press Build there and confirm the native-code warning. The launcher downloads its own Rust and builds a separate game (10–30 minutes the first time). It runs with your account's permissions.
 
 Pinned to Horizon nightly `d009ebd140476b5bdc958c00f56a75e82abec691` (2026-10-29) and Horizon Mixins `0d6b103c70633d8fd9443d8d0acd3aadaacedb06`; the launcher builds these exact revisions. Other Horizon revisions have not been validated. It builds together with Horizon's official native mods; it can't be built with a native mod pinned to a different Horizon commit. Turn Video Settings > LOD Distance off: Horizon's own far terrain draws in the same place.
 

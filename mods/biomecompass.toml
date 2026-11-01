@@ -3,7 +3,7 @@ kind = "native-mod"
 name = "BiomeCompass"
 summary = "Craft a Biome Compass, pick a biome and its needle points to the nearest one."
 description = """
-**A native Horizon mod**: the launcher builds it into the game (Settings → Game → Native mods, then Build). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
 
 Craft a **Biome Compass** (a compass with a sapling on each of its four sides, any kinds), right-click it and pick a biome from the list (with a search box). The world generator is searched around you, a little every tick, and the compass's needle then points to the nearest one, with its distance and direction on the action bar.
 

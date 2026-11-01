@@ -3,7 +3,7 @@ kind = "native-mod"
 name = "Item New"
 summary = "Newly picked-up items glow in your hotbar and inventory until you look at them."
 description = """
-**A native Horizon mod**: the launcher builds it into the game (Settings → Game → Native mods, then Build). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
 
 Items you just got (picked up, crafted, taken from a chest, given) get a soft glow in the hotbar and in inventory and container screens, until you point at them or close the screen.
 

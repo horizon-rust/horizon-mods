@@ -3,7 +3,7 @@ kind = "native-mod"
 name = "Mouse Tricks"
 summary = "Inventory mouse tricks: drag to spread or gather, the wheel moves items one by one, and R sorts."
 description = """
-**A native Horizon mod**: the launcher builds it into the game (Settings → Game → Native mods, then Build). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
 
 - **Right-drag**: one item into each slot you pass.
 - **Left-drag**: gather the same items; with Shift, quick-move many stacks.

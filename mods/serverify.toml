@@ -33,7 +33,7 @@ Horizon cannot join servers that check Minecraft accounts yet, which is most pub
 
 ## Install
 
-Install it from the launcher's Mods page, then Settings > Native mods (experimental) > Build, and play the Native mods instance. Guide: https://github.com/Louchatfroff/serverify/tree/main/horizon/serverify#readme
+Install it from the launcher's Mods page, then press Build there, and play that instance. Guide: https://github.com/Louchatfroff/serverify/tree/main/horizon/serverify#readme
 
 Native mods are not sandboxed. The source is public and licensed GPL-3.0-only: https://github.com/Louchatfroff/serverify/tree/main/horizon/serverify"""
 authors = ["Louchatfroff"]

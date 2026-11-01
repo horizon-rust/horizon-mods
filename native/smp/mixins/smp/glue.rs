@@ -11,6 +11,8 @@ use crate::game::{
     Game,
     native_server::{NativeCommand, NativeServerPlayer, NativeSidebar},
     smp_board::{self, Board, Line},
+    smp_casino::{self, Casino},
+    smp_casino_glue,
     smp_claims::{self, Claims},
     smp_economy::{self, Economy, Out, Player},
     smp_games::{self, Games},
@@ -35,7 +37,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.16.0";
+pub const VERSION: &str = "0.17.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -47,6 +49,7 @@ pub struct Config {
     pub market: smp_market::Config,
     pub shop: smp_shop::Config,
     pub gambling: smp_games::Config,
+    pub casino: smp_casino::Config,
     pub places: smp_places::Config,
     pub claims: smp_claims::Config,
     pub board: smp_board::Config,
@@ -69,6 +72,9 @@ pub struct Smp {
     trades: Trades<ItemStack>,
     games: Games,
     lottery: Lottery,
+    /// The casino's menus and rounds, and the random its draws come from.
+    casino: Casino,
+    rng: smp_casino::Rng,
     /// An error when `places.json` can't be read: the commands say so.
     places: Result<Places, String>,
     /// An error when `claims.json` can't be read: nothing is guarded then,
@@ -175,6 +181,10 @@ fn open(dir: PathBuf) -> Smp {
     if let Err(e) = &presence {
         log::error!("[smp] welcomes, daily rewards and AFK are off: {e}");
     }
+    let (casino, problem) = Casino::open(&dir, config.casino, config.gambling.enabled);
+    if let Some(e) = problem {
+        log::error!("[smp] casino.json can't be read, the day's ledger starts again (kept apart): {e}");
+    }
     Smp {
         dir,
         economy,
@@ -185,6 +195,8 @@ fn open(dir: PathBuf) -> Smp {
         trades: Trades::default(),
         games: Games::new(config.gambling),
         lottery: Lottery::default(),
+        casino,
+        rng: smp_casino::Rng::from_os(),
         places,
         claims,
         board,
@@ -249,6 +261,9 @@ fn save(smp: &mut Smp) {
     {
         log::error!("[smp] {err}");
     }
+    if let Err(err) = smp.casino.save() {
+        log::error!("[smp] {err}");
+    }
 }
 
 /// The commands, for every player's command tree.
@@ -275,6 +290,11 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "coinflip list",
         "lottery",
         "lottery buy <tickets:integer>",
+        "casino",
+        "casino help",
+        "casino top",
+        "casino stats",
+        "casino roulette",
         "spawn",
         "home [name:word]",
         "sethome [name:word]",
@@ -350,9 +370,9 @@ impl Bag for GameBag<'_, '_> {
     }
 }
 
-const COMMANDS: [&str; 15] = [
+const COMMANDS: [&str; 16] = [
     "balance", "bal", "pay", "baltop", "eco", "money", "worth", "sell", "buy", "shop", "trade", "coinflip",
-    "lottery", "treasury", "taxes",
+    "lottery", "treasury", "taxes", "casino",
 ];
 
 /// The players on, as the places see them.
@@ -537,6 +557,14 @@ pub(in crate::game) fn perform(
         }
     } else if word == "shop" {
         open_shop(game, smp, &me)
+    } else if word == "casino" {
+        match &mut smp.economy {
+            Ok(e) => {
+                e.seen(me.uuid, &me.name);
+                smp_casino_glue::command(game, &mut smp.casino, e, &me, now, line)
+            }
+            Err(_) => vec![Out::Error("The economy is off: its file can't be read (see the server log).".into())],
+        }
     } else {
         match &mut smp.economy {
         Ok(e) => {
@@ -844,6 +872,20 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
         shop_clicked(game, smp, uuid, slot, mode == 1);
         return;
     }
+    if smp.casino.owns(uuid, window) {
+        let Ok(economy) = &mut smp.economy else {
+            return;
+        };
+        let commands = smp_casino_glue::clicked(game, &mut smp.casino, economy, &mut smp.rng, uuid, slot, mode == 1);
+        if smp.casino.animating() {
+            BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
+        }
+        drop(guard);
+        for line in commands {
+            game.native_run_command(&line);
+        }
+        return;
+    }
     let Some(t) = smp.trades.trade_of(uuid) else {
         return;
     };
@@ -878,6 +920,10 @@ pub(in crate::game) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32)
     let smp = guard.as_mut().expect("opened");
     if smp.shop.views.get(&uuid).is_some_and(|v| v.0 == Some(window)) {
         smp.shop.views.remove(&uuid);
+        return;
+    }
+    // A round under way carries on and is paid all the same.
+    if smp.casino.closed(uuid, window) {
         return;
     }
     let Some(t) = smp.trades.trade_of(uuid) else {
@@ -1349,8 +1395,19 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         }
         smp.nicks_shown.retain(|u| players.iter().any(|p| p.uuid == *u) || nicks.nick_of(*u).is_none());
     }
+    // The casino: its frames and rounds each tick while one moves (5
+    // pictures a second at most), otherwise once a second for the sweep.
+    let mut casino = Vec::new();
+    if let Ok(e) = &mut smp.economy
+        && (n % 20 == 0 || smp.casino.animating())
+    {
+        e.now = now;
+        casino = smp_casino_glue::tick(game, &mut smp.casino, e, now);
+    }
     let title = smp.board.as_ref().map(|b| b.config.title.clone()).unwrap_or_default();
-    let busy = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty()) || !smp.trades.open.is_empty();
+    let busy = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty())
+        || !smp.trades.open.is_empty()
+        || smp.casino.animating();
     BUSY.store(busy, Relaxed);
     save(smp);
     drop(guard);
@@ -1359,7 +1416,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             game.native_sleep_ignored(uuid, ignored);
         }
     }
-    for line in particles {
+    for line in particles.into_iter().chain(casino) {
         game.native_run_command(&line);
     }
     for (uuid, lines) in sidebars {

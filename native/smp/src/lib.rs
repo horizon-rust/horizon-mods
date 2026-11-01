@@ -21,6 +21,8 @@ pub mod smp_casino_slots;
 pub mod smp_claims;
 #[path = "../mixins/smp/smp_economy.rs"]
 pub mod smp_economy;
+#[path = "../mixins/smp/smp_futures.rs"]
+pub mod smp_futures;
 #[path = "../mixins/smp/smp_games.rs"]
 pub mod smp_games;
 #[path = "../mixins/smp/smp_invsee.rs"]

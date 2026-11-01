@@ -1,0 +1,15 @@
+id = "redescreen_voice"
+kind = "native-mod"
+name = "RedeScreen Voice"
+summary = "Mod de voz no minecraft rust."
+authors = ["brennomcpe10-del"]
+owners = ["brennomcpe10-del"]
+license = "MIT"
+source = "https://github.com/brennomcpe10-del/SimpleVoiceChat/tree/native-hnmod"
+
+[[versions]]
+version = "0.4.0-beta.1"
+published = "2026-11-01"
+game = "26.3"
+file = "redescreen_voice-0.4.0-beta.1.hnmod"
+sha256 = "2c7b2972bb708d310192a6d2957235c69ff2ca7b963c4a27975ceebb67344043"

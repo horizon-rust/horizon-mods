@@ -31,8 +31,8 @@ header and footer).
 | `/ah cancel <listing>`, `/ah claim`, `/ah search <words>`, `/ah mine`, `/ah mail` | takes back a listing nobody bid on; gives you your mail; the menu on a search, your listings, your mail |
 | `/eco taxes`, `/taxes` | the tax code and your own bill on Monday; `/eco taxes pay` pays land tax you owe |
 | `/shop` | the market as a chest menu: categories, a click buys one, a shift-click 64, a click on a stack of yours sells it, "Sell all" |
-| `/market [item]` | the moving market as a chest menu: categories, each item's prices, its move over 1 h and 24 h and its volume; an item's page buys or sells 1, 16 or 64, sells all you carry, and gives its price chart as a map |
-| `/worth [item]` | what the market pays and asks for an item (the one in your hand without a name), and what you may still sell today |
+| `/market [item]` | the moving market as a chest menu: categories, each item's price, its move over 1 h and 24 h and its volume; an item's page buys or sells 1, 16 or 64, sells all you carry, and gives its price chart as a map |
+| `/worth [item]` | an item's price, the same to buy and to sell (the one in your hand without a name), and what you may still sell today |
 | `/sell hand [count]`, `/sell <item> [count]`, `/sell all` | sells to the market: the stack in your hand, an item, or everything it buys |
 | `/buy <item> [count]` | buys from the market, only what fits in your inventory |
 | `/trade <player>` | asks a player to trade (60 s to answer) |
@@ -67,18 +67,19 @@ mode. Items move first, then money, both logged; a sale the log refuses gives th
 money and the room before anything moves.
 
 **No way to get rich from the market.** The market makes money only from what players gather, and only so much a day:
-- Buying always costs more than selling: an item whose `sell` is not below its `buy` isn't bought (the server log
-  says so at the start).
+- One price per item, to buy and to sell (since 0.29): a config that still has two (`buy` 400, `sell` 100) gets
+  their geometric mean (200) at load, logged ("one price now"); `buy` or `sell` 0 still closes that side. A trade
+  of N items is priced along the curve it moves the price on (below), so buying N and selling them back gives back
+  exactly what was paid, less the tax: a round trip never earns (tested for 1, 64 and past the minute's band, and
+  over thousands of random trades with the drift in between).
 - No chain of recipes turns what the market sells into something it buys for more: the cheapest way to get each item
   from the market (bought, or crafted, smelted, cut from bought items, through any number of recipes) is worked out,
   and an item the market would buy for more than that isn't bought. The tests walk every vanilla recipe
   (`SMP_VANILLA_DATA=<.local/horizon-client/26.3/data/minecraft> cargo test`); the server checks the iron, gold,
   copper, diamond, emerald, coal, redstone, lapis, wheat, wood and food chains at each start.
-- With prices moving (below), every item's `buy` is at least its `sell` times `max_factor / min_factor`
-  (1.6 / 0.6), raised at load when it isn't: the most the market ever pays for an item is below the least it ever
-  asks, at any two moments, so buying low and selling high on the market's own prices never pays (a test pumps and
-  dumps every item for 2,000 minutes, another is a whale pushing diamond up for two hours and selling into it). The
-  recipe chains are checked at the worst factors too.
+- Items a recipe links (an ingot and its block, wheat and hay...) share one moving price, the block moving it as
+  its 9 ingots do, so crafting never beats the market however prices move; the vanilla-recipe test checks every item
+  at the worst drift (what makes it at 0.6 times its price, it at 1.6) too.
 - Each player sells at most `daily_sell_coins` (2,000 coins) and `daily_sell_items` (640 of each item) a UTC day,
   `/worth` and the shop show what is left, and `market.json` keeps the day's count across restarts.
 - Money received with `/pay` counts toward the receiver's same `daily_sell_coins`: selling up to the limit on alts
@@ -88,17 +89,17 @@ money and the room before anything moves.
 - The coinflip and the lottery give the winner the stakes (less `fee_percent`, 0 by default): they move money
   between players and never make any.
 
-Default prices (coins, buy / sell; `-` not traded that way):
+Default prices (coins; "buy only": the market sells it but doesn't buy it, "sell only" the other way):
 
 | Category | Items |
 |---|---|
-| Farming | wheat 3/1, wheat seeds 2/-, carrot 3/1, potato 3/1, beetroot 3/1, sugar cane 3/1, pumpkin 8/3, melon slice 2/1, cactus 3/1, bone meal 3/- |
-| Mining | coal 8/2, copper ingot 6/2, iron ingot 30/8, gold ingot 40/10, redstone 4/1, lapis 8/2, quartz 8/2, emerald 80/20, diamond 400/100 |
-| Wood | the eight logs 4/1 |
-| Mob drops | rotten flesh -/1, bone 3/1, string 3/1, gunpowder 8/2, spider eye 4/1, slime ball 10/2, blaze rod 30/8, leather 6/2, feather 2/1 |
-| Building | cobblestone 1/-, stone 2/-, dirt 1/-, sand 2/-, gravel 2/-, glass 3/-, bricks 4/-, stone bricks 3/- |
-| Food | bread 5/-, cooked beef 6/-, cooked porkchop 6/-, cooked chicken 5/-, baked potato 4/-, apple 4/-, golden carrot 40/- |
-| Tools | torch 1/-, ladder 2/-, crafting table 4/-, chest 6/-, furnace 6/- |
+| Farming | wheat 2, carrot 2, potato 2, beetroot 2, sugar cane 2, pumpkin 5, melon slice 1, cactus 2; buy only: wheat seeds 2, bone meal 3 |
+| Mining | coal 4, copper ingot 3, iron ingot 15, gold ingot 20, redstone 2, lapis 4, quartz 4, emerald 40, diamond 200 |
+| Wood | the eight logs 2 |
+| Mob drops | bone 2, string 2, gunpowder 4, spider eye 2, slime ball 4, blaze rod 15, leather 3, feather 1; sell only: rotten flesh 1 |
+| Building (buy only) | cobblestone 1, stone 2, dirt 1, sand 2, gravel 2, glass 3, bricks 4, stone bricks 3 |
+| Food (buy only) | bread 5, cooked beef 6, cooked porkchop 6, cooked chicken 5, baked potato 4, apple 4, golden carrot 40 |
+| Tools (buy only) | torch 1, ladder 2, crafting table 4, chest 6, furnace 6 |
 
 A `config.json` still holding the 18 prices of versions 0.1 to 0.11, never edited, gets these at the first start of
 0.12.0; edited prices are kept. Only items that stack to 64 belong in the market: a shift-click buys 64, and what
@@ -132,17 +133,20 @@ player's name. The player's profile (name, UUID) never changes.
 `config.json`'s `nicks`: `enabled`, `ops_only` (true), `cooldown_seconds` (600), `min_playtime_minutes` (60), `protected` (the Team's
 names), `reserved` (the words above).
 
-**Moving prices** (`market.dynamic`, on by default since 0.26). Each item has its base price (`items`) and a factor
-that supply and demand move: what players sell pushes it down, what they buy pushes it up, by `count × 1% / depth`,
-where the depth follows the item's rarity (400 / its mid price, between 2 and 400: a diamond moves 50 times faster per
-item than cobblestone; `depth` overrides it per item). Prices move only on a timer, once a minute, never per trade:
-one trade moves at most `max_trade_impact_percent` (2%), one player's trades on one item at most
-`max_player_impact_percent` (2%) a minute, and all of them `max_minute_move_percent` (5%) a minute. Between trades
-the factor goes back to 1 with a half-life of `half_life_hours` (6), and it stays within `min_factor` (0.6) and
-`max_factor` (1.6). The market makes the spread: it asks `ceil(buy × factor)` and pays `floor(sell × factor)`. A
-`tax_percent` (2%) of each sale and purchase goes to the Treasury, shown on the receipt ("Sold 3 diamond for 300
-coins, tax 6 coins (2%): +294 coins."). Items a player bought from the market in the last `round_trip_hours` (24)
-can't be sold back to it. History: one point a minute for 24 hours and one an hour for 30 days (the mid price, the
+**Moving prices** (`market.dynamic`, on by default since 0.26). Each item has one price: its base price (`items`)
+times a factor that supply and demand move as each trade happens. Every item bought raises the log of the factor by
+`1% / depth`, every item sold lowers it as much, where the depth follows the item's rarity (400 / its price, between
+2 and 400: a diamond moves 50 times faster per item than cobblestone; `depth` overrides it per item). A trade of N is
+worth the area under that curve (`price / step × (e^(N × step) - 1)`), rounded up to whole coins when buying and down
+when selling: one diamond at 200 costs 201 and sells for 199, 64 cobblestone at 1 cost 65, and a sale walks back the
+exact path of the purchase. All trades together move an item at most `max_minute_move_percent` (5%) a minute from
+where it started that minute: past that, a purchase is cut short and a sale keeps the rest ("sell them in a
+minute"). The factor goes back to 1 with a half-life of `half_life_hours` (6) and stays within `min_factor` (0.6)
+and `max_factor` (1.6), where the rest of a trade goes at that price. A `tax_percent` (2%) of each sale and purchase
+goes to the Treasury, on its own line of the receipt ("Sold 3 diamond at 198 coins each: 595 coins." then "Tax 2%:
+-12 coins. You get 583 coins."). Items a player bought from the market in the last `round_trip_hours` (24) can't be
+sold back to it. (`max_trade_impact_percent` and `max_player_impact_percent` are no longer used: the curve and the
+minute's band do their work.) History: one point a minute for 24 hours and one an hour for 30 days (the mid price, the
 items traded and those sold), in `market_prices.json`, written by a thread every 5 minutes and when the world closes.
 At the first minute of each UTC day, the day's three biggest risers and fallers (at least 1%) and news from real
 activity ("Diamond supply up 40% today", sales against the day before's, at least `news_percent` and
@@ -150,10 +154,10 @@ activity ("Diamond supply up 40% today", sales against the day before's, at leas
 fixed prices of 0.23. For other mods (the futures): `Market::spot`, `twap(id, minutes, now)`, `mark_price(id, now)`
 (the 10-minute TWAP from at least 5 points), `volume(id, now, hours)`, `history(id, Span)`.
 
-**`/market`.** A 6-row chest menu: the shop's categories and the day's movers; a category's items, each with its buy
-and sell price, its change over 1 h and 24 h (green ▲, red ▼) and what was traded in 24 h; an item's page with its
-base price, the tax and what you may still sell today, buttons to buy or sell 1, 16 and 64 (the price and tax on
-them), sell all of it you carry, and the price chart over 24 hours or 7 days, given as a filled map (128 × 128,
+**`/market`.** A 6-row chest menu: the shop's categories and the day's movers; a category's items, each with its
+price, its change over 1 h and 24 h (green ▲, red ▼) and what was traded in 24 h; an item's page with its
+base price, the tax and what you may still sell today, buttons to buy or sell 1, 16 and 64 (what they come to
+along the curve, and the tax), sell all of it you carry, and the price chart over 24 hours or 7 days, given as a filled map (128 × 128,
 drawn by the server: the curve green when it rose, red when it fell, the price, the change, the low and high). A
 chart map is drawn again each minute for whoever carries it, and once a minute the open menus follow the prices.
 `/market <item>` opens the item's page. `/worth` adds the item's moves and volume.
@@ -358,7 +362,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `staff.log` | one line per `/invsee` or `/endersee` menu in which something moved: who, whose, what was taken and put |
 | `market.json` | what each player sold today (coins and items), for the daily limits |
 | `market_prices.json` | each item's price factor and history (minutes for 24 h, hours for 30 days: `[time, mid, traded, sold]`), what each player bought in the last day (no selling it back), the day's summary |
-| `web/market.json` | for the website (`/hub/market`, through Kira), written by a thread each minute prices move: `schema` 1, `generated`, `currency`, `tax_percent`, `taxes_collected`, `daily_summary` (`day`, `lines`), `items` (`id`, `name`, `category`, `buy`, `sell`, `mid`, `base`, `change_1h`, `change_24h`, `volume_24h`, `day`: 5-minute points, `month`: hours, each `{step, t, price, volume}`). When `web.token` is set, the same thread POSTs each page of `web/` that changed (gzipped, `Authorization: Bearer <token>`) to `<web.url>/<name>`: Kira keeps the last one and serves it to the site; the server needs no inbound access and Kira no key to it |
+| `web/market.json` | for the website (`/hub/market`, through Kira), written by a thread each minute prices move: `schema` 1, `generated`, `currency`, `tax_percent`, `taxes_collected`, `daily_summary` (`day`, `lines`), `items` (`id`, `name`, `category`, `price` (the one price; `buy` and `sell` repeat it on the sides the market trades, for older readers), `mid`, `base`, `change_1h`, `change_24h`, `volume_24h`, `day`: 5-minute points, `month`: hours, each `{step, t, price, volume}`). When `web.token` is set, the same thread POSTs each page of `web/` that changed (gzipped, `Authorization: Bearer <token>`) to `<web.url>/<name>`: Kira keeps the last one and serves it to the site; the server needs no inbound access and Kira no key to it |
 | `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |
 | `casino.json` | the day's ledger: each player's bets, wins and rounds today (the daily loss cap), the day's biggest wins, each game's totals, the pot's last sweep |

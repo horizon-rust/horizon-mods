@@ -210,6 +210,18 @@ impl Futures {
         }
     }
 
+    /// Open positions' entries moved as their item's price history was
+    /// (`Market::rebased`: a base price of before 0.29 made one price), so a
+    /// position neither gains nor loses by it.
+    pub fn rebase(&mut self, ratios: &BTreeMap<String, f64>) {
+        for p in &mut self.data.positions {
+            if let Some(k) = ratios.get(&p.item) {
+                p.entry *= k;
+                self.dirty = true;
+            }
+        }
+    }
+
     pub fn store(&mut self, economy: &mut Economy) {
         if self.dirty {
             economy.set_ext(
@@ -875,6 +887,29 @@ mod tests {
         line: &str,
     ) -> Vec<Out> {
         f.command(e, p, &me(who), now, line).unwrap()
+    }
+
+    #[test]
+    fn a_position_keeps_its_profit_when_the_price_becomes_one_price() {
+        // Long diamond at a mark of 260 (old mid 250); the base becomes 200.
+        let (_e, mut f, dir) = setup("rebase", 0);
+        f.data.positions.push(Position {
+            id: 1,
+            owner: "a".into(),
+            name: "A".into(),
+            item: "minecraft:diamond".into(),
+            long: true,
+            size: 10.0,
+            entry: 260.0,
+            margin: 500,
+            leverage: 5,
+            opened: T0,
+        });
+        f.rebase(&BTreeMap::from([("minecraft:diamond".to_owned(), 0.8)]));
+        // The same mark, 1.04 times the base: no gain, no loss.
+        assert!(f.data.positions[0].pnl(208.0).abs() < 1e-9);
+        assert!(f.dirty);
+        let _ = fs::remove_dir_all(&dir);
     }
 
     #[test]

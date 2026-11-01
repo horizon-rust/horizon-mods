@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.28.0"
+version = "0.29.0"
 priority = 100
 
 # The commit of horizon it was tested on: it needs horizon#6106 (merged at 975c07d): native_inventory,

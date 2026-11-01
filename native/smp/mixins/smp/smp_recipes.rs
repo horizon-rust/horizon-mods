@@ -324,9 +324,10 @@ mod tests {
     fn the_default_prices_have_no_loop() {
         let config = Config::default();
         assert_eq!(loops(&config.items, &chains()), []);
+        // One price an item (spread 0), or one side closed.
         for (id, p) in &config.items {
             assert!(
-                p.buy == 0 || p.sell < p.buy,
+                p.buy == 0 || p.sell == 0 || p.sell == p.buy,
                 "{id} sells for {} and buys for {}",
                 p.sell,
                 p.buy
@@ -446,6 +447,54 @@ mod tests {
         assert!(recipes.len() > 1000, "{} recipes", recipes.len());
         let config = Config::default();
         assert_eq!(loops(&config.items, &recipes), []);
+        // Nor once prices have moved as far as they may (0.6 to 1.6 times
+        // their base): an item sold at the top while what makes it is
+        // bought at the bottom, unless both share one price (a family).
+        let families = super::super::smp_market::families(&config.items);
+        let (lo, hi) = (config.dynamic.min_factor, config.dynamic.max_factor);
+        let worst = |items: &BTreeMap<String, Price>, families: &[Vec<String>]| {
+            let mut worst = Vec::new();
+            for (id, p) in items.iter().filter(|(_, p)| p.sell > 0) {
+                let kin = |other: &String| {
+                    other == id || families.iter().any(|f| f.contains(id) && f.contains(other))
+                };
+                let moved: BTreeMap<String, Price> = items
+                    .iter()
+                    .map(|(other, q)| {
+                        let f = if kin(other) { hi } else { lo };
+                        // In hundredths, so rounding hides nothing.
+                        let scale = |v: i64| (v as f64 * f * 100.0).round() as i64;
+                        (
+                            other.clone(),
+                            Price {
+                                buy: scale(q.buy),
+                                sell: scale(q.sell),
+                            },
+                        )
+                    })
+                    .collect();
+                if let Some(c) = costs(&moved, &recipes).get(id)
+                    && p.sell as f64 * hi * 100.0 > c + 1e-6
+                {
+                    worst.push((id.clone(), p.sell as f64 * hi, *c / 100.0));
+                }
+            }
+            worst
+        };
+        assert_eq!(
+            worst(&config.items, &families),
+            [],
+            "loops once prices move"
+        );
+        // A gold block sold for its 9 ingots: no loop while they share one
+        // price; one once the ingots drift down and the block up.
+        let mut blocks = config.items.clone();
+        blocks.insert("minecraft:gold_block".into(), Price { buy: 0, sell: 180 });
+        assert_eq!(
+            worst(&blocks, &super::super::smp_market::families(&blocks)),
+            []
+        );
+        assert_eq!(worst(&blocks, &[])[0].0, "minecraft:gold_block");
         // The checker does find a loop through the real recipes.
         let mut cheap = config.items.clone();
         cheap.insert("minecraft:iron_block".into(), Price { buy: 0, sell: 300 });

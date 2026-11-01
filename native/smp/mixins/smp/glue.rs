@@ -11,6 +11,7 @@ use crate::game::{
     Game,
     smp_auction::{self, AuctionHouse},
     smp_bank::{self, Bank},
+    smp_jobs::{self, Jobs},
     smp_report::{self, Report},
     native_server::{NativeCommand, NativeServerPlayer, NativeSidebar},
     smp_board::{self, Board, Line},
@@ -38,7 +39,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.20.0";
+pub const VERSION: &str = "0.21.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -59,6 +60,7 @@ pub struct Config {
     pub auction: smp_auction::Config,
     pub bank: smp_bank::Config,
     pub report: smp_report::Config,
+    pub jobs: smp_jobs::Config,
 }
 
 /// The SMP of the open world.
@@ -74,6 +76,8 @@ pub struct Smp {
     bank: Option<Bank>,
     /// `/eco stats`, the daily report, `web/economy.json`.
     report: Option<Report>,
+    /// The day's contracts (None with the economy off).
+    jobs: Option<Jobs>,
     market: Market,
     shop_config: smp_shop::Config,
     /// The `/shop` menus open.
@@ -157,6 +161,7 @@ fn open(dir: PathBuf) -> Smp {
     let auction = economy.as_ref().ok().map(|e| AuctionHouse::open(e, config.auction));
     let bank = economy.as_ref().ok().map(|e| Bank::open(e, config.bank));
     let report = economy.as_ref().ok().map(|e| Report::open(e, config.report));
+    let jobs = economy.as_ref().ok().map(|e| Jobs::open(e, config.jobs));
     let places = Places::open(&dir, config.places);
     if let Err(e) = &places {
         log::error!("[smp] homes and warps are off: {e}");
@@ -197,6 +202,7 @@ fn open(dir: PathBuf) -> Smp {
         auction,
         bank,
         report,
+        jobs,
         market,
         shop_config: config.shop,
         shop: Shop::default(),
@@ -240,6 +246,9 @@ fn save(smp: &mut Smp) {
     }
     if let (Some(r), Ok(e)) = (&mut smp.report, &mut smp.economy) {
         r.store(e);
+    }
+    if let (Some(j), Ok(e)) = (&mut smp.jobs, &mut smp.economy) {
+        j.store(e);
     }
     // So are the auction house's listings, bids and mail.
     if let (Some(a), Ok(e)) = (&mut smp.auction, &mut smp.economy) {
@@ -354,6 +363,8 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "bank withdraw <amount:word>",
         "eco stats",
         "money stats",
+        "jobs",
+        "jobs deliver <contract:integer>",
     ] {
         commands.push(NativeCommand::new(usage));
     }
@@ -397,10 +408,16 @@ impl Bag for GameBag<'_, '_> {
     }
 }
 
-const COMMANDS: [&str; 17] = [
+const COMMANDS: [&str; 18] = [
     "balance", "bal", "pay", "baltop", "eco", "money", "worth", "sell", "buy", "shop", "trade", "coinflip",
-    "lottery", "treasury", "taxes", "ah", "bank",
+    "lottery", "treasury", "taxes", "ah", "bank", "jobs",
 ];
+
+/// The market's (sell, buy) for one item, as the contracts read it.
+fn market_price(market: &Market, id: &str) -> Option<(i64, i64)> {
+    let p = market.price(id);
+    (p.sell > 0 || p.buy > 0).then_some((p.sell, p.buy))
+}
 
 /// The players on, as the places see them.
 fn bodies(players: &[NativeServerPlayer]) -> Vec<Body> {
@@ -620,6 +637,10 @@ pub(in crate::game) fn perform(
                     report.and_then(|r| r.command(e, &savings, line))
                 })
                 .or_else(|| bank.and_then(|b| b.command(e, &me, line)))
+                .or_else(|| {
+                    let price = |id: &str| market_price(&smp.market, id);
+                    smp.jobs.as_mut()?.command(e, &me, trades, &mut bag, &price, line)
+                })
                 .or_else(|| e.command(&me, &on, line))
                 .or_else(|| smp.market.command(e, &me, trades, &mut bag, line))
                 .or_else(|| {
@@ -1466,6 +1487,11 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
             let vat = smp.taxes.as_ref().map_or(0, |t| t.config.vat_percent);
             out.extend(a.tick(e, &on, vat, now));
+        }
+        // The day's contracts: an O(1) check each second, posted once a day.
+        if let Some(j) = &mut smp.jobs {
+            let price = |id: &str| market_price(&smp.market, id);
+            out.extend(j.tick(e, &price, now));
         }
         // The bank's interest: an O(1) check each second, the work once a day.
         if let Some(b) = &mut smp.bank {

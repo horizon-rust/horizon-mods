@@ -11,7 +11,8 @@ The time of day line is gone: Horizon's hook points don't give the game's clock 
 
 ## Install
 
-In the Horizon launcher: Mods → Coordinates HUD → Install, then Settings → Game → Native mods (experimental) → Build. The
+In the Horizon launcher: Mods → Coordinates HUD → Install, then **Build** on the same page (once built, switch it
+on or off in the game under Options → Mods). The
 launcher downloads its own Rust and builds the game with your native mods; see Horizon's
 [native mods](https://github.com/horizon-rust/horizon/blob/main/docs/native-mods.md).
 

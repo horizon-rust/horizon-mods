@@ -3,7 +3,7 @@ kind = "native-mod"
 name = "MoreGamma"
 summary = "Brightness past 100%: set your own gamma with /gamma, or toggle full brightness with /fullbright."
 description = """
-A native Horizon mod: the launcher builds it into the game (Settings → Game → Native mods, then Build). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Uses only Horizon's native hook points (hooks 1); tested on Horizon 41672b1 and horizon-mixins 0d6b103.
+A native Horizon mod: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Uses only Horizon's native hook points (hooks 1); tested on Horizon 41672b1 and horizon-mixins 0d6b103.
 
 See in the dark without torches or night vision. MoreGamma lets you set the brightness (gamma) far past the video settings' 100% "Bright" limit, with a chat command, and switch full brightness on and off.
 

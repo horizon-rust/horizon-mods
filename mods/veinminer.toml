@@ -7,7 +7,7 @@ An unofficial Rust port by levzzz5154. Mines connected veins, including diagonal
 through Horizon's player-mining code, preserving loot, XP, tool wear and server block events.
 Includes per-player toggles, configurable block/tool groups, a block limit and cooldown.
 
-Native source mod: enable Settings → Game → Native mods (experimental), choose Build,
+Native source mod: install it on the launcher's Mods page, press Build there,
 and confirm the native-code warning. A supported launcher downloads its own Rust toolchain
 and builds a separate game using Horizon Mixins. Requires Git and Horizon's platform build
 dependencies, and runs with your account's permissions.

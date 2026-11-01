@@ -3,7 +3,7 @@ kind = "native-mod"
 name = "SmartF3"
 summary = "A tidier, configurable F3 debug screen: the same information in modules you can colour, reorder and turn off."
 description = """
-**A native Horizon mod**: the launcher builds it into the game (Settings → Game → Native mods, then Build). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
 
 The F3 debug screen, grouped into 14 modules: FPS, server, coordinates, chunk, facing, world, biome, light, chart keys, system, rendering, and the targeted block, fluid and entity.
 

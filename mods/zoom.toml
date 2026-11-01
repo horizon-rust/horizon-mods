@@ -13,7 +13,7 @@ Horizon's own zoom, formerly an extra in Options > Horizon Extras.
 It hears its own key and the mouse wheel while you hold it, and zooms the camera: nothing else.
 
 Now a native mod (2.0.0): built into the game by the launcher, on the Horizon you play, like any native mod
-(Settings → Game → Native mods (experimental), then Build). Your settings carry over from 1.0.0. Turn it off in
+(install it on the launcher's Mods page, then press Build there). Your settings carry over from 1.0.0. Turn it off in
 Options > Mods: it rests at once, and the next build leaves it out. Its source is
 [horizon-mods/native/zoom](https://github.com/horizon-rust/horizon-mods/tree/main/native/zoom).
 """

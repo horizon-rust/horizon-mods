@@ -3,7 +3,7 @@ kind = "native-mod"
 name = "Carry Block"
 summary = "Sneak and right-click with an empty hand to pick up a chest (with its items) or a small mob, carry it and put it down."
 description = """
-**A native Horizon mod**: the launcher builds it into the game (Settings → Game → Native mods, then Build). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
 
 Sneak and right-click with an empty hand to pick up a block with its contents (chests, furnaces, barrels...) or a small, friendly mob, and carry it; right-click to put it down where you want, with everything it held.
 

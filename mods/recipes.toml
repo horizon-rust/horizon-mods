@@ -15,7 +15,7 @@ Horizon's own recipe viewer.
 It reads the game's items and recipes, hears its own keys and your clicks on the panel, and places recipes or gives items only when you ask: nothing else.
 
 Now a native mod (2.0.0): built into the game by the launcher, on the Horizon you play, like any native mod
-(Settings → Game → Native mods (experimental), then Build). It needs Horizon's native hook points version 2, in the
+(install it on the launcher's Mods page, then press Build there). It needs Horizon's native hook points version 2, in the
 Nightlies from 4baa571 on. Your settings and keys carry over from 1.0.0. Turn it off in Options > Mods: it rests at
 once, and the next build leaves it out. Its source is
 [horizon-mods/native/recipes](https://github.com/horizon-rust/horizon-mods/tree/main/native/recipes).

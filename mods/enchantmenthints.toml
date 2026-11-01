@@ -3,7 +3,7 @@ kind = "native-mod"
 name = "Enchantment Hints"
 summary = "A short description under every enchantment in item tooltips, in English and Russian."
 description = """
-**A native Horizon mod**: the launcher builds it into the game (Settings → Game → Native mods, then Build). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to Horizon 142388e and horizon-mixins 0d6b103.
 
 Every enchantment on books and gear gets a one-line description in its tooltip: what it does, in plain words. Our own text for every 26.3 enchantment, in English and Russian.
 

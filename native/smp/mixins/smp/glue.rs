@@ -22,6 +22,7 @@ use crate::game::{
     smp_nick::{self, Names as _, Nicks},
     smp_shop::{self, Shop},
     smp_store,
+    smp_tax::{self, Taxes},
     smp_trade::{self, Act, Cell, Trades},
 };
 use horizon_client::{
@@ -34,7 +35,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.15.0";
+pub const VERSION: &str = "0.16.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -51,6 +52,7 @@ pub struct Config {
     pub board: smp_board::Config,
     pub presence: smp_presence::Config,
     pub nicks: smp_nick::Config,
+    pub taxes: smp_tax::Config,
 }
 
 /// The SMP of the open world.
@@ -58,6 +60,8 @@ pub struct Smp {
     dir: PathBuf,
     /// An error when `economy.json` can't be read: the commands say so.
     economy: Result<Economy, String>,
+    /// The tax code and its weekly collection (None with the economy off).
+    taxes: Option<Taxes>,
     market: Market,
     shop_config: smp_shop::Config,
     /// The `/shop` menus open.
@@ -137,6 +141,7 @@ fn open(dir: PathBuf) -> Smp {
     if let Err(e) = &economy {
         log::error!("[smp] the economy is off: {e}");
     }
+    let taxes = economy.as_ref().ok().map(|e| Taxes::open(e, config.taxes));
     let places = Places::open(&dir, config.places);
     if let Err(e) = &places {
         log::error!("[smp] homes and warps are off: {e}");
@@ -173,6 +178,7 @@ fn open(dir: PathBuf) -> Smp {
     Smp {
         dir,
         economy,
+        taxes,
         market,
         shop_config: config.shop,
         shop: Shop::default(),
@@ -206,6 +212,10 @@ fn state(dir: PathBuf) -> std::sync::MutexGuard<'static, Option<Smp>> {
 }
 
 fn save(smp: &mut Smp) {
+    // The tax state is written with the balances, in the same file.
+    if let (Some(t), Ok(e)) = (&mut smp.taxes, &mut smp.economy) {
+        t.store(e);
+    }
     if let Ok(e) = &mut smp.economy
         && let Err(err) = e.save()
     {
@@ -291,20 +301,28 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "afk",
         "nick <name:word>",
         "realname <nick:word>",
+        "treasury",
+        "treasury log",
+        "taxes",
+        "taxes pay",
+        "eco taxes",
+        "eco taxes pay",
     ] {
         commands.push(NativeCommand::new(usage));
     }
-    for usage in ["setspawn", "setwarp <name:word>", "delwarp <name:word>", "nick <name:word> <nick:word>"] {
+    for usage in [
+        "setspawn",
+        "setwarp <name:word>",
+        "delwarp <name:word>",
+        "nick <name:word> <nick:word>",
+        "treasury pay <player:word> <amount:integer> <reason:text>",
+    ] {
         commands.push(NativeCommand::op(usage, 3));
     }
+    // Operators take a cheat's gains into the Treasury; nobody gives or
+    // sets money (grants come from the Treasury: `/treasury pay`).
     for name in ["eco", "money"] {
-        for verb in ["give", "take", "set"] {
-            commands.push(NativeCommand::op(
-                &format!("{name} {verb} <player:word> <amount:integer>"),
-                3,
-            ));
-        }
-        // `give * <amount>` goes through `<player:word>`: a literal `*` isn't a command word.
+        commands.push(NativeCommand::op(&format!("{name} take <player:word> <amount:integer> [reason:text]"), 3));
     }
 }
 
@@ -332,9 +350,9 @@ impl Bag for GameBag<'_, '_> {
     }
 }
 
-const COMMANDS: [&str; 13] = [
+const COMMANDS: [&str; 15] = [
     "balance", "bal", "pay", "baltop", "eco", "money", "worth", "sell", "buy", "shop", "trade", "coinflip",
-    "lottery",
+    "lottery", "treasury", "taxes",
 ];
 
 /// The players on, as the places see them.
@@ -427,7 +445,7 @@ pub(in crate::game) fn perform(
         }
     }
     // A nickname where a command names a player: the player's name.
-    let names_a_player = matches!(word, "pay" | "tpa" | "trade" | "playtime" | "tpaccept" | "tpdeny" | "eco" | "money");
+    let names_a_player = matches!(word, "pay" | "tpa" | "trade" | "playtime" | "tpaccept" | "tpdeny" | "eco" | "money" | "treasury");
     let resolved = smp.nicks.as_ref().ok().filter(|_| names_a_player).and_then(|n| {
         let accounts = smp.economy.as_ref().map(|e| e.accounts()).unwrap_or_default();
         let is_name = |w: &str| players.iter().any(|p| p.name.eq_ignore_ascii_case(w)) || accounts.iter().any(|a| a.1.eq_ignore_ascii_case(w));
@@ -498,7 +516,12 @@ pub(in crate::game) fn perform(
             on.or_else(|| economy?.name_of(u).map(str::to_owned))
                 .unwrap_or_else(|| smp_store::uuid_string(u))
         };
+        let owed = match (&smp.taxes, economy) {
+            (Some(t), Some(e)) if line.split_whitespace().eq(["claim"]) => t.may_claim(e, me.uuid).err(),
+            _ => None,
+        };
         match (&mut smp.claims, at) {
+            (Ok(_), Some(_)) if owed.is_some() => vec![Out::Error(owed.expect("checked"))],
             (Ok(c), Some(at)) => c.command(&me, &at, played, &find, &name_of, line).unwrap_or_default(),
             (Ok(_), None) => vec![Out::Error("You are not in the world.".into())],
             (Err(_), _) => vec![Out::Error(
@@ -520,7 +543,11 @@ pub(in crate::game) fn perform(
             e.seen(me.uuid, &me.name);
             let on: Vec<(u128, String)> = players.iter().map(|p| (p.uuid, p.name.clone())).collect();
             let mut bag = GameBag(game);
-            e.command(&me, &on, line)
+            let my_chunks = smp.claims.as_ref().map_or(0, |c| c.held(me.uuid));
+            let taxes = smp.taxes.as_mut();
+            taxes
+                .and_then(|t| t.command(e, &me, my_chunks, line))
+                .or_else(|| e.command(&me, &on, line))
                 .or_else(|| smp.market.command(e, &me, trades, &mut bag, line))
                 .or_else(|| {
                     let (out, a) = smp.trades.command(e, &me, trades, &online, now, line)?;
@@ -1164,6 +1191,13 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             smp.games.left(e, uuid);
         }
         out.extend(smp.lottery.tick(&smp.games.config, e, now, &mut below));
+        // Monday's taxes: an O(1) check each second, the work once a week.
+        if let Some(t) = &mut smp.taxes
+            && t.due(now)
+        {
+            let chunks = smp.claims.as_ref().map(|c| c.counts()).unwrap_or_default();
+            out.extend(t.collect(e, &chunks, now));
+        }
     }
     // Each trade's offers against the inventories now: a player gone or
     // dead ends it; a stack that changed leaves its offer.

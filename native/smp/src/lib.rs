@@ -25,5 +25,7 @@ pub mod smp_recipes;
 pub mod smp_shop;
 #[path = "../mixins/smp/smp_store.rs"]
 pub mod smp_store;
+#[path = "../mixins/smp/smp_tax.rs"]
+pub mod smp_tax;
 #[path = "../mixins/smp/smp_trade.rs"]
 pub mod smp_trade;

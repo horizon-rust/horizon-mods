@@ -57,6 +57,7 @@ header and footer).
 | `/nick <name>`, `/nick off`, `/nick` | operators of level 3 (with `ops_only`, the default): another name for you in chat and the Tab list, shown as `~name` (hovering it gives your real one); `/nick off` (anyone with a nickname) takes it off; `/nick` alone says how |
 | `/nick <player> <name\|off>` | operators of level 3: sets or takes off a player's nickname |
 | `/realname <nick>` | who goes by that nickname |
+| `/invsee <player>`, `/endersee <player>` | operators of level 3: the player's inventory (main, hotbar, armour, off hand) or ender chest in a chest menu, on or off the server; click one of theirs to take it, one of yours to give it; every move in `audit.log`, a summary in `staff.log` |
 | `/sidebar off`, `/sidebar on`, `/sidebar` | hides the scoreboard sidebar for you (remembered), shows it again |
 
 The market trades only plain items (not worn, named or enchanted), and only with players in survival or adventure
@@ -95,6 +96,17 @@ Default prices (coins, buy / sell; `-` not traded that way):
 A `config.json` still holding the 18 prices of versions 0.1 to 0.11, never edited, gets these at the first start of
 0.12.0; edited prices are kept. Only items that stack to 64 belong in the market: a shift-click buys 64, and what
 doesn't fit falls at the player's feet for them.
+
+**/invsee and /endersee.** For operators of level 3 (luzW, bunchy7s...). The menu shows the main inventory in its
+first three rows, the hotbar in the fourth, then the armour (head to feet) and the off hand; the ender chest fills
+three rows. A click on one of the player's stacks moves it whole into the operator's inventory; a click on one of the
+operator's own moves it into the player's (main inventory or ender chest, where it fits whole). A stack moves only if
+it is still exactly what the menu showed: the game checks it and moves it, or nothing (no copy, no loss). A player who
+isn't on is read from and written to their saved file; while they log in or are dead nothing moves and the menu says
+why. The menu is read again once a second while open; nothing runs when none is open. Each move is in `audit.log`
+before it is made (`invsee_take`, `invsee_put`: operator, player, inventory, item, count; a refused one again with
+its reason); closing the menu writes one line to the server log (`[smp] staff: ...`), `staff.log`, and the chat of
+the other operators on. Needs horizon#6106 (`native_inventory`, `native_move_stack`).
 
 **Nicknames.** With `ops_only` (the default since 0.22) only operators of level 3 set nicknames: their own, or a
 player's with `/nick <player> <name>`; a player may take off the one given to them (`/nick off`). At each start, a
@@ -292,6 +304,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `economy.json` | balances by player UUID, with the name last seen; `held`: coinflip stakes and lottery tickets being decided; `pools`: the Treasury, its insurance fund and other system pools; `treasury`: its income and spending by kind and its last movements; `ext`: other parts' state written in the same step as the money (`tax`: the week collected, land tax owed; `auction`: the listings, bids, mail and notes) |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
 | `nicks.json` | each player's nickname and when they last changed it |
+| `staff.log` | one line per `/invsee` or `/endersee` menu in which something moved: who, whose, what was taken and put |
 | `market.json` | what each player sold today (coins and items), for the daily limits |
 | `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |

@@ -8,5 +8,6 @@ fn smp_server_tick(
         crate::game::native_lifecycle::ServerTickPhase::ServerTickEnd { .. }
     ) {
         crate::game::smp_glue::tick(game);
+        crate::game::smp_invsee_glue::tick(game);
     }
 }

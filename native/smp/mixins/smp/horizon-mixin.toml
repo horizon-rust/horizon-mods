@@ -1,12 +1,12 @@
 [mod]
 id = "smp"
-version = "0.24.0"
+version = "0.25.0"
 priority = 100
 
-# The commit of horizon main it was tested on. It uses only the native hook points (hooks 62 in
-# compatibility.json): it builds on any Horizon that has them.
+# The commit of horizon it was tested on: it needs horizon#6106 (merged at 975c07d): native_inventory,
+# native_move_stack, native_send_map, lore on the wire.
 [compatibility]
-horizon_revision = "c348d5da9c488f1d2453b0d2b03c2751b2379b05"
+horizon_revision = "975c07d9151847e6af13afc4b5ab37b6bbe78ef5"
 
 [[module]]
 id = "store"
@@ -151,6 +151,18 @@ id = "claims"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_claims"
 source = "smp_claims.rs"
+
+[[module]]
+id = "invsee"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_invsee"
+source = "smp_invsee.rs"
+
+[[module]]
+id = "invsee_glue"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_invsee_glue"
+source = "invsee_glue.rs"
 
 [[module]]
 id = "glue"

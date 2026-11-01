@@ -166,8 +166,7 @@ def crash(alex, steve, out):
     alex.quick(53)
     time.sleep(0.5)
     steve.quick(53)
-    r["in"] = [alex.name_at(53), steve.name_at(53)]
-    assert all("Your bet is in" in n for n in r["in"]), r
+    r["in"] = [c.wait_name(53, "Your bet is in", 8) for c in (alex, steve)]
     end = time.time() + 20
     while time.time() < end and not alex.name_at(38).startswith(("Flying", "Crashed")):
         time.sleep(0.25)

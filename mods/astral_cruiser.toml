@@ -1,0 +1,32 @@
+id = "astral_cruiser"
+kind = "native-mod"
+name = "Astral Cruiser"
+summary = "A huge pilotable starship with a walkable interior, lasers, dash and live portals between dimensions."
+description = """
+A huge starship you fly yourself, with a large walkable interior that moves with it.
+
+- **Flight:** WASD with the ship following your view, and F5 views including the ship's own.
+- **Weapons:** turrets, nose guns and two beams.
+- **Travel:** coordinate dash and jump. Long dashes show only a small strip of far terrain around the ship.
+- **Portals:** a portal shows the real destination dimension live, and you cross it aboard or on foot.
+- **Start:** `/astral spawn`, then `/astral board`. N opens the control panel; keys are in Options > Mods > Settings.
+
+**What it does as a native mod.** It is compiled into the game with no sandbox. It changes the game's rendering, ticking and chunk loading for the ship and portals, and registers a thread-exit callback in builds made with MinGW so the allocator frees finished threads' memory.
+
+**What it does not do.** It adds no network access of its own beyond the game's own, and it reads no accounts or files outside the game's data. It holds no Minecraft code or assets.
+
+Weapons can damage what they hit. Portals can hang in the air, so a player on foot falls if there is no ground at the exit, including into the End's void.
+
+Built for this Horizon commit only: `68ac6f647e7022b2c696e81863d7cface28c9416`."""
+authors = ["repositorykreml1n"]
+owners = ["repositorykreml1n"]
+license = "MIT"
+source = "https://github.com/repositorykreml1n/astral-cruiser"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-01"
+game = "26.3"
+file = "astral_cruiser-0.1.0.hnmod"
+sha256 = "69100219f92307f9190712da2854bfd43f15cf81773d89d89d6dd22411caa2f2"
+changelog = "First release, built for Horizon 68ac6f6."

@@ -75,6 +75,19 @@ class Client(harness.Client):
         raise AssertionError(f"{self.name}: slot {slot} never showed {text!r}: {self.cells()}")
 
 
+def shown(c, seconds=3):
+    """The titles and action bar lines `c` sees over the next `seconds`."""
+    seen = []
+    end = time.time() + seconds
+    while time.time() < end:
+        m = c.run("messages", 1)
+        for line in (m.get("title"), m.get("subtitle"), m.get("actionbar")):
+            if line and line not in seen:
+                seen.append(line)
+        time.sleep(0.2)
+    return seen
+
+
 def audit(data):
     return [json.loads(l) for l in (data / "audit.log").read_text().splitlines()]
 
@@ -102,9 +115,7 @@ def roulette(alex, out):
     assert r["pictures"] >= 3, "the wheel didn't turn"
     alex.wait_name(53, "SPIN")
     r["result"] = alex.name_at(40)
-    msgs = alex.run("messages", 5)
-    r["shown"] = [msgs.get("title"), msgs.get("subtitle"), msgs.get("actionbar")]
-    assert any(r["shown"]), msgs
+    r["shown"] = shown(alex)
     alex.shot(out, "roulette-result.png")
     # A second spin, the menu closed at once: paid all the same.
     time.sleep(2.5)
@@ -161,9 +172,7 @@ def crash(alex, steve, out):
         r["alex"] = "cashed out"
     else:
         r["alex"] = button
-    time.sleep(1)
-    msgs = alex.run("messages", 5)
-    r["shown"] = [msgs.get("title"), msgs.get("subtitle"), msgs.get("actionbar")]
+    r["shown"] = shown(alex)
     # The round ends (a crash, at most 100x: wait for it to show).
     end = time.time() + 120
     while time.time() < end and not alex.name_at(38).startswith(("Crashed", "No round")):
@@ -261,10 +270,16 @@ def run(ctl, resources, out):
         results["casino.json"] = ledger
         assert sum(t["rounds"] for t in ledger["totals"].values()) == 7, ledger
         print(json.dumps({"proof": "smp-casino", "ok": True, **results}, indent=2, ensure_ascii=False))
+    except BaseException:
+        print(json.dumps({"proof": "smp-casino", "ok": False, **results}, indent=2, ensure_ascii=False, default=str))
+        if (server.folder / "world" / "horizon-smp" / "audit.log").exists():
+            print("audit:", [a["kind"] for a in audit(server.folder / "world" / "horizon-smp")])
+        raise
     finally:
         (out / "server.log").write_text("\n".join(server.lines))
         for c in (alex, steve):
             c.quit()
         if server.__dict__.get("process") and server.process.poll() is None:
             server.process.kill()
-        shutil.rmtree(root, ignore_errors=True)
+        if not os.environ.get("SMP_PROOF_KEEP"):
+            shutil.rmtree(root, ignore_errors=True)

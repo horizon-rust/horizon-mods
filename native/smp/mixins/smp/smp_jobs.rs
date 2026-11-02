@@ -1,6 +1,6 @@
 // The contracts board (`/jobs`): each day at 00:00 UTC the state posts a few
 // contracts ("deliver 64 wheat for 160 coins"), paid from the Treasury: the
-// taxes go back to players who gather what the server asks for, never new
+// Treasury's income goes back to players who gather what the server asks for, never new
 // money. A delivery takes plain items from the player's inventory (they
 // leave the game: a sink for items) and pays at once. Never AFK income: only
 // a command with the items in hand pays; each contract has a few deliveries

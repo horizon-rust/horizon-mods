@@ -87,10 +87,10 @@ name = "smp_auction"
 source = "smp_auction.rs"
 
 [[module]]
-id = "tax"
+id = "treasury"
 file = "crates/horizon-client/src/game.rs"
-name = "smp_tax"
-source = "smp_tax.rs"
+name = "smp_treasury"
+source = "smp_treasury.rs"
 
 [[module]]
 id = "trade"

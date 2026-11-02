@@ -1,6 +1,6 @@
 // The auction house (`/ah`): players sell to players. A listing is a fixed
-// price or a timed auction; listing costs a fee and each sale pays VAT, both
-// to the Treasury. Listed items leave the seller's inventory at once; what
+// price or a timed auction; listing costs a fee, to the Treasury, and a sale
+// pays the seller the whole price. Listed items leave the seller's inventory at once; what
 // doesn't sell (and what an auction's winner gets) waits in the player's mail
 // (`/ah claim`, or the menu's mail page). Bids are held in the `auction`
 // pool until the auction ends or someone bids more. A bid in the last
@@ -144,7 +144,6 @@ pub struct Today {
     pub sales: u32,
     pub volume: i64,
     pub fees: i64,
-    pub vat: i64,
 }
 
 /// What `economy.json`'s `ext.auction` holds.
@@ -377,11 +376,10 @@ impl AuctionHouse {
         &mut self.data.today
     }
 
-    fn record_sale(&mut self, l: &Listing, price: i64, vat: i64, now: i64) {
+    fn record_sale(&mut self, l: &Listing, price: i64, now: i64) {
         let t = self.count_today(now);
         t.sales += 1;
         t.volume = t.volume.saturating_add(price);
-        t.vat = t.vat.saturating_add(vat);
         self.data.sales.push(Sale {
             time: now,
             item: l.item.clone(),
@@ -399,24 +397,17 @@ impl AuctionHouse {
         format!("{} {}", l.count, item_name(&l.item))
     }
 
-    /// Pays the seller `price` (from the buyer, or from the bids' pool),
-    /// then the VAT from it to the Treasury: what the VAT was.
+    /// Pays the seller `price` (from the buyer, or from the bids' pool).
     fn pay_seller(
         economy: &mut Economy,
         from: Result<u128, ()>,
         seller: u128,
         price: i64,
-        vat_percent: i64,
-    ) -> Result<i64, String> {
+    ) -> Result<(), String> {
         match from {
-            Ok(buyer) => economy.transfer("ah_sale", buyer, seller, price)?,
-            Err(()) => economy.from_pool("ah_sale", POOL, seller, price, "")?,
+            Ok(buyer) => economy.transfer("ah_sale", buyer, seller, price),
+            Err(()) => economy.from_pool("ah_sale", POOL, seller, price, ""),
         }
-        let vat = percent(price, vat_percent);
-        if vat > 0 {
-            economy.to_pool("vat", seller, TREASURY, vat, "auction house sale")?;
-        }
-        Ok(vat)
     }
 
     /// Runs `/ah ...`; None for another command. `bag`: the acting player's
@@ -428,7 +419,6 @@ impl AuctionHouse {
         me: &Player,
         trades: bool,
         bag: &mut dyn Bag,
-        vat_percent: i64,
         now: i64,
         line: &str,
     ) -> Option<Reply> {
@@ -485,7 +475,7 @@ impl AuctionHouse {
                 _ => err("Usage: /ah bid <listing> <amount>"),
             },
             ["buy", id] => match id.parse::<u64>() {
-                Ok(id) => out(self.buy(economy, me, bag, id, vat_percent, now)),
+                Ok(id) => out(self.buy(economy, me, bag, id, now)),
                 Err(_) => err("Usage: /ah buy <listing>"),
             },
             ["cancel", id] => match id.parse::<u64>() {
@@ -623,7 +613,6 @@ impl AuctionHouse {
         me: &Player,
         bag: &mut dyn Bag,
         id: u64,
-        vat_percent: i64,
         now: i64,
     ) -> Vec<Out> {
         let err = |s: String| vec![Out::Error(s)];
@@ -670,14 +659,10 @@ impl AuctionHouse {
             return err("The items couldn't be given: nothing was bought.".into());
         }
         self.post(&uuid_string(me.uuid), &l.item, l.count - given, "bought");
-        let vat = match Self::pay_seller(economy, Ok(me.uuid), seller, l.price, vat_percent) {
-            Ok(v) => v,
-            Err(e) => {
-                self.problems.push(format!("auction house sale #{id}: {e}"));
-                0
-            }
-        };
-        self.record_sale(&l, l.price, vat, now);
+        if let Err(e) = Self::pay_seller(economy, Ok(me.uuid), seller, l.price) {
+            self.problems.push(format!("auction house sale #{id}: {e}"));
+        }
+        self.record_sale(&l, l.price, now);
         let mut out = vec![Out::Reply(format!(
             "Bought {} from {} for {}.{}",
             Self::what(&l),
@@ -690,11 +675,10 @@ impl AuctionHouse {
             }
         ))];
         let line = format!(
-            "{} bought your {} for {} (VAT {}).",
+            "{} bought your {} for {}.",
             me.name,
             Self::what(&l),
-            economy.money(l.price - vat),
-            economy.money(vat)
+            economy.money(l.price)
         );
         self.notify(&mut out, &l.seller, line);
         out
@@ -778,7 +762,7 @@ impl AuctionHouse {
                 "You bid {} on #{id} ({}), ends in {}.{}",
                 economy.money(amount),
                 Self::what(&l),
-                super::smp_tax::span(l.ends - now),
+                super::smp_treasury::span(l.ends - now),
                 if extended {
                     " A late bid: the end moved back."
                 } else {
@@ -857,13 +841,7 @@ impl AuctionHouse {
     /// Once a second: notes to the players who came on, and the listings
     /// that ended (fixed ones back to their seller, auctions to their
     /// winner). Only a comparison while nothing ended.
-    pub fn tick(
-        &mut self,
-        economy: &mut Economy,
-        online: &[u128],
-        vat_percent: i64,
-        now: i64,
-    ) -> Vec<Out> {
+    pub fn tick(&mut self, economy: &mut Economy, online: &[u128], now: i64) -> Vec<Out> {
         self.online = online.iter().copied().collect();
         let mut out = Vec::new();
         if !self.data.notes.is_empty() {
@@ -895,16 +873,12 @@ impl AuctionHouse {
                 continue;
             };
             let seller = parse_uuid(&l.seller).unwrap_or_default();
-            let vat = match Self::pay_seller(economy, Err(()), seller, b.amount, vat_percent) {
-                Ok(v) => v,
-                Err(e) => {
-                    self.problems
-                        .push(format!("auction #{} payment: {e}", l.id));
-                    0
-                }
-            };
+            if let Err(e) = Self::pay_seller(economy, Err(()), seller, b.amount) {
+                self.problems
+                    .push(format!("auction #{} payment: {e}", l.id));
+            }
             self.post(&b.uuid, &l.item, l.count, "won");
-            self.record_sale(&l, b.amount, vat, now);
+            self.record_sale(&l, b.amount, now);
             let line = format!(
                 "You won #{} ({}) for {}: the items are in your mail (/ah claim).",
                 l.id,
@@ -913,12 +887,11 @@ impl AuctionHouse {
             );
             self.notify(&mut out, &b.uuid, line);
             let line = format!(
-                "Auction #{} ({}) sold to {} for {} (VAT {}).",
+                "Auction #{} ({}) sold to {} for {}.",
                 l.id,
                 Self::what(&l),
                 b.name,
-                economy.money(b.amount - vat),
-                economy.money(vat)
+                economy.money(b.amount)
             );
             self.notify(&mut out, &l.seller.clone(), line);
         }
@@ -1098,7 +1071,7 @@ impl AuctionHouse {
     /// A listing's name on its button.
     pub fn label(&self, l: &Listing, now: i64, money: &dyn Fn(i64) -> String) -> String {
         let each = l.amount() as f64 / f64::from(l.count.max(1));
-        let left = super::smp_tax::span(l.ends - now);
+        let left = super::smp_treasury::span(l.ends - now);
         let head = format!("#{} {} {}", l.id, l.count, title(&l.item));
         if l.auction {
             let bid = match &l.bid {
@@ -1163,7 +1136,6 @@ mod tests {
     const STEVE: u128 = 2;
     const NOTCH: u128 = 3;
     const T0: i64 = 1_793_577_600_000;
-    const VAT: i64 = 5;
 
     /// A player's inventory: plain stacks by id, 36 slots of 64.
     #[derive(Default)]
@@ -1261,14 +1233,14 @@ mod tests {
         now: i64,
         line: &str,
     ) -> Vec<Out> {
-        match ah.command(e, me, true, bag, VAT, now, line) {
+        match ah.command(e, me, true, bag, now, line) {
             Some(Reply::Out(o)) => o,
             other => panic!("{line}: {other:?}"),
         }
     }
 
     #[test]
-    fn a_fixed_sale_moves_items_once_and_pays_fee_and_vat_to_the_treasury() {
+    fn a_fixed_sale_moves_items_once_and_pays_the_seller_the_whole_price() {
         let (mut e, mut ah, _dir) = setup("fixed");
         let mut alex = holding("diamond", 10);
         let out = run(
@@ -1292,8 +1264,8 @@ mod tests {
         let mut steve = empty();
         let mut notch = empty();
         ah.online = [ALEX, STEVE, NOTCH].into();
-        let a = ah.buy(&mut e, &p(STEVE, "Steve"), &mut steve, 1, VAT, T0 + 1);
-        let b = ah.buy(&mut e, &p(NOTCH, "Notch"), &mut notch, 1, VAT, T0 + 1);
+        let a = ah.buy(&mut e, &p(STEVE, "Steve"), &mut steve, 1, T0 + 1);
+        let b = ah.buy(&mut e, &p(NOTCH, "Notch"), &mut notch, 1, T0 + 1);
         assert!(
             matches!(&a[0], Out::Reply(s) if s.starts_with("Bought 10 diamond from Alex")),
             "{a:?}"
@@ -1311,19 +1283,22 @@ mod tests {
             ),
             (10, None)
         );
-        // Alex gets 1,000 less 5% VAT; Steve paid 1,000.
+        // Alex gets the whole 1,000 Steve paid; only the listing fee went to the Treasury.
         assert_eq!(
             (e.balance(ALEX), e.balance(STEVE), e.balance(NOTCH)),
-            (990 + 950, 0, 1000)
+            (990 + 1000, 0, 1000)
         );
-        assert_eq!(e.pool(TREASURY), 10 + 50);
+        assert_eq!(e.pool(TREASURY), 10);
         assert_eq!(total(&e), 3000, "nothing made, nothing lost");
         assert!(a.contains(&Out::Tell(
             ALEX,
-            "Steve bought your 10 diamond for 950 coins (VAT 50 coins).".into()
+            "Steve bought your 10 diamond for 1,000 coins.".into()
         )));
         let t = e.treasury();
-        assert_eq!((t.income["vat"], t.income["ah_listing_fee"]), (50, 10));
+        assert_eq!(
+            (t.income.get("vat"), t.income["ah_listing_fee"]),
+            (None, 10)
+        );
     }
 
     #[test]
@@ -1347,16 +1322,16 @@ mod tests {
         );
         // Creative players can't list or buy.
         assert!(matches!(
-            ah.command(&mut e, &alex, false, &mut bag, VAT, T0, "ah sell 10"),
+            ah.command(&mut e, &alex, false, &mut bag, T0, "ah sell 10"),
             Some(Reply::Out(o)) if matches!(&o[0], Out::Error(_))
         ));
         run(&mut ah, &mut e, &alex, &mut bag, T0, "ah sell 5000 5");
         // Own listing, too poor, no room, a failed give: nothing moves.
         assert!(
-            matches!(&ah.buy(&mut e, &alex, &mut empty(), 1, VAT, T0)[0], Out::Error(s) if s.starts_with("That's your own"))
+            matches!(&ah.buy(&mut e, &alex, &mut empty(), 1, T0)[0], Out::Error(s) if s.starts_with("That's your own"))
         );
         assert!(
-            matches!(&ah.buy(&mut e, &p(STEVE, "Steve"), &mut empty(), 1, VAT, T0)[0], Out::Error(s) if s.starts_with("You only have"))
+            matches!(&ah.buy(&mut e, &p(STEVE, "Steve"), &mut empty(), 1, T0)[0], Out::Error(s) if s.starts_with("You only have"))
         );
         e.adjust("sell", STEVE, 10_000, "").unwrap();
         let mut full = Inv {
@@ -1364,7 +1339,7 @@ mod tests {
             ..Inv::default()
         };
         assert!(
-            matches!(&ah.buy(&mut e, &p(STEVE, "Steve"), &mut full, 1, VAT, T0)[0], Out::Error(s) if s.starts_with("Make room"))
+            matches!(&ah.buy(&mut e, &p(STEVE, "Steve"), &mut full, 1, T0)[0], Out::Error(s) if s.starts_with("Make room"))
         );
         let mut broken = Inv {
             slots_free: 5,
@@ -1372,7 +1347,7 @@ mod tests {
             ..Inv::default()
         };
         assert!(matches!(
-            &ah.buy(&mut e, &p(STEVE, "Steve"), &mut broken, 1, VAT, T0)[0],
+            &ah.buy(&mut e, &p(STEVE, "Steve"), &mut broken, 1, T0)[0],
             Out::Error(_)
         ));
         assert!(ah.listing(1).is_some(), "the listing stays for sale");
@@ -1437,8 +1412,7 @@ mod tests {
         );
         assert_eq!(ah.listing(1).unwrap().ends, late + 60_000);
         assert!(
-            ah.tick(&mut e, &[STEVE, NOTCH], VAT, late + 59_000)
-                .is_empty(),
+            ah.tick(&mut e, &[STEVE, NOTCH], late + 59_000).is_empty(),
             "not over yet"
         );
         // A restart mid-auction: everything comes back from economy.json.
@@ -1447,7 +1421,7 @@ mod tests {
         let mut e = Economy::open(&dir, EcoConfig::default()).unwrap();
         let mut ah = AuctionHouse::open(&e, Config::default());
         assert_eq!((e.pool(POOL), ah.listing(1).unwrap().amount()), (400, 400));
-        let out = ah.tick(&mut e, &[STEVE, NOTCH], VAT, late + 60_000);
+        let out = ah.tick(&mut e, &[STEVE, NOTCH], late + 60_000);
         assert!(out.contains(&Out::Tell(
             STEVE,
             "You won #1 (3 emerald) for 400 coins: the items are in your mail (/ah claim).".into()
@@ -1455,20 +1429,20 @@ mod tests {
         assert_eq!(e.pool(POOL), 0);
         assert_eq!(
             e.balance(ALEX),
-            999 + 400 - 20,
-            "paid while offline, less 5% VAT (fee: 1)"
+            999 + 400,
+            "paid while offline, the whole bid (fee: 1)"
         );
         assert_eq!(
             e.balance(STEVE) + e.balance(NOTCH) + e.balance(ALEX) + e.pool(TREASURY),
             3000
         );
         // Alex reads the note when back.
-        let out = ah.tick(&mut e, &[ALEX], VAT, late + 61_000);
+        let out = ah.tick(&mut e, &[ALEX], late + 61_000);
         assert_eq!(
             out,
             [Out::Tell(
                 ALEX,
-                "Auction #1 (3 emerald) sold to Steve for 380 coins (VAT 20 coins).".into()
+                "Auction #1 (3 emerald) sold to Steve for 400 coins.".into()
             )]
         );
         // Steve claims: the items, once.
@@ -1496,7 +1470,7 @@ mod tests {
         run(&mut ah, &mut e, &alex, &mut more, T0, "ah auction 50 1");
         ah.online = [ALEX].into();
         // The auction (1 h) ends with no bid; the fixed one (48 h) later.
-        let out = ah.tick(&mut e, &[ALEX], VAT, T0 + 3_600_000);
+        let out = ah.tick(&mut e, &[ALEX], T0 + 3_600_000);
         assert_eq!(
             out,
             [Out::Tell(
@@ -1504,7 +1478,7 @@ mod tests {
                 "#2 (64 wheat) ended with no bids: the items are in your mail (/ah claim).".into()
             )]
         );
-        ah.tick(&mut e, &[ALEX], VAT, T0 + 48 * 3_600_000);
+        ah.tick(&mut e, &[ALEX], T0 + 48 * 3_600_000);
         assert_eq!(ah.data.listings.len(), 0);
         assert_eq!(ah.mail_of(ALEX).len(), 2);
         // Room for one stack only: one parcel comes, the other waits.

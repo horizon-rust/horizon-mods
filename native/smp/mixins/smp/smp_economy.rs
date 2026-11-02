@@ -46,13 +46,13 @@ pub struct Account {
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Movement {
     pub time: i64,
-    /// `vat`, `land_tax`, `grant`...
+    /// `ah_listing_fee`, `casino_profit`, `grant`...
     pub kind: String,
     /// Positive: income; negative: spending.
     pub amount: i64,
     /// The player's name last seen.
     pub player: String,
-    /// Why, as the operator wrote it (payments); empty for taxes.
+    /// Why, as the operator wrote it (payments); empty for fees.
     #[serde(default, skip_serializing_if = "String::is_empty")]
     pub reason: String,
     /// The operator who paid it (name).
@@ -60,7 +60,7 @@ pub struct Movement {
     pub by: String,
 }
 
-/// The Treasury: the state's account. Every tax, fee and house edge goes in;
+/// The Treasury: the state's account. Every fee and house edge goes in;
 /// operators' grants, refunds and prizes (and later bank interest and
 /// contracts) come out, never more than it holds. Nobody can make money.
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
@@ -144,7 +144,7 @@ impl Flows {
     }
 }
 
-/// The state's pool: taxes, fees and house edges in; grants out.
+/// The state's pool: fees and house edges in; grants out.
 pub const TREASURY: &str = "treasury";
 /// Part of the state: covers what a liquidated position can't.
 pub const INSURANCE: &str = "insurance";
@@ -417,7 +417,7 @@ impl Economy {
         }
     }
 
-    /// A tax, a fee, a stake lost: `amount` of `uuid`'s balance goes into
+    /// A fee, a stake lost: `amount` of `uuid`'s balance goes into
     /// `pool`, logged as `kind`. An Err when they hold less.
     pub fn to_pool(
         &mut self,
@@ -1119,9 +1119,9 @@ mod tests {
     #[test]
     fn pools_pay_only_what_they_hold_and_survive_a_restart() {
         let (mut e, dir) = economy("pools");
-        e.to_pool("vat", ALEX, TREASURY, 30, "").unwrap();
+        e.to_pool("ah_listing_fee", ALEX, TREASURY, 30, "").unwrap();
         assert!(
-            e.to_pool("vat", ALEX, TREASURY, 71, "").is_err(),
+            e.to_pool("ah_listing_fee", ALEX, TREASURY, 71, "").is_err(),
             "more than Alex has"
         );
         assert!(
@@ -1136,10 +1136,14 @@ mod tests {
         assert_eq!((e.balance(ALEX), e.balance(STEVE)), (70, 110));
         let t = e.treasury();
         assert_eq!(
-            (t.income["vat"], t.spent["grant"], t.spent["insurance_fund"]),
+            (
+                t.income["ah_listing_fee"],
+                t.spent["grant"],
+                t.spent["insurance_fund"]
+            ),
             (30, 10, 5)
         );
-        assert_eq!(t.income_today["vat"], 30);
+        assert_eq!(t.income_today["ah_listing_fee"], 30);
         // Pools are nobody's: not in the ranking.
         assert_eq!(e.accounts().len(), 2);
         e.save().unwrap();

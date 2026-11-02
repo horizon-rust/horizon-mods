@@ -1,5 +1,5 @@
 // The bank (`/bank`): savings that earn a small interest, paid once a day
-// from the Treasury (taxes and fees), never minted. A player deposits coins
+// from the Treasury (fees and house edges), never minted. A player deposits coins
 // (they wait in the `bank` pool) and takes them back at any time, free.
 // Interest is paid at 00:00 UTC on the lowest amount the account held since
 // the last payment, so a deposit made just before midnight earns nothing
@@ -100,7 +100,7 @@ impl Bank {
         }
     }
 
-    /// What each player has saved (the wealth tax counts it).
+    /// What each player has saved (`/eco stats` counts it).
     pub fn savings(&self) -> HashMap<u128, i64> {
         self.data
             .accounts

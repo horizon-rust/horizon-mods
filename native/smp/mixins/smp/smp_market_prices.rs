@@ -5,7 +5,7 @@
 // (rare, dear items move faster than common ones). A trade of n items costs
 // the area under the price along the way it moves the price (`fill`): the
 // same curve both ways, so a sale exactly retraces a purchase, and a round
-// trip earns nothing but the tax, whoever trades and however the price was
+// trip earns nothing, whoever trades and however the price was
 // pushed. Within a minute the price moves at most `max_minute_move_percent`
 // from where the minute began: the rest of a trade waits for the next minute
 // (never priced flat: buying slowly while the price drifts back, then
@@ -44,9 +44,6 @@ pub struct Dynamic {
     pub max_player_impact_percent: f64,
     /// How far the price may move within one minute (either way).
     pub max_minute_move_percent: f64,
-    /// The share of each trade that goes to the Treasury (a money sink for
-    /// the players, shown on the receipt).
-    pub tax_percent: f64,
     /// What a player bought from the market can't be sold back to it for
     /// this long (that many of that item).
     pub round_trip_hours: i64,
@@ -68,7 +65,6 @@ impl Default for Dynamic {
             max_trade_impact_percent: 2.0,
             max_player_impact_percent: 2.0,
             max_minute_move_percent: 5.0,
-            tax_percent: 2.0,
             round_trip_hours: 24,
             depth: BTreeMap::new(),
             news_percent: 30.0,
@@ -103,15 +99,8 @@ impl Dynamic {
             50.0,
             d.max_minute_move_percent,
         );
-        self.tax_percent = ok(self.tax_percent, 0.0, 50.0, d.tax_percent);
         self.round_trip_hours = self.round_trip_hours.clamp(0, 24 * 30);
         self.depth.retain(|_, v| v.is_finite() && *v > 0.0);
-    }
-
-    /// The tax on `amount` coins (rounded to the nearest coin).
-    pub fn tax(&self, amount: i64) -> i64 {
-        let bp = (self.tax_percent * 100.0).round() as i64;
-        (amount.saturating_mul(bp) + 5_000) / 10_000
     }
 }
 
@@ -190,8 +179,6 @@ pub struct Book {
     /// What each player bought (item, when, how many), for the round-trip
     /// rule.
     pub bought: BTreeMap<String, Vec<(String, i64, u32)>>,
-    /// The Treasury's take so far (display).
-    pub taxes: i64,
     /// The last daily summary's lines (for the web page and Kira).
     pub last_summary: Vec<String>,
     /// The base price each item's history is quoted in (since 0.29).
@@ -732,8 +719,7 @@ mod tests {
     }
 
     #[test]
-    fn a_round_trip_earns_nothing_but_the_tax_for_1_64_and_past_the_band() {
-        let c = Dynamic::default();
+    fn a_round_trip_earns_nothing_for_1_64_and_past_the_band() {
         // 1, 64, and 2,000 (far past the minute's 5% band: only what fits
         // goes, and the same count comes back).
         for n in [1u32, 64, 2000] {
@@ -742,11 +728,9 @@ mod tests {
                 let (a, done) = deal(&mut b, n, first_buy);
                 let (z, back) = deal(&mut b, done, !first_buy);
                 assert_eq!(back, done);
-                let net = a + z - c.tax(a.abs()) - c.tax(z.abs());
                 assert!(a + z <= 0, "{n} {first_buy}: {a} {z}");
-                assert!(net < 0, "{n} {first_buy}: {net}");
                 // Within the band the curve is retraced exactly: only the
-                // rounding of whole coins (at most 2) and the tax remain.
+                // rounding of whole coins (at most 2) remains.
                 if n <= 8 {
                     assert!(a + z >= -2, "{n} {first_buy}: {a} {z}");
                 }
@@ -904,7 +888,7 @@ mod tests {
     }
 
     #[test]
-    fn the_round_trip_window_and_the_tax() {
+    fn the_round_trip_window_and_one_price() {
         let c = Dynamic::default();
         let mut b = book();
         b.bought("u", "minecraft:diamond", 5, T0);
@@ -918,9 +902,6 @@ mod tests {
             0
         );
         assert!(b.bought.is_empty());
-        assert_eq!(c.tax(100), 2);
-        assert_eq!(c.tax(25), 1);
-        assert_eq!(c.tax(24), 0);
         // One price from the old two: their geometric mean, whole.
         assert_eq!(one_price(400, 100), 200);
         assert_eq!(one_price(30, 8), 15);

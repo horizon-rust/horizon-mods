@@ -12,7 +12,7 @@
 // lends the player's items as a `Bag`. Added to the game as
 // `game::smp_market`; also a module of this crate, for its tests.
 
-use super::smp_economy::{Economy, MAX_AMOUNT, Out, Player, TREASURY, parse_amount};
+use super::smp_economy::{Economy, MAX_AMOUNT, Out, Player, parse_amount};
 use super::smp_market_prices::{
     Book, Dynamic, MINUTE_MS, Point, Quote, Span, arrow, base_mid, one_price, to_get, to_pay,
 };
@@ -804,12 +804,6 @@ impl Market {
             "{name}: {} each, {ways}.",
             each_money(economy, self.each(&id))
         ))];
-        if self.config.dynamic.enabled && self.config.dynamic.tax_percent > 0.0 {
-            out.push(Out::Reply(format!(
-                "Tax: {}% of each trade, to the Treasury. Big trades move the price as they go.",
-                self.config.dynamic.tax_percent
-            )));
-        }
         if self.config.dynamic.enabled {
             out.push(Out::Reply(format!(
                 "Moves: {}; traded in 24 h: {}. Chart: /market {}",
@@ -943,23 +937,13 @@ impl Market {
             match economy.adjust(&kind, me.uuid, pay, "") {
                 Ok(_) => {
                     self.count_sale(me.uuid, now, &id, taken, pay);
-                    let due = self.tax_on(pay);
-                    let tax = self.tax(economy, me.uuid, due, &format!("sell {taken} {id}"));
                     self.moved(&id, taken, false);
-                    total = total.saturating_add(pay - tax);
+                    total = total.saturating_add(pay);
                     let each = each_money(economy, pay as f64 / f64::from(taken));
                     out.push(Out::Reply(format!(
                         "Sold {taken} {name} at {each} each: {}.",
                         economy.money(pay)
                     )));
-                    if tax > 0 {
-                        out.push(Out::Reply(format!(
-                            "Tax {}%: -{}. You get {}.",
-                            self.config.dynamic.tax_percent,
-                            economy.money(tax),
-                            economy.money(pay - tax)
-                        )));
-                    }
                     if taken < limited {
                         let hours = self.config.dynamic.round_trip_hours;
                         out.push(Out::Reply(format!(
@@ -1030,16 +1014,10 @@ impl Market {
         if cost > MAX_AMOUNT {
             return vec![Out::Error("That costs too much at once.".into())];
         }
-        let tax = self.tax_on(cost);
-        if economy.balance(me.uuid) < cost + tax {
+        if economy.balance(me.uuid) < cost {
             return vec![Out::Error(format!(
-                "{count} {name} cost {}{}; you have {}.",
+                "{count} {name} cost {}; you have {}.",
                 economy.money(cost),
-                if tax > 0 {
-                    format!(" + {} tax", economy.money(tax))
-                } else {
-                    String::new()
-                },
                 economy.money(economy.balance(me.uuid))
             ))];
         }
@@ -1059,12 +1037,6 @@ impl Market {
         } else {
             self.value(&id, given, true).0
         };
-        let tax = if given > 0 {
-            let due = self.tax_on(paid);
-            self.tax(economy, me.uuid, due, &format!("buy {given} {id}"))
-        } else {
-            0
-        };
         if given > 0 {
             self.moved(&id, given, true);
             let now = economy.now;
@@ -1076,14 +1048,6 @@ impl Market {
             "Bought {given} {name} at {each} each: {}.",
             economy.money(paid)
         ))];
-        if tax > 0 {
-            out.push(Out::Reply(format!(
-                "Tax {}%: -{}. You paid {}.",
-                self.config.dynamic.tax_percent,
-                economy.money(tax),
-                economy.money(paid + tax)
-            )));
-        }
         if count < wanted {
             out.push(Out::Reply(format!(
                 "Only {count} of {wanted}: the price moved {}% this minute, as far as it may.",
@@ -1117,34 +1081,6 @@ impl Market {
 }
 
 impl Market {
-    /// The tax on a trade of `amount` coins (0 without moving prices).
-    pub fn tax_on(&self, amount: i64) -> i64 {
-        if self.config.dynamic.enabled {
-            self.config.dynamic.tax(amount)
-        } else {
-            0
-        }
-    }
-
-    /// Takes `tax` from `uuid` into the Treasury (logged as `market_tax`):
-    /// what it took (0 when the log refused).
-    fn tax(&mut self, economy: &mut Economy, uuid: u128, tax: i64, what: &str) -> i64 {
-        let tax = tax.min(economy.balance(uuid));
-        if tax <= 0 {
-            return 0;
-        }
-        match economy.to_pool("market_tax", uuid, TREASURY, tax, what) {
-            Ok(()) => {
-                self.book.taxes = self.book.taxes.saturating_add(tax);
-                tax
-            }
-            Err(e) => {
-                self.warnings.push(format!("market tax: {e}"));
-                0
-            }
-        }
-    }
-
     /// A trade's move of the price (at once, with its family's).
     fn moved(&mut self, id: &str, n: u32, buy: bool) {
         if !self.config.dynamic.enabled {
@@ -1288,8 +1224,8 @@ impl WebView {
             "generated": now,
             "currency": currency,
             "moving": self.config.enabled && d.enabled,
-            "tax_percent": d.tax_percent,
-            "taxes_collected": self.book.taxes,
+            // No tax since 0.30: kept at 0 for older readers.
+            "tax_percent": 0,
             "daily_summary": {
                 "day": self.book.summary_day * DAY_MS,
                 "lines": self.book.last_summary,
@@ -1301,7 +1237,7 @@ impl WebView {
 
 #[cfg(test)]
 mod tests {
-    use super::super::smp_economy::Config as EconomyConfig;
+    use super::super::smp_economy::{Config as EconomyConfig, TREASURY};
     use super::*;
     use std::fs;
 
@@ -1742,7 +1678,7 @@ mod tests {
     fn no_trades_on_moving_prices_ever_earn_once_the_items_are_back() {
         // Five players pump and dump every item for 2,000 minutes, with the
         // drift between; then every position is closed. On every item the
-        // market ends up with the money, before any tax.
+        // market ends up with the money.
         let c = moving();
         let mut m = Market::new(c.clone());
         let t0 = 1_800_000_000_000i64;
@@ -1888,13 +1824,11 @@ mod tests {
             "{} >= {start}",
             e.balance(me.uuid)
         );
-        // The Treasury got the tax on every trade.
-        assert!(e.pool(TREASURY) > 0);
         fs::remove_dir_all(dir).ok();
     }
 
     #[test]
-    fn moving_prices_tax_the_receipt_and_keep_bought_items_from_coming_back() {
+    fn moving_prices_pay_the_whole_receipt_and_keep_bought_items_from_coming_back() {
         let mut c = Config::default();
         let _ = validate(&mut c);
         let (mut e, _, me, dir) = setup("dyn");
@@ -1906,21 +1840,17 @@ mod tests {
         // One price, 200; three diamonds move it 1.5% as they go.
         let out = m.sell(&mut e, &me, &mut b, &["diamond"]);
         assert_eq!(
-            out[..2],
-            [
-                Out::Reply("Sold 3 diamond at 198 coins each: 595 coins.".into()),
-                Out::Reply("Tax 2%: -12 coins. You get 583 coins.".into())
-            ]
+            out[0],
+            Out::Reply("Sold 3 diamond at 198 coins each: 595 coins.".into())
         );
-        assert_eq!(e.pool(TREASURY), 12);
+        assert_eq!(e.balance(me.uuid), 10_000 + 595, "no tax taken");
+        assert_eq!(e.pool(TREASURY), 0);
         let out = m.buy(&mut e, &me, &mut b, &["iron_ingot", "10"]);
         assert_eq!(
-            out[..2],
-            [
-                Out::Reply("Bought 10 iron ingot at 15 coins each: 151 coins.".into()),
-                Out::Reply("Tax 2%: -3 coins. You paid 154 coins.".into())
-            ]
+            out[0],
+            Out::Reply("Bought 10 iron ingot at 15 coins each: 151 coins.".into())
         );
+        assert_eq!(e.balance(me.uuid), 10_000 + 595 - 151);
         let out = m.sell(&mut e, &me, &mut b, &["iron_ingot"]);
         assert_eq!(
             out[0],
@@ -1934,7 +1864,7 @@ mod tests {
             "{out:?}"
         );
         assert_eq!(
-            out[2],
+            out[1],
             Out::Reply("10 iron ingot kept: bought from the market in the last 24 h.".into())
         );
         b.items.insert("minecraft:iron_ingot".into(), 10);

@@ -252,7 +252,7 @@ impl Report {
                 list(economy, &flows.burned, 3)
             )),
             Out::Reply(format!(
-                "Taxes and fees today: {} ({}). The Treasury paid out {}.",
+                "The Treasury got {} today ({}) and paid out {}.",
                 economy.money(sum(&inc)),
                 list(economy, &inc, 4),
                 economy.money(sum(&out))
@@ -264,9 +264,7 @@ impl Report {
                 d.top10_percent
             )),
         ];
-        lines.push(Out::Reply(
-            "The Treasury: /treasury. The taxes: /eco taxes.".into(),
-        ));
+        lines.push(Out::Reply("The Treasury: /treasury.".into()));
         Some(lines)
     }
 
@@ -318,7 +316,7 @@ impl Report {
 
     fn daily_line(&self, economy: &Economy, d: &Day, before: Option<i64>) -> String {
         format!(
-            "Economy yesterday: money supply {}{}; the server made {} and destroyed {}; taxes and fees {} to the Treasury (now {}), which paid out {}. /eco stats",
+            "Economy yesterday: money supply {}{}; the server made {} and destroyed {}; the Treasury got {} (now {}) and paid out {}. /eco stats",
             economy.money(d.supply),
             before.map_or(String::new(), |b| {
                 let c = d.supply - b;
@@ -337,14 +335,8 @@ impl Report {
     }
 
     /// `web/economy.json`: aggregates, the Treasury's every movement (public
-    /// in game too), the tax code, the days kept.
-    pub fn web(
-        &self,
-        economy: &mut Economy,
-        savings: &HashMap<u128, i64>,
-        taxes: Value,
-        now: i64,
-    ) -> Value {
+    /// in game too), the days kept.
+    pub fn web(&self, economy: &mut Economy, savings: &HashMap<u128, i64>, now: i64) -> Value {
         let today = now.div_euclid(DAY_MS);
         let d = Self::snapshot(economy, savings, today);
         let flows = economy.flows().clone();
@@ -381,7 +373,6 @@ impl Report {
                 "spent_today": if fresh { t.spent_today } else { BTreeMap::new() },
                 "log": t.log,
             },
-            "taxes": taxes,
             "days": self.state.days,
             "daily_report": daily,
         })
@@ -419,12 +410,12 @@ mod tests {
     }
 
     #[test]
-    fn stats_show_what_was_made_destroyed_and_taxed_today() {
+    fn stats_show_what_was_made_destroyed_and_paid_to_the_treasury_today() {
         let (mut e, r) = setup("stats");
         e.adjust("sell 20 minecraft:wheat", A, 600, "").unwrap();
         e.adjust("daily_reward", B, 50, "").unwrap();
         e.adjust("buy 5 minecraft:torch", A, -100, "").unwrap();
-        e.to_pool("vat", A, TREASURY, 25, "").unwrap();
+        e.to_pool("ah_listing_fee", A, TREASURY, 25, "").unwrap();
         let out = r
             .command(&mut e, &HashMap::from([(B, 0)]), "eco stats")
             .unwrap();
@@ -445,7 +436,7 @@ mod tests {
             "Today the server made 650 coins (market sales 600 coins, daily reward 50 coins) and destroyed 100 coins (market purchases 100 coins)."
         );
         assert!(
-            text[2].starts_with("Taxes and fees today: 25 coins (vat 25 coins)"),
+            text[2].starts_with("The Treasury got 25 coins today (ah listing fee 25 coins)"),
             "{}",
             text[2]
         );
@@ -456,7 +447,7 @@ mod tests {
     fn midnight_reports_the_day_before_once_and_keeps_it_through_a_restart() {
         let (mut e, mut r) = setup("daily");
         e.adjust("sell 1 minecraft:diamond", A, 100, "").unwrap();
-        e.to_pool("vat", A, TREASURY, 5, "").unwrap();
+        e.to_pool("ah_listing_fee", A, TREASURY, 5, "").unwrap();
         let (out, web) = r.tick(&mut e, &HashMap::new(), T0 + 2000);
         assert!(out.is_empty() && web, "same day; the JSON's first minute");
         assert!(
@@ -469,7 +460,7 @@ mod tests {
         assert_eq!(
             out,
             [Out::All(
-                "Economy yesterday: money supply 100 coins; the server made 100 coins and destroyed 0 coins; taxes and fees 5 coins to the Treasury (now 5 coins), which paid out 0 coins. /eco stats"
+                "Economy yesterday: money supply 100 coins; the server made 100 coins and destroyed 0 coins; the Treasury got 5 coins (now 5 coins) and paid out 0 coins. /eco stats"
                     .into()
             )]
         );
@@ -477,7 +468,7 @@ mod tests {
             r.tick(&mut e, &HashMap::new(), now + 1000).0.is_empty(),
             "once"
         );
-        let json = r.web(&mut e, &HashMap::new(), json!({}), now);
+        let json = r.web(&mut e, &HashMap::new(), now);
         assert_eq!(json["schema"], 1);
         assert_eq!(json["days"][0]["minted"], 100);
         assert_eq!(json["treasury"]["balance"], 5);

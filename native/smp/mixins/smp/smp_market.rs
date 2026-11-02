@@ -328,9 +328,6 @@ pub struct Market {
     pub warnings: Vec<String>,
     /// Each item made of or into others: those others (`families`).
     family: BTreeMap<String, Vec<String>>,
-    /// Items whose history `open` scaled to their one price, by how much
-    /// (for the futures' entries).
-    pub rebased: BTreeMap<String, f64>,
 }
 
 /// The market's items made of one another (by `smp_recipes::chains`), in
@@ -412,7 +409,6 @@ impl Market {
             book_dirty: !rebased.is_empty(),
             warnings: Vec::new(),
             family: BTreeMap::new(),
-            rebased,
         };
         market.link();
         (market, problems)
@@ -431,7 +427,6 @@ impl Market {
             book_dirty: false,
             warnings: Vec::new(),
             family: BTreeMap::new(),
-            rebased: BTreeMap::new(),
         };
         m.link();
         m
@@ -591,7 +586,7 @@ impl Market {
     }
 
     /// What the market asks and pays for one `id` now, and the mid; None
-    /// when it isn't traded. For futures and charts.
+    /// when it isn't traded. For the charts.
     pub fn spot(&self, id: &str) -> Option<Quote> {
         let b = self.config.items.get(id)?;
         Some(if self.config.dynamic.enabled {
@@ -608,32 +603,6 @@ impl Market {
                 sell: b.sell,
             }
         })
-    }
-
-    #[allow(
-        dead_code,
-        reason = "read by the futures (smp-econ), not the market itself"
-    )]
-    /// The time-weighted mean mid of `id` over the last `minutes` minutes.
-    pub fn twap(&self, id: &str, minutes: u32, now: i64) -> Option<f64> {
-        self.config
-            .items
-            .contains_key(id)
-            .then(|| self.book.twap(id, minutes, now))
-            .flatten()
-    }
-
-    #[allow(
-        dead_code,
-        reason = "read by the futures (smp-econ), not the market itself"
-    )]
-    /// The 10-minute TWAP, rounded, from at least 5 one-minute points.
-    pub fn mark_price(&self, id: &str, now: i64) -> Option<i64> {
-        self.config
-            .items
-            .contains_key(id)
-            .then(|| self.book.mark_price(id, now))
-            .flatten()
     }
 
     /// Items of `id` traded (both sides) in the last `hours`.
@@ -1237,7 +1206,7 @@ impl WebView {
 
 #[cfg(test)]
 mod tests {
-    use super::super::smp_economy::{Config as EconomyConfig, TREASURY};
+    use super::super::smp_economy::Config as EconomyConfig;
     use super::*;
     use std::fs;
 
@@ -1844,7 +1813,6 @@ mod tests {
             Out::Reply("Sold 3 diamond at 198 coins each: 595 coins.".into())
         );
         assert_eq!(e.balance(me.uuid), 10_000 + 595, "no tax taken");
-        assert_eq!(e.pool(TREASURY), 0);
         let out = m.buy(&mut e, &me, &mut b, &["iron_ingot", "10"]);
         assert_eq!(
             out[0],

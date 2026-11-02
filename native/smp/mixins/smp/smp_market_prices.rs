@@ -15,8 +15,7 @@
 // 1 (mean reversion). Items made of one another (`smp_recipes`) share one
 // factor, with an elasticity by value, so crafting can't beat the market. The
 // history: one point a minute for 24 h, one an hour for 30 days
-// (`market_prices.json`), the time-weighted mean for futures (`twap`,
-// `mark_price`), the day's movers and news (`summary`). No game types. Added
+// (`market_prices.json`), the day's movers and news (`summary`). No game types. Added
 // to the game as `game::smp_market_prices`; also a module of this crate, for
 // its tests.
 
@@ -353,7 +352,7 @@ impl Book {
     /// At load: each minute's band opens where its price is, and a book
     /// from before 0.29 (no `bases`), whose history is quoted in the old
     /// mid of buy and sell (`old`), gets it scaled to the one price of now
-    /// (`bases`), so the charts, the moves and the futures' TWAP see no
+    /// (`bases`), so the charts and the moves see no
     /// cliff. The items it scaled, by how much.
     pub fn settle(
         &mut self,
@@ -485,46 +484,6 @@ impl Book {
             },
             None => &[],
         }
-    }
-
-    #[allow(
-        dead_code,
-        reason = "read by the futures (smp-econ), not the market itself"
-    )]
-    /// The minute points of `id` within the last `minutes` minutes.
-    fn recent(&self, id: &str, minutes: u32, now: i64) -> impl Iterator<Item = &Point> {
-        let since = now - i64::from(minutes) * MINUTE_MS;
-        self.items
-            .get(id)
-            .into_iter()
-            .flat_map(move |t| t.minutes.iter().rev().take_while(move |p| p.t >= since))
-    }
-
-    #[allow(
-        dead_code,
-        reason = "read by the futures (smp-econ), not the market itself"
-    )]
-    /// The time-weighted mean mid over the last `minutes` complete minutes
-    /// (each point is one minute); None without a point there.
-    pub fn twap(&self, id: &str, minutes: u32, now: i64) -> Option<f64> {
-        let (n, sum) = self
-            .recent(id, minutes, now)
-            .fold((0u32, 0.0), |(n, s), p| (n + 1, s + p.price));
-        (n > 0).then(|| sum / f64::from(n))
-    }
-
-    #[allow(
-        dead_code,
-        reason = "read by the futures (smp-econ), not the market itself"
-    )]
-    /// The 10-minute TWAP, rounded, from at least 5 points: a mark price
-    /// one player can't move much.
-    pub fn mark_price(&self, id: &str, now: i64) -> Option<i64> {
-        let n = self.recent(id, 10, now).count();
-        (n >= 5)
-            .then(|| self.twap(id, 10, now))
-            .flatten()
-            .map(|p| p.round() as i64)
     }
 
     /// Items of `id` traded in the last `hours` (minutes for a day, hours
@@ -823,18 +782,14 @@ mod tests {
     }
 
     #[test]
-    fn twap_mark_price_volume_and_history() {
+    fn volume_and_history() {
         let c = Dynamic::default();
         let mut b = book();
-        assert_eq!(b.mark_price("minecraft:diamond", T0), None);
         for m in 1..=12 {
             b.trade(&c, D, &[], 250.0, delta(), 2, true);
             b.tick(&c, &mids(), T0 + m * MINUTE_MS);
         }
         let now = T0 + 12 * MINUTE_MS;
-        let mark = b.mark_price("minecraft:diamond", now).unwrap();
-        let spot = b.quote(&c, D, 250.0, delta()).mid;
-        assert!(mark as f64 <= spot && mark > 250, "{mark} {spot}");
         assert_eq!(b.volume("minecraft:diamond", now, 24), 24);
         assert_eq!(b.history("minecraft:diamond", Span::Minute).len(), 12);
         let h = b.history("minecraft:diamond", Span::Minute);

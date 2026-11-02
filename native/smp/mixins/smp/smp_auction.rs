@@ -1,6 +1,6 @@
 // The auction house (`/ah`): players sell to players. A listing is a fixed
-// price or a timed auction; listing costs a fee, to the Treasury, and a sale
-// pays the seller the whole price. Listed items leave the seller's inventory at once; what
+// price or a timed auction; listing is free, and a sale pays the seller the
+// whole price. Listed items leave the seller's inventory at once; what
 // doesn't sell (and what an auction's winner gets) waits in the player's mail
 // (`/ah claim`, or the menu's mail page). Bids are held in the `auction`
 // pool until the auction ends or someone bids more. A bid in the last
@@ -19,7 +19,7 @@
 // menu from `Cell`s. Added to the game as `game::smp_auction`; also a module
 // of this crate, for its tests.
 
-use super::smp_economy::{DAY_MS, Economy, MAX_AMOUNT, Out, Player, TREASURY, parse_amount};
+use super::smp_economy::{DAY_MS, Economy, MAX_AMOUNT, Out, Player, parse_amount};
 use super::smp_market::{Bag, item_name, valid_id};
 use super::smp_shop::{Category, title};
 use super::smp_store::{parse_uuid, uuid_string};
@@ -57,9 +57,6 @@ const CATEGORY_SLOTS: [usize; 21] = [
 #[serde(default)]
 pub struct Config {
     pub enabled: bool,
-    /// Paid when listing, in percent of the price (or starting bid), at
-    /// least 1 coin; to the Treasury, never given back.
-    pub listing_fee_percent: i64,
     /// Listings one player may have at once.
     pub max_listings: usize,
     /// How long a fixed-price listing stays.
@@ -77,7 +74,6 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             enabled: true,
-            listing_fee_percent: 1,
             max_listings: 8,
             listing_hours: 48,
             auction_hours: 12,
@@ -143,7 +139,6 @@ pub struct Today {
     pub day: i64,
     pub sales: u32,
     pub volume: i64,
-    pub fees: i64,
 }
 
 /// What `economy.json`'s `ext.auction` holds.
@@ -237,6 +232,19 @@ pub struct AuctionHouse {
     /// Money moves that failed after the items moved (the audit log
     /// couldn't be written): the glue logs them.
     pub problems: Vec<String>,
+}
+
+/// `2d 5h`, `3h 05m`, `12m`: the time left on a listing.
+fn span(ms: i64) -> String {
+    let m = ms.max(0) / 60_000;
+    let (d, h, m) = (m / 1440, m / 60 % 24, m % 60);
+    if d > 0 {
+        format!("{d}d {h}h")
+    } else if h > 0 {
+        format!("{h}h {m:02}m")
+    } else {
+        format!("{m}m")
+    }
 }
 
 /// `price * percent / 100`, without overflow.
@@ -539,10 +547,6 @@ impl AuctionHouse {
         if count == 0 || count > held {
             return err(format!("You hold {held} {}.", item_name(&item)));
         }
-        let fee = percent(price, self.config.listing_fee_percent).max(1);
-        if economy.balance(me.uuid) < fee {
-            return err(format!("Listing costs {}.", economy.money(fee)));
-        }
         let taken = bag.take(&item, count);
         if taken != count {
             bag.give(&item, taken);
@@ -555,10 +559,7 @@ impl AuctionHouse {
             "kind": "ah_list", "id": id, "seller": mine, "item": &item, "count": count,
             "price": price, "auction": hours.is_some(), "ends": ends,
         });
-        if let Err(e) = economy
-            .record(entry)
-            .and_then(|()| economy.to_pool("ah_listing_fee", me.uuid, TREASURY, fee, ""))
-        {
+        if let Err(e) = economy.record(entry) {
             bag.give(&item, taken);
             return err(e);
         }
@@ -576,22 +577,19 @@ impl AuctionHouse {
         };
         let line = match hours {
             None => format!(
-                "Listed #{id}: {} for {} ({:.2} each), {}h. Fee: {}.",
+                "Listed #{id}: {} for {} ({:.2} each), {}h.",
                 Self::what(&l),
                 economy.money(price),
                 price as f64 / f64::from(count),
-                self.config.listing_hours,
-                economy.money(fee)
+                self.config.listing_hours
             ),
             Some(h) => format!(
-                "Auction #{id}: {} from {}, ends in {h}h. Fee: {}.",
+                "Auction #{id}: {} from {}, ends in {h}h.",
                 Self::what(&l),
-                economy.money(price),
-                economy.money(fee)
+                economy.money(price)
             ),
         };
         self.data.listings.push(l);
-        self.count_today(now).fees += fee;
         self.dirty = true;
         vec![Out::Reply(line)]
     }
@@ -762,7 +760,7 @@ impl AuctionHouse {
                 "You bid {} on #{id} ({}), ends in {}.{}",
                 economy.money(amount),
                 Self::what(&l),
-                super::smp_treasury::span(l.ends - now),
+                span(l.ends - now),
                 if extended {
                     " A late bid: the end moved back."
                 } else {
@@ -788,10 +786,7 @@ impl AuctionHouse {
         }
         let l = self.data.listings.remove(i);
         self.post(&l.seller, &l.item, l.count, "withdrawn");
-        vec![Out::Reply(format!(
-            "Took #{id} ({}) back. The fee stays paid.",
-            Self::what(&l)
-        ))]
+        vec![Out::Reply(format!("Took #{id} ({}) back.", Self::what(&l)))]
     }
 
     /// Gives `uuid` their mail (one parcel, or all of it), as much as fits;
@@ -1071,7 +1066,7 @@ impl AuctionHouse {
     /// A listing's name on its button.
     pub fn label(&self, l: &Listing, now: i64, money: &dyn Fn(i64) -> String) -> String {
         let each = l.amount() as f64 / f64::from(l.count.max(1));
-        let left = super::smp_treasury::span(l.ends - now);
+        let left = span(l.ends - now);
         let head = format!("#{} {} {}", l.id, l.count, title(&l.item));
         if l.auction {
             let bid = match &l.bid {
@@ -1222,7 +1217,7 @@ mod tests {
 
     /// Every coin of the game: balances and pools.
     fn total(e: &Economy) -> i64 {
-        e.balance(ALEX) + e.balance(STEVE) + e.balance(NOTCH) + e.pool(TREASURY) + e.pool(POOL)
+        e.balance(ALEX) + e.balance(STEVE) + e.balance(NOTCH) + e.pool(POOL)
     }
 
     fn run(
@@ -1259,7 +1254,7 @@ mod tests {
             alex.items["minecraft:diamond"], 0,
             "the items left the inventory"
         );
-        assert_eq!((e.balance(ALEX), e.pool(TREASURY)), (990, 10), "1% fee");
+        assert_eq!(e.balance(ALEX), 1000, "listing is free");
         // Steve and Notch click "buy" in the same tick: one gets it.
         let mut steve = empty();
         let mut notch = empty();
@@ -1283,22 +1278,16 @@ mod tests {
             ),
             (10, None)
         );
-        // Alex gets the whole 1,000 Steve paid; only the listing fee went to the Treasury.
+        // Alex gets the whole 1,000 Steve paid.
         assert_eq!(
             (e.balance(ALEX), e.balance(STEVE), e.balance(NOTCH)),
-            (990 + 1000, 0, 1000)
+            (1000 + 1000, 0, 1000)
         );
-        assert_eq!(e.pool(TREASURY), 10);
         assert_eq!(total(&e), 3000, "nothing made, nothing lost");
         assert!(a.contains(&Out::Tell(
             ALEX,
             "Steve bought your 10 diamond for 1,000 coins.".into()
         )));
-        let t = e.treasury();
-        assert_eq!(
-            (t.income.get("vat"), t.income["ah_listing_fee"]),
-            (None, 10)
-        );
     }
 
     #[test]
@@ -1429,13 +1418,10 @@ mod tests {
         assert_eq!(e.pool(POOL), 0);
         assert_eq!(
             e.balance(ALEX),
-            999 + 400,
-            "paid while offline, the whole bid (fee: 1)"
+            1000 + 400,
+            "paid while offline, the whole bid"
         );
-        assert_eq!(
-            e.balance(STEVE) + e.balance(NOTCH) + e.balance(ALEX) + e.pool(TREASURY),
-            3000
-        );
+        assert_eq!(e.balance(STEVE) + e.balance(NOTCH) + e.balance(ALEX), 3000);
         // Alex reads the note when back.
         let out = ah.tick(&mut e, &[ALEX], late + 61_000);
         assert_eq!(

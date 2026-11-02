@@ -63,34 +63,10 @@ name = "smp_report"
 source = "smp_report.rs"
 
 [[module]]
-id = "jobs"
-file = "crates/horizon-client/src/game.rs"
-name = "smp_jobs"
-source = "smp_jobs.rs"
-
-[[module]]
-id = "futures"
-file = "crates/horizon-client/src/game.rs"
-name = "smp_futures"
-source = "smp_futures.rs"
-
-[[module]]
-id = "bank"
-file = "crates/horizon-client/src/game.rs"
-name = "smp_bank"
-source = "smp_bank.rs"
-
-[[module]]
 id = "auction"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_auction"
 source = "smp_auction.rs"
-
-[[module]]
-id = "treasury"
-file = "crates/horizon-client/src/game.rs"
-name = "smp_treasury"
-source = "smp_treasury.rs"
 
 [[module]]
 id = "trade"

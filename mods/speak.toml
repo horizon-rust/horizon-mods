@@ -5,16 +5,15 @@ summary = "Proximity voice chat: hold a key to talk, nearby players hear you; gr
 description = """
 Speak. is a proximity voice chat for Horizon: hold a key to talk and the players near you hear you — or join a group and talk beyond distance.
 
-- Hold the key (V by default) to transmit; let go to stop.
-- The server mixes each voice packet to the players within range, by in-game position and dimension.
-- Groups: /speak group <name> joins (or creates) a group and reaches its members whatever the distance; /speak group <name> <password> guards one; /speak group <name> type isolated makes one that hears no strangers and bleeds nothing; /speak invite <player>, /speak leave; a group that empties is deleted, and a disconnect leaves it.
-- Whispering: hold the whisper key (B) while transmitting for a shorter distance.
-- Mute: the mute key (M) toggles your microphone; the HUD shows it.
-- The HUD (top-left): your mic state (talking, whispering, muted, disabled) and the talking players, whisperers in their own colour, fading half a second after the last packet; a "hide icons" setting blanks it.
-- Per-player volume: the settings page shows the last heard player's own volume; a click steps it 25%, wrapping at 200%.
-- Settings page: Options > Mods > Speak. > Settings — mode (push to talk / voice activation), voice distance, whisper distance, mic sensitivity, volume, the toggles above.
+The keys, all bindable in Options > Mods, with Simple Voice Chat's own defaults where it has them: speak (Caps Lock, hold to transmit), menu (V), mute (M), whisper (B, hold while transmitting), hide icons (H), disable (N).
 
-What is real and what is stubbed: the transport is real — the window sends a mic packet each tick while the key is held, the server mixes by group and proximity and sends sound packets to the receivers, over Horizon's mod message channel (speak:voice), which vanilla clients simply don't carry. The audio codec is a stub: the packets are framed but carry no sound bytes yet, because Horizon has no audio capture hook and no codec crate in its lock. Until one is wired in, voice activation and actual audio are pending; the settings for them are in place.
+The menu, on V: a centered panel with the toggles and the quick settings, keyboard-navigated (arrows move, the number keys and Enter use a row, V or Esc closes) — mute, deafen (hear nobody), hide icons, voice chat, voice distance, whisper distance, volume, and leave group, with the header showing the group the server says you are in.
+
+The indicators, top-left: icons, not text — a pixel speaker glyph for your own mic state (waves when talking, one wave when whispering, a slash when muted, struck through when deafened, bare gray when off) and a glyph and name for each talking player, whisperers in their own colour, fading half a second after the last packet.
+
+Also: proximity routing by position and dimension; groups with passwords and open/isolated types (/speak group, invite, leave), members reached whatever the distance; per-player volume on the settings page; and the full settings under Options > Mods > Speak. > Settings.
+
+What is real and what is stubbed: the transport is real — the window sends a mic packet each tick while the key is held, the server mixes by group and proximity and sends sound packets to the receivers, over Horizon's mod message channel (speak:voice), which vanilla clients simply don't carry. Control messages (a leave, the group's name) ride the same channel, kept apart from voice by a kind byte. The audio codec is a stub: the packets are framed but carry no sound bytes yet, because Horizon has no audio capture hook and no codec crate in its lock. Until one is wired in, voice activation and actual audio are pending; the settings for them are in place.
 
 Built as a Horizon native mod with horizon-mixins, on Horizon's native hook points. Install it on the launcher's Mods page, then press Build there. Native mods run with the player's account permissions and are not sandboxed.
 
@@ -26,9 +25,9 @@ license = "MIT"
 source = "https://github.com/wxundup/speak"
 
 [[versions]]
-version = "0.2.0"
+version = "0.3.0"
 published = "2026-11-01"
 game = "26.3"
-file = "speak-0.2.0.hnmod"
-sha256 = "921a606a484d65e903f11947813e107d7c8129f9228da18825f439dcfda3d706"
-changelog = "Groups with passwords, open and isolated types, invites and routing rules; the HUD with mic states and talking players; mute and whisper keys; per-player volume; sound packets carry sender, position, dimension and name. Verified: the bundle applies and the whole game cargo checks on the pinned Horizon commit with -D warnings; 32 unit tests. The audio codec stays a stub until Horizon offers native mods an audio source."
+file = "speak-0.3.0.hnmod"
+sha256 = "8ab34b870d7bcca579ccac7d50c877dcf424bac11952233957b7be8834a5d4a6"
+changelog = "The UI remaster: a voice menu on V (Simple Voice Chat's own keybind defaults: M mute, H hide icons, N disable; push-to-talk on Caps Lock), centered and keyboard-navigated; pixel speaker icons instead of text indicators (talking, whispering, muted, deafened, off); the deafen state (hear nobody); and a control channel so the server tells the client its group and the menu can leave one. Verified: the bundle applies and the whole game cargo checks on the pinned Horizon commit with -D warnings; 40 unit tests."

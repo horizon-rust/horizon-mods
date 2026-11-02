@@ -220,7 +220,8 @@ as any teleport does.
 click blocks: doors, chests, levers, buttons, placing a block, a bucket or flint on a block. Anyone else's click does
 nothing, and the action bar says whose land it is. The chunks a player may hold grow with the time played here
 (`claims.chunks`: `[hours, chunks]`, by default 4, 16 from 5 hours, 36 from 20, 64 from 100); `claims.enabled`
-turns them off. The world stays out too: no water or lava flows, no fire spreads or burns, and no piston pushes into
+turns them off. `claims.free_radius` (0, none) keeps the overworld's land within that many blocks of 0 0 free for
+all: no one claims a chunk that touches it, and claims already there are dropped at start (each logged). The world stays out too: no water or lava flows, no fire spreads or burns, and no piston pushes into
 a claim from land that isn't its owner's (or a player's they trust), and explosions break no claimed block, whoever
 lit them. Buckets are guarded where they fill or empty, and hitting the claim's item frames, armour stands,
 paintings, boats, minecarts and animals does nothing for others (`claims.protected_entities`, entity ids; monsters

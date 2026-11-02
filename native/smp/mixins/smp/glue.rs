@@ -39,7 +39,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.29.1";
+pub const VERSION: &str = "0.30.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -184,9 +184,14 @@ fn open(dir: PathBuf) -> Smp {
     if let Err(e) = &places {
         log::error!("[smp] homes and warps are off: {e}");
     }
-    let claims = Claims::open(&dir, config.claims);
-    if let Err(e) = &claims {
-        log::error!("[smp] claims are off: {e}");
+    let mut claims = Claims::open(&dir, config.claims);
+    match &mut claims {
+        Ok(c) => {
+            for line in c.clear_free_zone() {
+                log::warn!("[smp] {line}");
+            }
+        }
+        Err(e) => log::error!("[smp] claims are off: {e}"),
     }
     let board = Board::open(&dir, config.board);
     if let Err(e) = &board {

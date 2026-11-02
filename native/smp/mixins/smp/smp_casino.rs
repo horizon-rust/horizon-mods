@@ -397,9 +397,12 @@ pub struct Ledger {
     /// The day's biggest wins (by profit), biggest first.
     pub wins: Vec<Win>,
     pub totals: BTreeMap<String, Totals>,
-    /// Whether the pot got its float (once, ever).
-    pub seeded: bool,
 }
+
+/// The mark, in `economy.json`'s `ext`, that the pot got its float: kept with
+/// the pot's money so one write saves both, and a lost or unreadable
+/// `casino.json` can't make the float again.
+const FLOATED: &str = "casino_float";
 
 /// A bet placed and held, for a game to decide.
 #[derive(Clone, Debug, PartialEq)]
@@ -713,11 +716,10 @@ impl Casino {
     /// it), made for it. A world whose pot already holds money (from before
     /// 0.30) gets only what it lacks.
     pub fn seed(&mut self, economy: &mut Economy) -> Option<String> {
-        if self.ledger.seeded {
+        if economy.ext(FLOATED) == Some(&serde_json::Value::Bool(true)) {
             return None;
         }
-        self.ledger.seeded = true;
-        self.dirty = true;
+        economy.set_ext(FLOATED, serde_json::Value::Bool(true));
         let lacks = self.config.float.max(0) - economy.pool(POT);
         if lacks <= 0 {
             return None;
@@ -1654,7 +1656,7 @@ pub(crate) mod tests {
         assert!(problem.is_none());
         // Draws the same every run; the pot as set up.
         c.rng = Rng::from_seed([7; 32]);
-        c.ledger.seeded = true;
+        e.set_ext(FLOATED, serde_json::Value::Bool(true));
         (e, c, dir)
     }
 
@@ -1888,7 +1890,7 @@ pub(crate) mod tests {
     #[test]
     fn a_new_pot_gets_its_float_once_and_keeps_the_house_edge() {
         let (mut e, mut c, dir) = setup("seed", 0);
-        c.ledger.seeded = false;
+        e.set_ext(FLOATED, serde_json::Value::Bool(false));
         assert_eq!(c.seed(&mut e), None);
         assert_eq!(e.pool(POT), 20_000);
         assert_eq!(e.flows().minted["casino_float"], 20_000);
@@ -1897,9 +1899,16 @@ pub(crate) mod tests {
             .unwrap();
         assert_eq!(c.seed(&mut e), None);
         assert_eq!(e.pool(POT), 1000);
+        // Nor after a restart that lost casino.json: the mark is the economy's.
+        e.save().unwrap();
+        let mut e = Economy::open(&dir, EconomyConfig::default()).unwrap();
+        std::fs::remove_file(dir.join("casino.json")).ok();
+        let (mut c, _) = Casino::open(&dir, Config::default(), true);
+        assert_eq!(c.seed(&mut e), None);
+        assert_eq!(e.pool(POT), 1000, "no second float");
         // An old pot with money gets only what it lacks.
         let (mut e, mut c, _) = setup("seed-old", 25_000);
-        c.ledger.seeded = false;
+        e.set_ext(FLOATED, serde_json::Value::Bool(false));
         c.seed(&mut e);
         assert_eq!(e.pool(POT), 25_000, "above the float: nothing made");
         std::fs::remove_dir_all(dir).unwrap();

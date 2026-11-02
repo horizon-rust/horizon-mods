@@ -1,6 +1,5 @@
 id = "customhud"
 kind = "native-mod"
-repo = "sonoFrangu/CustomHUD-Horizon"
 name = "Beautiful Day Counter"
 summary = "A lightweight day counter, clock and day/night cycle bar for the HUD, with an in-game settings screen."
 description = """
@@ -17,4 +16,13 @@ Shows the current survival day, an in-game clock and a color-shifting bar that f
 authors = ["SCARABOCCHIO100"]
 owners = ["sonoFrangu"]
 license = "MIT"
+source = "https://github.com/sonoFrangu/CustomHUD-Horizon"
 icon = "icons/customhud.png"
+
+[[versions]]
+version = "1.6.0"
+published = "2026-10-31"
+game = "26.3"
+file = "customhud-1.6.0.hnmod"
+sha256 = "ab255d3c722b40f4d068a762857d6c027c11381308bfe23196e2974307814a7f"
+changelog = "First release for Horizon: the CustomHUD 1.6.0 HUD and settings screen as a native mod."

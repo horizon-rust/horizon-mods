@@ -1,0 +1,22 @@
+id = "rmotd"
+kind = "native-mod"
+repo = "Vakarux12/RMotd"
+owners = ["Vakarux12"]
+key = "RWS5u/7lEyKbzVHC6uMJRlhM/N7vzKp5fZe2LCDUlHsDK4lvPupxJbqQ"
+name = "RMotd"
+summary = "Rotating server list MOTDs, managed in game with /randommotd and /motd."
+description = """
+A Horizon port of [adasjusk's RMotd](https://github.com/adasjusk/RMotd), the rotating MOTD plugin.
+
+- The MOTD in the server list changes every 10 seconds, through the list in `config/rmotd.json` (the Fabric build's file).
+- `/randommotd` turns rotation on and off.
+- `/motd create <name> <motd>` adds an MOTD, `/motd reload` reads the file again (operator level 2).
+- MOTDs take `&` colour codes.
+
+It sets the MOTD of a world opened to LAN. The server list ping shows the rotation, the LAN broadcast keeps the first one. Horizon has no MOTD hook point, so a support module in `horizon_client::lan` writes the private MOTD field of the LAN server. Its injections are all hook points, but that field is not a stable API, so a later Nightly can break the build. Runs where the world is hosted: single player and worlds opened to LAN (Horizon's dedicated server cannot build native mods yet). Native mods run with the player's account permissions and are not sandboxed.
+
+Source: `horizon/` in https://github.com/Vakarux12/RMotd, a fork of the original. CC-BY-SA-4.0, the original's licence, with a grant for Horizon's reviewers in `horizon/REVIEW-GRANT.md`.
+"""
+authors = ["adasjusk", "Vakarux12"]
+license = "CC-BY-SA-4.0"
+source = "https://github.com/Vakarux12/RMotd/tree/main/horizon"

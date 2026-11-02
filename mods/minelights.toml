@@ -7,27 +7,27 @@ MineLights is a Minecraft Fabric, Quilt, Forge, NeoForge and Horizon mod that br
 
 Configure MineLights through Horizon's Mods menu. OpenRGB devices and Yeelight bulbs can connect directly. Other supported RGB devices use [MineLights Server](https://github.com/megabytesme/MineLights-Server).
 
-MineLights connects to local RGB services and may discover Yeelight bulbs on the local network. On Windows, its enabled-by-default server option can download MineLights Server from GitHub and launch it when needed. The settings include controls for this behaviour and for restarting or updating the server.
+MineLights connects to local RGB services and may discover Yeelight bulbs on the local network. On Windows, its server option is off by default. If you opt in and confirm, it can download and launch the reviewed MineLights Server v2.3.4 after verifying its pinned SHA-256. You can also install and start the server yourself. Configurable chat notices can tell you when the server is missing or a newer stable release is available; update checks read release metadata without downloading an update.
 
 This is the Horizon port of [MineLights](https://github.com/megabytesme/MineLights), by MegaBytesMe. As a native mod, it is built into the game and runs with the player's account permissions.
 """
 authors = ["MegaBytesMe"]
 owners = ["megabytesme"]
 license = "CC-BY-NC-SA-4.0"
-source = "https://github.com/megabytesme/MineLights/tree/814483164be9d249c4bc29deb5528905f29c34dd/horizon"
+source = "https://github.com/megabytesme/MineLights/tree/d066816202d8506498a7111f155d72247c96c73f/horizon"
 icon = "https://raw.githubusercontent.com/megabytesme/MineLights/master/assets/icon.png"
 key = "RWQXM9P921f9AnO4kAKnVMu+2UdAr6BeAdM70P6PjbT7xxxmJbVb/qlN"
 
 [[versions]]
-version = "0.1.0"
-published = "2026-11-01"
+version = "0.1.1"
+published = "2026-11-02"
 game = "26.3"
-file = "minelights-0.1.0.hnmod"
-sha256 = "0b12b1a3094f39d7c36135fa4800c7cff7754415097896288e4cc12c49697ed6"
+file = "minelights-0.1.1.hnmod"
+sha256 = "708d1cd66c3fd29d960cd30962f5db487376fa5256db9a1e1041322d4aec2517"
 signature = """
 untrusted comment: signature from minisign secret key
-RUQXM9P921f9AmH+azTAaO/EDU0hBKnY4aOHoLA6qbcvZmitA8jV7kT0vQ1X2Cprc0bxDpLvLK6rJF5Tk5UhhZSC2oRTl+A99wU=
-trusted comment: MineLights Horizon native mod 0.1.0
-/TprNG2Mb7e2LVN+hBzI348OIqO/cfW3zfjmnOXO/O4Hwxf15M3TYQ4izCq3sYzhpTVVxjVgvkOFPB7FaOcaAQ==
+RUQXM9P921f9AvW6VG2ZrPS/haN9KdAcGMvzLl5+9TfqjGXkPUTbPm9IKuZY8NotUZuP0YqZ2rTzyEB/ei0P+2ukaorgZQjbdAs=
+trusted comment: MineLights Horizon native mod 0.1.1
+EtL5O72N3Z34xsgRzs5rT71c1hGWjjexUHlHAlv4cShMCPeQ85WRldhYOsTaMBTnouEvtzduIMIxLRjdmCdnCg==
 """
-changelog = "Initial Horizon release of MineLights for Minecraft 26.3."
+changelog = "Make server download and launch opt-in, pin the reviewed server version and hash, and add configurable server notices."

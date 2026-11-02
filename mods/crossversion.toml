@@ -1,0 +1,31 @@
+id = "crossversion"
+kind = "native-mod"
+name = "Cross Version"
+summary = "Allows joining older version minecraft servers"
+description = """
+
+
+A native Horizon mod that lets the 26.3 client join servers that speak an older Minecraft protocol.
+
+Horizon talks exactly one protocol (777, Minecraft 26.3). This mod watches a join, asks the server what protocol it speaks in its status reply, and — if it is not 26.3 — starts a ViaProxy instance on a loopback port and points the join at it. The proxy speaks 26.3 to Horizon and the server's own version to the server. Nothing else in the client changes, and a join to a 26.3 server never starts anything."""
+authors = ["JustKarkat"]
+owners = ["JustKarkat"]
+license = "MIT"
+source = "https://github.com/JustKarkat/horizon-crossversion/"
+icon = "https://github.com/JustKarkat/horizon-crossversion/blob/master/icon.png?raw=true"
+key = "RWTcPJHJYjPW0pV3lPwr45crCu0wJxW5HbDLc3fr3Eom1TzxO++kHOo4"
+
+[[versions]]
+version = "0.7.1"
+published = "2026-11-02"
+game = "26.3"
+file = "crossversion-0.7.1.hnmod"
+sha256 = "deb9cf8a84838e6c48999f70fbd3c81db90992c456d6e85a0e0746b088c5b8fa"
+signature = """
+untrusted comment: signature from minisign secret key
+RUTcPJHJYjPW0nmeON4u6rxOS7AxK+s/e3kPaLkJ3lm618iPPc8oP8nWdJQ8k9yYriSZSu091TZ5m7qX56nNovAjeZyTcOdrUAk=
+trusted comment: timestamp:1793657606\tfile:crossversion-0.7.1.hnmod\thashed
+q2Oy6yVv5T+GHc2iM+HxNDImfPcaKGV/XPToNCTQFHSTKJ8+rz5IV4LfJnOBwBp1rZQZoGkExopDrXfZyQybCQ=="""
+changelog = """
+Version:     0.7.1
+Changelog:   The MIT notice now ships inside the .hnmod (it is the header of the bundled engine source). The settings page's 'Delete the downloaded ViaProxy' deletes the jars only, so the account added to ViaProxy and its refresh token in saves.json stay. Also: a version switch on Edit Server and Direct Connect: choose what version ViaProxy tells that server it is (auto, 1.8, 1.9, 1.12.2, 1.16.5, 1.20.1, 1.21.1, 1.21.4, 26.3), kept per address, for servers whose status reports the wrong version."""

@@ -1,0 +1,31 @@
+id = "horizon_physics"
+kind = "native-mod"
+name = "Horizon Physics"
+summary = "Physics for blocks, mobs, items, snow, water, smoke, capes and more, with its own settings screen."
+description = """
+By tariksabanuz. Physics for Horizon in the spirit of PhysicsMod: broken blocks fall apart into pieces, mobs die as
+ragdolls, snow gives way under your feet, water waves, smoke rises and plants sway in the wind.
+
+- Broken blocks crumble into pieces (blocky, particles, crumbled voxel or fractured). Mobs die as ragdolls or come apart.
+- Structures and trees fall when what holds them up is broken. Dropped items tumble and settle.
+- Snow layers are pressed down by you and the mobs, water has waves that boats (and you in them) ride, and leaves, plants and vines sway.
+- Hit a ragdoll or a piece and it flies off; grass and flowers bend away as you walk through them.
+- Fire, campfires and lava give off smoke and embers that gather and darken under ceilings, capes and banners are cloth, doors swing open and shut, leads and fishing lines are ropes.
+- Rain splashes and rings the water, snow falls, and the wind blows harder with the weather.
+- A Physics Settings button in Options opens a screen with a page for every part, and a Quick Setup the first time you start.
+
+Needs the Performance build in the launcher. Inspired by PhysicsMod by Haubna; this is a clean-room version for
+Horizon and contains none of its code or assets. It uses your own game's textures at runtime, and the icon is my own."""
+authors = ["tariksabanuz"]
+owners = ["tariksabanuz"]
+license = "MIT"
+source = "https://github.com/tariksabanuz/PhysicsModHorizon"
+icon = "icons/horizon_physics.png"
+
+[[versions]]
+version = "0.15.1"
+published = "2026-11-03"
+game = "26.3"
+file = "horizon_physics-0.15.1.hnmod"
+sha256 = "d7cf1201f0a47a852aa1a4c9684ef9e658ec3c86852104d44716d05f11281ca3"
+changelog = "First release: block, mob, item, snow, water, smoke, cloth, weather and collapse physics, with a Physics Settings screen."

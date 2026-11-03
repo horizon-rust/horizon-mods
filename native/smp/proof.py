@@ -28,6 +28,8 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - the web pages (web/market.json, web/economy.json) sent gzipped with the token to a stand-in for Kira;
 - /invsee: an operator takes a stack from an offline player's saved inventory, logged before the move and summed up in
   staff.log;
+- the emergency switches: an operator turns the market off (its commands refuse), then everything but land
+  protection (the economy refuses, the sidebar goes), then everything on again, each in audit.log;
 - nicknames, for operators only: a player can't pick one; an operator's refused ones (a player's name, too short, a
   bad character), the one given in the other's chat and Tab list, /realname, someone else's taken, the player taking
   it off.
@@ -452,7 +454,7 @@ def world_guard(server, alex, steve):
 
 
 def board(alex, steve, out):
-    """The scoreboard sidebar (the player's own block, the richest, the address) and the Tab list; /sidebar off
+    """The scoreboard sidebar (the player's own block, then the address) and the Tab list; /sidebar off
     hides it, on shows it again."""
     r = {}
     side = lambda c: c.run("status").get("sidebar")
@@ -462,9 +464,8 @@ def board(alex, steve, out):
             break
         time.sleep(0.5)
     assert r["sidebar"]["objective"] == "horizon:native_sidebar" and r["sidebar"]["title"] == "Horizon SMP", r
-    # Steve's name, balance, playtime and the players on; a gap, "Richest", Alex and Steve (the two accounts); a gap,
-    # the address.
-    assert len(r["sidebar"]["scores"]) == 10, r
+    # Steve's name, balance, playtime and the players on; a gap, the address. No ranking of the richest.
+    assert len(r["sidebar"]["scores"]) == 6, r
     # Holders starting with '#' would be hidden from the sidebar (only the title would show).
     assert not any(o.startswith("#") for o in r["sidebar"]["scores"]), r
     steve.run("key", "tab", "down")
@@ -510,6 +511,37 @@ def polish(server, alex, steve, out):
     assert any("This chunk's border, for 10 s" in l for l in r["show"]), r
     time.sleep(2)
     alex.run("screenshot", str(Path(out).resolve() / "claim-show.png"))
+    return r
+
+
+def switches(alex, data):
+    """/smp off and on (Alex is an operator): a part turned off refuses its commands, everything (but land
+    protection) off takes the sidebar away, and on again brings it all back; switches.json keeps what is off."""
+    r = {}
+    side = lambda: alex.run("status").get("sidebar")
+    r["off_market"] = alex.say("/smp off market proof")
+    assert any("Turned off: market (proof)" in l for l in r["off_market"]), r
+    r["worth"] = alex.say("/worth diamond")
+    assert any("The market is turned off for now" in l for l in r["worth"]), r
+    r["balance"] = alex.say("/balance")
+    assert any("Balance:" in l for l in r["balance"]), r
+    r["status"] = alex.say("/smp status")
+    assert any("- market, by Alex" in l and ": proof" in l for l in r["status"]), r
+    r["off_all"] = alex.say("/smp off")
+    assert any("Land protection stays on" in l for l in r["off_all"]), r
+    r["balance_off"] = alex.say("/balance")
+    assert any("The economy is turned off for now" in l for l in r["balance_off"]), r
+    time.sleep(1.5)
+    assert not side(), "the sidebar is taken away"
+    r["on"] = alex.say("/smp on")
+    assert any("Turned on again:" in l and "claims" not in l for l in r["on"]), r
+    r["balance_on"] = alex.say("/balance")
+    assert any("Balance:" in l for l in r["balance_on"]), r
+    for _ in range(10):
+        if side():
+            break
+        time.sleep(0.5)
+    assert side(), "the sidebar is back"
     return r
 
 
@@ -1040,6 +1072,7 @@ def run(ctl, resources, out):
         added, results["shop"] = shop(server, alex)
         spent, results["market"] = market(server, alex, out, data)
         results["invsee"] = invsee(alex, data)
+        results["switches"] = switches(alex, data)
         sent = {path: (auth, doc) for path, auth, doc in receiver.got}
         results["pushed"] = sorted(sent)
         assert {"/smp/ingest/market.json", "/smp/ingest/economy.json"} <= set(sent), receiver.got[:2]
@@ -1059,7 +1092,11 @@ def run(ctl, resources, out):
         audit = [json.loads(l) for l in (data / "audit.log").read_text().splitlines()]
         took = [a for a in audit if a["kind"] == "invsee_take"]
         assert [(a["item"], a["count"], a["inventory"]) for a in took] == [("minecraft:torch", 5, "inventory")], took
-        kinds = [a["kind"] for a in audit if not a["kind"].startswith("invsee_")]
+        switched = [(a["kind"], a["parts"]) for a in audit if a["kind"].startswith("switch_")]
+        assert [k for k, _ in switched] == ["switch_off", "switch_off", "switch_on"], switched
+        assert switched[0][1] == ["market"] and "claims" not in switched[1][1], switched
+        assert not json.loads((data / "switches.json").read_text())["off"], "everything on again"
+        kinds = [a["kind"] for a in audit if not a["kind"].startswith(("invsee_", "switch_"))]
         shop_kinds = ["eco_give", "buy 1 minecraft:iron_ingot", "buy 64 minecraft:cobblestone",
                       "sell 1 minecraft:iron_ingot", "sell 9 minecraft:diamond", "buy 1 minecraft:diamond"]
         assert kinds[-len(shop_kinds):] == shop_kinds, kinds[-8:]

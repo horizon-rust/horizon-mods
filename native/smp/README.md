@@ -9,7 +9,7 @@ lines, vanilla chest menus the server fills with ordinary items (the trade menu)
 bar, boss bars and the sidebar).
 
 This version: the economy, the auction house, the server market and its `/shop` menu, player trades, the coinflip, the lottery, places (spawn, homes, warps,
-teleport requests, the rules), land claims, and the scoreboard (a sidebar with your balance, playtime and the richest players, the Tab list's
+teleport requests, the rules), land claims, and the scoreboard (a sidebar with your balance and playtime, the Tab list's
 header and footer).
 
 | Command | Does |
@@ -39,7 +39,7 @@ header and footer).
 | `/casino`, `/casino roulette\|slots\|crash\|blackjack` | the casino's lobby menu, or a game's table (needs `gambling.enabled` and `casino.enabled`) |
 | `/casino help`, `/casino top`, `/casino stats` | every game's odds and house edge and the limits; today's biggest wins; what you bet, won and may still lose today |
 | `/coinflip accept <player>`, `/coinflip cancel`, `/coinflip list` | takes an offer (a fair coin decides, the winner gets both stakes), withdraws yours, lists those waiting |
-| `/spawn` | to the server's spawn; `/setspawn` (operators of level 3) sets it where you stand |
+| `/spawn` | to a safe spot within `places.spawn_radius` of the server's spawn; `/setspawn` (operators of level 3) sets it where you stand |
 | `/home [name]`, `/sethome [name]`, `/delhome [name]`, `/homes` | your homes (`home` when unnamed): go, set or move one where you stand, delete, list |
 | `/warp <name>`, `/warps` | to a warp, the list; `/setwarp <name>`, `/delwarp <name>` for operators of level 3 |
 | `/tpa <player>`, `/tpaccept [player]`, `/tpdeny [player]` | asks to go to a player (60 s to answer); answers a request |
@@ -57,6 +57,7 @@ header and footer).
 | `/vanish`, `/vanish list` | operators of level 3: hides you from the other players, or shows you again; who is vanished |
 | `/invsee <player>`, `/endersee <player>` | operators of level 3: the player's inventory (main, hotbar, armour, off hand) or ender chest in a chest menu, on or off the server; click one of theirs to take it, one of yours to give it; every move in `audit.log`, a summary in `staff.log` |
 | `/sidebar off`, `/sidebar on`, `/sidebar` | hides the scoreboard sidebar for you (remembered), shows it again |
+| `/smp status`, `/smp off [part\|all] [reason]`, `/smp on [part\|all]` | operators of level 3: the emergency switches (below) |
 
 The market trades only plain items (not worn, named or enchanted), and only with players in survival or adventure
 mode. Items move first, then money, both logged; a sale the log refuses gives the items back, and a purchase checks the
@@ -222,7 +223,7 @@ stays where they are, and `cooldown_seconds` (10) passes between two of one play
 `places.fees` is ignored). `/tpa` takes the
 asker to where the other player is when the warmup ends. Homes grow with the time played on the server since the mod
 was on (`homes`: `[hours, homes]`, by default 1 home, 2 from 5 hours, 3 from 20, 5 from 100). `rules` holds `/rules`'
-lines. Teleports are vanilla's `tp`, run as the server (`execute in <level> run tp`), so they cross levels and land
+lines. `/spawn` lands on a random safe column within `spawn_radius` (250) blocks of the spawn point, like vanilla's `respawn_radius` for a first join or a respawn: after the `tp`, vanilla's `spreadplayers` moves the player off fluid, fire and magma onto solid ground (0: exactly the spawn point; if no column is found the player stays at the spawn point). Teleports are vanilla's `tp`, run as the server (`execute in <level> run tp`), so they cross levels and land
 as any teleport does.
 
 **Claims.** In a claimed chunk, only its owner, the players they trust and operators of level 3 break blocks or right
@@ -239,14 +240,14 @@ items, shearing, leads), which waits for Horizon's hook (#4648). The server's `s
 the spawn.
 
 **The scoreboard.** A sidebar on the right, titled `board.title` ("Horizon SMP"): your own block first (your name, or
-your nickname; your balance, `125.4k`, `3.2M`; your playtime, `2h 05m`; the players online), then the `board.top` (3)
-richest players with their balance, then `board.footer` (`play.playhorizon.dev`, empty for none). The ranking is
-built once for everyone, only when a balance changed (at most every `board.min_seconds`, 5) or every
-`board.refresh_seconds` (60); each player's own lines are looked at on the same `board.refresh_seconds`, and a
+your nickname; your balance, `125.4k`, `3.2M`; your playtime, `2h 05m`; the players online), then `board.footer`
+(`play.playhorizon.dev`, empty for none). It lists no ranking: `/baltop` does (`board.top`, of 0.14 to 0.29, is
+ignored). The balances are read once for everyone, only when one changed (at most every `board.min_seconds`, 5) or
+every `board.refresh_seconds` (60); each player's own lines are looked at on the same `board.refresh_seconds`, and a
 sidebar is sent only to the players whose lines changed and to newcomers: nothing runs per tick per player. The Tab
 list shows `board.tab_header` and `board.tab_footer` (`{server}`, `{tps}`, `{players}` filled in, every
 `board.tab_refresh_seconds`, 5). `board.sidebar` and `board.tab` turn either off; `board.server_name` names the Tab
-list. A server that kept 0.13's defaults (`Richest players`, the top 10) gets these at its first start of 0.14. The
+list. A server that kept 0.13's title (`Richest players`) gets `Horizon SMP` at its first start. The
 sidebar uses one scoreboard objective of its own (`horizon:native_sidebar`) and leaves the world's scoreboard alone.
 
 **Presence.** A player's first join is announced to everyone (`presence.first_join`, empty for none) and they read
@@ -306,6 +307,19 @@ pool: the stake goes in, the payout comes out, never more than the pool holds), 
 
 The currency is earned in game only: it can't be bought with real money or cashed out (Mojang's usage guidelines).
 
+**Emergency switches.** An operator of level 3 turns parts of the SMP off while the server runs: `/smp off`
+(everything but land protection), `/smp off <part> [reason]`, `/smp on [part]`, `/smp status` (what is off, by whom,
+when and why). Parts: `economy` (balances, `/pay`, `/eco`, the daily
+reward), `market` (`/worth`, `/sell`, `/buy`, `/shop`, `/market`), `auction`, `trades`, `gambling` (coinflips, the
+lottery, the casino), `places` (spawn, homes, warps, `/tpa`, `/back`), `claims` (land protection and
+`/claim`: only by name, `/smp off claims`), `board` (the sidebar and the Tab list's header and footer), `presence`
+(welcomes, AFK, the commands' rate limit), `nicks`, `invsee`. A part that is off answers its commands with "... is
+turned off for now by the server's staff", and its menus close at the next click. Turning one off ends open trades
+with nothing moved, closes the shop, market and auction menus, calls off teleports waiting, takes the
+sidebars and nicknames away. Its timed work waits (the lottery's draw, auctions ending, the daily reward); nothing held is lost: coinflips not taken still go back and a casino
+round under way still ends and is paid. The other operators on are told, and each change is in the server's log and
+`audit.log` (`switch_off`, `switch_on`). What is off is kept in `switches.json`, so a restart keeps it off.
+
 ## Data
 
 Everything is in the world's folder, `world/horizon-smp/`, so a backup of the world carries it. A world without that
@@ -324,6 +338,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `web/market.json` | for the website (`/hub/market`, through Kira), written by a thread each minute prices move: `schema` 1, `generated`, `currency`, `tax_percent` (always 0, for older readers), `daily_summary` (`day`, `lines`), `items` (`id`, `name`, `category`, `price` (the one price; `buy` and `sell` repeat it on the sides the market trades, for older readers), `mid`, `base`, `change_1h`, `change_24h`, `volume_24h`, `day`: 5-minute points, `month`: hours, each `{step, t, price, volume}`). When `web.token` is set, the same thread POSTs each page of `web/` that changed (gzipped, `Authorization: Bearer <token>`) to `<web.url>/<name>`: Kira keeps the last one and serves it to the site; the server needs no inbound access and Kira no key to it |
 | `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |
+| `switches.json` | the parts operators turned off (`/smp off`): by whom, when and why |
 | `casino.json` | the day's ledger: each player's bets, wins and rounds today (the daily loss cap), the day's biggest wins, each game's totals, the pot's last sweep |
 | `claims.json` | each claimed chunk (`<dimension> <chunk x> <chunk z>`) with its owner, and whom each owner trusts |
 | `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `grant`, `ah_listing_fee`...), `amount`, `from`/`to` with their balance before, `by` for an operator, `to_pool`/`from_pool` with `pool_before` and `reason` for a pool's movement; a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
@@ -344,8 +359,8 @@ action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explos
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: twenty-eight modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_auction.rs`, `smp_report.rs`, `smp_market_prices.rs`, `smp_market_menu.rs`, `smp_market_chart.rs`, `smp_invsee.rs`, `smp_vanish.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_auction`, `game::smp_report`, `game::smp_market_prices`, `game::smp_market_menu`, `game::smp_market_chart`, `game::smp_invsee`, `game::smp_vanish`; also this crate's modules (`src/lib.rs`), for their tests |
+| `mixins/smp/horizon-mixin.toml` | The bundle: twenty-nine modules and the HEAD hooks |
+| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_auction.rs`, `smp_report.rs`, `smp_market_prices.rs`, `smp_market_menu.rs`, `smp_market_chart.rs`, `smp_invsee.rs`, `smp_switch.rs`, `smp_vanish.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_auction`, `game::smp_report`, `game::smp_market_prices`, `game::smp_market_menu`, `game::smp_market_chart`, `game::smp_invsee`, `game::smp_switch`, `game::smp_vanish`; also this crate's modules (`src/lib.rs`), for their tests |
 | `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
 | `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
 | `mixins/smp/smp_casino.rs`, `smp_casino_roulette.rs`, `smp_casino_slots.rs`, `smp_casino_crash.rs`, `smp_casino_blackjack.rs` | The casino's rules, menus and effects (`game::smp_casino*`) |

@@ -27,6 +27,7 @@ use crate::game::{
     smp_nick::{self, Names as _, Nicks},
     smp_shop::{self, Shop},
     smp_store,
+    smp_switch::{self, Part, Switches},
     smp_trade::{self, Act, Cell, Trades},
     smp_vanish::{self, Vanish},
 };
@@ -130,6 +131,8 @@ pub struct Smp {
     /// The vanished players on who were sent the subtitle: cleared and
     /// counted for sleeping again once they show themselves or leave.
     vanish_titled: std::collections::HashSet<u128>,
+    /// The parts operators turned off (`/smp off`).
+    switches: Switches,
 }
 
 static STATE: Mutex<Option<Smp>> = Mutex::new(None);
@@ -171,7 +174,7 @@ fn open(dir: PathBuf) -> Smp {
     let mut config = config;
     // Prices never edited: today's defaults (the balances are untouched).
     let write = smp_market::migrate(&mut config.market) | write;
-    // 0.13's sidebar (the richest ten), never edited: 0.14's scoreboard.
+    // 0.13's sidebar title, never edited: today's.
     let write = smp_board::migrate(&mut config.board) | write;
     if write && let Err(e) = smp_store::write_json(&config_path, &config) {
         log::error!("[smp] {e}");
@@ -229,6 +232,13 @@ fn open(dir: PathBuf) -> Smp {
     if let Err(e) = &presence {
         log::error!("[smp] welcomes, daily rewards and AFK are off: {e}");
     }
+    let (switches, problem) = Switches::open(&dir);
+    if let Some(e) = problem {
+        log::error!("[smp] {e}: every part is on");
+    }
+    for p in Part::ALL.into_iter().filter(|&p| !switches.on(p)) {
+        log::warn!("[smp] {} is turned off (/smp on {} turns it on)", p.name(), p.name());
+    }
     let (casino, problem) = Casino::open(&dir, config.casino, config.gambling.enabled);
     if let Some(e) = problem {
         log::error!("[smp] casino.json can't be read, the day's ledger starts again (kept apart): {e}");
@@ -257,6 +267,7 @@ fn open(dir: PathBuf) -> Smp {
         shows: Default::default(),
         vanish,
         vanish_titled: Default::default(),
+        switches,
     }
 }
 
@@ -328,6 +339,9 @@ fn save(smp: &mut Smp) {
     if let Ok(v) = &mut smp.vanish
         && let Err(err) = v.save()
     {
+        log::error!("[smp] {err}");
+    }
+    if let Err(err) = smp.switches.save() {
         log::error!("[smp] {err}");
     }
 }
@@ -416,6 +430,9 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "vanish list",
     ] {
         commands.push(NativeCommand::op(usage, 3));
+    }
+    for usage in ["smp", "smp status", "smp on [part:word]", "smp off [part:word] [reason:text]"] {
+        commands.push(NativeCommand::op(usage, smp_switch::LEVEL));
     }
     // Operators make money (an event prize, a bug refund: with a reason
     // everyone reads) and take a cheat's gains away.
@@ -639,6 +656,7 @@ pub(in crate::game) fn perform(
         &smp_presence::COMMANDS,
         &smp_nick::COMMANDS,
         &smp_vanish::COMMANDS,
+        &smp_switch::COMMANDS,
     ];
     if !game.native_on(ID) || !ours.iter().any(|c| c.contains(&word)) {
         return;
@@ -671,11 +689,28 @@ pub(in crate::game) fn perform(
             .find(|p| p.name.eq_ignore_ascii_case(name))
             .map(|p| (p.uuid, p.name.clone(), matches!(p.game_mode, 0 | 2)))
     };
+    // The switches: `/smp` itself, then a part turned off answers alone.
+    if let Some((out, changed)) = smp.switches.command(&me, now, line) {
+        let out = switched(game, smp, &me, &players, changed, now, out);
+        drop(guard);
+        *ran = true;
+        show(game, out);
+        return;
+    }
+    if let Some(part) = smp_switch::Part::of_command(word).filter(|&p| !smp.switches.on(p)) {
+        let refusal = smp_switch::refusal(part);
+        drop(guard);
+        *ran = true;
+        show(game, vec![refusal]);
+        return;
+    }
     let mut acts = Vec::new();
     // Any SMP command is activity (no longer AFK), and past the limit waits.
     let mut sleeps = Vec::new();
     let mut before = Vec::new();
-    if let Ok(p) = &mut smp.presence {
+    if let Ok(p) = &mut smp.presence
+        && smp.switches.on(Part::Presence)
+    {
         match p.allow(&me, now) {
             Ok((o, a)) => (before, sleeps) = (o, a),
             Err(o) => {
@@ -878,6 +913,9 @@ pub(in crate::game) fn guard(game: &mut Game<'_>, pos: [i32; 3], canceled: &mut 
     };
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
+    if !smp.switches.on(Part::Claims) {
+        return;
+    }
     let Ok(claims) = &mut smp.claims else {
         return;
     };
@@ -912,7 +950,7 @@ pub(in crate::game) fn attack(game: &mut Game<'_>, kind: &str, pos: [f64; 3], ca
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .as_ref()
-        .is_some_and(|s| s.claims.as_ref().is_ok_and(|c| c.protects(kind)));
+        .is_some_and(|s| s.switches.on(Part::Claims) && s.claims.as_ref().is_ok_and(|c| c.protects(kind)));
     if protected {
         guard(game, pos.map(|v| v.floor() as i32), canceled);
     }
@@ -935,7 +973,7 @@ pub(in crate::game) fn world_allows(dimension: &str, from: [i32; 3], to: &[[i32;
     let Ok(state) = STATE.try_lock() else {
         return true;
     };
-    match state.as_ref().map(|s| &s.claims) {
+    match state.as_ref().filter(|s| s.switches.on(Part::Claims)).map(|s| &s.claims) {
         Some(Ok(c)) => to.iter().all(|&t| c.spread_allowed(dimension, from, t)),
         _ => true,
     }
@@ -950,7 +988,7 @@ pub(in crate::game) fn explosion(game: &Game<'_>, dimension: &str, blocks: &mut 
     let Ok(state) = STATE.try_lock() else {
         return;
     };
-    if let Some(Ok(c)) = state.as_ref().map(|s| &s.claims) {
+    if let Some(Ok(c)) = state.as_ref().filter(|s| s.switches.on(Part::Claims)).map(|s| &s.claims) {
         c.spare(dimension, blocks);
     }
 }
@@ -1128,6 +1166,14 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
     };
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
+    // A menu of a part turned off since it opened: closed, nothing done.
+    if let Some(part) = menu_part(smp, uuid, window).filter(|&p| !smp.switches.on(p)) {
+        let refusal = smp_switch::refusal(part);
+        drop(guard);
+        game.native_close_menu(uuid);
+        tell(game, uuid, vec![refusal]);
+        return;
+    }
     if smp.shop.views.get(&uuid).is_some_and(|v| v.0 == Some(window)) {
         shop_clicked(game, smp, uuid, slot, mode == 1);
         return;
@@ -1174,6 +1220,133 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
     act(game, smp, acts);
     drop(guard);
     show(game, out);
+}
+
+/// The part whose menu `window` is, open for that player.
+fn menu_part(smp: &Smp, uuid: u128, window: i32) -> Option<Part> {
+    let open = |v: Option<i32>| v == Some(window);
+    if smp.shop.views.get(&uuid).is_some_and(|v| open(v.0)) || smp.market_menus.views.get(&uuid).is_some_and(|v| open(v.0)) {
+        return Some(Part::Market);
+    }
+    if smp.auction.as_ref().is_some_and(|a| a.views.get(&uuid).is_some_and(|v| open(v.0))) {
+        return Some(Part::Auction);
+    }
+    if smp.casino.owns(uuid, window) {
+        return Some(Part::Gambling);
+    }
+    let trade = smp.trades.trade_of(uuid);
+    trade.and_then(|t| t.side_of(uuid).map(|me| t.sides[me].window)).filter(|&w| open(w)).map(|_| Part::Trades)
+}
+
+/// Parts turned off or on by `/smp`: what was under way in those turned off
+/// stops (trades end with nothing moved, menus close, teleports waiting are
+/// called off, sidebars and nicknames are taken away), the other operators
+/// on are told, and the change is in the server's log and `audit.log`.
+fn switched(
+    game: &mut Game<'_>,
+    smp: &mut Smp,
+    me: &Player,
+    players: &[NativeServerPlayer],
+    changed: smp_switch::Changed,
+    now: i64,
+    mut out: Vec<Out>,
+) -> Vec<Out> {
+    let names = |ps: &[Part]| ps.iter().map(|p| p.name()).collect::<Vec<_>>().join(", ");
+    let reason = line_reason(&smp.switches, &changed);
+    for (verb, parts) in [("off", &changed.off), ("on", &changed.on)] {
+        if parts.is_empty() {
+            continue;
+        }
+        log::warn!("[smp] {} turned {verb}: {}{reason}", me.name, names(parts));
+        if let Ok(e) = &mut smp.economy
+            && let Err(err) = e.record(serde_json::json!({
+                "time": now, "kind": format!("switch_{verb}"), "by": smp_store::uuid_string(me.uuid),
+                "parts": parts.iter().map(|p| p.name()).collect::<Vec<_>>(), "reason": reason.trim_start_matches(": "),
+            }))
+        {
+            log::error!("[smp] {err}");
+        }
+        for p in players.iter().filter(|p| p.permission >= smp_switch::LEVEL && p.uuid != me.uuid) {
+            out.push(Out::Tell(p.uuid, format!("[SMP] {} turned {verb}: {}{reason}", me.name, names(parts))));
+        }
+    }
+    for part in changed.off {
+        match part {
+            Part::Trades => {
+                let sides: Vec<u128> = smp.trades.open.iter().map(|t| t.sides[0].uuid).collect();
+                for uuid in sides {
+                    let (o, acts) = smp.trades.end(uuid, "trading was turned off");
+                    out.extend(o);
+                    act(game, smp, acts);
+                }
+            }
+            Part::Market => {
+                let open: Vec<u128> = smp.shop.views.keys().chain(smp.market_menus.views.keys()).copied().collect();
+                open.into_iter().for_each(|u| game.native_close_menu(u));
+            }
+            Part::Auction => {
+                let open: Vec<u128> = smp.auction.as_ref().map(|a| a.views.keys().copied().collect()).unwrap_or_default();
+                open.into_iter().for_each(|u| game.native_close_menu(u));
+            }
+            // A round under way still ends and is paid when its menu closes
+            // (`menu_clicked` closes it at the next click).
+            Part::Gambling => {}
+            Part::Places => {
+                if let Ok(p) = &mut smp.places {
+                    for t in std::mem::take(&mut p.pending) {
+                        out.push(Out::Tell(t.uuid, "Teleport called off: teleporting was turned off.".into()));
+                    }
+                }
+            }
+            Part::Claims => smp.shows.clear(),
+            Part::Board => {
+                if let Ok(b) = &mut smp.board {
+                    b.forget();
+                }
+                let blank = Text::literal("");
+                for p in players {
+                    game.native_sidebar(p.uuid, None);
+                    game.native_tab_list(p.uuid, &blank, &blank);
+                }
+            }
+            Part::Nicks => {
+                for uuid in std::mem::take(&mut smp.nicks_shown) {
+                    game.native_set_nickname(uuid, None);
+                }
+            }
+            // `/invsee` refuses and its open menus take no click.
+            Part::Invsee | Part::Economy | Part::Presence => {}
+        }
+    }
+    BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
+    out
+}
+
+/// `: why` of the parts just turned off (as `switches.json` has it), or "".
+fn line_reason(switches: &Switches, changed: &smp_switch::Changed) -> String {
+    changed
+        .off
+        .first()
+        .and_then(|&p| switches.why(p))
+        .filter(|r| !r.is_empty())
+        .map(|r| format!(": {r}"))
+        .unwrap_or_default()
+}
+
+/// What a command of a part turned off answers.
+pub(in crate::game) fn refusal(part: Part) -> String {
+    match smp_switch::refusal(part) {
+        Out::Error(s) | Out::Reply(s) | Out::Tell(_, s) | Out::All(s) => s,
+    }
+}
+
+/// Whether a part of the SMP is on (`/smp off` turns them off), for the
+/// SMP's other glue (`/invsee`).
+pub(in crate::game) fn part_on(game: &Game<'_>, part: Part) -> bool {
+    let Some(dir) = game.native_world_dir() else {
+        return true;
+    };
+    state(dir.join(smp_store::DIR)).as_ref().is_none_or(|s| s.switches.on(part))
 }
 
 /// A native menu closed: a trade's ends, nothing moved.
@@ -2090,6 +2263,8 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         }
     }
     // Teleports: each tick while one warms up; requests expire once a second.
+    // With places off only the playtime counts.
+    let places_on = smp.switches.on(Part::Places);
     if let Ok(p) = &mut smp.places
         && (n % 20 == 0 || warming)
     {
@@ -2097,7 +2272,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
             p.played(&on, now);
         }
-        let (o, go) = p.tick(&bodies(&players), now);
+        let (o, go) = if places_on { p.tick(&bodies(&players), now) } else { Default::default() };
         out.extend(o);
         for t in go {
             // `.3`: a whole number would be a block's centre to `tp`.
@@ -2110,6 +2285,13 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 p.call_off(&t);
                 out.push(Out::Tell(t.uuid, "The teleport failed.".into()));
                 continue;
+            }
+            // `/spawn`: on to a safe column within the radius, as vanilla's
+            // respawn does. If none is found the player stays at the spawn.
+            if let Some(spread) = t.spread_line()
+                && !game.native_run_command(&spread)
+            {
+                log::warn!("[smp] no safe spot near the spawn: {spread}");
             }
             out.push(Out::Tell(t.uuid, t.done.clone()));
         }
@@ -2132,9 +2314,16 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         for uuid in gone {
             smp.games.left(e, uuid);
         }
-        out.extend(smp.lottery.tick(&smp.games.config, e, now, &mut below));
+        // A part turned off waits: its draws, endings, markings and payments
+        // happen once it is on again (coinflips not taken still go back).
+        let on = |p| smp.switches.on(p);
+        if on(Part::Gambling) {
+            out.extend(smp.lottery.tick(&smp.games.config, e, now, &mut below));
+        }
         // The auction house: notes for who came on, listings that ended.
-        if let Some(a) = &mut smp.auction {
+        if let Some(a) = &mut smp.auction
+            && on(Part::Auction)
+        {
             let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
             out.extend(a.tick(e, &on, now));
         }
@@ -2209,7 +2398,9 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     }
     // Welcomes, daily rewards and AFK, once a second.
     let mut sleeps = std::mem::take(&mut *PENDING_SLEEP.lock().unwrap_or_else(|e| e.into_inner()));
+    let economy_on = smp.switches.on(Part::Economy);
     if n % 20 == 0
+        && smp.switches.on(Part::Presence)
         && let Ok(pr) = &mut smp.presence
     {
         let seen: Vec<smp_presence::Seen> = players
@@ -2228,7 +2419,9 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         for a in acts {
             match a {
                 smp_presence::Act::Reward(uuid) => {
-                    if let Ok(e) = &mut smp.economy {
+                    if let Ok(e) = &mut smp.economy
+                        && economy_on
+                    {
                         match e.adjust("daily_reward", uuid, reward, "") {
                             Ok(_) => out.push(Out::Tell(uuid, format!("Daily reward: {}.", e.money(reward)))),
                             Err(err) => log::warn!("[smp] daily reward: {err}"),
@@ -2267,6 +2460,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     let mut tab = None;
     let (nicks, places) = (&smp.nicks, &smp.places);
     if n % 20 == 0
+        && smp.switches.on(Part::Board)
         && let Ok(b) = &mut smp.board
     {
         let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
@@ -2299,6 +2493,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     }
     // Nicknames: the changes asked for, then those of players who came on.
     if n % 20 == 0
+        && smp.switches.on(Part::Nicks)
         && let Ok(nicks) = &mut smp.nicks
     {
         let pending = std::mem::take(&mut nicks.pending);
@@ -2485,14 +2680,6 @@ fn sidebar(title: &str, lines: &[Line]) -> NativeSidebar {
                 )
             }
             Line::Gap => (Text::literal(""), None),
-            Line::Heading => (Text::literal("Richest").with_color(text::YELLOW), None),
-            Line::Top { rank, name, amount, me } => {
-                let color = if *me { text::GREEN } else { text::WHITE };
-                (
-                    Text::literal(format!("{rank}. ")).with_color(text::GRAY).append(Text::literal(name.clone()).with_color(color)),
-                    Some(Text::literal(amount.clone()).with_color(text::GOLD)),
-                )
-            }
             Line::Footer(address) => (Text::literal(address.clone()).with_color(text::AQUA), None),
         })
         .collect();

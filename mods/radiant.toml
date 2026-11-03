@@ -1,0 +1,4 @@
+id = "radiant"
+kind = "shader"
+repo = "expensiverest/radiant"
+owners = ["expensiverest"]

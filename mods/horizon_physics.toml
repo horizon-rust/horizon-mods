@@ -23,9 +23,9 @@ source = "https://github.com/tariksabanuz/PhysicsModHorizon"
 icon = "icons/horizon_physics.png"
 
 [[versions]]
-version = "0.15.0"
+version = "0.15.1"
 published = "2026-11-03"
 game = "26.3"
-file = "horizon_physics-0.15.0.hnmod"
-sha256 = "d8f6965b81bffdfe20503807f551236cdcb6d97d1b61690177ef9a47db02f803"
+file = "horizon_physics-0.15.1.hnmod"
+sha256 = "d7cf1201f0a47a852aa1a4c9684ef9e658ec3c86852104d44716d05f11281ca3"
 changelog = "First release: block, mob, item, snow, water, smoke, cloth, weather and collapse physics, with a Physics Settings screen."

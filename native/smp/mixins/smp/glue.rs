@@ -167,7 +167,7 @@ fn open(dir: PathBuf) -> Smp {
     let mut config = config;
     // Prices never edited: today's defaults (the balances are untouched).
     let write = smp_market::migrate(&mut config.market) | write;
-    // 0.13's sidebar (the richest ten), never edited: 0.14's scoreboard.
+    // 0.13's sidebar title, never edited: today's.
     let write = smp_board::migrate(&mut config.board) | write;
     if write && let Err(e) = smp_store::write_json(&config_path, &config) {
         log::error!("[smp] {e}");
@@ -2216,6 +2216,13 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 out.push(Out::Tell(t.uuid, "The teleport failed.".into()));
                 continue;
             }
+            // `/spawn`: on to a safe column within the radius, as vanilla's
+            // respawn does. If none is found the player stays at the spawn.
+            if let Some(spread) = t.spread_line()
+                && !game.native_run_command(&spread)
+            {
+                log::warn!("[smp] no safe spot near the spawn: {spread}");
+            }
             out.push(Out::Tell(t.uuid, t.done.clone()));
         }
     }
@@ -2583,14 +2590,6 @@ fn sidebar(title: &str, lines: &[Line]) -> NativeSidebar {
                 )
             }
             Line::Gap => (Text::literal(""), None),
-            Line::Heading => (Text::literal("Richest").with_color(text::YELLOW), None),
-            Line::Top { rank, name, amount, me } => {
-                let color = if *me { text::GREEN } else { text::WHITE };
-                (
-                    Text::literal(format!("{rank}. ")).with_color(text::GRAY).append(Text::literal(name.clone()).with_color(color)),
-                    Some(Text::literal(amount.clone()).with_color(text::GOLD)),
-                )
-            }
             Line::Footer(address) => (Text::literal(address.clone()).with_color(text::AQUA), None),
         })
         .collect();

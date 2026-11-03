@@ -9,7 +9,7 @@ lines, vanilla chest menus the server fills with ordinary items (the trade menu)
 bar, boss bars and the sidebar).
 
 This version: the economy, the auction house, the server market and its `/shop` menu, player trades, the coinflip, the lottery, places (spawn, homes, warps,
-teleport requests, the rules), land claims, and the scoreboard (a sidebar with your balance, playtime and the richest players, the Tab list's
+teleport requests, the rules), land claims, and the scoreboard (a sidebar with your balance and playtime, the Tab list's
 header and footer).
 
 | Command | Does |
@@ -39,7 +39,7 @@ header and footer).
 | `/casino`, `/casino roulette\|slots\|crash\|blackjack` | the casino's lobby menu, or a game's table (needs `gambling.enabled` and `casino.enabled`) |
 | `/casino help`, `/casino top`, `/casino stats` | every game's odds and house edge and the limits; today's biggest wins; what you bet, won and may still lose today |
 | `/coinflip accept <player>`, `/coinflip cancel`, `/coinflip list` | takes an offer (a fair coin decides, the winner gets both stakes), withdraws yours, lists those waiting |
-| `/spawn` | to the server's spawn; `/setspawn` (operators of level 3) sets it where you stand |
+| `/spawn` | to a safe spot within `places.spawn_radius` of the server's spawn; `/setspawn` (operators of level 3) sets it where you stand |
 | `/home [name]`, `/sethome [name]`, `/delhome [name]`, `/homes` | your homes (`home` when unnamed): go, set or move one where you stand, delete, list |
 | `/warp <name>`, `/warps` | to a warp, the list; `/setwarp <name>`, `/delwarp <name>` for operators of level 3 |
 | `/tpa <player>`, `/tpaccept [player]`, `/tpdeny [player]` | asks to go to a player (60 s to answer); answers a request |
@@ -214,7 +214,7 @@ stays where they are, and `cooldown_seconds` (10) passes between two of one play
 `places.fees` is ignored). `/tpa` takes the
 asker to where the other player is when the warmup ends. Homes grow with the time played on the server since the mod
 was on (`homes`: `[hours, homes]`, by default 1 home, 2 from 5 hours, 3 from 20, 5 from 100). `rules` holds `/rules`'
-lines. Teleports are vanilla's `tp`, run as the server (`execute in <level> run tp`), so they cross levels and land
+lines. `/spawn` lands on a random safe column within `spawn_radius` (250) blocks of the spawn point, like vanilla's `respawn_radius` for a first join or a respawn: after the `tp`, vanilla's `spreadplayers` moves the player off fluid, fire and magma onto solid ground (0: exactly the spawn point; if no column is found the player stays at the spawn point). Teleports are vanilla's `tp`, run as the server (`execute in <level> run tp`), so they cross levels and land
 as any teleport does.
 
 **Claims.** In a claimed chunk, only its owner, the players they trust and operators of level 3 break blocks or right
@@ -231,14 +231,14 @@ items, shearing, leads), which waits for Horizon's hook (#4648). The server's `s
 the spawn.
 
 **The scoreboard.** A sidebar on the right, titled `board.title` ("Horizon SMP"): your own block first (your name, or
-your nickname; your balance, `125.4k`, `3.2M`; your playtime, `2h 05m`; the players online), then the `board.top` (3)
-richest players with their balance, then `board.footer` (`play.playhorizon.dev`, empty for none). The ranking is
-built once for everyone, only when a balance changed (at most every `board.min_seconds`, 5) or every
-`board.refresh_seconds` (60); each player's own lines are looked at on the same `board.refresh_seconds`, and a
+your nickname; your balance, `125.4k`, `3.2M`; your playtime, `2h 05m`; the players online), then `board.footer`
+(`play.playhorizon.dev`, empty for none). It lists no ranking: `/baltop` does (`board.top`, of 0.14 to 0.29, is
+ignored). The balances are read once for everyone, only when one changed (at most every `board.min_seconds`, 5) or
+every `board.refresh_seconds` (60); each player's own lines are looked at on the same `board.refresh_seconds`, and a
 sidebar is sent only to the players whose lines changed and to newcomers: nothing runs per tick per player. The Tab
 list shows `board.tab_header` and `board.tab_footer` (`{server}`, `{tps}`, `{players}` filled in, every
 `board.tab_refresh_seconds`, 5). `board.sidebar` and `board.tab` turn either off; `board.server_name` names the Tab
-list. A server that kept 0.13's defaults (`Richest players`, the top 10) gets these at its first start of 0.14. The
+list. A server that kept 0.13's title (`Richest players`) gets `Horizon SMP` at its first start. The
 sidebar uses one scoreboard objective of its own (`horizon:native_sidebar`) and leaves the world's scoreboard alone.
 
 **Presence.** A player's first join is announced to everyone (`presence.first_join`, empty for none) and they read

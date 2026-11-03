@@ -1,0 +1,35 @@
+id = "stuck"
+kind = "native-mod"
+owners = ["Vakarux12"]
+key = "RWS5u/7lEyKbzVHC6uMJRlhM/N7vzKp5fZe2LCDUlHsDK4lvPupxJbqQ"
+name = "Stuck?"
+summary = "/stuck and /escape move you to a safe spot nearby, off the Nether roof too."
+description = """
+A Horizon port of [adasjusk's Stuck?](https://github.com/adasjusk/Stuck), the unstuck plugin for Spigot, Paper, Folia and Fabric.
+
+- `/stuck` and `/escape` search random columns near you for solid ground with two blocks of air above, and teleport you there.
+- Skips lava, fire, magma, cactus and other hazards, and leaves and snow.
+- A player on the Nether's bedrock roof is brought back under it.
+- Cooldown between uses, 30 seconds by default.
+- Config: `config/stuck.properties`, the same keys as the Fabric build.
+
+Only loaded chunks are searched. Runs where the world is hosted: single player and worlds opened to LAN (Horizon's dedicated server cannot build native mods yet). Native mods run with the player's account permissions and are not sandboxed.
+
+Source: `horizon/` in https://github.com/Vakarux12/Stuck, a fork of the original. CC-BY-SA-4.0, the original's licence, with a grant for Horizon's reviewers in `horizon/REVIEW-GRANT.md`.
+"""
+authors = ["adasjusk", "Vakarux12"]
+license = "CC-BY-SA-4.0"
+source = "https://github.com/Vakarux12/Stuck/tree/main/horizon"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-01"
+game = "26.3"
+file = "stuck-1.0.0.hnmod"
+sha256 = "8e6292d9c89f660e72f01e54be4103b5273017955c7bd8034dd5ae8ec2e98630"
+signature = """
+untrusted comment: signature from minisign secret key
+RUS5u/7lEyKbzf0/fn5Is2b8jJq55073yA8Sl7hSeLN1jAg9itcMlCO2kcEMVJaGyYrxFZIwPYfQJMCb61o/0g8XD8iYIUCeswU=
+trusted comment: timestamp:1793694727	file:stuck-1.0.0.hnmod	hashed
+/JDVcy8eoaPHppahV7p+f+3LTx0CtfE34jqqZq7bU4TNvnSOx7ISCgp6Eg3+X1xYMRJRwTYM2aJwgbytRGzOCA=="""
+changelog = "First Horizon release, ported from adasjusk's Stuck."

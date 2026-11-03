@@ -1,0 +1,29 @@
+id = "connected_textures"
+kind = "native-mod"
+name = "Connected Textures"
+summary = "Glass, glass panes, bookshelves and sandstone connect to the same block beside them, like Continuity does."
+description = """
+By tariksabanuz. Connected textures for Horizon, in the spirit of Continuity for Fabric: the frames between blocks go away, so
+a window is one pane with one frame, a wall of bookshelves is one long shelf and sandstone walls have no seams.
+
+- Glass and stained glass (all 16 colours) and tinted glass join on every face; an inner corner keeps its frame pixel.
+- Glass panes join along their sides, and the edges between stacked panes are left out.
+- Bookshelves, cut and chiseled sandstone (red too) join left and right.
+- Sandstone and red sandstone show their smooth pattern where the same block is above.
+- Options > Mods > Connected Textures turns the mod and each part on and off, and the world is meshed again at once.
+
+Needs the Performance build in the launcher. Inspired by Continuity (PepperCode1); this is a clean-room version for Horizon and
+contains none of its code or textures. It works on your own game's textures and resource packs, and the icon is my own."""
+authors = ["tariksabanuz"]
+owners = ["tariksabanuz"]
+license = "MIT"
+source = "https://github.com/tariksabanuz/ContinuityHorizon"
+icon = "icons/connected_textures.png"
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-03"
+game = "26.3"
+file = "connected_textures-0.1.2.hnmod"
+sha256 = "e86d1d3fd92045737b90218de51c158b60519afc6618c063c87f64ca68d36adf"
+changelog = "First release: connected glass, panes, bookshelves and sandstone."

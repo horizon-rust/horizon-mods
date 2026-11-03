@@ -1,0 +1,5 @@
+id = "spider_man"
+kind = "native-mod"
+repo = "wyddy7/minecraft-spider-man-rust"
+owners = ["wyddy7"]
+icon = "https://raw.githubusercontent.com/wyddy7/minecraft-spider-man-rust/main/docs/icon.png"

@@ -7,16 +7,30 @@ MineLights is a Minecraft Fabric, Quilt, Forge, NeoForge and Horizon mod that br
 
 Configure MineLights through Horizon's Mods menu. OpenRGB devices and Yeelight bulbs can connect directly. Other supported RGB devices use [MineLights Server](https://github.com/megabytesme/MineLights-Server).
 
-MineLights connects to local RGB services and may discover Yeelight bulbs on the local network. On Windows, its server option is off by default. If you opt in and confirm, it can download and launch the reviewed MineLights Server v2.3.4 after verifying its pinned SHA-256. You can also install and start the server yourself. Configurable chat notices can tell you when the server is missing or a newer stable release is available; update checks read release metadata without downloading an update.
+MineLights connects to local RGB services and may discover Yeelight bulbs on the local network. On Windows, its server option is off by default. If you opt in and confirm, it can download and launch the reviewed MineLights Server v2.3.5 after verifying its pinned SHA-256. You can also install and start the server yourself. Configurable chat notices can tell you when the server is missing or a newer stable release is available; update checks read release metadata without downloading an update.
 
 This is the Horizon port of [MineLights](https://github.com/megabytesme/MineLights), by MegaBytesMe. As a native mod, it is built into the game and runs with the player's account permissions.
 """
 authors = ["MegaBytesMe"]
 owners = ["megabytesme"]
 license = "CC-BY-NC-SA-4.0"
-source = "https://github.com/megabytesme/MineLights/tree/d066816202d8506498a7111f155d72247c96c73f/horizon"
+source = "https://github.com/megabytesme/MineLights/tree/12a77047b45cbd0cad55c35e3910d14a62f04a3d/horizon"
 icon = "https://raw.githubusercontent.com/megabytesme/MineLights/master/assets/icon.png"
 key = "RWQXM9P921f9AnO4kAKnVMu+2UdAr6BeAdM70P6PjbT7xxxmJbVb/qlN"
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-03"
+game = "26.3"
+file = "minelights-0.1.2.hnmod"
+sha256 = "08cc24478fcebd131ba89b3a4d476f97e22c6bd7122808751d0a37c9a5594dd8"
+signature = """
+untrusted comment: signature from minisign secret key
+RUQXM9P921f9AvTkfpGkMDePAYHJEdz352rDxMBKeQzsuAcgqVKhTTpcLcVBr9uqyY+hMC/O0/KPcPvmgIbRQB6zk3npXkClxAc=
+trusted comment: MineLights Horizon native mod 0.1.2
+qIpj5CU3XUVovJ5aEnlvEfzRomCrVZWguKAItO5QINsvwt9Z6RCQnBrnMTnZ8PAPDCjVOr1YAw0He/kUj6mGBA==
+"""
+changelog = "Pin the opt-in server download to v2.3.5 with localhost-only listeners and update the tested Horizon and Mixins revisions."
 
 [[versions]]
 version = "0.1.1"

@@ -9,8 +9,9 @@ ragdolls, snow gives way under your feet, water waves, smoke rises and plants sw
 - Broken blocks crumble into pieces (blocky, particles, crumbled voxel or fractured). Mobs die as ragdolls or come apart.
 - Structures and trees fall when what holds them up is broken. Dropped items tumble and settle.
 - Snow layers are pressed down by you and the mobs, water has waves that boats ride, and leaves, plants and vines sway.
-- Fire, campfires and lava give off smoke and embers, capes are cloth, leads and fishing lines are ropes.
-- Rain splashes, snow falls, and the wind blows harder with the weather.
+- Hit a ragdoll or a piece and it flies off; grass and flowers bend away as you walk through them.
+- Fire, campfires and lava give off smoke and embers that gather and darken under ceilings, capes are cloth, leads and fishing lines are ropes.
+- Rain splashes and rings the water, snow falls, and the wind blows harder with the weather.
 - A Physics Settings button in Options opens a screen with a page for every part, and a Quick Setup the first time you start.
 
 Needs the Performance build in the launcher. Inspired by PhysicsMod by Haubna; this is a clean-room version for
@@ -22,9 +23,9 @@ source = "https://github.com/tariksabanuz/PhysicsModHorizon"
 icon = "icons/horizon_physics.png"
 
 [[versions]]
-version = "0.12.1"
+version = "0.13.0"
 published = "2026-11-03"
 game = "26.3"
-file = "horizon_physics-0.12.1.hnmod"
-sha256 = "0ef675d62604c0ce4c5ddb94401a517d3077d0ab28eca6bcfa02777c5465c79c"
+file = "horizon_physics-0.13.0.hnmod"
+sha256 = "25b4079b775c69ceb58741b0e6a06fecdb9f6f6a8c3e813ce721a7fbd7e07e15"
 changelog = "First release: block, mob, item, snow, water, smoke, cloth, weather and collapse physics, with a Physics Settings screen."

@@ -1,0 +1,28 @@
+id = "chat_animation"
+kind = "native-mod"
+name = "Chat Animation"
+summary = "New chat messages slide up and fade in, and the chat input field slides up when you open chat."
+description = """
+By tariksabanuz. Smooth chat for Horizon, in the spirit of Chat Animation for Fabric: a new message no longer pops in, it rises
+into place while it fades in, and the input field glides up when you open chat.
+
+- New messages slide up from one line below and fade in; the indicator bar beside them can be hidden.
+- The input field slides up from the bottom edge when chat opens.
+- Chat Animation Settings... in Options opens a config screen with Yes/No toggles and duration sliders (0 to 750 ms) with a reset button per row.
+- Options > Mods > Chat Animation has the same settings.
+
+Needs the Performance build in the launcher. Inspired by Chat Animation (Ezzenix, MIT); this is a clean-room version for Horizon and
+contains none of its code or textures. The icon is my own."""
+authors = ["tariksabanuz"]
+owners = ["tariksabanuz"]
+license = "MIT"
+source = "https://github.com/tariksabanuz/ChatAnimationHorizon"
+icon = "icons/chat_animation.png"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-03"
+game = "26.3"
+file = "chat_animation-0.1.0.hnmod"
+sha256 = "aee273e2861a185ed2667679c0f943dcc73693b46eded6c078cde8bdf13ee49a"
+changelog = "First release: sliding and fading chat messages, sliding input field, config screen."

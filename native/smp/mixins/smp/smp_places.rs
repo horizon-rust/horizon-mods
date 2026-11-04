@@ -489,7 +489,9 @@ impl Places {
         let min = self.config.rtp_min_distance.max(0) as f64;
         let max = (self.config.rtp_max_distance as f64).max(min);
         let mut chunks = Vec::new();
-        for _ in 0..self.config.rtp_attempts.max(1) * 16 {
+        // Drawn until enough fall inside the border: a border that cuts the
+        // ring takes more draws (a few microseconds each).
+        for _ in 0..2_000 {
             if chunks.len() >= self.config.rtp_attempts.max(1) as usize {
                 break;
             }

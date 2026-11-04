@@ -179,9 +179,17 @@ pub struct Teleport {
     /// Land on a safe column within this many blocks of `to` instead of on it
     /// (0: on it). Only `/spawn` sets it.
     pub spread: i64,
-    /// The cooldown and `/back` before it, and the `/rtp` cooldown when it
-    /// is one: `call_off` puts them back.
-    undo: (Option<i64>, Option<(Place, bool)>, Option<Option<i64>>),
+    /// What it changed: `call_off` puts it back.
+    undo: Undo,
+}
+
+/// The cooldown and `/back` before a teleport, and the `/rtp` cooldown
+/// when it is one.
+#[derive(Clone, Debug, PartialEq)]
+struct Undo {
+    last: Option<i64>,
+    back: Option<(Place, bool)>,
+    rtp: Option<Option<i64>>,
 }
 
 impl Teleport {
@@ -266,7 +274,9 @@ pub fn ring_point(centre: (f64, f64), min: f64, max: f64, u: f64, v: f64) -> (f6
 
 /// Whether `(x, z)` is at least 16 blocks inside the border.
 fn inside(border: Option<Bounds>, x: f64, z: f64) -> bool {
-    border.is_none_or(|[x0, z0, x1, z1]| x >= x0 + 16.0 && x <= x1 - 16.0 && z >= z0 + 16.0 && z <= z1 - 16.0)
+    border.is_none_or(|[x0, z0, x1, z1]| {
+        x >= x0 + 16.0 && x <= x1 - 16.0 && z >= z0 + 16.0 && z <= z1 - 16.0
+    })
 }
 
 /// A block a player may stand on: solid, no fluid, nothing that hurts.
@@ -274,19 +284,38 @@ fn ground_ok(name: &str) -> bool {
     let n = name.strip_prefix("minecraft:").unwrap_or(name);
     !(matches!(
         n,
-        "air" | "cave_air" | "void_air" | "water" | "lava" | "fire" | "soul_fire" | "cactus"
-            | "magma_block" | "powder_snow" | "campfire" | "soul_campfire" | "sweet_berry_bush"
-            | "pointed_dripstone" | "wither_rose" | "bubble_column" | "kelp" | "kelp_plant"
-            | "seagrass" | "tall_seagrass" | "bedrock"
+        "air"
+            | "cave_air"
+            | "void_air"
+            | "water"
+            | "lava"
+            | "fire"
+            | "soul_fire"
+            | "cactus"
+            | "magma_block"
+            | "powder_snow"
+            | "campfire"
+            | "soul_campfire"
+            | "sweet_berry_bush"
+            | "pointed_dripstone"
+            | "wither_rose"
+            | "bubble_column"
+            | "kelp"
+            | "kelp_plant"
+            | "seagrass"
+            | "tall_seagrass"
+            | "bedrock"
     ) || n.ends_with("_leaves"))
 }
 
 /// A block a player's feet or head may be in: air, or a plant they walk through.
 fn room_ok(name: &str) -> bool {
     let n = name.strip_prefix("minecraft:").unwrap_or(name);
-    matches!(n, "air" | "cave_air" | "short_grass" | "tall_grass" | "fern" | "large_fern" | "snow")
+    matches!(
+        n,
+        "air" | "cave_air" | "short_grass" | "tall_grass" | "fern" | "large_fern" | "snow"
+    )
 }
-
 
 /// `2 h 05 min`, `12 min`.
 fn duration(seconds: i64) -> String {
@@ -332,7 +361,8 @@ impl Places {
             others: HashSet::new(),
             rng: {
                 use std::hash::BuildHasher;
-                std::collections::hash_map::RandomState::new().hash_one(std::time::SystemTime::now())
+                std::collections::hash_map::RandomState::new()
+                    .hash_one(std::time::SystemTime::now())
             },
             border: None,
         })
@@ -395,7 +425,7 @@ impl Places {
     /// A teleport the game couldn't make: no
     /// cooldown, and `/back` goes where it went before.
     pub fn call_off(&mut self, t: &Teleport) {
-        if let Some(rtp) = t.undo.2 {
+        if let Some(rtp) = t.undo.rtp {
             let key = smp_store::uuid_string(t.uuid);
             match rtp {
                 Some(at) => self.data.rtp.insert(key, at),
@@ -403,11 +433,11 @@ impl Places {
             };
             self.changed = true;
         }
-        match t.undo.0 {
+        match t.undo.last {
             Some(at) => self.last.insert(t.uuid, at),
             None => self.last.remove(&t.uuid),
         };
-        match &t.undo.1 {
+        match &t.undo.back {
             Some(b) => self.back.insert(t.uuid, b.clone()),
             None => self.back.remove(&t.uuid),
         };
@@ -564,7 +594,9 @@ impl Places {
             }
             let Some(&c) = r.chunks.first() else { continue };
             asked.push((p.uuid, c));
-            let Some(ground) = look(p.uuid, c) else { continue };
+            let Some(ground) = look(p.uuid, c) else {
+                continue;
+            };
             match self.pick(r, &ground) {
                 Some(spot) => r.spot = Some(spot),
                 None => {
@@ -597,7 +629,11 @@ impl Places {
     pub fn force(&mut self, now: i64, run: &mut dyn FnMut(&str) -> bool) {
         let wanted = self.rtp_wanted(now);
         let line = |verb: &str, (x, z): (i32, i32)| {
-            format!("execute in {OVERWORLD} run forceload {verb} {} {}", x * 16, z * 16)
+            format!(
+                "execute in {OVERWORLD} run forceload {verb} {} {}",
+                x * 16,
+                z * 16
+            )
         };
         for &c in &wanted {
             if self.data.forced.contains(&c) || self.others.contains(&c) {
@@ -949,7 +985,8 @@ impl Places {
                         let mut done = format!("Teleported to {what}.");
                         let mut undo_rtp = None;
                         if let Some((chunk, d)) = rtp {
-                            undo_rtp = Some(self.data.rtp.insert(smp_store::uuid_string(p.uuid), now));
+                            undo_rtp =
+                                Some(self.data.rtp.insert(smp_store::uuid_string(p.uuid), now));
                             self.changed = true;
                             // Held a little longer: the player's own view takes it over.
                             self.release.push((chunk, now + 10_000));
@@ -960,11 +997,11 @@ impl Places {
                                 to.z.floor()
                             );
                         }
-                        let undo = (
-                            self.last.insert(p.uuid, now),
-                            self.back.insert(p.uuid, (p.from.clone(), false)),
-                            undo_rtp,
-                        );
+                        let undo = Undo {
+                            last: self.last.insert(p.uuid, now),
+                            back: self.back.insert(p.uuid, (p.from.clone(), false)),
+                            rtp: undo_rtp,
+                        };
                         go.push(Teleport {
                             uuid: p.uuid,
                             name: me.name.clone(),
@@ -1278,7 +1315,12 @@ mod tests {
         Ground { palette, columns }
     }
     fn grass(c: (i32, i32)) -> Option<Ground> {
-        Some(chunk(c, "minecraft:grass_block", "minecraft:air", "minecraft:short_grass"))
+        Some(chunk(
+            c,
+            "minecraft:grass_block",
+            "minecraft:air",
+            "minecraft:short_grass",
+        ))
     }
     fn distance(t: &Teleport) -> f64 {
         t.to.x.hypot(t.to.z)
@@ -1292,7 +1334,10 @@ mod tests {
         land: &mut dyn FnMut(u128, (i32, i32)) -> Option<Ground>,
     ) -> (Vec<Out>, Vec<Teleport>) {
         let out = p.command(&player(A, 0), here, now, "rtp").unwrap();
-        assert_eq!(out, vec![Out::Reply("Teleporting in 3 s: don't move.".into())]);
+        assert_eq!(
+            out,
+            vec![Out::Reply("Teleporting in 3 s: don't move.".into())]
+        );
         for _ in 0..8 {
             p.rtp_look(land);
         }
@@ -1305,17 +1350,32 @@ mod tests {
         let n = 20_000;
         let mut inner = 0;
         for _ in 0..n {
-            let (x, z) = ring_point((100.0, -50.0), 500.0, 5000.0, unit(&mut rng), unit(&mut rng));
+            let (x, z) = ring_point(
+                (100.0, -50.0),
+                500.0,
+                5000.0,
+                unit(&mut rng),
+                unit(&mut rng),
+            );
             let d = (x - 100.0).hypot(z + 50.0);
             assert!((500.0 - 1e-6..=5000.0 + 1e-6).contains(&d), "{d}");
             // Half the ring's area is within sqrt((500² + 5000²) / 2) blocks.
             inner += usize::from(d < ((500f64.powi(2) + 5000f64.powi(2)) / 2.0).sqrt());
         }
         let share = inner as f64 / n as f64;
-        assert!((0.48..0.52).contains(&share), "uniform over the area, not the radius: {share}");
+        assert!(
+            (0.48..0.52).contains(&share),
+            "uniform over the area, not the radius: {share}"
+        );
         // The ring's edges themselves.
-        assert_eq!(ring_point((0.0, 0.0), 500.0, 5000.0, 0.0, 0.0), (500.0, 0.0));
-        assert_eq!(ring_point((0.0, 0.0), 500.0, 5000.0, 1.0, 0.0), (5000.0, 0.0));
+        assert_eq!(
+            ring_point((0.0, 0.0), 500.0, 5000.0, 0.0, 0.0),
+            (500.0, 0.0)
+        );
+        assert_eq!(
+            ring_point((0.0, 0.0), 500.0, 5000.0, 1.0, 0.0),
+            (5000.0, 0.0)
+        );
     }
 
     #[test]
@@ -1341,15 +1401,24 @@ mod tests {
             assert!(t.to.x.abs() <= 984.0 && t.to.z.abs() <= 984.0, "{:?}", t.to);
             assert_eq!((t.to.dimension.as_str(), t.to.y), (OVERWORLD, 65.0));
             assert_eq!(t.spread_line(), None, "the spot is exact");
-            assert!(t.done.starts_with("Teleported to a random spot "), "{}", t.done);
+            assert!(
+                t.done.starts_with("Teleported to a random spot "),
+                "{}",
+                t.done
+            );
             for (x, z) in asked {
                 assert!((x * 16).abs() <= 1000 && (z * 16).abs() <= 1000, "{x} {z}");
             }
         }
         // A border closer than the ring: nothing to try.
         p.border = Some([-400.0, -400.0, 400.0, 400.0]);
-        let out = p.command(&player(A, 0), &[body(A, 0.0)], 1_000_000_000, "rtp").unwrap();
-        assert!(matches!(&out[0], Out::Error(s) if s.contains("world border")), "{out:?}");
+        let out = p
+            .command(&player(A, 0), &[body(A, 0.0)], 1_000_000_000, "rtp")
+            .unwrap();
+        assert!(
+            matches!(&out[0], Out::Error(s) if s.contains("world border")),
+            "{out:?}"
+        );
         let _ = std::fs::remove_dir_all(d);
     }
 
@@ -1364,22 +1433,45 @@ mod tests {
         // Other teleports wait only their own short cooldown.
         p.command(&player(A, 3), &here, 20_000, "sethome").unwrap();
         let out = p.command(&player(A, 0), &here, 20_000, "home").unwrap();
-        assert!(matches!(&out[0], Out::Reply(s) if s.starts_with("Teleporting")), "{out:?}");
+        assert!(
+            matches!(&out[0], Out::Reply(s) if s.starts_with("Teleporting")),
+            "{out:?}"
+        );
         p.tick(&[body(A, 1.0)], 20_500);
-        let out = p.command(&player(A, 0), &here, 18 * 60_000 + 3_000, "rtp").unwrap();
-        assert_eq!(out, vec![Out::Error("Wait 12 min before your next /rtp.".into())]);
-        let out = p.command(&player(A, 0), &here, 1_800_000 + 2_500, "wild").unwrap();
-        assert_eq!(out, vec![Out::Error("Wait 1 s before your next /rtp.".into())]);
+        let out = p
+            .command(&player(A, 0), &here, 18 * 60_000 + 3_000, "rtp")
+            .unwrap();
+        assert_eq!(
+            out,
+            vec![Out::Error("Wait 12 min before your next /rtp.".into())]
+        );
+        let out = p
+            .command(&player(A, 0), &here, 1_800_000 + 2_500, "wild")
+            .unwrap();
+        assert_eq!(
+            out,
+            vec![Out::Error("Wait 1 s before your next /rtp.".into())]
+        );
         // Written, and read back after a restart.
         p.save(0).unwrap();
         let mut again = Places::open(&d, Config::default()).unwrap();
         again.rng = 43;
         let out = again.command(&player(A, 0), &here, 60_000, "rtp").unwrap();
-        assert_eq!(out, vec![Out::Error("Wait 30 min before your next /rtp.".into())]);
-        let out = again.command(&player(A, 0), &here, 1_803_000, "rtp").unwrap();
-        assert!(matches!(&out[0], Out::Reply(_)), "allowed after it: {out:?}");
+        assert_eq!(
+            out,
+            vec![Out::Error("Wait 30 min before your next /rtp.".into())]
+        );
+        let out = again
+            .command(&player(A, 0), &here, 1_803_000, "rtp")
+            .unwrap();
+        assert!(
+            matches!(&out[0], Out::Reply(_)),
+            "allowed after it: {out:?}"
+        );
         // Someone else isn't held up by it.
-        let out = again.command(&player(B, 0), &[body(B, 0.0)], 60_000, "rtp").unwrap();
+        let out = again
+            .command(&player(B, 0), &[body(B, 0.0)], 60_000, "rtp")
+            .unwrap();
         assert!(matches!(&out[0], Out::Reply(_)), "{out:?}");
         let _ = std::fs::remove_dir_all(d);
     }
@@ -1394,19 +1486,39 @@ mod tests {
         let mut asked = Vec::new();
         let (out, go) = rtp_to(&mut p, &here, 0, &mut |_, c| {
             asked.push(c);
-            Some(chunk(c, "minecraft:water", "minecraft:air", "minecraft:air"))
+            Some(chunk(
+                c,
+                "minecraft:water",
+                "minecraft:air",
+                "minecraft:air",
+            ))
         });
         assert!(go.is_empty());
-        assert_eq!(out, vec![Out::Tell(A, "No safe spot found for /rtp: try again.".into())]);
+        assert_eq!(
+            out,
+            vec![Out::Tell(
+                A,
+                "No safe spot found for /rtp: try again.".into()
+            )]
+        );
         assert_eq!(asked.len(), 6, "rtp_attempts chunks: {asked:?}");
         // Land that never loads: given up after rtp_search_seconds.
         let (out, go) = rtp_to(&mut p, &here, 10_000, &mut |_, _| None);
         assert!(go.is_empty());
-        assert_eq!(out, vec![Out::Tell(A, "Looking for a safe spot: don't move.".into())]);
+        assert_eq!(
+            out,
+            vec![Out::Tell(A, "Looking for a safe spot: don't move.".into())]
+        );
         let (out, _) = p.tick(&here, 10_000 + 3_000 + 30_000);
         assert!(out.is_empty(), "{out:?}");
         let (out, _) = p.tick(&here, 10_000 + 3_000 + 30_001);
-        assert_eq!(out, vec![Out::Tell(A, "/rtp couldn't load the land in time: try again.".into())]);
+        assert_eq!(
+            out,
+            vec![Out::Tell(
+                A,
+                "/rtp couldn't load the land in time: try again.".into()
+            )]
+        );
         // The game couldn't make the teleport: no cooldown either.
         let (_, go) = rtp_to(&mut p, &here, 50_000, &mut |_, c| grass(c));
         p.call_off(&go[0]);
@@ -1424,7 +1536,10 @@ mod tests {
             let mut b = body(A, 0.0);
             b.at.dimension = level.into();
             let out = p.command(&player(A, 0), &[b], 0, "rtp").unwrap();
-            assert_eq!(out, vec![Out::Error("/rtp only works in the Overworld.".into())]);
+            assert_eq!(
+                out,
+                vec![Out::Error("/rtp only works in the Overworld.".into())]
+            );
         }
         assert!(p.pending.is_empty() && p.data.rtp.is_empty());
         let _ = std::fs::remove_dir_all(d);
@@ -1454,7 +1569,10 @@ mod tests {
             })
         });
         assert_eq!(n, 6);
-        assert!(go.is_empty(), "the six chunks were all unsafe: {go:?} {out:?}");
+        assert!(
+            go.is_empty(),
+            "the six chunks were all unsafe: {go:?} {out:?}"
+        );
         // One safe column among lava: that one.
         let (_, go) = rtp_to(&mut p, &here, 100_000, &mut |_, c| {
             let mut g = chunk(c, "minecraft:lava", "minecraft:air", "minecraft:air");
@@ -1482,7 +1600,10 @@ mod tests {
         });
         assert_eq!(ran.len(), 1, "one chunk at a time: {ran:?}");
         let first = ran[0].clone();
-        assert!(first.starts_with("execute in minecraft:overworld run forceload add "), "{first}");
+        assert!(
+            first.starts_with("execute in minecraft:overworld run forceload add "),
+            "{first}"
+        );
         // The chunk isn't loaded yet: nothing more.
         p.rtp_look(&mut |_, _| None);
         ran.clear();
@@ -1492,7 +1613,14 @@ mod tests {
         });
         assert!(ran.is_empty(), "{ran:?}");
         // Ocean: the next one is held, the first let go.
-        p.rtp_look(&mut |_, c| Some(chunk(c, "minecraft:water", "minecraft:air", "minecraft:air")));
+        p.rtp_look(&mut |_, c| {
+            Some(chunk(
+                c,
+                "minecraft:water",
+                "minecraft:air",
+                "minecraft:air",
+            ))
+        });
         p.force(200, &mut |l| {
             ran.push(l.to_owned());
             true
@@ -1554,10 +1682,16 @@ mod tests {
         let here = [body(A, 0.0)];
         p.command(&player(A, 0), &here, 0, "rtp").unwrap();
         let (out, _) = p.tick(&here, 3_000);
-        assert_eq!(out, vec![Out::Tell(A, "Looking for a safe spot: don't move.".into())]);
+        assert_eq!(
+            out,
+            vec![Out::Tell(A, "Looking for a safe spot: don't move.".into())]
+        );
         let (out, go) = p.tick(&[body(A, 2.0)], 4_000);
         assert!(go.is_empty());
-        assert_eq!(out, vec![Out::Tell(A, "Teleport called off: you moved.".into())]);
+        assert_eq!(
+            out,
+            vec![Out::Tell(A, "Teleport called off: you moved.".into())]
+        );
         assert!(p.rtp_wanted(4_000).is_empty(), "its chunk is let go");
         let out = p.command(&player(A, 0), &here, 5_000, "rtp").unwrap();
         assert!(matches!(&out[0], Out::Reply(_)), "no cooldown: {out:?}");

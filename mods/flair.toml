@@ -7,7 +7,7 @@ authors = ["_idom_"]
 owners = ["umbx-dot"]
 license = "MIT"
 source = "https://github.com/umbx-dot/horizon-flair"
-icon = "https://raw.githubusercontent.com/umbx-dot/horizon-flair/main/icon.png"
+icon = "icons/flair.png"
 key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
 
 [[versions]]

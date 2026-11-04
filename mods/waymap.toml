@@ -1,22 +1,64 @@
 id = "waymap"
 kind = "native-mod"
 name = "Waymap"
-summary = "Native Horizon waypoint mod with per-context storage, minimap dots, world markers, and full command suite."
+summary = "Persistent client-side waypoints with 3D world markers, minimap dots, a native editor, and automatic death markers for Horizon."
 description = """
-Waymap — Native client-side waypoints for Horizon.
-Features:
-- World markers (3D, camera-projected)
-- Minimap dots (rotation-aware)
-- Waypoint list panel (bottom-left, 6 nearest)
-- Per-context storage (per server server_<host:port>.txt / world world_<folder>.txt)
-- Atomic saves (temp + atomic rename), legacy migration
-- Commands: /wp add|del|list|rename|color|clear|edit|help
-- Keys: N = add, B = toggle list"""
+Waymap brings complete waypoint management into the game itself. Instead of relying only on chat commands or external tools, it provides a native Horizon screen for creating, finding and editing waypoints, while keeping the existing /wp commands and minimap behaviour. Waypoints are stored locally per world or server, survive restarts, and never require server-side installation. Deaths are recorded automatically so the player can always find the place where they died.
+Features
+- World markers — 3D waypoints projected from the player's camera, hidden when outside the view
+- Minimap markers — coloured dots at the correct map position, including rotated maps
+- Native waypoint screen — list and editor with mouse and keyboard support
+- Filters — All, Overworld, Nether, End and Deaths
+- Editor — name, X/Y/Z, current position, dimension, 16-colour palette, visibility
+- Automatic death waypoints — every death creates Death 1, Death 2, … at the death spot, drawn as a red X
+- HUD panel — optional bottom-left list with the nearest waypoints and distances
+- Full command suite — /wp commands remain available alongside the GUI
+- Per-context storage — separate files for each singleplayer world and multiplayer server
+- Atomic persistence — temporary file plus atomic rename; unreadable files are never overwritten
+- Legacy migration — old waypoints.txt files are migrated once, with waypoints.txt.v1.bak preserved
+- Whole coordinates — all waypoint coordinates are rounded to whole numbers
+- Settings and rebindable keys — markers, labels, HUD panel, create key and list key
+- Up to 512 waypoints per context
+Usage
+Keys
+- N — create a waypoint at the current position
+- B or M — open or close the waypoint list
+- Esc — close the list or cancel the editor
+- Enter — save the editor or edit the selected waypoint
+- Tab / Shift+Tab — next or previous editor field
+- ↑ / ↓ — move the list selection or editor field
+- PgUp / PgDn / Home / End — navigate the list
+- Delete — clear the focused editor field; twice on the list deletes the row
+GUI
+Click a row to select it. The list offers filter buttons, Hide/Show, Edit, Delete, + New and Close; the mouse wheel scrolls. The editor provides name, X/Y/Z, Use my position, dimension cycling, colour palette, visibility and save/cancel.
+Commands
+- /wp add [name] — add a waypoint at the current position
+- /wp del <name> — delete a waypoint
+- /wp list — list waypoints in the current context
+- /wp rename <old> <new> — rename a waypoint
+- /wp color <name> <color> — set a colour by name or #rrggbb
+- /wp clear — delete all waypoints in the current context
+- /wp edit <name> — show waypoint information
+- /wp hide <name> — hide a waypoint from the world and minimap
+- /wp show <name> — show a hidden waypoint
+- /wp help — show the command list"""
 authors = ["Aron"]
 owners = ["Lauch2"]
 license = "MIT"
 source = "https://github.com/Lauch2/horizon-waymap-mod"
 key = "RWS1B1QZPeYaSNKJr9rffnfHDSvB0AZj/Ul1B2pKrJ2XFBgKXL0FC96u"
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-04"
+game = "26.3"
+file = "waymap-0.2.0.hnmod"
+sha256 = "096636b4401799f6a48dfa96a5b63ac1e2bb5fd9ad91b34532fd745a1df5af99"
+signature = """
+untrusted comment: signature from minisign secret key
+RUS1B1QZPeYaSFo4MAt57LlqdgtcN1Z2Ujq2Z4+EBdgRbR9DmcVMaYi0oi28JeGYt9INetBYM+Cdr/v/m+0NymnxcKufr1x4mwI=
+trusted comment: timestamp:1793833502\tfile:waymap-0.2.0.hnmod\thashed
+Bmk8zkQYHb4/9hwW2ZEiv3I2WatOkj6z9sdbVJ16RlvG9b0eiSTZ1pyVLa0p9erPt6xD2Jx36ImUnBcBCnWtBQ=="""
 
 [[versions]]
 version = "0.1.4"

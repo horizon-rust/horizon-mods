@@ -63,7 +63,7 @@ The market trades only plain items (not worn, named or enchanted), and only with
 mode. Items move first, then money, both logged; a sale the log refuses gives the items back, and a purchase checks the
 money and the room before anything moves.
 
-**No way to get rich from the market.** The market makes money only from what players gather, and only so much a day:
+**No way to get rich from the market.** The market makes money only from what players gather:
 - One price per item, to buy and to sell (since 0.29): a config that still has two (`buy` 400, `sell` 100) gets
   their geometric mean (200) at load, logged ("one price now"); `buy` or `sell` 0 still closes that side. A trade
   of N items is priced along the curve it moves the price on (below), so buying N and selling them back gives back
@@ -77,11 +77,10 @@ money and the room before anything moves.
 - Items a recipe links (an ingot and its block, wheat and hay...) share one moving price, the block moving it as
   its 9 ingots do, so crafting never beats the market however prices move; the vanilla-recipe test checks every item
   at the worst drift (what makes it at 0.6 times its price, it at 1.6) too.
-- Each player sells at most `daily_sell_coins` (2,000 coins) and `daily_sell_items` (640 of each item) a UTC day,
-  `/worth` and the shop show what is left, and `market.json` keeps the day's count across restarts.
-- Money received with `/pay` counts toward the receiver's same `daily_sell_coins`: selling up to the limit on alts
-  and paying it all to a main is refused once the main's limit is reached ("can only receive N more today").
-  Trades (`/trade`) and auction house sales are not counted.
+- Each player sells at most `daily_sell_items` (640 of each item) a UTC day; `/worth` and the shop show
+  the item limit, and `market.json` keeps the day's count across restarts.
+- There is no daily coin limit on market sales or `/pay` receipts. The former `daily_sell_coins` setting
+  and saved coin counts are ignored, including in existing server files.
 - Amounts are checked: no price above 1,000,000,000,000, no sum that overflows.
 - The coinflip and the lottery give the winner all the stakes: they move money between players and never make any.
 
@@ -327,7 +326,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 
 | File | Holds |
 |---|---|
-| `config.json` | `currency` (default `coins`), `starting_balance` (default 0), `market`: `enabled`, `items` (each item's `buy`, what the market asks, and `sell`, what it pays, 0 closing that side), `daily_sell_coins` (2000) and `daily_sell_items` (640), 0 for no limit; `shop`: `enabled`, `title`, `categories` (`name`, `icon`, `items`); `web`: `url` (Kira's `/smp/ingest`) and `token` (empty: nothing is sent), where the pages of `web/` go; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
+| `config.json` | `currency` (default `coins`), `starting_balance` (default 0), `market`: `enabled`, `items` (each item's `buy`, what the market asks, and `sell`, what it pays, 0 closing that side), `daily_sell_items` (640), 0 for no item limit; `shop`: `enabled`, `title`, `categories` (`name`, `icon`, `items`); `web`: `url` (Kira's `/smp/ingest`) and `token` (empty: nothing is sent), where the pages of `web/` go; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
 | `economy.json` | balances by player UUID, with the name last seen; `held`: coinflip stakes and lottery tickets being decided; `pools`: the casino's pot and the auction house's bids; `ext`: other parts' state written in the same step as the money (`auction`: the listings, bids, mail and notes) |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
 | `nicks.json` | each player's nickname and when they last changed it |

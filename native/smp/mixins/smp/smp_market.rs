@@ -39,9 +39,6 @@ pub struct Config {
     pub enabled: bool,
     /// By item id, `minecraft:diamond`. Items that stack to 64.
     pub items: BTreeMap<String, Price>,
-    /// The most a player earns selling to the market in a UTC day (0: no
-    /// limit).
-    pub daily_sell_coins: i64,
     /// The most of one item a player sells to the market in a UTC day (0:
     /// no limit).
     pub daily_sell_items: u32,
@@ -137,7 +134,6 @@ impl Default for Config {
                     )
                 })
                 .collect(),
-            daily_sell_coins: 2000,
             daily_sell_items: 640,
             dynamic: Dynamic::default(),
         }
@@ -195,7 +191,6 @@ pub fn migrate(config: &mut Config) -> bool {
 pub struct Sold {
     /// The UTC day (days since 1970) the counts are for.
     pub day: i64,
-    pub coins: i64,
     pub items: BTreeMap<String, u32>,
 }
 
@@ -211,7 +206,6 @@ pub struct Ledger {
 /// for less than it sells for is no longer bought. What changed, to log.
 pub fn validate(config: &mut Config) -> Vec<String> {
     let mut closed = Vec::new();
-    config.daily_sell_coins = config.daily_sell_coins.clamp(0, MAX_AMOUNT);
     config.dynamic.validate();
     for (id, p) in config.items.iter_mut() {
         if !valid_id(id) {
@@ -504,12 +498,6 @@ impl Market {
         }
     }
 
-    /// The coins `uuid` may still earn selling today (None: no limit).
-    pub fn coins_left(&self, uuid: u128, now: i64) -> Option<i64> {
-        let cap = self.config.daily_sell_coins;
-        (cap > 0).then(|| (cap - self.sold(uuid, now).coins).max(0))
-    }
-
     /// How many of `id` `uuid` may still sell today (None: no limit).
     pub fn items_left(&self, uuid: u128, now: i64, id: &str) -> Option<u32> {
         let cap = self.config.daily_sell_items;
@@ -517,34 +505,8 @@ impl Market {
             .then(|| cap.saturating_sub(self.sold(uuid, now).items.get(id).copied().unwrap_or(0)))
     }
 
-    /// Whether `uuid` may be paid `amount` by another player now (`/pay`):
-    /// money received counts toward the same daily limit as selling to the
-    /// market, so selling on alts and paying it all to a main doesn't get
-    /// past it. Err: what they may still receive today.
-    pub fn may_receive(&self, uuid: u128, amount: i64, now: i64) -> Result<(), i64> {
-        match self.coins_left(uuid, now) {
-            Some(left) if amount > left => Err(left),
-            _ => Ok(()),
-        }
-    }
-
-    /// Counts `coins` paid to `uuid` (`/pay`) against today's limit.
-    pub fn count_received(&mut self, uuid: u128, now: i64, coins: i64) {
-        let day = now.div_euclid(DAY_MS);
-        let s = self.ledger.sold.entry(uuid_string(uuid)).or_default();
-        if s.day != day {
-            *s = Sold {
-                day,
-                ..Sold::default()
-            };
-        }
-        s.coins = s.coins.saturating_add(coins.max(0));
-        self.ledger.sold.retain(|_, s| s.day == day);
-        self.dirty = true;
-    }
-
     /// Counts a sale against today's limits.
-    fn count_sale(&mut self, uuid: u128, now: i64, id: &str, n: u32, coins: i64) {
+    fn count_sale(&mut self, uuid: u128, now: i64, id: &str, n: u32) {
         let day = now.div_euclid(DAY_MS);
         let s = self.ledger.sold.entry(uuid_string(uuid)).or_default();
         if s.day != day {
@@ -553,7 +515,6 @@ impl Market {
                 ..Sold::default()
             };
         }
-        s.coins = s.coins.saturating_add(coins);
         let c = s.items.entry(id.to_owned()).or_default();
         *c = c.saturating_add(n);
         // Yesterday's counts go.
@@ -696,24 +657,14 @@ impl Market {
         }
     }
 
-    /// Today's limits for `uuid`, as a line (None when there are none).
-    pub fn limits_line(&self, economy: &Economy, uuid: u128) -> Option<String> {
-        let now = economy.now;
-        let coins = self.coins_left(uuid, now).map(|left| {
+    /// Today's item limit, as a line (None when there is none).
+    pub fn limits_line(&self) -> Option<String> {
+        (self.config.daily_sell_items > 0).then(|| {
             format!(
-                "{} left of your {} a day",
-                economy.money(left),
-                economy.money(self.config.daily_sell_coins)
-            )
-        });
-        let items = (self.config.daily_sell_items > 0).then(|| {
-            format!(
-                "at most {} of each item a day",
+                "Selling today: at most {} of each item a day.",
                 self.config.daily_sell_items
             )
-        });
-        let parts: Vec<String> = coins.into_iter().chain(items).collect();
-        (!parts.is_empty()).then(|| format!("Selling today: {}.", parts.join(", ")))
+        })
     }
 
     /// Runs `/worth`, `/sell` or `/buy`; None for another command. `trades`
@@ -787,7 +738,7 @@ impl Market {
                     "You may sell {left} more {name} today."
                 )));
             }
-            out.extend(self.limits_line(economy, me.uuid).map(Out::Reply));
+            out.extend(self.limits_line().map(Out::Reply));
         }
         out
     }
@@ -855,9 +806,6 @@ impl Market {
             }
             // What they bought here lately can't come back yet.
             let back = self.recently_bought(me.uuid, &id, now);
-            if let Some(left) = self.coins_left(me.uuid, now) {
-                cap = cap.min((left as f64 / price).min(f64::from(u32::MAX)) as u32);
-            }
             let carried = bag.count(&id).min(at_most);
             if carried == 0 {
                 out.push(Out::Error(format!("You have no plain {name}.")));
@@ -905,7 +853,7 @@ impl Market {
             let kind = format!("sell {taken} {id}");
             match economy.adjust(&kind, me.uuid, pay, "") {
                 Ok(_) => {
-                    self.count_sale(me.uuid, now, &id, taken, pay);
+                    self.count_sale(me.uuid, now, &id, taken);
                     self.moved(&id, taken, false);
                     total = total.saturating_add(pay);
                     let each = each_money(economy, pay as f64 / f64::from(taken));
@@ -1279,31 +1227,56 @@ mod tests {
     }
 
     #[test]
-    fn money_received_by_pay_counts_toward_the_daily_selling_limit() {
-        let config = Config {
-            daily_sell_coins: 250,
-            ..Config::default()
+    fn legacy_coin_cap_does_not_limit_sales_or_payments() {
+        // Existing configs and today's saved ledger may still contain the
+        // removed coin cap and receipts from before the upgrade.
+        let config: Config = serde_json::from_value(serde_json::json!({
+            "daily_sell_coins": 2000,
+            "dynamic": {"enabled": false}
+        }))
+        .unwrap();
+        let (mut e, mut m, me, dir) = setup_with("no-coin-cap", config);
+        e.now = 5 * DAY_MS;
+        fs::write(
+            dir.join("market.json"),
+            serde_json::json!({
+                "sold": { uuid_string(ALEX): {
+                    "day": 5, "coins": 2000, "items": {"minecraft:diamond": 10}
+                }}
+            })
+            .to_string(),
+        )
+        .unwrap();
+        let (loaded, problems) = Market::open(&dir, m.config.clone());
+        assert!(problems.is_empty(), "{problems:?}");
+        m = loaded;
+        let mut b = bag(&[("minecraft:diamond", 32)], 0);
+        m.command(&mut e, &me, true, &mut b, "sell diamond")
+            .unwrap();
+        assert_eq!(b.count("minecraft:diamond"), 0);
+        assert_eq!(e.balance(ALEX), 6400);
+        let earned = e.balance(ALEX);
+        e.seen(2, "Steve");
+        e.adjust("test", 2, 10_000, "").unwrap();
+        let sender = Player {
+            uuid: 2,
+            name: "Steve".into(),
+            level: 0,
         };
-        let (_e, mut m, _me, _dir) = setup_with("received", config);
-        let now = 1_793_577_600_000;
-        // An alt pays the main 200: fine, and it counts.
-        assert_eq!(m.may_receive(ALEX, 200, now), Ok(()));
-        m.count_received(ALEX, now, 200);
-        assert_eq!(m.coins_left(ALEX, now), Some(50));
-        // A second alt's 100 is refused: 50 left today, for sales or payments.
-        assert_eq!(m.may_receive(ALEX, 100, now), Err(50));
-        assert_eq!(m.may_receive(ALEX, 50, now), Ok(()));
-        // The next day the limit is whole again.
-        assert_eq!(m.may_receive(ALEX, 250, now + DAY_MS), Ok(()));
-        // No limit configured: anything goes.
-        let (_e, m, _me, _dir) = setup_with(
-            "unlimited",
-            Config {
-                daily_sell_coins: 0,
-                ..Config::default()
-            },
-        );
-        assert_eq!(m.may_receive(ALEX, 1_000_000, now), Ok(()));
+        // Repeated receipts over the former cap, on the same day as sales.
+        for _ in 0..2 {
+            let out = e.command(&sender, &[], "pay Alex 3000").unwrap();
+            assert!(matches!(&out[0], Out::Reply(_)), "{out:?}");
+        }
+        assert_eq!(e.balance(ALEX), earned + 6000);
+        assert_eq!(e.balance(2), 4000);
+        // Payments do not consume the remaining per-item allowance.
+        assert_eq!(m.items_left(ALEX, e.now, "minecraft:diamond"), Some(598));
+        m.save().unwrap();
+        let (m, problems) = Market::open(&dir, m.config.clone());
+        assert!(problems.is_empty(), "{problems:?}");
+        assert_eq!(m.items_left(ALEX, e.now, "minecraft:diamond"), Some(598));
+        fs::remove_dir_all(dir).unwrap();
     }
 
     #[test]
@@ -1434,72 +1407,33 @@ mod tests {
     }
 
     #[test]
-    fn sales_stop_at_the_daily_limits_and_start_again_the_next_day() {
+    fn sales_stop_at_the_daily_item_limit_and_reset_the_next_day() {
         let config = Config {
-            daily_sell_coins: 250,
             daily_sell_items: 30,
             ..fixed()
         };
         let (mut e, mut m, me, dir) = setup_with("limits", config);
         e.now = 5 * DAY_MS + 1000;
-        let mut b = bag(&[("minecraft:diamond", 5), ("minecraft:wheat", 64)], 0);
-        // 250 coins a day: one diamond (200), then 25 wheat (50 coins), the
-        // coins' limit before the 30 items of one kind.
-        let out = m
-            .command(&mut e, &me, true, &mut b, "sell diamond")
+        let mut b = bag(&[("minecraft:diamond", 64), ("minecraft:wheat", 64)], 0);
+        m.command(&mut e, &me, true, &mut b, "sell diamond")
             .unwrap();
-        assert_eq!(
-            out[0],
-            Out::Reply("Sold 1 diamond at 200 coins each: 200 coins.".into()),
-            "{out:?}"
-        );
-        assert_eq!(
-            out[1],
-            Out::Reply("4 diamond kept: today's selling limit.".into())
-        );
-        let out = m
-            .command(&mut e, &me, true, &mut b, "sell wheat 5")
-            .unwrap();
-        assert_eq!(
-            out[0],
-            Out::Reply("Sold 5 wheat at 2 coins each: 10 coins.".into()),
-            "{out:?}"
-        );
-        // 40 coins left, but 25 more wheat would pass the 30 items.
-        e.adjust("test", ALEX, 0, "").ok();
-        m.config.daily_sell_coins = 1000;
-        let out = m.command(&mut e, &me, true, &mut b, "sell wheat").unwrap();
-        assert_eq!(
-            out[0],
-            Out::Reply("Sold 25 wheat at 2 coins each: 50 coins.".into()),
-            "{out:?}"
-        );
-        m.config.daily_sell_coins = 250;
-        let out = m.command(&mut e, &me, true, &mut b, "sell wheat").unwrap();
-        assert_eq!(
-            out,
-            [Out::Error(
-                "You reached today's selling limit for wheat; it starts again at midnight UTC."
-                    .into()
-            )]
-        );
+        assert_eq!((e.balance(ALEX), b.count("minecraft:diamond")), (6000, 34));
+        m.command(&mut e, &me, true, &mut b, "sell wheat").unwrap();
+        assert_eq!(e.balance(ALEX), 6060);
         let worth = m
             .command(&mut e, &me, true, &mut b, "worth diamond")
             .unwrap();
         assert!(
-            worth.contains(&Out::Reply("You may sell 29 more diamond today.".into())),
+            worth.contains(&Out::Reply("You may sell 0 more diamond today.".into())),
             "{worth:?}"
         );
         assert!(
             worth.contains(&Out::Reply(
-                "Selling today: 0 coins left of your 250 coins a day, at most 30 of each item a day.".into()
+                "Selling today: at most 30 of each item a day.".into()
             )),
             "{worth:?}"
         );
-        assert_eq!((e.balance(ALEX), b.items["minecraft:diamond"]), (260, 4));
-        // Kept across a restart, in market.json.
         m.path = Some(dir.join("market.json"));
-        m.dirty = true;
         m.save().unwrap();
         let (mut m, _) = Market::open(&dir, m.config.clone());
         let out = m
@@ -1509,16 +1443,10 @@ mod tests {
             matches!(&out[0], Out::Error(s) if s.contains("limit")),
             "{out:?}"
         );
-        // A new UTC day.
         e.now = 6 * DAY_MS;
-        let out = m
-            .command(&mut e, &me, true, &mut b, "sell diamond")
+        m.command(&mut e, &me, true, &mut b, "sell diamond")
             .unwrap();
-        assert_eq!(
-            out[0],
-            Out::Reply("Sold 1 diamond at 200 coins each: 200 coins.".into()),
-            "{out:?}"
-        );
+        assert_eq!((e.balance(ALEX), b.count("minecraft:diamond")), (12060, 4));
         fs::remove_dir_all(dir).unwrap();
     }
 
@@ -1556,13 +1484,7 @@ mod tests {
         );
         assert!(config.items.keys().all(|k| valid_id(k)));
         // At the largest price: one at a time, without overflow.
-        let (mut e, mut m, me, dir) = setup_with(
-            "validate",
-            Config {
-                daily_sell_coins: 0,
-                ..config
-            },
-        );
+        let (mut e, mut m, me, dir) = setup_with("validate", Config { ..config });
         let mut b = bag(&[("minecraft:rotten_flesh", 64)], 0);
         let out = m
             .command(&mut e, &me, true, &mut b, "sell rotten_flesh")
@@ -1634,7 +1556,6 @@ mod tests {
     /// window: only the prices themselves stand between a trader and money.
     fn moving() -> Config {
         let mut c = Config {
-            daily_sell_coins: 0,
             daily_sell_items: 0,
             ..Config::default()
         };

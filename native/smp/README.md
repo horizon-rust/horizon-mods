@@ -43,6 +43,7 @@ header and footer).
 | `/home [name]`, `/sethome [name]`, `/delhome [name]`, `/homes` | your homes (`home` when unnamed): go, set or move one where you stand, delete, list |
 | `/warp <name>`, `/warps` | to a warp, the list; `/setwarp <name>`, `/delwarp <name>` for operators of level 3 |
 | `/tpa <player>`, `/tpaccept [player]`, `/tpdeny [player]` | asks to go to a player (60 s to answer); answers a request |
+| `/rtp`, `/wild` | to a random safe spot 500 to 5,000 blocks from the spawn, in the Overworld only; once every 30 minutes |
 | `/rules` | the server's rules |
 | `/back` | back to where you died, or where your last teleport took you from (warmup and cooldown as any teleport) |
 | `/afk` | marks you away from the keyboard until you move, turn or run a command |
@@ -224,6 +225,20 @@ asker to where the other player is when the warmup ends. Homes grow with the tim
 was on (`homes`: `[hours, homes]`, by default 1 home, 2 from 5 hours, 3 from 20, 5 from 100). `rules` holds `/rules`'
 lines. `/spawn` lands on a random safe column within `spawn_radius` (250) blocks of the spawn point, like vanilla's `respawn_radius` for a first join or a respawn: after the `tp`, vanilla's `spreadplayers` moves the player off fluid, fire and magma onto solid ground (0: exactly the spawn point; if no column is found the player stays at the spawn point). Teleports are vanilla's `tp`, run as the server (`execute in <level> run tp`), so they cross levels and land
 as any teleport does.
+
+`/rtp` (or `/wild`) draws `rtp_attempts` (6) chunks at random between `rtp_min_distance` (500) and `rtp_max_distance`
+(5000) blocks from the spawn (`/setspawn`'s point, 0 0 without one), uniform over the ring's area and at least 16 blocks
+inside the world border (as last saved in `world_border.dat`), then holds them loaded one after another with vanilla's
+`forceload` while the warmup runs: the game generates them on its worker threads, never on the server tick. Once a
+chunk is loaded, the Overworld's tick reads its 256 columns (`native_read_columns`, the top block below the
+`MOTION_BLOCKING_NO_LEAVES` height and the two above it) and the player lands, still standing still, on a random one
+whose top block is solid ground (no fluid, fire, cactus, magma, powder snow, berry bush or dripstone) with air or grass
+above it, outside another player's claim and still in the ring and the border; with none the next chunk is tried. With
+no spot after the six, or no land loaded `rtp_search_seconds` (30) after the warmup, it says so and nothing is spent.
+A teleport made starts `rtp_cooldown_seconds` (1800) for that player, kept in `places.json` over restarts ("Wait 12 min
+before your next /rtp."); a teleport called off (a move, a hit, the game failing it) doesn't. Elsewhere than the
+Overworld it refuses. The chunks it forced are let go 10 s after the landing, or at the next start if the server
+stopped first; a chunk an operator forced already is used and left forced. `/back` returns from it as from any teleport.
 
 **Claims.** In a claimed chunk, only its owner, the players they trust and operators of level 3 break blocks or right
 click blocks: doors, chests, levers, buttons, placing a block, a bucket or flint on a block. Anyone else's click does

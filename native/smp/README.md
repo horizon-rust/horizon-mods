@@ -145,8 +145,9 @@ exact path of the purchase. All trades together move an item at most `max_minute
 where it started that minute: past that, a purchase is cut short and a sale keeps the rest ("sell them in a
 minute"). The factor goes back to 1 with a half-life of `half_life_hours` (6) and stays within `min_factor` (0.6)
 and `max_factor` (1.6), where the rest of a trade goes at that price. There is no tax on trades (an older config's
-`tax_percent` is ignored): the receipt is the price ("Sold 3 diamond at 198 coins each: 595 coins."). Items a player bought from the market in the last `round_trip_hours` (24) can't be
-sold back to it. (`max_trade_impact_percent` and `max_player_impact_percent` are no longer used: the curve and the
+`tax_percent` is ignored): the receipt is the price ("Sold 3 diamond at 198 coins each: 595 coins."). Market purchases can be sold back immediately;
+the former `round_trip_hours` setting and saved purchase receipts are ignored. (`max_trade_impact_percent` and
+`max_player_impact_percent` are no longer used: the curve and the
 minute's band do their work.) History: one point a minute for 24 hours and one an hour for 30 days (the mid price, the
 items traded and those sold), in `market_prices.json`, written by a thread every 5 minutes and when the world closes.
 At the first minute of each UTC day, the day's three biggest risers and fallers (at least 1%) and news from real
@@ -331,7 +332,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `nicks.json` | each player's nickname and when they last changed it |
 | `vanish.json` | the vanished operators by UUID, with their name |
 | `staff.log` | one line per `/invsee` or `/endersee` menu in which something moved: who, whose, what was taken and put |
-| `market_prices.json` | each item's price factor and history (minutes for 24 h, hours for 30 days: `[time, mid, traded, sold]`), what each player bought in the last day (no selling it back), the day's summary |
+| `market_prices.json` | each item's price factor and history (minutes for 24 h, hours for 30 days: `[time, mid, traded, sold]`), the day's summary |
 | `web/market.json` | for the website (`/hub/market`, through Kira), written by a thread each minute prices move: `schema` 1, `generated`, `currency`, `tax_percent` (always 0, for older readers), `daily_summary` (`day`, `lines`), `items` (`id`, `name`, `category`, `price` (the one price; `buy` and `sell` repeat it on the sides the market trades, for older readers), `mid`, `base`, `change_1h`, `change_24h`, `volume_24h`, `day`: 5-minute points, `month`: hours, each `{step, t, price, volume}`). When `web.token` is set, the same thread POSTs each page of `web/` that changed (gzipped, `Authorization: Bearer <token>`) to `<web.url>/<name>`: Kira keeps the last one and serves it to the site; the server needs no inbound access and Kira no key to it |
 | `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |

@@ -43,9 +43,6 @@ pub struct Dynamic {
     pub max_player_impact_percent: f64,
     /// How far the price may move within one minute (either way).
     pub max_minute_move_percent: f64,
-    /// What a player bought from the market can't be sold back to it for
-    /// this long (that many of that item).
-    pub round_trip_hours: i64,
     /// Items that move the price 1%, by item (else from its price: dear
     /// items move faster).
     pub depth: BTreeMap<String, f64>,
@@ -64,7 +61,6 @@ impl Default for Dynamic {
             max_trade_impact_percent: 2.0,
             max_player_impact_percent: 2.0,
             max_minute_move_percent: 5.0,
-            round_trip_hours: 24,
             depth: BTreeMap::new(),
             news_percent: 30.0,
             news_min_volume: 64,
@@ -98,7 +94,6 @@ impl Dynamic {
             50.0,
             d.max_minute_move_percent,
         );
-        self.round_trip_hours = self.round_trip_hours.clamp(0, 24 * 30);
         self.depth.retain(|_, v| v.is_finite() && *v > 0.0);
     }
 }
@@ -175,9 +170,6 @@ pub struct Book {
     pub minute: i64,
     /// The UTC day the last summary was for.
     pub summary_day: i64,
-    /// What each player bought (item, when, how many), for the round-trip
-    /// rule.
-    pub bought: BTreeMap<String, Vec<(String, i64, u32)>>,
     /// The last daily summary's lines (for the web page and Kira).
     pub last_summary: Vec<String>,
     /// The base price each item's history is quoted in (since 0.29).
@@ -448,32 +440,7 @@ impl Book {
         // Items no longer traded go.
         self.items.retain(|id, _| mids.contains_key(id));
         self.minute = minute;
-        // Purchases past the round-trip window go.
-        let since = now - config.round_trip_hours * HOUR_MS;
-        for v in self.bought.values_mut() {
-            v.retain(|(_, t, _)| *t > since);
-        }
-        self.bought.retain(|_, v| !v.is_empty());
         true
-    }
-
-    /// `uuid` bought `n` of `id` at `now`.
-    pub fn bought(&mut self, uuid: &str, id: &str, n: u32, now: i64) {
-        self.bought
-            .entry(uuid.to_owned())
-            .or_default()
-            .push((id.to_owned(), now, n));
-    }
-
-    /// How many of `id` `uuid` bought within the round-trip window.
-    pub fn recently_bought(&self, config: &Dynamic, uuid: &str, id: &str, now: i64) -> u32 {
-        let since = now - config.round_trip_hours * HOUR_MS;
-        self.bought.get(uuid).map_or(0, |v| {
-            v.iter()
-                .filter(|(i, t, _)| i == id && *t > since)
-                .map(|e| e.2)
-                .sum()
-        })
     }
 
     pub fn history(&self, id: &str, span: Span) -> &[Point] {
@@ -843,20 +810,7 @@ mod tests {
     }
 
     #[test]
-    fn the_round_trip_window_and_one_price() {
-        let c = Dynamic::default();
-        let mut b = book();
-        b.bought("u", "minecraft:diamond", 5, T0);
-        assert_eq!(
-            b.recently_bought(&c, "u", "minecraft:diamond", T0 + HOUR_MS),
-            5
-        );
-        b.tick(&c, &mids(), T0 + 25 * HOUR_MS);
-        assert_eq!(
-            b.recently_bought(&c, "u", "minecraft:diamond", T0 + 25 * HOUR_MS),
-            0
-        );
-        assert!(b.bought.is_empty());
+    fn one_price_and_whole_coin_rounding() {
         // One price from the old two: their geometric mean, whole.
         assert_eq!(one_price(400, 100), 200);
         assert_eq!(one_price(30, 8), 15);

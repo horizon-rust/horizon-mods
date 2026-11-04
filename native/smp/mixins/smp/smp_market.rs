@@ -15,7 +15,7 @@ use super::smp_economy::{Economy, MAX_AMOUNT, Out, Player, parse_amount};
 use super::smp_market_prices::{
     Book, Dynamic, MINUTE_MS, Point, Quote, Span, arrow, base_mid, one_price, to_get, to_pay,
 };
-use super::smp_store::{read_json, uuid_string};
+use super::smp_store::read_json;
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, path::PathBuf};
 
@@ -701,25 +701,14 @@ impl Market {
             }
             let price = self.each(&id).max(0.01);
             // Never more than the account can be paid for at once.
-            let now = economy.now;
             let cap = (MAX_AMOUNT as f64 / price).min(f64::from(u32::MAX)) as u32;
-            // What they bought here lately can't come back yet.
-            let back = self.recently_bought(me.uuid, &id, now);
             let carried = bag.count(&id).min(at_most);
             if carried == 0 {
                 out.push(Out::Error(format!("You have no plain {name}.")));
                 continue;
             }
             let limited = carried.min(cap);
-            let have = limited.min(carried.saturating_sub(back));
-            if have == 0 {
-                let hours = self.config.dynamic.round_trip_hours;
-                out.push(Out::Error(format!(
-                    "You bought {back} {name} from the market in the last {hours} h: those can't be sold back yet."
-                )));
-                continue;
-            }
-            let taken = bag.take(&id, have);
+            let taken = bag.take(&id, limited);
             if taken == 0 {
                 continue;
             }
@@ -753,13 +742,6 @@ impl Market {
                         "Sold {taken} {name} at {each} each: {}.",
                         economy.money(pay)
                     )));
-                    if taken < limited {
-                        let hours = self.config.dynamic.round_trip_hours;
-                        out.push(Out::Reply(format!(
-                            "{} {name} kept: bought from the market in the last {hours} h.",
-                            limited - taken
-                        )));
-                    }
                 }
                 Err(e) => {
                     let back = bag.give(&id, taken);
@@ -842,9 +824,6 @@ impl Market {
         };
         if given > 0 {
             self.moved(&id, given, true);
-            let now = economy.now;
-            self.book.bought(&uuid_string(me.uuid), &id, given, now);
-            self.book_dirty = true;
         }
         let each = each_money(economy, paid as f64 / f64::from(given.max(1)));
         let mut out = vec![Out::Reply(format!(
@@ -902,15 +881,6 @@ impl Market {
             buy,
         );
         self.book_dirty = true;
-    }
-
-    /// How many of `id` `uuid` bought within the round-trip window.
-    pub fn recently_bought(&self, uuid: u128, id: &str, now: i64) -> u32 {
-        if !self.config.dynamic.enabled {
-            return 0;
-        }
-        self.book
-            .recently_bought(&self.config.dynamic, &uuid_string(uuid), id, now)
     }
 }
 
@@ -1041,6 +1011,7 @@ impl WebView {
 #[cfg(test)]
 mod tests {
     use super::super::smp_economy::Config as EconomyConfig;
+    use super::super::smp_store::{uuid_string, write_json};
     use super::*;
     use std::fs;
 
@@ -1396,13 +1367,9 @@ mod tests {
         assert_eq!(edited, before);
     }
 
-    /// Moving prices, validated, with no daily caps and no round-trip
-    /// window: only the prices themselves stand between a trader and money.
+    /// Moving prices, validated: only the prices stand between a trader and money.
     fn moving() -> Config {
-        let mut c = Config {
-            ..Config::default()
-        };
-        c.dynamic.round_trip_hours = 0;
+        let mut c = Config::default();
         let _ = validate(&mut c);
         c
     }
@@ -1561,11 +1528,14 @@ mod tests {
     }
 
     #[test]
-    fn moving_prices_pay_the_whole_receipt_and_keep_bought_items_from_coming_back() {
-        let mut c = Config::default();
-        let _ = validate(&mut c);
+    fn moving_prices_allow_immediate_resale_with_legacy_purchase_history() {
+        let c: Config = serde_json::from_value(serde_json::json!({
+            "dynamic": {"round_trip_hours": 24}
+        }))
+        .unwrap();
         let (mut e, _, me, dir) = setup("dyn");
-        let mut m = Market::new(c);
+        let (mut m, problems) = Market::open(&dir, c);
+        assert!(problems.is_empty(), "{problems:?}");
         let t0 = 1_800_000_000_000i64;
         e.now = t0;
         e.adjust("test_funds", me.uuid, 10_000, "").unwrap();
@@ -1583,31 +1553,22 @@ mod tests {
             Out::Reply("Bought 10 iron ingot at 15 coins each: 151 coins.".into())
         );
         assert_eq!(e.balance(me.uuid), 10_000 + 595 - 151);
+        // Old files can still contain a purchase within the former 24 h
+        // window. Preserve the moving price history and ignore that receipt.
+        let mut old_book = serde_json::to_value(&m.book).unwrap();
+        old_book["bought"] = serde_json::json!({
+            uuid_string(me.uuid): [["minecraft:iron_ingot", t0, 10]]
+        });
+        write_json(&dir.join("market_prices.json"), &old_book).unwrap();
+        let (mut m, problems) = Market::open(&dir, m.config.clone());
+        assert!(problems.is_empty(), "{problems:?}");
         let out = m.sell(&mut e, &me, &mut b, &["iron_ingot"]);
         assert_eq!(
             out[0],
-            Out::Error("You bought 10 iron ingot from the market in the last 24 h: those can't be sold back yet.".into())
+            Out::Reply("Sold 10 iron ingot at 15 coins each: 150 coins.".into())
         );
-        // Five more found in a mine: those sell, the bought ones stay.
-        b.items.insert("minecraft:iron_ingot".into(), 15);
-        let out = m.sell(&mut e, &me, &mut b, &["iron_ingot"]);
-        assert!(
-            matches!(&out[0], Out::Reply(r) if r.starts_with("Sold 5 iron ingot")),
-            "{out:?}"
-        );
-        assert_eq!(
-            out[1],
-            Out::Reply("10 iron ingot kept: bought from the market in the last 24 h.".into())
-        );
-        b.items.insert("minecraft:iron_ingot".into(), 10);
-        // A day later they may.
-        e.now = t0 + 25 * 3_600_000;
-        m.tick(e.now);
-        let out = m.sell(&mut e, &me, &mut b, &["iron_ingot"]);
-        assert!(
-            matches!(&out[0], Out::Reply(r) if r.starts_with("Sold 10 iron ingot")),
-            "{out:?}"
-        );
+        assert_eq!(b.count("minecraft:iron_ingot"), 0);
+        assert_eq!(e.balance(me.uuid), 10_000 + 595 - 151 + 150);
         fs::remove_dir_all(dir).ok();
     }
 

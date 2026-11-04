@@ -20,8 +20,8 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change;
 - an operator's /eco give, then the /shop menu: a category, one item bought by a click and a stack by
   a shift-click, a stack of the player's own sold by clicking it, "Sell all", the close button;
-- after the restart, prices moving: a purchase and a sale with no tax (receipts), an item bought can't be sold
-  back while one found can, one price for diamond, moved down by a sale and up by a purchase as they go, /market's item
+- after the restart, prices moving: a purchase and a sale with no tax (receipts), bought items can be sold
+  back immediately, one price for diamond, moved down by a sale and up by a purchase as they go, /market's item
   page buying, the 24 h chart given as a map and drawn in the player's hand (market-chart.png), web/market.json, and
   market_prices.json written when the world closes;
 - the web pages (web/market.json, web/economy.json) sent gzipped with the token to a stand-in for Kira;
@@ -663,18 +663,21 @@ def shop(server, alex):
     results["stack"] = alex.chat()[-4:]  # an advancement may come after
     assert any("Bought 64 cobblestone at 1.02 coins each: 65 coins." in l for l in results["stack"]), results
     assert not any("Tax" in l for l in results["stack"]), results
-    # Her own stack of iron, clicked: the ingot she just bought stays (no buying to sell back), one she found sells.
+    # Clear the cobblestone so the later Sell all step only tests diamonds.
+    server.console("clear Alex minecraft:cobblestone 64")
+    time.sleep(1)
+    # The iron she just bought can be sold back immediately.
     alex.click(alex.slot_of("minecraft:iron_ingot"))
-    results["round_trip"] = alex.chat()[-1:]
-    assert any("You bought 1 iron ingot from the market in the last 24 h" in l for l in results["round_trip"]), results
+    results["round_trip"] = alex.chat()[-3:]
+    assert any("Sold 1 iron ingot at 15 coins each: 15 coins." in l for l in results["round_trip"]), results
+    assert alex.count("minecraft:iron_ingot") == 0
     server.console("give Alex minecraft:iron_ingot 1")
     time.sleep(2)
     alex.click(alex.slot_of("minecraft:iron_ingot"))
     results["sold"] = alex.chat()[-4:]
     # Sold at the price she bought at: one price.
     assert any("Sold 1 iron ingot at 15 coins each: 15 coins." in l for l in results["sold"]), results
-    assert any("1 iron ingot kept: bought from the market in the last 24 h." in l for l in results["sold"]), results
-    assert alex.count("minecraft:iron_ingot") == 1
+    assert alex.count("minecraft:iron_ingot") == 0
     # Sell all nine diamonds, with no daily cap. Along the curve they earn
     # 40,000 * (1 - e^-0.045) = 1,760.1, rounded down to 1,760 coins.
     server.console("give Alex minecraft:diamond 9")
@@ -689,7 +692,7 @@ def shop(server, alex):
     assert not alex.menu()
     results["worth"] = alex.say("/worth diamond")
     assert any("diamond:" in l for l in results["worth"]), results
-    return 2000 + 10 - 15 - 65 + 15 + 1760, results
+    return 2000 + 10 - 15 - 65 + 15 + 15 + 1760, results
 
 
 def invsee(alex, data):
@@ -1090,7 +1093,7 @@ def run(ctl, resources, out):
         assert not json.loads((data / "switches.json").read_text())["off"], "everything on again"
         kinds = [a["kind"] for a in audit if not a["kind"].startswith(("invsee_", "switch_"))]
         shop_kinds = ["eco_give", "buy 1 minecraft:iron_ingot", "buy 64 minecraft:cobblestone",
-                      "sell 1 minecraft:iron_ingot", "sell 9 minecraft:diamond", "buy 1 minecraft:diamond"]
+                      "sell 1 minecraft:iron_ingot", "sell 1 minecraft:iron_ingot", "sell 9 minecraft:diamond", "buy 1 minecraft:diamond"]
         assert kinds[-len(shop_kinds):] == shop_kinds, kinds[-8:]
         kinds = kinds[:-len(shop_kinds)]
         assert kinds[-2] in ("held_returned", "coinflip_cancel") and kinds[-1] == "daily_reward", kinds[-3:]

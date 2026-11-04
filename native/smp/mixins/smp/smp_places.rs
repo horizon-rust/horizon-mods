@@ -579,13 +579,8 @@ impl Places {
     }
 
     /// Each `/rtp` still looking reads the chunk it loads: None while it
-    /// isn't loaded yet; with no safe column, the next chunk is tried. The
-    /// players' UUIDs and chunks `look` was asked about, in order.
-    pub fn rtp_look(
-        &mut self,
-        look: &mut dyn FnMut(u128, (i32, i32)) -> Option<Ground>,
-    ) -> Vec<(u128, (i32, i32))> {
-        let mut asked = Vec::new();
+    /// isn't loaded yet; with no safe column, the next chunk is tried.
+    pub fn rtp_look(&mut self, look: &mut dyn FnMut(u128, (i32, i32)) -> Option<Ground>) {
         let mut pending = std::mem::take(&mut self.pending);
         for p in &mut pending {
             let To::Random(r) = &mut p.to else { continue };
@@ -593,7 +588,6 @@ impl Places {
                 continue;
             }
             let Some(&c) = r.chunks.first() else { continue };
-            asked.push((p.uuid, c));
             let Some(ground) = look(p.uuid, c) else {
                 continue;
             };
@@ -605,7 +599,6 @@ impl Places {
             }
         }
         self.pending = pending;
-        asked
     }
 
     /// The chunks `/rtp` wants loaded now: each search's current one, and

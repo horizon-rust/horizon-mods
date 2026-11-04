@@ -32,7 +32,12 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
   protection (the economy refuses, the sidebar goes), then everything on again, each in audit.log;
 - nicknames, for operators only: a player can't pick one; an operator's refused ones (a player's name, too short, a
   bad character), the one given in the other's chat and Tab list, /realname, someone else's taken, the player taking
-  it off.
+  it off;
+- /rtp: refused in the Nether; in the Overworld the player lands 500 to 5,000 blocks from the spawn on solid ground
+  (and stays there), a second /rtp is refused with the time left, and the chunk it held loaded is let go.
+
+`SMP_PROOF=rtp` runs one /rtp alone on a normal (not flat) world's fresh land instead, and what it cost the server's
+ticks: a performance report (`horizon-report`) over the search and landing against one over the same time before it.
 
 The casino has its own proof (proof_casino.py): `SMP_PROOF=casino` runs it instead of this one.
 
@@ -100,10 +105,10 @@ def scratch_env(root):
 class Server:
     """`horizon-client --dedicated --nogui` in a scratch server folder, its console on stdin."""
 
-    def __init__(self, game, resources, folder, port):
+    def __init__(self, game, resources, folder, port, properties=None):
         self.folder, self.lines, self.game, self.resources, self.port = folder, [], game, resources, port
         folder.mkdir(parents=True, exist_ok=True)
-        props = dict(PROPERTIES, **{"server-port": str(port)})
+        props = dict(PROPERTIES, **(properties or {}), **{"server-port": str(port)})
         (folder / "server.properties").write_text("".join(f"{k}={v}\n" for k, v in props.items()))
         (folder / "eula.txt").write_text("eula=true\n")
         self.env = scratch_env(folder.parent / "server-env")
@@ -340,6 +345,130 @@ def places(server, alex, steve):
     r["rules"] = steve.say("/rules")
     assert any("1. Be respectful to everyone." in l for l in r["rules"]), r
     return r
+
+
+def landed(c, text, timeout=120):
+    """Waits for a chat line with `text` (an /rtp's end), up to `timeout` s; the line."""
+    end = time.time() + timeout
+    while time.time() < end:
+        hit = [l for l in c.chat()[-6:] if text in l or "/rtp couldn't" in l or "No safe spot" in l]
+        if hit:
+            return hit[-1]
+        time.sleep(1)
+    raise AssertionError(f"{c.name}: no {text!r} in {timeout} s: {c.chat()[-8:]}")
+
+
+def standing(server, at):
+    """Whether the block under `at` is solid ground and its two above are free, as the server sees them."""
+    x, y, z = (math.floor(v) for v in at)
+    before = len(server.lines)
+    server.console(f"execute in minecraft:overworld positioned {x} {y} {z} if block ~ ~-1 ~ #minecraft:dirt "
+                   f"if block ~ ~ ~ minecraft:air if block ~ ~1 ~ minecraft:air")
+    time.sleep(2)
+    return any("Test passed" in l for l in server.lines[before:]), server.lines[before:]
+
+
+def rtp(server, steve, data):
+    """/rtp: refused in the Nether; to a random spot 500..5000 blocks from the spawn, on the ground; then its cooldown."""
+    r = {}
+    spawn = json.loads((data / "places.json").read_text())["spawn"]
+    _, home, _ = where(steve)
+    server.console("execute in minecraft:the_nether run tp Steve 0.5 128 0.5")
+    time.sleep(5)
+    r["nether"] = steve.say("/rtp")
+    assert any("/rtp only works in the Overworld." in l for l in r["nether"]), r
+    server.console(f"execute in minecraft:overworld run tp Steve {home[0]:.2f} {home[1]:.2f} {home[2]:.2f}")
+    time.sleep(5)
+    start = len(server.lines)
+    r["asked"] = steve.say("/wild")
+    assert any("Teleporting in 2 s: don't move." in l for l in r["asked"]), r
+    r["landed"] = landed(steve, "Teleported to a random spot")
+    assert "Teleported to a random spot" in r["landed"], r
+    time.sleep(3)
+    dim, at, health = where(steve)
+    r["at"], r["distance"] = at, math.hypot(at[0] - spawn["x"], at[2] - spawn["z"])
+    assert dim == "minecraft:overworld" and 499 <= r["distance"] <= 5001, r
+    # On the ground, not falling: the same place a few seconds later, unhurt.
+    time.sleep(4)
+    _, still, health2 = where(steve)
+    assert near(at, still) and health2 >= health, (r, still, health2)
+    r["ground"], lines = standing(server, at)
+    assert r["ground"], (r, lines)
+    log = [l for l in server.lines[start:] if "[smp] /rtp: Steve" in l]
+    assert log, server.lines[start:][-20:]
+    r["log"] = log[-1]
+    r["slow_ticks"] = [l for l in server.lines[start:] if "slow tick" in l or "Can't keep up" in l]
+    r["again"] = steve.say("/rtp")
+    assert any("Wait 30 min before your next /rtp." in l for l in r["again"]), r
+    # The chunk it held loaded is let go 10 s after the landing.
+    time.sleep(12)
+    saved = json.loads((data / "places.json").read_text())
+    assert not saved.get("forced") and len(saved.get("rtp", {})) == 1, saved
+    server.console(f"execute in minecraft:overworld run tp Steve {home[0]:.2f} {home[1]:.2f} {home[2]:.2f}")
+    time.sleep(3)
+    return r
+
+
+def report(server, seconds):
+    """A performance report over the next `seconds`: its ticks (`mspt`, `over_50_ms`...)."""
+    folder = server.folder / "reports"
+    before = set(folder.glob("perf-*.json")) if folder.exists() else set()
+    server.console(f"horizon-report {seconds}")
+    end = time.time() + seconds + 60
+    while time.time() < end:
+        made = set(folder.glob("perf-*.json")) - before if folder.exists() else set()
+        if made:
+            time.sleep(1)
+            return json.loads(made.pop().read_text())["ticks"]
+        time.sleep(1)
+    raise AssertionError(f"no report after {seconds} s: {server.lines[-20:]}")
+
+
+def rtp_alone(ctl, resources, out):
+    """SMP_PROOF=rtp: one /rtp on a normal world's fresh land (view distance 8, as the official server), with the
+    ticks' cost: a 30 s report from the /rtp on, against a 30 s report just before it."""
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    game = Path(ctl).with_name("horizon-client")
+    root = Path(tempfile.mkdtemp(prefix="smp-rtp-"))
+    port = free_port()
+    server = Server(game, resources, root / "server", port, {"level-type": "minecraft\\:normal", "view-distance": "8",
+                                                             "generate-structures": "true"})
+    server.env["HORIZON_SPIKES"] = "50"
+    steve = Client(ctl, resources, "Steve", root)
+    r = {}
+    try:
+        server.start()
+        steve.join(port)
+        # The spawn's land settles first.
+        time.sleep(30)
+        r["before"] = report(server, 30)
+        start = len(server.lines)
+        r["asked"] = steve.say("/rtp")
+        assert any("Teleporting in 3 s: don't move." in l for l in r["asked"]), r
+        server.console("horizon-report 30")
+        r["landed"] = landed(steve, "Teleported to a random spot", 90)
+        assert "Teleported to a random spot" in r["landed"], r
+        folder = server.folder / "reports"
+        end = time.time() + 120
+        while len(list(folder.glob("perf-*.json"))) < 2 and time.time() < end:
+            time.sleep(1)
+        r["during"] = json.loads(max(folder.glob("perf-*.json"), key=lambda f: f.stat().st_mtime).read_text())["ticks"]
+        time.sleep(5)
+        dim, at, _ = where(steve)
+        r["at"], r["distance"] = at, math.hypot(at[0], at[2])
+        assert dim == "minecraft:overworld" and 499 <= r["distance"] <= 5001, r
+        r["ground"], _ = standing(server, at)
+        r["log"] = [l for l in server.lines[start:] if "[smp] /rtp: Steve" in l]
+        r["slow_ticks"] = [l for l in server.lines[start:] if "slow tick" in l or "Can't keep up" in l]
+        print(json.dumps({"proof": "rtp", "ok": True, **r}, indent=2))
+    finally:
+        (out / "server.log").write_text("\n".join(server.lines))
+        steve.quit()
+        server.stop()
+        if server.__dict__.get("process") and server.process.poll() is None:
+            server.process.kill()
+        shutil.rmtree(root, ignore_errors=True)
 
 
 def claims(server, alex, steve):
@@ -907,6 +1036,8 @@ def run(ctl, resources, out):
         casino = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(casino)
         return casino.run(ctl, resources, out)
+    if os.environ.get("SMP_PROOF") == "rtp":
+        return rtp_alone(ctl, resources, out)
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     game = Path(ctl).with_name("horizon-client")
@@ -1016,6 +1147,7 @@ def run(ctl, resources, out):
         results["trades"], steve = trades(server, alex, steve, port, ctl, resources, root)
         # Before the coinflips: their last offer must still wait when the server stops.
         results["places"] = places(server, alex, steve)
+        results["rtp"] = rtp(server, steve, data)
         results["claims"] = claims(server, alex, steve)
         results["world_guard"] = world_guard(server, alex, steve)
         results["board"] = board(alex, steve, out)

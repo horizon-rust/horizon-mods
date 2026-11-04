@@ -1,0 +1,32 @@
+id = "connected_textures"
+kind = "native-mod"
+name = "ContinuityHorizon"
+summary = "Continuity for Horizon"
+description = """
+By tariksabanuz
+
+ContinuityHorizon brings Continuity-style connected textures to Horizon. Neighbouring blocks of the same kind join up into one seamless surface instead of showing a border on every block.
+
+What it connects
+- Glass and glass panes
+- Bookshelves
+- Sandstone
+
+Notes
+- Works with the game's own textures; no resource pack needed.
+- Native Horizon mod, built from source by the launcher.
+- Inspired by Continuity (MIT licensed), recreated for Horizon.
+
+Source code: https://github.com/tariksabanuz/ContinuityHorizon"""
+authors = ["tariksabanuz"]
+owners = ["tariksabanuz"]
+license = "MIT"
+source = "https://github.com/tariksabanuz/ContinuityHorizon"
+icon = "https://github.com/tariksabanuz/ContinuityHorizon/blob/cd5301759efef6b1819ed7a8590a0d76e15d6d7e/icon.png"
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-04"
+game = "26.3"
+file = "connected_textures-0.1.2.hnmod"
+sha256 = "e86d1d3fd92045737b90218de51c158b60519afc6618c063c87f64ca68d36adf"

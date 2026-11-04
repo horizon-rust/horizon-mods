@@ -1,44 +1,49 @@
 id = "basic_hud"
 kind = "native-mod"
 name = "The Basic HUD"
-summary = "A visual HUD editor with movable widgets, FPS, coordinates, effect timers, cooldowns, mini armour and a customizable Tab list."
+summary = "A visual HUD editor with 14 customizable widgets, recent pickups, effect timers, durability, coordinates, FPS and a customizable Tab list."
 description = """
-![The Basic HUD](https://raw.githubusercontent.com/repositorykreml1n/the-basic-hud/v0.4.1/assets/cover-0.4.1.png)
+A client-side visual HUD for Horizon. Move, resize and style fourteen independent widgets directly over the game.
 
-## Your HUD, your layout
+Includes effects and timers, consumable counts, durability, observed totem uses, available player health, item cooldowns, coordinates, FPS, ping, speed, CPS, world clock, mini armour and recent item pickups.
 
-Arrange 13 independent widgets directly over the game. Drag, resize and style each block with colours, opacity, padding and shadows. Use full labels or compact icons with useful values such as ×16 and 1:45.
+Recent pickups aggregates matching items and refreshes their expiry: 4 torches + 2 torches becomes x6. Five seconds by default, adjustable from 1 to 60 seconds. Includes icon + count mode.
 
-Includes effects, consumables, durability, observed totem uses, available player-health data, item cooldowns, coordinates, FPS, ping, optional speed/CPS/clock, and mini armour next to the hotbar. Customize the Tab list with coloured numeric ping, bars, counts, sorting, scale and opacity.
+Customize each widget's position, scale, colours, opacity, padding and shadows. Includes a customizable Tab list and ten interface languages. A short tutorial appears on the first settings visit and can be replayed with ?. Reset requires confirmation; leaving with edits offers Save / Discard / Stay.
 
-Ten interface languages plus Auto. A short first-visit guide can be replayed through ?. Reset requires confirmation; leaving unsaved edits offers Save / Discard changes / Stay. Failed writes retain the draft.
+Controls: Right Shift, or Options > Mods > The Basic HUD > Settings > Edit HUD.
 
-## Install and compatibility
+Install the .hnmod through Horizon and choose Performance. Minecraft 26.3; pinned Horizon 68ac6f647e7022b2c696e81863d7cface28c9416. Compatibility with other Nightlies is not claimed.
 
-Native .hnmod for Minecraft 26.3, pinned to Horizon **68ac6f647e7022b2c696e81863d7cface28c9416**. Install through the launcher and select **Performance**. Dev can overflow the startup stack on this Windows baseline. Other Nightlies require separate verification.
+Client-side only: unknown health stays unknown, unobserved totem uses cannot be counted, and server-plugin-only cooldowns are unavailable. No FPS improvement is claimed.
 
-Client-side only. Unknown player health remains unknown, unseen totem uses cannot be counted and server-plugin-only timers are unavailable. No server mod is required. No FPS improvement is promised. Native mods compile into the game and run with the player’s rights, without a sandbox. Tested on Windows; other platforms were not tested.
-
-## Other languages
-
-**Русский:** редактор поверх игры, размер и оформление каждого блока, значки с числами, FPS, координаты, кулдауны, мини-броня и настройка Tab. Обучение один раз; подтверждение сброса и выхода с правками.
-
-**Українська:** редактор поверх гри, розмір і стиль кожного віджета, значки зі значеннями, FPS, координати, час відновлення, мініброня та налаштування Tab. Навчання під час першого входу й захист незбережених змін.
-
-**Deutsch:** Editor direkt im Spiel, frei verschiebbare und skalierbare Widgets, Symbole mit Werten, FPS, Koordinaten, Abklingzeiten, Rüstungsanzeige und anpassbare Tab-Liste. Einführung beim ersten Besuch und Schutz ungespeicherter Änderungen.
-
-**Français :** éditeur superposé au jeu, widgets déplaçables et redimensionnables, icônes avec valeurs, FPS, coordonnées, délais de récupération, petite vue de l’armure et liste Tab personnalisable. Tutoriel initial et protection des modifications non enregistrées.
-
-**Español:** editor superpuesto al juego, widgets movibles y ajustables, iconos con valores, FPS, coordenadas, tiempos de recarga, vista pequeña de la armadura y lista Tab personalizable. Tutorial inicial y protección de cambios sin guardar.
-
-[Full update notes in six languages](https://github.com/repositorykreml1n/the-basic-hud/blob/main/CHANGELOG.md)
-
-MIT. Not an official Horizon, Mojang or Microsoft product. Cover is a generated promotional illustration, not a gameplay screenshot or measured FPS claim."""
+Release notes and verification: https://github.com/repositorykreml1n/the-basic-hud/releases/tag/v0.5.0"""
 authors = ["repositorykreml1n"]
 owners = ["repositorykreml1n"]
 license = "MIT"
 source = "https://github.com/repositorykreml1n/the-basic-hud"
-icon = "https://raw.githubusercontent.com/repositorykreml1n/the-basic-hud/main/icon.png"
+icon = "https://raw.githubusercontent.com/repositorykreml1n/the-basic-hud/v0.5.0/icon.png"
+
+[[versions]]
+version = "0.5.0"
+published = "2026-11-04"
+game = "26.3"
+file = "basic_hud-0.5.0.hnmod"
+sha256 = "97011cc7374354c6293678c7ab593240d0512bffde1d7b642dad521e1df3f8ac"
+changelog = """
+## 0.5.0 — Recent pickups
+- New movable widget for recently collected items: pick up 4 torches, then 2 more before expiry, and it shows x6. Each repeat pickup refreshes that item's timer.
+- Default display time: 5 seconds; adjustable from 1 to 60 seconds.
+- Supports icon + count mode, dragging, scale, colours and opacity.
+- Partial pickups count only the amount that fits. Giving, crafting and inventory rearrangement do not by themselves create entries.
+- New pixel-art totem icon; new labels translated into all ten interface languages. Existing layouts and settings are preserved.
+
+Verified: 75 strict Rust test executions, warning-free pinned native build, real in-game aggregation/expiry/partial-pickup checks, editor persistence and ordinary startup without a controller.
+
+Русский: добавлен блок недавнего подбора с суммированием количества, обновлением таймера и настройкой 1–60 секунд (по умолчанию 5). Новая иконка — тотем.
+Deutsch: Neues Widget für aufgehobene Gegenstände mit addierten Mengen und einstellbarer Dauer von 1–60 Sekunden.
+Français : nouveau widget des objets ramassés, quantités cumulées et durée réglable de 1 à 60 secondes.
+Español: nuevo widget de objetos recogidos, cantidades acumuladas y duración ajustable de 1 a 60 segundos."""
 
 [[versions]]
 version = "0.4.1"

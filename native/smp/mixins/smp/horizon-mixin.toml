@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.32.0"
+version = "0.33.0"
 priority = 100
 
 # The commit of horizon it was tested on: it needs native_hide_player (horizon#7003, API 314, stamped at 48c63bc),

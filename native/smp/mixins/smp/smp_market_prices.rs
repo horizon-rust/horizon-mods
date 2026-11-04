@@ -28,6 +28,17 @@ pub const HOUR_MS: i64 = 3_600_000;
 pub const MINUTES: usize = 1440;
 pub const HOURS: usize = 720;
 
+/// The least share of its base price the market pays (since 0.33, with no
+/// daily sale caps: an item sold without end falls to it and stays there
+/// while the selling goes on).
+pub const MIN_FACTOR: f64 = 0.2;
+/// The default floor before 0.33: a config that still has it gets
+/// `MIN_FACTOR` (`smp_market::migrate`).
+pub const OLD_MIN_FACTOR: f64 = 0.6;
+/// The most items that move a price 1% (unless `depth` says otherwise): the
+/// cheap items farms make reach the floor within 10,000 sold.
+pub const MAX_DEPTH: f64 = 50.0;
+
 /// `config.json`'s `market.dynamic`.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default)]
@@ -55,7 +66,7 @@ impl Default for Dynamic {
     fn default() -> Self {
         Self {
             enabled: true,
-            min_factor: 0.6,
+            min_factor: MIN_FACTOR,
             max_factor: 1.6,
             half_life_hours: 6.0,
             max_trade_impact_percent: 2.0,
@@ -254,7 +265,7 @@ impl Book {
             .depth
             .get(id)
             .copied()
-            .unwrap_or_else(|| (400.0 / mid.max(0.01)).clamp(2.0, 400.0))
+            .unwrap_or_else(|| (400.0 / mid.max(0.01)).clamp(2.0, MAX_DEPTH))
     }
 
     /// How far one of `id` (based at `mid`) moves the log of its factor.
@@ -634,10 +645,10 @@ mod tests {
         assert!((b.factor(D) - (-0.005f64).exp()).abs() < 1e-12, "at once");
         assert_eq!(deal(&mut b, 1, true), (-250, 1));
         assert!((b.factor(D) - 1.0).abs() < 1e-12, "and back");
-        // Wheat is deep: 64 move it far less than one diamond.
+        // Wheat is deep: a whole stack moves it under 1.5%.
         let w = Book::unit_move(&c, "minecraft:wheat", 2.0);
         b.trade(&c, "minecraft:wheat", &[], 2.0, w, 64, false);
-        assert!(1.0 - b.factor("minecraft:wheat") < 0.004);
+        assert!(1.0 - b.factor("minecraft:wheat") < 0.015);
         // Its family moves with it.
         let fam = vec!["minecraft:hay_block".to_string()];
         b.trade(&c, "minecraft:wheat", &fam, 2.0, w, 64, true);

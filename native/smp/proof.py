@@ -24,6 +24,8 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
   back immediately, one price for diamond, moved down by a sale and up by a purchase as they go, /market's item
   page buying, the 24 h chart given as a map and drawn in the player's hand (market-chart.png), web/market.json, and
   market_prices.json written when the world closes;
+- a farm's dump with no daily cap: 1,000 wheat (more than the old 640 a day) sold over four minutes, each minute's
+  sale stopped by the 5% band, the price lower after each, and /worth showing no daily limit;
 - the web pages (web/market.json, web/economy.json) sent gzipped with the token to a stand-in for Kira;
 - /invsee: an operator takes a stack from an offline player's saved inventory, logged before the move and summed up in
   staff.log;
@@ -912,6 +914,47 @@ def market(server, alex, out, data):
     return paid, results
 
 
+def farm(server, alex):
+    """No daily sale cap: Alex sells 1,000 wheat, more than the old 640 a day, a minute at a time. Each minute's
+    sale stops at the 5% band (250 wheat at 50 a 1%), and the price is lower after each. Returns the coins and lines."""
+    results = {}
+
+    def worth():
+        lines = alex.say("/worth wheat")
+        line = next(l for l in lines if "wheat: " in l and "each, to buy or sell." in l)
+        return float(re.search(r"wheat: ([\d.,]+) coins? each", line)[1].replace(",", "")), lines
+
+    server.console("give Alex minecraft:wheat 1000")
+    time.sleep(2)
+    assert alex.count("minecraft:wheat") == 1000, alex.run("inventory")
+    price, lines = worth()
+    results["worth_before"] = lines
+    assert not any("today" in l for l in lines), lines
+    got, prices, sales = 0, [price], []
+    for minute in range(4):
+        if minute:
+            time.sleep(61)  # the next minute's band
+        lines = alex.say("/sell wheat")
+        sold = [re.search(r"Sold (\d+) wheat at [\d.,]+ coins? each: ([\d,]+) coins?\.", l) for l in lines]
+        sold = [m for m in sold if m]
+        assert len(sold) == 1, lines
+        n, coins = int(sold[0][1]), int(sold[0][2].replace(",", ""))
+        sales.append(n)
+        got += coins
+        # 250 a minute; what the band keeps stays in her inventory.
+        assert n == 250, lines
+        assert minute == 3 or any("kept: its price moved 5% this minute" in l for l in lines), lines
+        assert not any("limit" in l for l in lines), lines
+        price, wl = worth()
+        assert price < prices[-1], (prices, wl)
+        prices.append(price)
+    assert alex.count("minecraft:wheat") == 0, alex.run("inventory")
+    results["sales"], results["prices"], results["coins"] = sales, prices, got
+    # Four 5% steps down from 2 (a little drift back between): about 2 * e^-0.2 = 1.64.
+    assert 1.6 < prices[-1] < 1.7 and 1500 < got < 2000, results
+    return got, results
+
+
 def trades(server, alex, steve, port, ctl, resources, root):
     """Every way out of a trade, then one that goes through. Alex: 10 diamonds; Steve: 5 emeralds, 5 torches."""
     results = {}
@@ -1203,6 +1246,8 @@ def run(ctl, resources, out):
         assert not any("joined for the first time" in l for l in alex.chat()), alex.chat()
         added, results["shop"] = shop(server, alex)
         spent, results["market"] = market(server, alex, out, data)
+        farmed, results["farm"] = farm(server, alex)
+        added += farmed
         results["invsee"] = invsee(alex, data)
         results["switches"] = switches(alex, data)
         sent = {path: (auth, doc) for path, auth, doc in receiver.got}
@@ -1230,7 +1275,8 @@ def run(ctl, resources, out):
         assert not json.loads((data / "switches.json").read_text())["off"], "everything on again"
         kinds = [a["kind"] for a in audit if not a["kind"].startswith(("invsee_", "switch_"))]
         shop_kinds = ["eco_give", "buy 1 minecraft:iron_ingot", "buy 64 minecraft:cobblestone",
-                      "sell 1 minecraft:iron_ingot", "sell 1 minecraft:iron_ingot", "sell 9 minecraft:diamond", "buy 1 minecraft:diamond"]
+                      "sell 1 minecraft:iron_ingot", "sell 1 minecraft:iron_ingot", "sell 9 minecraft:diamond", "buy 1 minecraft:diamond",
+                      *["sell 250 minecraft:wheat"] * 4]
         assert kinds[-len(shop_kinds):] == shop_kinds, kinds[-8:]
         kinds = kinds[:-len(shop_kinds)]
         assert kinds[-2] in ("held_returned", "coinflip_cancel") and kinds[-1] == "daily_reward", kinds[-3:]

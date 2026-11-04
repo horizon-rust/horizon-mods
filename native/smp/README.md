@@ -77,7 +77,7 @@ money and the room before anything moves.
   copper, diamond, emerald, coal, redstone, lapis, wheat, wood and food chains at each start.
 - Items a recipe links (an ingot and its block, wheat and hay...) share one moving price, the block moving it as
   its 9 ingots do, so crafting never beats the market however prices move; the vanilla-recipe test checks every item
-  at the worst drift (what makes it at 0.6 times its price, it at 1.6) too.
+  at the worst drift (what makes it at 0.2 times its price, it at 1.6) too.
 - There are no daily coin or per-item limits on market sales, or daily limits on `/pay` receipts.
   The former `daily_sell_coins` and `daily_sell_items` settings and `market.json` counts are ignored,
   including in existing server files.
@@ -139,13 +139,16 @@ names), `reserved` (the words above).
 **Moving prices** (`market.dynamic`, on by default since 0.26). Each item has one price: its base price (`items`)
 times a factor that supply and demand move as each trade happens. Every item bought raises the log of the factor by
 `1% / depth`, every item sold lowers it as much, where the depth follows the item's rarity (400 / its price, between
-2 and 400: a diamond moves 50 times faster per item than cobblestone; `depth` overrides it per item). A trade of N is
+2 and 50: a diamond moves 25 times faster per item than cobblestone, and any item reaches the floor within 10,000
+sold; `depth` overrides it per item). A trade of N is
 worth the area under that curve (`price / step × (e^(N × step) - 1)`), rounded up to whole coins when buying and down
 when selling: one diamond at 200 costs 201 and sells for 199, 64 cobblestone at 1 cost 65, and a sale walks back the
 exact path of the purchase. All trades together move an item at most `max_minute_move_percent` (5%) a minute from
 where it started that minute: past that, a purchase is cut short and a sale keeps the rest ("sell them in a
-minute"). The factor goes back to 1 with a half-life of `half_life_hours` (6) and stays within `min_factor` (0.6)
-and `max_factor` (1.6), where the rest of a trade goes at that price. There is no tax on trades (an older config's
+minute"). The factor goes back to 1 with a half-life of `half_life_hours` (6) and stays within `min_factor` (0.2)
+and `max_factor` (1.6), where the rest of a trade goes at that price. With no daily sale caps (since 0.33), the floor
+is what bounds a farm: selling one item without end takes its price down to a fifth of its base, where it stays while
+the selling goes on; a config with the old floor (0.6) gets 0.2 when it loads. There is no tax on trades (an older config's
 `tax_percent` is ignored): the receipt is the price ("Sold 3 diamond at 198 coins each: 595 coins."). Market purchases can be sold back immediately;
 the former `round_trip_hours` setting and saved purchase receipts are ignored. (`max_trade_impact_percent` and
 `max_player_impact_percent` are no longer used: the curve and the

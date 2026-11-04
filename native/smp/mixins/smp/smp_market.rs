@@ -13,7 +13,8 @@
 
 use super::smp_economy::{Economy, MAX_AMOUNT, Out, Player, parse_amount};
 use super::smp_market_prices::{
-    Book, Dynamic, MINUTE_MS, Point, Quote, Span, arrow, base_mid, one_price, to_get, to_pay,
+    Book, Dynamic, MIN_FACTOR, MINUTE_MS, OLD_MIN_FACTOR, Point, Quote, Span, arrow, base_mid,
+    one_price, to_get, to_pay,
 };
 use super::smp_store::read_json;
 use serde::{Deserialize, Serialize};
@@ -157,9 +158,20 @@ const OLD_PRICES: [(&str, i64, i64); 18] = [
     ("torch", 1, 0),
 ];
 
-/// A config whose prices are still the old defaults, untouched: today's
-/// defaults instead. Whether it changed (the file is written again).
+/// A config whose prices, or price floor, are still the old defaults,
+/// untouched: today's defaults instead. Whether it changed (the file is
+/// written again).
 pub fn migrate(config: &mut Config) -> bool {
+    // 0.33 dropped the daily sale caps: the floor (60% of the base before)
+    // goes down to 20%, so selling without end pays less and less.
+    let floor = (config.dynamic.min_factor - OLD_MIN_FACTOR).abs() < 1e-9;
+    if floor {
+        config.dynamic.min_factor = MIN_FACTOR;
+    }
+    migrate_prices(config) || floor
+}
+
+fn migrate_prices(config: &mut Config) -> bool {
     let old: BTreeMap<String, Price> = OLD_PRICES
         .iter()
         .map(|(id, buy, sell)| {
@@ -405,18 +417,21 @@ impl Market {
     }
 
     /// How far one `id` moves the log of its factor: in a family, by value
-    /// (a block of 9 moves it as 9 ingots do), so crafting can't beat it.
+    /// (a block of 9 moves it as 9 ingots do), so crafting can't beat it,
+    /// from its cheapest member's depth (so that every member, not only
+    /// the cheapest, reaches the floor within `MAX_DEPTH` items a 1%).
     fn unit_move(&self, id: &str) -> f64 {
         let d = &self.config.dynamic;
         let mid = |id: &str| {
             let b = self.base(id);
             base_mid(b.buy, b.sell)
         };
-        match self
-            .family
-            .get(id)
-            .and_then(|f| f.iter().chain([&id.to_owned()]).min().cloned())
-        {
+        match self.family.get(id).and_then(|f| {
+            f.iter()
+                .chain([&id.to_owned()])
+                .min_by(|a, b| mid(a).total_cmp(&mid(b)).then_with(|| a.cmp(b)))
+                .cloned()
+        }) {
             Some(first) if mid(&first) > 0.0 => {
                 Book::unit_move(d, &first, mid(&first)) / mid(&first) * mid(id)
             }
@@ -1525,6 +1540,149 @@ mod tests {
             e.balance(me.uuid)
         );
         fs::remove_dir_all(dir).ok();
+    }
+
+    #[test]
+    fn the_old_price_floor_becomes_the_new_one_and_an_edited_one_stays() {
+        let mut c = Config::default();
+        c.dynamic.min_factor = 0.6;
+        assert!(migrate(&mut c));
+        assert_eq!(c.dynamic.min_factor, 0.2);
+        assert!(!migrate(&mut c), "once");
+        c.dynamic.min_factor = 0.5;
+        assert!(!migrate(&mut c));
+        assert_eq!(c.dynamic.min_factor, 0.5);
+    }
+
+    #[test]
+    fn selling_ten_thousand_of_any_item_drives_its_price_to_the_floor() {
+        // No daily cap: an AFK farm sells 10,000 of one item, a minute at a
+        // time as the band allows. The price falls to a fifth of its base
+        // and the farm gets far less than 10,000 at the base price.
+        let c = moving();
+        let ids: Vec<String> = c
+            .items
+            .iter()
+            .filter(|(_, p)| p.sell > 0)
+            .map(|(id, _)| id.clone())
+            .collect();
+        assert!(ids.len() > 30, "{ids:?}");
+        let t0 = 1_800_000_000_000i64;
+        for id in ids {
+            let (mut e, _, me, dir) = setup(&format!("farm-{id}"));
+            let mut m = Market::new(c.clone());
+            let base = m.base(&id).sell;
+            // Room for what a minute's band keeps.
+            let mut b = bag(&[(id.as_str(), 10_000)], u32::MAX);
+            let mut now = t0;
+            e.now = now;
+            m.tick(now);
+            let mut minutes = 0;
+            while b.count(&id) > 0 && minutes < 600 {
+                m.sell(&mut e, &me, &mut b, &[&id]);
+                minutes += 1;
+                now += MINUTE_MS;
+                e.now = now;
+                m.tick(now);
+            }
+            // A few left worth less than a coin at the floor: kept.
+            assert!(b.count(&id) < 5, "{id}: {} unsold", b.count(&id));
+            let got = e.balance(ALEX);
+            let at_base = 10_000 * base;
+            assert!(
+                got * 2 < at_base,
+                "{id}: 10,000 sold for {got}, {at_base} at the base price"
+            );
+            let f = m.book.factor(&id);
+            assert!(f < c.dynamic.min_factor * 1.01, "{id}: factor {f}");
+            if std::env::var_os("SMP_MARKET_REPORT").is_some() {
+                eprintln!("{id}: 10,000 sold for {got} ({at_base} at the base) in {minutes} min");
+            }
+            // The price comes back once the selling stops: in a day, to
+            // within 10% of the base.
+            m.tick(now + 24 * 60 * MINUTE_MS);
+            assert!(m.book.factor(&id) > 0.9, "{id}: {}", m.book.factor(&id));
+            fs::remove_dir_all(dir).ok();
+        }
+    }
+
+    #[test]
+    fn buying_and_selling_straight_back_never_earns_without_a_resale_delay() {
+        // Every item the market trades both ways, bought and sold back the
+        // same moment, from a fresh price, from the floor (after another
+        // player's dump) and from the top (after another's pumping): the
+        // trader never ends with more coins than they started with.
+        let c = moving();
+        let ids: Vec<String> = c
+            .items
+            .iter()
+            .filter(|(_, p)| p.buy > 0 && p.sell > 0)
+            .map(|(id, _)| id.clone())
+            .collect();
+        assert!(ids.len() > 10, "{ids:?}");
+        let t0 = 1_800_000_000_000i64;
+        let mut cases = 0;
+        let mut worst = (0i64, String::new());
+        for id in &ids {
+            for start in ["fresh", "floor", "top"] {
+                for n in [1u32, 7, 64, 640, 64 * 36] {
+                    let (mut e, _, me, dir) = setup("loop");
+                    let mut m = Market::new(c.clone());
+                    let mut now = t0;
+                    m.tick(now);
+                    // Others push the price to a bound, a minute at a time.
+                    let to_bound = |m: &mut Market, now: &mut i64, buy: bool| {
+                        for _ in 0..200 {
+                            m.moved(id, 100_000, buy);
+                            *now += MINUTE_MS;
+                            m.tick(*now);
+                        }
+                    };
+                    match start {
+                        "floor" => to_bound(&mut m, &mut now, false),
+                        "top" => to_bound(&mut m, &mut now, true),
+                        _ => {}
+                    }
+                    match start {
+                        "floor" => assert!(m.book.factor(id) < c.dynamic.min_factor * 1.01),
+                        "top" => assert!(m.book.factor(id) > c.dynamic.max_factor * 0.99),
+                        _ => {}
+                    }
+                    e.now = now;
+                    e.adjust("test_funds", me.uuid, 100_000_000, "").unwrap();
+                    let start_coins = e.balance(me.uuid);
+                    let mut b = bag(&[], u32::MAX);
+                    m.buy(&mut e, &me, &mut b, &[id, &n.to_string()]);
+                    let bought = b.count(id);
+                    assert!(bought > 0, "{id} {start} {n}: nothing bought");
+                    // At once; what the minute's band keeps, in the next
+                    // minutes (the price only drifts back down meanwhile).
+                    m.sell(&mut e, &me, &mut b, &[id]);
+                    let mut minutes = 0;
+                    while b.count(id) >= 5 && minutes < 2_000 {
+                        now += MINUTE_MS;
+                        e.now = now;
+                        m.tick(now);
+                        m.sell(&mut e, &me, &mut b, &[id]);
+                        minutes += 1;
+                    }
+                    assert!(b.count(id) < 5, "{id} {start} {n}: {} kept", b.count(id));
+                    let end = e.balance(me.uuid);
+                    assert!(
+                        end <= start_coins,
+                        "{id} from {start}: bought {bought} and sold back, {} coins earned",
+                        end - start_coins
+                    );
+                    worst = worst.max((end - start_coins, format!("{id} {start} {n}")));
+                    cases += 1;
+                    fs::remove_dir_all(dir).ok();
+                }
+            }
+        }
+        assert_eq!(cases, ids.len() * 15);
+        if std::env::var_os("SMP_MARKET_REPORT").is_some() {
+            eprintln!("round trips: {cases}, best for the trader {worst:?}");
+        }
     }
 
     #[test]

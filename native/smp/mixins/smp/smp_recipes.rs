@@ -447,7 +447,7 @@ mod tests {
         assert!(recipes.len() > 1000, "{} recipes", recipes.len());
         let config = Config::default();
         assert_eq!(loops(&config.items, &recipes), []);
-        // Nor once prices have moved as far as they may (0.6 to 1.6 times
+        // Nor once prices have moved as far as they may (0.2 to 1.6 times
         // their base): an item sold at the top while what makes it is
         // bought at the bottom, unless both share one price (a family).
         let families = super::super::smp_market::families(&config.items);

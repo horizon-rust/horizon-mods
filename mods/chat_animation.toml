@@ -1,0 +1,30 @@
+id = "chat_animation"
+kind = "native-mod"
+name = "ChatAnimationHorizon"
+summary = "ChatAnimation for Horizon"
+description = """
+By tariksabanuz
+
+ChatAnimationHorizon brings smooth chat animations to Horizon, recreating Ezzenix's Chat Animation mod. New chat messages slide and fade in instead of popping onto the screen.
+
+Features
+- Messages animate in smoothly when they arrive
+- Works with the game's normal chat, no setup needed
+
+Notes
+- Native Horizon mod, built from source by the launcher.
+- Based on Ezzenix's Chat Animation (MIT licensed), recreated for Horizon.
+
+Source code: https://github.com/tariksabanuz/ChatAnimationHorizon"""
+authors = ["tariksabanuz"]
+owners = ["tariksabanuz"]
+license = "MIT"
+source = "https://github.com/tariksabanuz/ChatAnimationHorizon"
+icon = "https://github.com/tariksabanuz/ChatAnimationHorizon/blob/3794c3c1ede07a1c7ebb80856b246a1ad4339101/icon.png"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-04"
+game = "26.3"
+file = "chat_animation-0.1.0.hnmod"
+sha256 = "aee273e2861a185ed2667679c0f943dcc73693b46eded6c078cde8bdf13ee49a"

@@ -1,0 +1,34 @@
+id = "jade"
+kind = "native-mod"
+name = "Jade"
+summary = "The look-at tooltip: what you're pointing at, its mod, its details and its state."
+description = """
+An unofficial port of [Jade](https://github.com/Snownee/Jade) 26.3.5 by Snownee to Horizon: the look-at overlay for blocks and entities, with its providers, its settings under Options > Mods, its keys, and the `/jade` and `/jadec` commands.
+
+Rewritten in Rust for Horizon's hooks, so no original code runs. Not made or endorsed by Snownee, so please report problems to this project, not to them.
+
+**Ported:** themes, opacity, text background, profiles, ignore lists, boss bar overlap, TTS, perspective mode, reach, icon positions, the item mod name and the plugin sub-options.
+
+**What differs from Jade:**
+- Themes are drawn with solid fills in the theme's colours, not Jade's sprites.
+- The position adjust screen is a setting you cycle through, not a screen you drag on.
+- The sniffer's dig cooldown isn't shown.
+- Energy Storage has nothing to show, because Horizon has no shared energy API for other mods.
+- Access variant and NPC details are approximate.
+
+Tested on Windows, in single player and on LAN with one guest. Dedicated servers don't build native mods, so "server" here means a LAN host.
+
+Licence: CC BY-NC-SA 4.0, noncommercial use only, the same licence as Jade."""
+authors = ["Snownee", "Joeypc6"]
+owners = ["Joeypc6"]
+license = "CC-BY-NC-SA-4.0"
+source = "https://github.com/Joeypc6/Jade-Horizon"
+icon = "https://media.forgecdn.net/avatars/thumbnails/207/323/256/256/636965628804677340.png"
+
+[[versions]]
+version = "26.3.5"
+published = "2026-11-04"
+game = "26.3"
+file = "jade-26.3.5.hnmod"
+sha256 = "676a129f55db075284313a39ff4387674c426ebd9be04a8830ffb8955281c7ec"
+changelog = "First Horizon release, a port of Jade 26.3.5. Built and tested on Horizon commit c9d474d."

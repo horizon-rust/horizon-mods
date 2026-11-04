@@ -795,7 +795,7 @@ def shop(server, alex):
     alex.run("click-slot", 300 + 0, "shift")  # a stack of cobblestone
     time.sleep(1)
     assert alex.count("minecraft:cobblestone") == 64, alex.run("inventory")
-    # Along the price as the stack moves it: 64 at 1 coin come to 64.05, 65 whole coins.
+    # Along the price as the stack moves it (50 a 1%): 64 at 1 coin come to 64.41, 65 whole coins.
     results["stack"] = alex.chat()[-4:]  # an advancement may come after
     assert any("Bought 64 cobblestone at 1.02 coins each: 65 coins." in l for l in results["stack"]), results
     assert not any("Tax" in l for l in results["stack"]), results

@@ -1,0 +1,24 @@
+id = "skins_3d"
+kind = "native-mod"
+name = "3D Skins"
+summary = "The outer layer of every player's skin drawn as real 3D pixels."
+description = "The outer layer of every player’s skin drawn as real 3D pixels: hat, jacket, sleeves and pants follow the head, arms and legs exactly as the game moves them. Works for everyone you can see, with downloaded, launcher and default skins, classic and slim arms and HD skins, respects Skin Customization, and switches to the flat layer further away. Client side only."
+authors = ["_idom_"]
+owners = ["umbx-dot"]
+license = "MIT"
+source = "https://github.com/umbx-dot/horizon-3d-skins"
+icon = "https://raw.githubusercontent.com/umbx-dot/horizon-3d-skins/main/icon.png"
+key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-04"
+game = "26.3"
+file = "skins_3d-1.0.1.hnmod"
+sha256 = "c9d618c4bedaa92c9373d7363b182eff9f4723889dcb5ba8a877c78ffc0fb6ae"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUT9Ujo/oCprPNTOokDM8JeIMRDlcc/O1BsND0UNQzPl9RO81svhFlu2yiSfc+uaeR9fARo8pJeE2Mw/+zvPKqb8awVQUHjozAM=\r
+trusted comment: timestamp:1793812703\tfile:skins_3d-1.0.1.hnmod\thashed\r
+z9cSZKR27HkOB6zuxDSkT9Bz4GHtm3WaQpy9VkZ5aPTs0TZgtgF4qp/ijHPUJP2jRpJl/fWYwAhEl0A2UrK5Aw=="""
+changelog = "Initial Release. "

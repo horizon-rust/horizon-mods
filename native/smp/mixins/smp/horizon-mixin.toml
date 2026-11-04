@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.31.0"
+version = "0.32.0"
 priority = 100
 
 # The commit of horizon it was tested on: it needs native_hide_player (horizon#7003, API 314, stamped at 48c63bc),
@@ -211,6 +211,16 @@ helper = "tick.rs"
 bindings = [
   { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
   { name = "phase", ty = "crate::game::native_lifecycle::ServerTickPhase", value = "phase" },
+]
+
+[[injection]]
+id = "level_tick"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_level_tick_post"
+helper = "level_tick.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "dimension", ty = "&str", value = "dimension" },
 ]
 
 [[injection]]

@@ -2,7 +2,7 @@
 // between the game's types and the rules (smp_economy, smp_market, smp_shop,
 // smp_trade, smp_games, smp_lottery, smp_places, smp_claims). Added to
 // the game as `game::smp_glue`; the helpers (register.rs, command.rs,
-// tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs, destroy_block.rs,
+// tick.rs, level_tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs, destroy_block.rs,
 // right_click_block.rs, block_spread.rs, piston_move.rs,
 // explosion_detonate.rs, fill_bucket.rs, attack_entity.rs) call it from the
 // hook points.
@@ -41,7 +41,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.31.0";
+pub const VERSION: &str = "0.32.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -143,6 +143,8 @@ static BUSY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(
 /// Sleep-count changes decided inside a player's command, for the next
 /// second's tick.
 static PENDING_SLEEP: Mutex<Vec<smp_presence::Act>> = Mutex::new(Vec::new());
+/// Whether an `/rtp` waits for its land: the Overworld's tick reads it then.
+static RTP: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 fn open(dir: PathBuf) -> Smp {
     let config_path = dir.join("config.json");
@@ -392,6 +394,8 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "tpdeny [player:word]",
         "rules",
         "back",
+        "rtp",
+        "wild",
         "playtime [player:word]",
         "claim",
         "claim info",
@@ -604,6 +608,78 @@ fn pay_target(e: &Economy, line: &str) -> Option<(u128, String, i64)> {
     let amount = smp_economy::parse_amount(amount)?;
     let (to, account) = e.find(who)?;
     Some((to, account.name.clone(), amount))
+}
+
+/// The world border, from the Overworld's `world_border.dat` (the root's in
+/// older worlds), as the game last saved it; None without one (the default
+/// border, 60 million blocks wide).
+fn world_border(world: &std::path::Path) -> Option<smp_places::Bounds> {
+    let files = [
+        world.join("dimensions/minecraft/overworld/data/minecraft/world_border.dat"),
+        world.join("data/minecraft/world_border.dat"),
+    ];
+    let root = files
+        .iter()
+        .find_map(|f| horizon_world::datafix::files::read_saved_dat(f).ok().flatten())?;
+    let border = horizon_client::worldborder::WorldBorder::unpack(root.get("data")?);
+    Some(border.bounds())
+}
+
+/// After a level's tick: in the Overworld, each `/rtp` that waits reads the
+/// chunk it loads (the game reads only the level it ticks), five times a
+/// second. Columns in another player's claim are never a spot.
+pub(in crate::game) fn level_ticked(game: &mut Game<'_>, dimension: &str) {
+    use std::sync::atomic::Ordering::Relaxed;
+    if dimension != smp_places::OVERWORLD
+        || !RTP.load(Relaxed)
+        || TICKS.load(Relaxed) % 4 != 0
+        || !game.native_on(ID)
+    {
+        return;
+    }
+    let Some(dir) = game.native_world_dir() else {
+        return;
+    };
+    let mut guard = state(dir.join(smp_store::DIR));
+    let Some(smp) = guard.as_mut() else {
+        return;
+    };
+    let (Ok(places), claims) = (&mut smp.places, &smp.claims) else {
+        return;
+    };
+    let started = std::time::Instant::now();
+    let game = &*game;
+    let asked = places.rtp_look(&mut |uuid, (cx, cz)| {
+        let columns: Vec<(i32, i32)> = (0..256).map(|i| (cx * 16 + i / 16, cz * 16 + i % 16)).collect();
+        let read = game
+            .native_read_columns(
+                smp_places::OVERWORLD,
+                &columns,
+                crate::game::native_world_edit::NativeHeightmap::MotionBlockingNoLeaves,
+                (1, 2),
+            )
+            .ok()?;
+        if read.bases.iter().any(Option::is_none) {
+            return None;
+        }
+        let mut ground = smp_places::Ground { palette: read.palette, columns: Vec::new() };
+        let claimed = claims
+            .as_ref()
+            .ok()
+            .and_then(|c| c.owner(smp_places::OVERWORLD, cx * 16, cz * 16))
+            .is_some_and(|owner| owner != uuid);
+        if !claimed {
+            for (i, (&(x, z), base)) in columns.iter().zip(&read.bases).enumerate() {
+                let b = &read.blocks[i * 3..i * 3 + 3];
+                ground.columns.push((x, z, base.unwrap_or_default(), [b[0], b[1], b[2]]));
+            }
+        }
+        Some(ground)
+    });
+    RTP.store(places.rtp_searching(), Relaxed);
+    if !asked.is_empty() {
+        log::debug!("[smp] /rtp read {} chunk(s) in {} µs", asked.len(), started.elapsed().as_micros());
+    }
 }
 
 /// The players on, as the places see them.
@@ -820,6 +896,10 @@ pub(in crate::game) fn perform(
     } else if smp_places::COMMANDS.contains(&word) {
         match &mut smp.places {
             Ok(p) => {
+                if matches!(word, "rtp" | "wild") {
+                    p.border = world_border(&dir);
+                    BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
+                }
                 let seen: Vec<NativeServerPlayer> = players.iter().filter(|p| !hidden.contains(&p.uuid)).cloned().collect();
                 p.command(&me, &bodies(&seen), now, line).unwrap_or_default()
             }
@@ -2293,8 +2373,14 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             {
                 log::warn!("[smp] no safe spot near the spawn: {spread}");
             }
+            if t.what == "a random spot" {
+                log::info!("[smp] /rtp: {} to {:.1} {:.1} {:.1}", t.name, t.to.x, t.to.y, t.to.z);
+            }
             out.push(Out::Tell(t.uuid, t.done.clone()));
         }
+        // `/rtp`'s chunks: held loaded while it looks, let go after.
+        p.force(now, &mut |line| game.native_run_command(line));
+        RTP.store(p.rtp_searching(), Relaxed);
     }
     if let Ok(e) = &mut smp.economy
         && n % 20 == 0

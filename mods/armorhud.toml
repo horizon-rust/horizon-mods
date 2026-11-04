@@ -1,13 +1,13 @@
 id = "armorhud"
 kind = "native-mod"
 name = "Armor HUD"
-summary = "Armor HUD mod"
-description = "A mod that adds 4 armor durability viewing slots to the hotbar."
+summary = "Your worn armor and its durability in a column left to the off-hand slot."
+description = "A mod that adds 4 armor durability viewing slots to the hotbar. You can toggle durability numbers with 'K' or change it in the settings, and toggle low durability warnings in the mod settings."
 authors = ["Thomas9950"]
 owners = ["Thomas-Slot"]
 license = "MIT"
 source = "https://github.com/Thomas-Slot/horizon-armor-hud"
-icon = "https://github.com/Thomas-Slot/horizon-armor-hud/blob/main/icon.png"
+icon = "https://raw.githubusercontent.com/Thomas-Slot/horizon-armor-hud/main/icon.png"
 key = "RWQNLUB+Hf9pa54kEx/ItgJHmDivzpAZxK9lqvv9wnecj34yzNVQHQur"
 
 [[versions]]
@@ -21,4 +21,4 @@ untrusted comment: signature from minisign secret key
 RUQNLUB+Hf9pa0KnzbNFmdhyi6xpMr56two0l9g3QlnoBYyrHFtJt5luXXEl9FnJQpP6GH7Y9KDqYUSAac7QZEQDejqrM2gA7A4=
 trusted comment: timestamp:1793750475\tfile:armorhud-1.0.0.hnmod\thashed
 q840egwiCqF5Ptn8MCP/0VqaPUQQgaWzyXwhnFhD47GLeblsZWdvPyaTnEUbsGxHCgHGT5FFrqJ54Mu1OSz/DQ=="""
-changelog = "First upload."
+changelog = "Changed mod icon and description."

@@ -1,0 +1,41 @@
+id = "dynamic_fps_for_rust"
+kind = "native-mod"
+name = "Dynamic FPS for rust"
+summary = "Reduce resource usage while Minecraft is in the background, idle, or on battery"
+description = """
+Dynamic FPS
+Reduce resource usage while Minecraft is in the background, idle, or on battery.
+
+Features
+Dynamic FPS will detect whether the Minecraft window is currently active, being hovered over, unfocused, or invisible.
+For each of these states you're able to adjust the frame rate, volume, and whether toast notifications are temporarily paused.
+
+You can also configure these settings for when you're idling (with a custom timeout) or while your laptop / handheld is on battery.
+Optionally you may also display the current battery status on the in-game HUD and receive toast notifications about battery activity."""
+authors = ["Lyvt (dc: _.lyvt)"]
+owners = ["Lyvt-Dev"]
+license = "MIT"
+source = "https://github.com/Lyvt-Dev/dynamic-fps-for-rust"
+icon = "https://raw.githubusercontent.com/Lyvt-Dev/dynamic-fps-for-rust/main/logo/dynamic-fps.png"
+key = "RWQ84d8BvD1EaarVDgHgXyz+MDiL7ONsCZc0BUrJqTmqzXBItnJy918A"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-04"
+game = "26.3"
+file = "dynamic_fps_for_rust-0.1.0.hnmod"
+sha256 = "50fad9a8d1d481a3862479b313c04e0dc6f8494a84d4cd007583822f5671e17e"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUQ84d8BvD1EaVhURO1FuYGMB/oFMSego05WqzetlxYu+Xqw833gPsVaui5/duBbZ3lGVErA0gcc/vxslYvhhaGkPRciB+/40wg=\r
+trusted comment: Dynamic FPS for rust 0.1.0; dynamic-fps-for-rust-0.1.0.hnmod\r
+V1fosOt0MvcQQm5uFTaFubXeoX1nt3411VAeox/pIV+R/GbcsiJGGRO/p1NcY39sOFOFkF3qWg9pNt/J4EXaDA=="""
+changelog = """
+Reduce resource usage while Minecraft is in the background, idle, or on battery.
+
+Features
+Dynamic FPS will detect whether the Minecraft window is currently active, being hovered over, unfocused, or invisible.
+For each of these states you're able to adjust the frame rate, volume, and whether toast notifications are temporarily paused.
+
+You can also configure these settings for when you're idling (with a custom timeout) or while your laptop / handheld is on battery.
+Optionally you may also display the current battery status on the in-game HUD and receive toast notifications about battery activity."""

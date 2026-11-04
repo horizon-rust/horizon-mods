@@ -358,14 +358,19 @@ def landed(c, text, timeout=120):
     raise AssertionError(f"{c.name}: no {text!r} in {timeout} s: {c.chat()[-8:]}")
 
 
-def standing(server, at):
-    """Whether the block under `at` is solid ground and its two above are free, as the server sees them."""
+FLAT_GROUND = "if block ~ ~-1 ~ minecraft:grass_block if block ~ ~ ~ minecraft:air if block ~ ~1 ~ minecraft:air"
+SOLID_GROUND = ("unless block ~ ~-1 ~ minecraft:air unless block ~ ~-1 ~ minecraft:water "
+                "unless block ~ ~-1 ~ minecraft:lava")
+
+
+def standing(server, c, at, tests=FLAT_GROUND):
+    """Whether the blocks round `at` pass `tests` (execute's conditions), as the server sees them: it says so."""
     x, y, z = (math.floor(v) for v in at)
     before = len(server.lines)
-    server.console(f"execute in minecraft:overworld positioned {x} {y} {z} if block ~ ~-1 ~ #minecraft:dirt "
-                   f"if block ~ ~ ~ minecraft:air if block ~ ~1 ~ minecraft:air")
-    time.sleep(2)
-    return any("Test passed" in l for l in server.lines[before:]), server.lines[before:]
+    server.console(f"execute in minecraft:overworld positioned {x} {y} {z} {tests} run say rtp-ground-ok")
+    time.sleep(3)
+    seen = server.lines[before:] + c.chat()[-4:]
+    return any("rtp-ground-ok" in l for l in seen), seen
 
 
 def rtp(server, steve, data):
@@ -392,7 +397,7 @@ def rtp(server, steve, data):
     time.sleep(4)
     _, still, health2 = where(steve)
     assert near(at, still) and health2 >= health, (r, still, health2)
-    r["ground"], lines = standing(server, at)
+    r["ground"], lines = standing(server, steve, at)
     assert r["ground"], (r, lines)
     log = [l for l in server.lines[start:] if "[smp] /rtp: Steve" in l]
     assert log, server.lines[start:][-20:]
@@ -458,7 +463,7 @@ def rtp_alone(ctl, resources, out):
         dim, at, _ = where(steve)
         r["at"], r["distance"] = at, math.hypot(at[0], at[2])
         assert dim == "minecraft:overworld" and 499 <= r["distance"] <= 5001, r
-        r["ground"], _ = standing(server, at)
+        r["ground"], _ = standing(server, steve, at, SOLID_GROUND)
         r["log"] = [l for l in server.lines[start:] if "[smp] /rtp: Steve" in l]
         r["slow_ticks"] = [l for l in server.lines[start:] if "slow tick" in l or "Can't keep up" in l]
         print(json.dumps({"proof": "rtp", "ok": True, **r}, indent=2))

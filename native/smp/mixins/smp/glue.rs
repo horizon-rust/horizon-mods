@@ -305,9 +305,6 @@ fn save(smp: &mut Smp) {
     {
         log::error!("[smp] {err}");
     }
-    if let Err(err) = smp.market.save() {
-        log::error!("[smp] {err}");
-    }
     if let Ok(p) = &mut smp.places
         && let Err(err) = p.save(chrono::Utc::now().timestamp_millis())
     {
@@ -1475,10 +1472,6 @@ fn shop_items(smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
                     button("minecraft:gold_ingot", &format!("Balance: {}", money(b)), "gold")
                 }
                 C::SellAll => button("minecraft:hopper", "Sell everything the market buys", "green"),
-                C::Limits => {
-                    let line = smp.market.limits_line();
-                    button("minecraft:clock", &line.unwrap_or_else(|| "No selling limit".into()), "aqua")
-                }
                 C::Help => button("minecraft:book", smp_shop::HELP_TEXT, "white"),
                 C::Close => button("minecraft:barrier", "Close", "red"),
             })

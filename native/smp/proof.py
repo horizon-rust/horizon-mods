@@ -19,8 +19,7 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
   the pot;
 - after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change;
 - an operator's /eco give, then the /shop menu: a category, one item bought by a click and a stack by
-  a shift-click, a stack of the player's own sold by clicking it, "Sell all" stopped by the daily limit (the rest
-  kept, the limit shown in the menu and in /worth, the day's sales in market.json), the close button;
+  a shift-click, a stack of the player's own sold by clicking it, "Sell all", the close button;
 - after the restart, prices moving: a purchase and a sale with no tax (receipts), an item bought can't be sold
   back while one found can, one price for diamond, moved down by a sale and up by a purchase as they go, /market's item
   page buying, the 24 h chart given as a map and drawn in the player's hand (market-chart.png), web/market.json, and
@@ -635,7 +634,7 @@ def nicks(server, alex, steve, out):
 
 def shop(server, alex):
     """Alex alone, op, in survival: given money (/eco give), then the /shop menu: a category, buying one and a stack,
-    selling a stack of hers, "Sell all" up to the daily limit, closing. Returns the coins it added, and the lines."""
+    selling a stack of hers, "Sell all" without a daily limit, closing. Returns the coins it added, and the lines."""
     results = {}
     # Only what the step gives her: "Sell all" would sell the rest too.
     server.console("clear Alex")
@@ -676,25 +675,20 @@ def shop(server, alex):
     assert any("Sold 1 iron ingot at 15 coins each: 15 coins." in l for l in results["sold"]), results
     assert any("1 iron ingot kept: bought from the market in the last 24 h." in l for l in results["sold"]), results
     assert alex.count("minecraft:iron_ingot") == 1
-    # Sell all, up to the 2,000 coins a day: 1,984 left (1 from Steve's /pay in the nickname step: money received
-    # counts too; 15 for the iron), 9 diamonds at 200. Each one sold lowers the price: 40,000 * (1 - e^-0.045)
-    # = 1,760.1 for the 9.
-    server.console("give Alex minecraft:diamond 30")
+    # Sell all nine diamonds, with no daily cap. Along the curve they earn
+    # 40,000 * (1 - e^-0.045) = 1,760.1, rounded down to 1,760 coins.
+    server.console("give Alex minecraft:diamond 9")
     time.sleep(2)
     alex.click(300 + 49)
     results["sell_all"] = alex.chat()[-8:]
     assert any("Sold 9 diamond at 196 coins each: 1,760 coins." in l for l in results["sell_all"]), results
     assert not any("Tax" in l for l in results["sell_all"]), results
-    assert any("21 diamond kept: today's selling limit." in l for l in results["sell_all"]), results
-    assert alex.count("minecraft:diamond") == 21, alex.run("inventory")
-    limits = alex.menu()[50]
-    results["limits"] = limits
-    # 1,984 - 1,760.
-    assert "224 coins left of your 2,000 coins a day" in json.dumps(limits), limits
+    assert alex.count("minecraft:diamond") == 0, alex.run("inventory")
+    assert alex.menu()[50]["item"] == "minecraft:gray_stained_glass_pane", alex.menu()
     alex.click(300 + 53)  # close
     assert not alex.menu()
     results["worth"] = alex.say("/worth diamond")
-    assert any("You may sell 631 more diamond today." in l for l in results["worth"]), results
+    assert any("diamond:" in l for l in results["worth"]), results
     return 2000 + 10 - 15 - 65 + 15 + 1760, results
 
 
@@ -970,12 +964,10 @@ def run(ctl, resources, out):
         assert any("You paid 120 coins to Steve. Balance: 380 coins" in l for l in results["pay"]), results
         results["paid"] = steve.chat()[-3:]
         assert any("Alex paid you 120 coins." in l for l in results["paid"]), results
-        # 9999 is past what Steve may still receive today (2,000 a day, 120 received): money paid counts toward the
-        # same daily limit as selling, so alts can't sell for a main past it.
         results["refused"] = [alex.say(l) for l in ("/pay Steve 1500", "/pay Steve 9999", "/pay Alex 1",
                                                     "/pay Nobody 1")]
         for lines, error in zip(results["refused"], ("You only have 380 coins.",
-                                                     "Steve can only receive 1,880 coins more today",
+                                                     "You only have 380 coins.",
                                                      "You can't pay yourself.",
                                                      "No player named Nobody has an account.")):
             assert any(error in l for l in lines), results["refused"]
@@ -1103,12 +1095,6 @@ def run(ctl, resources, out):
         kinds = kinds[:-len(shop_kinds)]
         assert kinds[-2] in ("held_returned", "coinflip_cancel") and kinds[-1] == "daily_reward", kinds[-3:]
         results["stake_back"] = kinds[-2]
-        sold = json.loads((data / "market.json").read_text())["sold"]
-        # Steve's sales of the first run's day, and Alex's; coins received by /pay count too (#139): Steve got 120 + 1
-        # from Alex, Alex 1 from Steve.
-        assert sorted((s["coins"], s["items"]) for s in sold.values()) == [
-            (441, {"minecraft:diamond": 1, "minecraft:wheat": 60}),
-            (1776, {"minecraft:diamond": 9, "minecraft:iron_ingot": 1})], sold
         print(json.dumps({"proof": "smp", "ok": True, **results}, indent=2))
     finally:
         (out / "server.log").write_text("\n".join(server.lines))

@@ -27,7 +27,7 @@ header and footer).
 | `/ah cancel <listing>`, `/ah claim`, `/ah search <words>`, `/ah mine`, `/ah mail` | takes back a listing nobody bid on; gives you your mail; the menu on a search, your listings, your mail |
 | `/shop` | the market as a chest menu: categories, a click buys one, a shift-click 64, a click on a stack of yours sells it, "Sell all" |
 | `/market [item]` | the moving market as a chest menu: categories, each item's price, its move over 1 h and 24 h and its volume; an item's page buys or sells 1, 16 or 64, sells all you carry, and gives its price chart as a map |
-| `/worth [item]` | an item's price, the same to buy and to sell (the one in your hand without a name), and what you may still sell today |
+| `/worth [item]` | an item's price, the same to buy and to sell (the one in your hand without a name) |
 | `/sell hand [count]`, `/sell <item> [count]`, `/sell all` | sells to the market: the stack in your hand, an item, or everything it buys |
 | `/buy <item> [count]` | buys from the market, only what fits in your inventory |
 | `/trade <player>` | asks a player to trade (60 s to answer) |
@@ -77,10 +77,9 @@ money and the room before anything moves.
 - Items a recipe links (an ingot and its block, wheat and hay...) share one moving price, the block moving it as
   its 9 ingots do, so crafting never beats the market however prices move; the vanilla-recipe test checks every item
   at the worst drift (what makes it at 0.6 times its price, it at 1.6) too.
-- Each player sells at most `daily_sell_items` (640 of each item) a UTC day; `/worth` and the shop show
-  the item limit, and `market.json` keeps the day's count across restarts.
-- There is no daily coin limit on market sales or `/pay` receipts. The former `daily_sell_coins` setting
-  and saved coin counts are ignored, including in existing server files.
+- There are no daily coin or per-item limits on market sales, or daily limits on `/pay` receipts.
+  The former `daily_sell_coins` and `daily_sell_items` settings and `market.json` counts are ignored,
+  including in existing server files.
 - Amounts are checked: no price above 1,000,000,000,000, no sum that overflows.
 - The coinflip and the lottery give the winner all the stakes: they move money between players and never make any.
 
@@ -157,7 +156,7 @@ fixed prices of 0.23. For other mods: `Market::spot`, `volume(id, now, hours)`, 
 
 **`/market`.** A 6-row chest menu: the shop's categories and the day's movers; a category's items, each with its
 price, its change over 1 h and 24 h (green ▲, red ▼) and what was traded in 24 h; an item's page with its
-base price and what you may still sell today, buttons to buy or sell 1, 16 and 64 (what they come to
+base price , buttons to buy or sell 1, 16 and 64 (what they come to
 along the curve), sell all of it you carry, and the price chart over 24 hours or 7 days, given as a filled map (128 × 128,
 drawn by the server: the curve green when it rose, red when it fell, the price, the change, the low and high). A
 chart map is drawn again each minute for whoever carries it, and once a minute the open menus follow the prices.
@@ -166,8 +165,8 @@ chart map is drawn again each minute for whoever carries it, and once a minute t
 **The shop.** `/shop` opens a 6-row chest menu on the market's prices: the categories of `config.json`'s `shop` (an
 item in none goes under "Other"), each item named with its prices. A click buys one, a shift-click 64; a click on a
 stack in your own inventory, below the menu, sells it; "Sell all" sells everything the market buys. The bottom row
-shows your balance and today's selling limit. It goes through the market's own rules (survival or adventure only,
-items then money, logged, the daily limits); the items move by the console's `clear` and `give`, measured on the
+shows your balance. It goes through the market's own rules (survival or adventure only,
+items then money, logged); the items move by the console's `clear` and `give`, measured on the
 inventory before and after, so the money follows what really moved.
 
 **Trades.** Once accepted, both players see a 6-row chest menu: their own offer on the left (16 stacks), the other's
@@ -326,13 +325,12 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 
 | File | Holds |
 |---|---|
-| `config.json` | `currency` (default `coins`), `starting_balance` (default 0), `market`: `enabled`, `items` (each item's `buy`, what the market asks, and `sell`, what it pays, 0 closing that side), `daily_sell_items` (640), 0 for no item limit; `shop`: `enabled`, `title`, `categories` (`name`, `icon`, `items`); `web`: `url` (Kira's `/smp/ingest`) and `token` (empty: nothing is sent), where the pages of `web/` go; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
+| `config.json` | `currency` (default `coins`), `starting_balance` (default 0), `market`: `enabled`, `items` (each item's `buy`, what the market asks, and `sell`, what it pays, 0 closing that side), `shop`: `enabled`, `title`, `categories` (`name`, `icon`, `items`); `web`: `url` (Kira's `/smp/ingest`) and `token` (empty: nothing is sent), where the pages of `web/` go; written with the defaults the first time, and again when a newer version adds keys (your values kept) |
 | `economy.json` | balances by player UUID, with the name last seen; `held`: coinflip stakes and lottery tickets being decided; `pools`: the casino's pot and the auction house's bids; `ext`: other parts' state written in the same step as the money (`auction`: the listings, bids, mail and notes) |
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
 | `nicks.json` | each player's nickname and when they last changed it |
 | `vanish.json` | the vanished operators by UUID, with their name |
 | `staff.log` | one line per `/invsee` or `/endersee` menu in which something moved: who, whose, what was taken and put |
-| `market.json` | what each player sold today (coins and items), for the daily limits |
 | `market_prices.json` | each item's price factor and history (minutes for 24 h, hours for 30 days: `[time, mid, traded, sold]`), what each player bought in the last day (no selling it back), the day's summary |
 | `web/market.json` | for the website (`/hub/market`, through Kira), written by a thread each minute prices move: `schema` 1, `generated`, `currency`, `tax_percent` (always 0, for older readers), `daily_summary` (`day`, `lines`), `items` (`id`, `name`, `category`, `price` (the one price; `buy` and `sell` repeat it on the sides the market trades, for older readers), `mid`, `base`, `change_1h`, `change_24h`, `volume_24h`, `day`: 5-minute points, `month`: hours, each `{step, t, price, volume}`). When `web.token` is set, the same thread POSTs each page of `web/` that changed (gzipped, `Authorization: Bearer <token>`) to `<web.url>/<name>`: Kira keeps the last one and serves it to the site; the server needs no inbound access and Kira no key to it |
 | `presence.json` | the players who have joined (no welcome again), and the day each last got the daily reward |

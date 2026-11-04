@@ -7,8 +7,7 @@
 // log refuses gives the items back. Nobody gets rich from it: buying always
 // costs more than selling (an item priced otherwise isn't bought), no chain
 // of recipes turns bought items into dearer ones (smp_recipes; such an item
-// isn't bought either), and what a player sells is capped each UTC day, in
-// coins and per item (`market.json` counts it). No game types: the glue
+// isn't bought either). No daily sale caps. No game types: the glue
 // lends the player's items as a `Bag`. Added to the game as
 // `game::smp_market`; also a module of this crate, for its tests.
 
@@ -16,7 +15,7 @@ use super::smp_economy::{Economy, MAX_AMOUNT, Out, Player, parse_amount};
 use super::smp_market_prices::{
     Book, Dynamic, MINUTE_MS, Point, Quote, Span, arrow, base_mid, one_price, to_get, to_pay,
 };
-use super::smp_store::{read_json, uuid_string, write_json};
+use super::smp_store::{read_json, uuid_string};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, path::PathBuf};
 
@@ -39,9 +38,6 @@ pub struct Config {
     pub enabled: bool,
     /// By item id, `minecraft:diamond`. Items that stack to 64.
     pub items: BTreeMap<String, Price>,
-    /// The most of one item a player sells to the market in a UTC day (0:
-    /// no limit).
-    pub daily_sell_items: u32,
     /// Prices that move with supply and demand (smp_market_prices); the
     /// item prices above are then the base ones.
     pub dynamic: Dynamic,
@@ -116,8 +112,7 @@ pub const PRICES: &[(&str, i64, i64)] = &[
 ];
 
 impl Default for Config {
-    /// `PRICES` (one price where the market trades both ways), and the
-    /// daily limits.
+    /// `PRICES` (one price where the market trades both ways).
     fn default() -> Self {
         Self {
             enabled: true,
@@ -134,7 +129,6 @@ impl Default for Config {
                     )
                 })
                 .collect(),
-            daily_sell_items: 640,
             dynamic: Dynamic::default(),
         }
     }
@@ -183,22 +177,6 @@ pub fn migrate(config: &mut Config) -> bool {
     }
     config.items = Config::default().items;
     true
-}
-
-/// What one player sold today.
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
-#[serde(default)]
-pub struct Sold {
-    /// The UTC day (days since 1970) the counts are for.
-    pub day: i64,
-    pub items: BTreeMap<String, u32>,
-}
-
-/// `market.json`: what each player sold today, by UUID.
-#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
-#[serde(default)]
-pub struct Ledger {
-    pub sold: BTreeMap<String, Sold>,
 }
 
 /// A config's prices made safe: an amount out of range closes that side; an
@@ -309,10 +287,8 @@ pub fn item_name(id: &str) -> String {
 
 pub struct Market {
     pub config: Config,
-    ledger: Ledger,
-    /// `market.json`; None in tests that keep nothing.
-    path: Option<PathBuf>,
-    dirty: bool,
+    /// The SMP data directory; None in tests that keep nothing.
+    dir: Option<PathBuf>,
     /// The moving prices and their history (`market_prices.json`, written
     /// by the glue off the tick thread: `book_to_write`).
     pub book: Book,
@@ -362,9 +338,7 @@ const BOOK_EVERY_MS: i64 = 5 * MINUTE_MS;
 
 impl Market {
     /// The market of `dir` (`world/horizon-smp/`), its config made safe
-    /// (`validate`), with what to log. A `market.json` that can't be read
-    /// starts the day's counts from nothing (they only limit, never hold
-    /// money).
+    /// (`validate`), with what to log.
     pub fn open(dir: &std::path::Path, mut config: Config) -> (Self, Vec<String>) {
         let mids = |c: &Config| -> BTreeMap<String, f64> {
             c.items
@@ -377,11 +351,6 @@ impl Market {
             .into_iter()
             .map(|l| format!("market: {l}"))
             .collect();
-        let path = dir.join("market.json");
-        let ledger = read_json(&path).unwrap_or_else(|e| {
-            problems.push(format!("{e}: today's sale limits start again"));
-            Ledger::default()
-        });
         let mut book: Book = read_json(&dir.join("market_prices.json")).unwrap_or_else(|e| {
             problems.push(format!("{e}: prices start again from their base"));
             Book::default()
@@ -395,9 +364,7 @@ impl Market {
         }
         let mut market = Self {
             config,
-            ledger,
-            path: Some(path),
-            dirty: false,
+            dir: Some(dir.to_owned()),
             book,
             book_written: 0,
             book_dirty: !rebased.is_empty(),
@@ -413,9 +380,7 @@ impl Market {
     pub fn new(config: Config) -> Self {
         let mut m = Self {
             config,
-            ledger: Ledger::default(),
-            path: None,
-            dirty: false,
+            dir: None,
             book: Book::default(),
             book_written: 0,
             book_dirty: false,
@@ -477,49 +442,6 @@ impl Market {
     /// The price of one `id` now (its mid), for display.
     pub fn each(&self, id: &str) -> f64 {
         self.spot(id).map_or(0.0, |q| q.mid)
-    }
-
-    pub fn save(&mut self) -> Result<(), String> {
-        if !self.dirty {
-            return Ok(());
-        }
-        if let Some(path) = &self.path {
-            write_json(path, &self.ledger)?;
-        }
-        self.dirty = false;
-        Ok(())
-    }
-
-    /// What `uuid` sold today (`now`: milliseconds since 1970).
-    fn sold(&self, uuid: u128, now: i64) -> Sold {
-        match self.ledger.sold.get(&uuid_string(uuid)) {
-            Some(s) if s.day == now.div_euclid(DAY_MS) => s.clone(),
-            _ => Sold::default(),
-        }
-    }
-
-    /// How many of `id` `uuid` may still sell today (None: no limit).
-    pub fn items_left(&self, uuid: u128, now: i64, id: &str) -> Option<u32> {
-        let cap = self.config.daily_sell_items;
-        (cap > 0)
-            .then(|| cap.saturating_sub(self.sold(uuid, now).items.get(id).copied().unwrap_or(0)))
-    }
-
-    /// Counts a sale against today's limits.
-    fn count_sale(&mut self, uuid: u128, now: i64, id: &str, n: u32) {
-        let day = now.div_euclid(DAY_MS);
-        let s = self.ledger.sold.entry(uuid_string(uuid)).or_default();
-        if s.day != day {
-            *s = Sold {
-                day,
-                ..Sold::default()
-            };
-        }
-        let c = s.items.entry(id.to_owned()).or_default();
-        *c = c.saturating_add(n);
-        // Yesterday's counts go.
-        self.ledger.sold.retain(|_, s| s.day == day);
-        self.dirty = true;
     }
 
     /// The price of `id` now (nothing on either side when it isn't
@@ -603,7 +525,7 @@ impl Market {
         if !self.book_dirty || (!force && now - self.book_written < BOOK_EVERY_MS) {
             return None;
         }
-        let path = self.path.as_ref()?.with_file_name("market_prices.json");
+        let path = self.dir.as_ref()?.join("market_prices.json");
         self.book_dirty = false;
         self.book_written = now;
         Some((path, self.book.clone()))
@@ -657,16 +579,6 @@ impl Market {
         }
     }
 
-    /// Today's item limit, as a line (None when there is none).
-    pub fn limits_line(&self) -> Option<String> {
-        (self.config.daily_sell_items > 0).then(|| {
-            format!(
-                "Selling today: at most {} of each item a day.",
-                self.config.daily_sell_items
-            )
-        })
-    }
-
     /// Runs `/worth`, `/sell` or `/buy`; None for another command. `trades`
     /// is false for a player in creative or spectator mode.
     pub fn command(
@@ -686,7 +598,7 @@ impl Market {
             return Some(vec![Out::Error("The market is closed.".into())]);
         }
         if name == "worth" {
-            return Some(self.worth(economy, me, bag, args));
+            return Some(self.worth(economy, bag, args));
         }
         if !trades {
             return Some(vec![Out::Error(
@@ -699,7 +611,7 @@ impl Market {
         })
     }
 
-    fn worth(&self, economy: &Economy, me: &Player, bag: &mut dyn Bag, args: &[&str]) -> Vec<Out> {
+    fn worth(&self, economy: &Economy, bag: &mut dyn Bag, args: &[&str]) -> Vec<Out> {
         let id = match args {
             [] => match bag.held() {
                 Some((id, ..)) => id,
@@ -732,19 +644,10 @@ impl Market {
                 id.trim_start_matches("minecraft:")
             )));
         }
-        if p.sell > 0 {
-            if let Some(left) = self.items_left(me.uuid, economy.now, &id) {
-                out.push(Out::Reply(format!(
-                    "You may sell {left} more {name} today."
-                )));
-            }
-            out.extend(self.limits_line().map(Out::Reply));
-        }
         out
     }
 
-    /// Sells what `args` names (`hand [n]`, `all`, `<item> [n]`), within
-    /// today's limits.
+    /// Sells what `args` names (`hand [n]`, `all`, `<item> [n]`).
     pub fn sell(
         &mut self,
         economy: &mut Economy,
@@ -797,13 +700,9 @@ impl Market {
                 continue;
             }
             let price = self.each(&id).max(0.01);
-            // Never more than the account can be paid for at once, nor
-            // than today's limits leave.
+            // Never more than the account can be paid for at once.
             let now = economy.now;
-            let mut cap = (MAX_AMOUNT as f64 / price).min(f64::from(u32::MAX)) as u32;
-            if let Some(left) = self.items_left(me.uuid, now, &id) {
-                cap = cap.min(left);
-            }
+            let cap = (MAX_AMOUNT as f64 / price).min(f64::from(u32::MAX)) as u32;
             // What they bought here lately can't come back yet.
             let back = self.recently_bought(me.uuid, &id, now);
             let carried = bag.count(&id).min(at_most);
@@ -812,12 +711,6 @@ impl Market {
                 continue;
             }
             let limited = carried.min(cap);
-            if limited == 0 {
-                out.push(Out::Error(format!(
-                    "You reached today's selling limit for {name}; it starts again at midnight UTC."
-                )));
-                continue;
-            }
             let have = limited.min(carried.saturating_sub(back));
             if have == 0 {
                 let hours = self.config.dynamic.round_trip_hours;
@@ -853,7 +746,6 @@ impl Market {
             let kind = format!("sell {taken} {id}");
             match economy.adjust(&kind, me.uuid, pay, "") {
                 Ok(_) => {
-                    self.count_sale(me.uuid, now, &id, taken);
                     self.moved(&id, taken, false);
                     total = total.saturating_add(pay);
                     let each = each_money(economy, pay as f64 / f64::from(taken));
@@ -866,12 +758,6 @@ impl Market {
                         out.push(Out::Reply(format!(
                             "{} {name} kept: bought from the market in the last {hours} h.",
                             limited - taken
-                        )));
-                    }
-                    if limited < carried {
-                        out.push(Out::Reply(format!(
-                            "{} {name} kept: today's selling limit.",
-                            carried - limited
                         )));
                     }
                 }
@@ -1227,21 +1113,22 @@ mod tests {
     }
 
     #[test]
-    fn legacy_coin_cap_does_not_limit_sales_or_payments() {
+    fn legacy_daily_caps_do_not_limit_sales_or_payments() {
         // Existing configs and today's saved ledger may still contain the
-        // removed coin cap and receipts from before the upgrade.
+        // removed daily caps and receipts from before the upgrade.
         let config: Config = serde_json::from_value(serde_json::json!({
             "daily_sell_coins": 2000,
+            "daily_sell_items": 640,
             "dynamic": {"enabled": false}
         }))
         .unwrap();
         let (mut e, mut m, me, dir) = setup_with("no-coin-cap", config);
-        e.now = 5 * DAY_MS;
+        e.now = 5 * 86_400_000;
         fs::write(
             dir.join("market.json"),
             serde_json::json!({
                 "sold": { uuid_string(ALEX): {
-                    "day": 5, "coins": 2000, "items": {"minecraft:diamond": 10}
+                    "day": 5, "coins": 2000, "items": {"minecraft:diamond": 640}
                 }}
             })
             .to_string(),
@@ -1250,11 +1137,11 @@ mod tests {
         let (loaded, problems) = Market::open(&dir, m.config.clone());
         assert!(problems.is_empty(), "{problems:?}");
         m = loaded;
-        let mut b = bag(&[("minecraft:diamond", 32)], 0);
+        let mut b = bag(&[("minecraft:diamond", 700)], 0);
         m.command(&mut e, &me, true, &mut b, "sell diamond")
             .unwrap();
         assert_eq!(b.count("minecraft:diamond"), 0);
-        assert_eq!(e.balance(ALEX), 6400);
+        assert_eq!(e.balance(ALEX), 140_000);
         let earned = e.balance(ALEX);
         e.seen(2, "Steve");
         e.adjust("test", 2, 10_000, "").unwrap();
@@ -1270,12 +1157,13 @@ mod tests {
         }
         assert_eq!(e.balance(ALEX), earned + 6000);
         assert_eq!(e.balance(2), 4000);
-        // Payments do not consume the remaining per-item allowance.
-        assert_eq!(m.items_left(ALEX, e.now, "minecraft:diamond"), Some(598));
-        m.save().unwrap();
-        let (m, problems) = Market::open(&dir, m.config.clone());
+        // Reopening on the same day ignores the old full daily ledger too.
+        let (mut m, problems) = Market::open(&dir, m.config.clone());
         assert!(problems.is_empty(), "{problems:?}");
-        assert_eq!(m.items_left(ALEX, e.now, "minecraft:diamond"), Some(598));
+        b.items.insert("minecraft:diamond".into(), 700);
+        m.command(&mut e, &me, true, &mut b, "sell all").unwrap();
+        assert_eq!(b.count("minecraft:diamond"), 0);
+        assert_eq!(e.balance(ALEX), 286_000);
         fs::remove_dir_all(dir).unwrap();
     }
 
@@ -1407,50 +1295,6 @@ mod tests {
     }
 
     #[test]
-    fn sales_stop_at_the_daily_item_limit_and_reset_the_next_day() {
-        let config = Config {
-            daily_sell_items: 30,
-            ..fixed()
-        };
-        let (mut e, mut m, me, dir) = setup_with("limits", config);
-        e.now = 5 * DAY_MS + 1000;
-        let mut b = bag(&[("minecraft:diamond", 64), ("minecraft:wheat", 64)], 0);
-        m.command(&mut e, &me, true, &mut b, "sell diamond")
-            .unwrap();
-        assert_eq!((e.balance(ALEX), b.count("minecraft:diamond")), (6000, 34));
-        m.command(&mut e, &me, true, &mut b, "sell wheat").unwrap();
-        assert_eq!(e.balance(ALEX), 6060);
-        let worth = m
-            .command(&mut e, &me, true, &mut b, "worth diamond")
-            .unwrap();
-        assert!(
-            worth.contains(&Out::Reply("You may sell 0 more diamond today.".into())),
-            "{worth:?}"
-        );
-        assert!(
-            worth.contains(&Out::Reply(
-                "Selling today: at most 30 of each item a day.".into()
-            )),
-            "{worth:?}"
-        );
-        m.path = Some(dir.join("market.json"));
-        m.save().unwrap();
-        let (mut m, _) = Market::open(&dir, m.config.clone());
-        let out = m
-            .command(&mut e, &me, true, &mut b, "sell diamond")
-            .unwrap();
-        assert!(
-            matches!(&out[0], Out::Error(s) if s.contains("limit")),
-            "{out:?}"
-        );
-        e.now = 6 * DAY_MS;
-        m.command(&mut e, &me, true, &mut b, "sell diamond")
-            .unwrap();
-        assert_eq!((e.balance(ALEX), b.count("minecraft:diamond")), (12060, 4));
-        fs::remove_dir_all(dir).unwrap();
-    }
-
-    #[test]
     fn prices_that_would_make_money_are_closed() {
         let mut config = fixed();
         let set = |c: &mut Config, id: &str, buy, sell| {
@@ -1556,7 +1400,6 @@ mod tests {
     /// window: only the prices themselves stand between a trader and money.
     fn moving() -> Config {
         let mut c = Config {
-            daily_sell_items: 0,
             ..Config::default()
         };
         c.dynamic.round_trip_hours = 0;

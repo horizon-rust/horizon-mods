@@ -71,9 +71,24 @@ def get(url):
 
 
 def latest_nightly():
-    """The commit of the newest Nightly: its permanent nightly-source/<date>-<short> tag."""
+    """The commit of the newest Nightly: its permanent nightly-source/<date>-<short> tag.
+
+    The newest is picked by the tag's date, and a same-date tie by the tagged commit's own
+    date: comparing the ref name alone breaks a tie by the short SHA, which can be an earlier
+    build than the day's latest nightly.
+    """
     refs = json.loads(get(f"https://api.github.com/repos/{REPO}/git/matching-refs/tags/nightly-source/"))
-    newest = max(refs, key=lambda r: r["ref"])
+    def nightly_date(ref):
+        return ref.split("nightly-source/")[1][:10]
+    newest_day = max(nightly_date(r["ref"]) for r in refs)
+    same_day = [r for r in refs if nightly_date(r["ref"]) == newest_day]
+    if len(same_day) == 1:
+        newest = same_day[0]
+    else:
+        def commit_time(r):
+            commit = json.loads(get(f"https://api.github.com/repos/{REPO}/commits/{r['object']['sha']}"))
+            return commit["commit"]["committer"]["date"]
+        newest = max(same_day, key=commit_time)
     return get_commit(newest["ref"].removeprefix("refs/tags/"))
 
 
@@ -159,7 +174,9 @@ def cargo(stage_dir, action):
     jobs = os.environ.get("FLEET_LOAD_JOBS") or os.environ.get("CARGO_BUILD_JOBS")
     command = ["cargo", action, "--locked", "-p", "horizon-client", "--bin", "horizon-client"]
     if action == "build":
-        command += ["--bin", "horizon-ctl", "--profile", "fast"]
+        # horizon-ctl is a bin of horizon-client-lib (its path is the client's src/bin), so it
+        # cannot be named under `-p horizon-client`.
+        command += ["-p", "horizon-client-lib", "--bin", "horizon-ctl", "--profile", "fast"]
     if os.environ.get("NATIVE_NO_DEFAULT_FEATURES"):
         command.append("--no-default-features")
     if jobs:

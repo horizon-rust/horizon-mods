@@ -1,20 +1,30 @@
 id = "wisdom_horizon_lite"
 kind = "shader"
 name = "Wisdom Shaders V3 Lite (Horizon port)"
-summary = "The LITE profile of bobcao3's Wisdom Shaders V3 for Horizon, made for integrated graphics."
+summary = "A lighter Wisdom Shaders V3 port for Horizon, for more FPS."
 description = """
-The LITE profile of the unofficial Horizon port of **Wisdom Shaders V3 (Build 3300)** by bobcao3 (https://github.com/bobcao3/Wisdom-Shaders). Like the original, it is licensed under the Apache License 2.0. It is not an official Wisdom Shaders release.
+A lighter version of the Wisdom Shaders V3 port (`wisdom_horizon`) for more FPS: the same lighting, atmosphere, fog and AgX tonemap, with a smaller shadow map, no bloom or FXAA, and soft shadows, cloud shadows and water reflections off by default (each can be turned back on in the settings).
 
-It has the same lighting, sky, clouds, fog and AgX tonemap as the full version (`wisdom_horizon`), tuned to Wisdom's LITE profile for integrated graphics:
-- a 1024 shadow map over 64 blocks, with single-tap shadows
-- no cloud shadows and no water mirror
-- no bloom and no FXAA
-
-The README in the repository lists everything that was ported and what changed."""
+Unofficial port of bobcao3's Wisdom Shaders V3 by tomasmendes01 (in-game name: iLoong)."""
 authors = ["bobcao3", "tomasmendes01"]
 owners = ["tomasmendes01"]
 license = "Apache-2.0"
 source = "https://github.com/tomasmendes01/wisdom-horizon"
+
+[[versions]]
+version = "1.3.7"
+published = "2026-11-04"
+game = "26.3"
+file = "wisdom_horizon_lite-1.3.7.hshader"
+sha256 = "ba41f0094a886b2e86a462994206fa184ebabf424dc0736829ddc7024ea9e880"
+changelog = """
+- Night: the sky and fog no longer turn black when rain hides the stars, rain streaks stay faint in the dark, and a "Night brightness" option raises the moonlight and night ambient light (3x Wisdom's by default).
+- Rain: lighter fog in the rain ("Rain fog", 0.5 by default; 1 is Wisdom's), the water gets the same fog as the land, and the sun's glint on water fades under rain clouds.
+- Water: its top stays flat (the waves are in the normals, as in Wisdom), and the mirror Horizon draws with vanilla's light is brought to this pack's light.
+- Mobs, items, chests and particles: a post pass relights them to match this pack's light on the terrain in view, eased over time ("Light mobs and chests", with a diagnostic view).
+- Held light sources light the terrain when Horizon's Dynamic lights extra is on.
+- Glowing blocks show their own colour instead of burning out to white at night ("Glowing blocks").
+- The far edge of the loaded terrain blends into the sky ("Horizon haze")."""
 
 [[versions]]
 version = "1.1.0"

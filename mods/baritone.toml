@@ -20,7 +20,7 @@ source = "https://github.com/luhnox/horizon-baritone"
 icon = "icons/baritone.png"
 categories = ["utility", "transportation"]
 tags = ["pathfinding", "automation", "bot", "mining", "elytra", "port"]
-key = "RWRTLwnAmb4dyVYWM1egwotcybd6nw1ILTIWGHmQVwiMROClbjW0JoKZ"
+key = "RWTHPH49xk0RxlR1W1RZwYeuLJjnGPW0U/nElRyWuiDh6S1zz9ey1QTj"
 
 [[versions]]
 version = "1.1.38"

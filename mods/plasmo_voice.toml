@@ -1,0 +1,36 @@
+# Catalog submission metadata; listing requires maintainer acceptance.
+id = "plasmo_voice"
+kind = "native-mod"
+source = "https://github.com/rison1337/horizon-plasmo-voice"
+owners = ["rison1337"]
+owner_ids = [225131806]
+icon = "icons/plasmo_voice.png"
+name = "Plasmo Voice for Horizon"
+summary = "Proximity voice for Plasmo Voice 2.1 servers, built natively for Horizon. Spatial audio, push to talk, and player controls."
+authors = ["rison1337"]
+license = "MIT"
+categories = ["utility"]
+tags = ["voice-chat", "proximity", "audio", "multiplayer"]
+description = """
+An unofficial, independently written Rust client compatible with Plasmo Voice 2.1 servers.
+
+- Proximity voice with distance attenuation, stereo positioning, optional HRTF and noise suppression.
+- Push to talk over normal menus, a foreground microphone indicator, and configurable key bindings.
+- Six settings tabs, device selection, microphone preview, and per-player/source volume and mute.
+- Pixel head icons with current-frame positioning, helmet clearance and block-shape visibility.
+- One native .hnmod with Linux x86_64 and Windows x64 runtimes; English and Russian UI.
+
+The launcher compiles the mod into the game. It communicates with the connected server's advertised voice endpoint, uses the selected audio devices, and keeps per-instance settings. It does not implement or enable Minecraft older-version adapters.
+
+This is not an official Plasmo Voice or Horizon release. Original Plasmo Voice implementation sources and graphics were not read or copied. Upstream project: https://github.com/plasmoapp/plasmo-voice.
+
+Tested with Plasmo Voice 2.1.17: two-way synthetic audio and inventory/chest cases on Paper 1.21.10, 1.21.11, 26.1.2, 26.2 and 26.3, plus earlier Fabric 1.21.11 UI checks. Older protocols require Horizon's explicit opt-in; an explicit goat-horn instrument still fails in the tested 1.21.x core adapters (upstream PR #10038). Linux live checks and Windows x64 cross-checking pass; actual Windows GUI and physical audio-device testing are outstanding. See the repository validation record for scope.
+"""
+
+[[versions]]
+version = "0.5.0"
+published = "2026-11-05"
+game = "26.3"
+file = "plasmo-voice-0.5.0.hnmod"
+sha256 = "d27a18cc590d2829646579a443d45fb9b6e37f13952ab52c62604f9c80e80829"
+changelog = "Native Hooks/Host API 411 client. Proximity audio, PTT over menus, player controls and pixel indicators; bundled Linux/Windows runtimes. Five server versions tested; see source validation for upstream inventory and Windows testing limits."

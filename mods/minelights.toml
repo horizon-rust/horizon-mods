@@ -14,7 +14,7 @@ This is the Horizon port of [MineLights](https://github.com/megabytesme/MineLigh
 authors = ["MegaBytesMe"]
 owners = ["megabytesme"]
 license = "CC-BY-NC-SA-4.0"
-source = "https://github.com/megabytesme/MineLights/tree/5a558d8743fc0fa1fe488dde4fa2fda091c2fa5c/horizon"
+source = "https://github.com/megabytesme/MineLights/tree/cd01d8cb0690ce847151bab6ec8ae578471c41fb/horizon"
 icon = "https://raw.githubusercontent.com/megabytesme/MineLights/master/assets/icon.png"
 key = "RWQXM9P921f9AnO4kAKnVMu+2UdAr6BeAdM70P6PjbT7xxxmJbVb/qlN"
 
@@ -22,15 +22,15 @@ key = "RWQXM9P921f9AnO4kAKnVMu+2UdAr6BeAdM70P6PjbT7xxxmJbVb/qlN"
 version = "2.4.0"
 published = "2026-11-05"
 game = "26.3"
-file = "minelights-2.4.0-build2-final.hnmod"
-sha256 = "0238a9651b0cc9c66de8dbf9757b28953042a34b18cc6f9890d10a07679fa400"
+file = "minelights-2.4.0-final.hnmod"
+sha256 = "094be3e8bf9b338c6619e9966ec3656fc91cfa6f569e4d5f6bb283795af9ad87"
 signature = """
 untrusted comment: signature from minisign secret key
-RUQXM9P921f9Askn4xqbHUgCL48LeaU06WBwZnl2E2oI4o9TZzSflGhPDK17TDMdIsvEufJwcMud5C2szliXK4nKha3CbawuBws=
-trusted comment: timestamp:1793863572	file:minelights-2.4.0-build2-final.hnmod	hashed
-MUITIU6KSguejo2vRlaqbv9po85IBaZj/FRjYGJ2fIx5EQzWWsY+CoGt1PnAPSnFIae+W1f6rN/YVQTTQFXjDA==
+RUQXM9P921f9AoJ+Bwmakn9aGji8S46/yaZatpSxLkjDsR9WTJ9eFbglGO9Phiqb158NdCQbeHbwWDPzn+eafdb+Je6V4JQPmwM=
+trusted comment: timestamp:1793887483	file:minelights-2.4.0-final.hnmod	hashed
+9gGT58B64VaE+QLKQjj2X6Utaii2zZ+f5JwOfSLDVTtbSrhnlwXpPy+003er2vLc5C+SG/I2WZjf7IWjFoPGAA==
 """
-changelog = "Use authenticated V2 connections in Horizon and Java, preserve opt-in V1 support for older clients, add shared-provider priorities and safe shutdown, and pin the reviewed MineLights Server 2.4.0 build 2."
+changelog = "Use authenticated V2 connections in Horizon and Java, preserve opt-in V1 support for older clients, add shared-provider priorities and safe shutdown, and pin the reviewed MineLights Server 2.4.0 release."
 
 [[versions]]
 version = "2.3.8.5"

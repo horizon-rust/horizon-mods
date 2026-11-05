@@ -1,0 +1,24 @@
+id = "server_browser"
+kind = "native-mod"
+name = "Server Atlas"
+summary = "Find and organize Minecraft servers with local notes, favorites, filters, and opt-in discovery."
+description = """
+Server Atlas is a native Rust multiplayer browser for Horizon and Minecraft Java 26.3. It adds search, favorites, recent servers, LAN, reusable filters, and local notes and groups in a Minecraft-style interface.
+
+Online Discover is off until you accept the privacy screen. Modrinth and minecraftserve.rs receive listing requests with public filters. Discover contacts visible servers and a small margin for status checks. Saved addresses, search text, player names, and notes stay local. Feedback and server suggestions save local drafts. The toolbar Ko-fi button opens https://ko-fi.com/foryou41 in your browser.
+
+Install the .hnmod in your instance, build it through the Horizon launcher, and open Multiplayer. The bundle targets Horizon Nightly 6475f62 and uses the normal native mod workflow. English and German are included. Developed by shuab with Codex assistance."""
+authors = ["shuab"]
+owners = ["Musti3214"]
+owner_ids = [266587196]
+license = "MIT"
+source = "https://github.com/Musti3214/Horizon-Server-Browser/tree/8a467654699ca83ebdf901498fe3dc73c46dbe69/mod"
+icon = "https://raw.githubusercontent.com/Musti3214/Horizon-Server-Browser/182284c36b0e53c12757e110a345413cc80b0e9c/docs/server-atlas-icon.png"
+
+[[versions]]
+version = "2.2.1"
+published = "2026-11-05"
+game = "26.3"
+file = "server_browser-2.2.1.hnmod"
+sha256 = "71279e980f3861608810f762fed93cb3264bc5b069b0200f3e9f46099418e8c3"
+changelog = "Addresses registry review #248. Discover limits status probes to the visible window plus a small margin. Scrolling replaces queued probes and automatic refresh uses the active window or saved servers. Removed offline-access search options and catalog listings. Added explicit discovery consent for new and upgrading users, removed the dormant feedback sender, and corrected copyright to shuab."

@@ -11,12 +11,12 @@ pub fn resolve(x: u8) -> u8 {
     x
 }
 """
-# One mod's helper inside a target (formatted with a trailing comma), another's support module; braces in strings,
-# chars and comments must not end them early.
+# One mod's helper inside a target (formatted with a trailing comma, an array type's `;` in its signature), another's
+# support module; braces in strings, chars and comments must not end them early.
 STAGED = """struct MeshTables { base: u8, layers: u8 }
 pub fn resolve(x: u8) -> u8 {
     if let Some(v) = {
-        fn fast_mesh_resolve(x: u8,) -> Option<u8> {
+        fn fast_mesh_resolve(x: u8, _at: [f64; 3],) -> Option<u8> {
             let _ = "}"; let _ = '}'; // }
             let _ = r#"}"#;
             Some(MeshTables { base: x }.base)

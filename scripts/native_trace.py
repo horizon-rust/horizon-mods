@@ -81,12 +81,22 @@ def item_ranges(code, keyword, name):
     pattern = rb"\b%s\s+%s\b" % (keyword.encode(), re.escape(name.encode()))
     ranges = []
     for m in re.finditer(pattern, code):
-        open_at = code.find(b"{", m.end())
-        if keyword == "mod" and code[m.end():open_at].strip():
-            continue  # `mod name;`
-        semi = code.find(b";", m.end())
-        if open_at < 0 or (keyword == "fn" and 0 <= semi < open_at):
+        # The body's `{`, unless a `;` ends the item first; either outside the signature's () and [] (`[f64; 3]`).
+        open_at, nested, k = -1, 0, m.end()
+        while k < len(code):
+            c = code[k]
+            if c in b"([":
+                nested += 1
+            elif c in b")]":
+                nested -= 1
+            elif nested <= 0 and c in b"{;":
+                open_at = k if c == ord("{") else -1
+                break
+            k += 1
+        if open_at < 0:
             continue  # a declaration without a body
+        if keyword == "mod" and code[m.end():open_at].strip():
+            continue
         depth, k = 0, open_at
         while k < len(code):
             if code[k] == ord("{"):
@@ -120,18 +130,19 @@ class Tracer:
         for e in plan.get("modules", []):
             self.entries.append((e.get("mod_id"), e.get("mod_version"), e.get("file"), "mod", e.get("name")))
         self.entries = [e for e in self.entries if (e[0], e[1]) in mods and e[2] and e[4]]
-        self.cache = {}
+        self.cache, self.code = {}, {}
+
+    def _masked(self, path):
+        if path not in self.code:
+            self.code[path] = masked(path.read_bytes()) if path.is_file() else b""
+        return self.code[path]
 
     def _ranges(self, rel, keyword, name):
         key = (rel, keyword, name)
         if key not in self.cache:
-            staged = self.stage / rel
-            pristine = self.pristine / rel
             found = []
-            if staged.is_file():
-                original = masked(pristine.read_bytes()) if pristine.is_file() else b""
-                if not item_ranges(original, keyword, name):
-                    found = item_ranges(masked(staged.read_bytes()), keyword, name)
+            if (self.stage / rel).is_file() and not item_ranges(self._masked(self.pristine / rel), keyword, name):
+                found = item_ranges(self._masked(self.stage / rel), keyword, name)
             self.cache[key] = found
         return self.cache[key]
 

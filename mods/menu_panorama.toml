@@ -22,6 +22,8 @@ owner_ids = [230844871]
 license = "MIT"
 source = "https://github.com/form1t/menu-panorama"
 icon = "icons/menu_panorama.png"
+categories = ["gui", "themed"]
+tags = ["panorama", "main-menu", "title-screen", "wallpaper", "background"]
 
 [[versions]]
 version = "1.0.0"

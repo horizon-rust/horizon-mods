@@ -3,17 +3,23 @@ kind = "native-mod"
 name = "Mod Menu"
 summary = "ModMenu For Horizon"
 description = """
-Adds a Mods button next to Accessibility on the title screen. It opens a Mod Menu style screen that lists every mod you have installed, with its icon, name, version and description.
+A Mods button on the title screen, in the icon row after Accessibility, opening a screen laid out like the
+Java [Mod Menu](https://modrinth.com/mod/modmenu)'s: every mod you have installed, with its icon, name, version and
+description. A clean-room native mod for Horizon, with no Mod Menu code.
 
-- Search by name, id or description, and filter by on, off, native or content mods.
-- Pick a mod to see its details, turn it on or off, or open its own settings page.
-- Open Mods Folder and Done at the bottom, as in the Java mod."""
+- **Search** by name, id or description, and **filter** by all, on, off, native or content mods.
+- **Pick a mod** to see its version, type, description and any problems, turn it on or off, or open its own settings
+  page.
+- **Open Mods Folder** and **Done** at the bottom, as in the Java mod.
+- The keyboard works too: type to search, arrows and Page Up/Down to pick a mod, Escape to leave."""
 authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
 owner_ids = [332662152]
 license = "MIT"
 source = "https://github.com/tariksabanuz/ModMenuHorizon"
-icon = "https://raw.githubusercontent.com/tariksabanuz/ModMenuHorizon/caec7c4c3a2c6c7746a97d137ccf8f8904801e72/icon.png"
+icon = "icons/mod_menu.png"
+categories = ["utility", "management"]
+tags = ["mod-menu", "mods-list", "settings", "ui", "port"]
 
 [[versions]]
 version = "0.3.3"

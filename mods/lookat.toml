@@ -18,6 +18,8 @@ owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/lookat"
 icon = "icons/lookat.png"
+categories = ["utility"]
+tags = ["tooltip", "hud", "block-info", "waila"]
 
 [[versions]]
 version = "0.2.1"

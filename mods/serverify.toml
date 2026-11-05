@@ -42,6 +42,8 @@ owner_ids = [87802271]
 license = "GPL-3.0-only"
 source = "https://github.com/Louchatfroff/serverify"
 icon = "icons/serverify.png"
+categories = ["social", "utility"]
+tags = ["server-list", "servers", "multiplayer", "browser"]
 
 [[versions]]
 version = "0.1.0"

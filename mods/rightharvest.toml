@@ -8,7 +8,9 @@ owners = ["Domanffe"]
 owner_ids = [94391234]
 license = "MIT"
 source = "https://github.com/Domanffe/rightharvest"
-icon = "https://horizon-rust.github.io/horizon-mods/icons/rightharvest.png"
+icon = "icons/rightharvest.png"
+categories = ["utility", "food"]
+tags = ["farming", "crops", "harvest", "replant"]
 
 [[versions]]
 version = "0.1.1"

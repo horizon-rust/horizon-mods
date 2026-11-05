@@ -20,6 +20,9 @@ Source: `horizon/` in https://github.com/Vakarux12/RMotd, a fork of the original
 authors = ["adasjusk", "Vakarux12"]
 license = "CC-BY-SA-4.0"
 source = "https://github.com/Vakarux12/RMotd/tree/main/horizon"
+icon = "icons/rmotd.png"
+categories = ["utility", "management"]
+tags = ["motd", "server-list", "lan", "commands", "port"]
 
 [[versions]]
 version = "1.0.0"

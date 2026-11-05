@@ -17,6 +17,8 @@ owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/mousetricks"
 icon = "icons/mousetricks.png"
+categories = ["storage", "utility"]
+tags = ["inventory", "mouse", "sorting", "drag", "quick-move"]
 
 [[versions]]
 version = "0.2.0"

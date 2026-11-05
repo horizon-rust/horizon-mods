@@ -34,6 +34,8 @@ owner_ids = [82058189]
 license = "MIT"
 source = "https://github.com/AyanoKaito/horizon-right-click-crops"
 icon = "icons/right_click_crops.png"
+categories = ["utility", "food"]
+tags = ["farming", "crops", "harvest", "replant"]
 key = "RWRwbuaByP5mM4VUm4kZEQVPiuw+3IEVJ7CZcEHIjY5fPKf9lhQKUZRy"
 
 [[versions]]

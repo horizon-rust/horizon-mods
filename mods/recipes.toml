@@ -25,6 +25,9 @@ owners = ["ludovic111"]
 owner_ids = [136255825]
 license = "MIT"
 source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/recipes"
+icon = "icons/recipes.png"
+categories = ["utility"]
+tags = ["recipes", "item-browser", "recipe-viewer", "search"]
 
 [[versions]]
 version = "2.0.0"

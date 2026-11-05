@@ -13,6 +13,9 @@ owners = ["levzzz5154"]
 owner_ids = [86072227]
 license = "MIT"
 source = "https://github.com/levzzz5154/horizon-motion-blur"
+icon = "icons/motion_blur.png"
+categories = ["decoration"]
+tags = ["motion-blur", "post-processing", "graphics", "visual"]
 
 [[versions]]
 version = "0.1.0"

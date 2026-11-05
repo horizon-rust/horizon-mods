@@ -11,6 +11,9 @@ owners = ["tomasmendes01"]
 owner_ids = [68385376]
 license = "Apache-2.0"
 source = "https://github.com/tomasmendes01/wisdom-horizon"
+icon = "icons/wisdom_horizon_lite.png"
+categories = ["semi-realistic", "atmosphere", "low"]
+tags = ["wisdom", "lite", "performance", "port"]
 
 [[versions]]
 version = "1.3.7"

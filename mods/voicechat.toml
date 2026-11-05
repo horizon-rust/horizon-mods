@@ -33,6 +33,9 @@ owners = ["Nirokx"]
 owner_ids = [95123456]
 license = "MIT"
 source = "https://github.com/Nirokx/horizon-voice-chat"
+icon = "icons/voicechat.png"
+categories = ["social"]
+tags = ["voice-chat", "proximity-chat", "simple-voice-chat", "multiplayer", "push-to-talk"]
 
 [[versions]]
 version = "1.0.0"

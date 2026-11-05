@@ -23,7 +23,9 @@ owners = ["Bioneisme"]
 owner_ids = [92920845]
 license = "MIT"
 source = "https://github.com/Bioneisme/wayfarer-stones"
-icon = "https://raw.githubusercontent.com/Bioneisme/wayfarer-stones/main/content/assets/wayfarer_stones/textures/item/wayfarer_stone.png"
+icon = "icons/wayfarer_stones_native.png"
+categories = ["transportation", "adventure"]
+tags = ["teleport", "waystones", "fast-travel", "villages"]
 
 [[versions]]
 version = "0.6.0"

@@ -18,6 +18,9 @@ owners = ["Nirokx"]
 owner_ids = [95123456]
 license = "MIT"
 source = "https://github.com/Nirokx/horizon-waypoints"
+icon = "icons/waypoints.png"
+categories = ["utility", "adventure"]
+tags = ["waypoints", "navigation", "markers", "hud"]
 
 [[versions]]
 version = "1.0.0"

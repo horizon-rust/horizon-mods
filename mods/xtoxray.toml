@@ -3,21 +3,22 @@ kind = "native-mod"
 name = "X To Xray"
 summary = "Opensource Xraymod"
 description = """
-Press X To Xray!
-Does Not Work On Servers.
+Press **X** to see ores through the world, as a native mod for Horizon.
 
-Instalation:
-1. Download Horizon
-2. Get Horizon Working
-3. Add The Mod Trough The Horizon Launcher
-4. Start Xraying
-"""
+While it is on, every block except ores (coal, copper, iron, gold, redstone, lapis, diamond, emerald, their
+deepslate kinds, nether gold and quartz, ancient debris), chests, spawners, water and lava is drawn as air, and what is left shines at full brightness. Press X again to see the world as usual. Rebind the key in
+Options > Mods.
+
+Single player only: it turns itself off as soon as the world is no longer a closed single player world, so it does
+not work on servers or in a world opened to LAN."""
 authors = ["1_st_Cat"]
 owners = ["RealCat1st"]
 owner_ids = [260922535]
 license = "Apache-2.0"
 source = "https://github.com/RealCat1st/XToXrayRust"
 icon = "icons/xtoxray.png"
+categories = ["utility"]
+tags = ["xray", "ores", "mining"]
 key = "RWQVF+EFGGnX6eUNms+cP5AceLvx9b0rFYYXCty7so4MVbJ1SNpi9zNK"
 
 [[versions]]

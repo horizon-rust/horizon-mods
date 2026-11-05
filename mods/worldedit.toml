@@ -3,14 +3,29 @@ kind = "native-mod"
 name = "WorldEdit"
 summary = "working port of java world edit"
 description = """
-//we for commands
+The WorldEdit editor as a native mod for Horizon: select a region and fill, replace, shape, copy and paste
+it with `//` commands, and load or save schematics. It writes blocks through the game's own code, with no command
+length limit, in single player and on a LAN world you host or join.
 
-working schematics."""
+- **Select**: `//wand` gives a wooden axe; left click and right click set position 1 and 2 (or `//pos1`, `//pos2`).
+- **Edit**: `//set`, `//replace`, `//walls`, `//outline`, `//hollow`, `//overlay`, `//sphere`, `//cyl`,
+  `//pyramid`, `//line`, `//copy`, `//cut`, `//paste`, `//move`, `//expand`, `//contract`, `//shift`, `//count`.
+- **Patterns**: one block or a weighted mix, such as `//set 70%stone,30%gravel`.
+- **Undo**: `//undo` and `//redo`, for the last 10 edits.
+- **Schematics**: `//schem load <name>` reads a `.schem` (Sponge v1 to v3), `.litematic` or `.schematic` from the
+  world's `schematics/` folder, `//paste` places it, `//schem save` writes the selection; `//schem` alone opens a
+  file menu.
+
+`//we` lists the commands, and `//` completes in chat. One edit touches at most 250,000 blocks and never loads a
+chunk; editing needs permission level 2."""
 authors = ["_cykoo_"]
 owners = ["XnotCykoX"]
 owner_ids = [215324132]
 license = "MIT"
 source = "https://github.com/XnotCykoX/WorldEdit-Horizon"
+icon = "icons/worldedit.png"
+categories = ["utility"]
+tags = ["worldedit", "building", "schematics", "editing", "commands", "port"]
 
 [[versions]]
 version = "1.2.1"

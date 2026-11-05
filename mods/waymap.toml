@@ -47,6 +47,9 @@ owners = ["Lauch2"]
 owner_ids = [339589475]
 license = "MIT"
 source = "https://github.com/Lauch2/horizon-waymap-mod"
+icon = "icons/waymap.png"
+categories = ["utility", "adventure"]
+tags = ["waypoints", "minimap", "navigation", "death-points", "hud"]
 key = "RWS1B1QZPeYaSNKJr9rffnfHDSvB0AZj/Ul1B2pKrJ2XFBgKXL0FC96u"
 
 [[versions]]

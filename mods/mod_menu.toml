@@ -12,7 +12,7 @@ authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
 license = "MIT"
 source = "https://github.com/tariksabanuz/ModMenuHorizon"
-icon = "https://github.com/tariksabanuz/ModMenuHorizon/blob/caec7c4c3a2c6c7746a97d137ccf8f8904801e72/icon.png"
+icon = "https://raw.githubusercontent.com/tariksabanuz/ModMenuHorizon/caec7c4c3a2c6c7746a97d137ccf8f8904801e72/icon.png"
 
 [[versions]]
 version = "0.3.3"

@@ -37,6 +37,7 @@ Both can be installed at once: they use different keys.
 Source and issues: [github.com/SU4G3/classic-zoom](https://github.com/SU4G3/classic-zoom)"""
 authors = ["Surge"]
 owners = ["SU4G3"]
+owner_ids = [92383635]
 license = "GPL-3.0-or-later"
 source = "https://github.com/SU4G3/classic-zoom"
 icon = "icons/classic_zoom.png"

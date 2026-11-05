@@ -11,6 +11,7 @@ Based on AppleSkin by squeek502. See the LICENSE in the source for the
 original copyright and licence notices."""
 authors = ["soufi"]
 owners = ["soufied"]
+owner_ids = [47915535]
 license = "MIT"
 source = "https://github.com/soufied/AppleSkin-Horizon"
 icon = "https://raw.githubusercontent.com/soufied/AppleSkin-Horizon/refs/heads/main/icons/appleskin.png"

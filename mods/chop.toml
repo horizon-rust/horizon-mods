@@ -22,6 +22,7 @@ Native source mod: install it on the launcher's Mods page, press Build there, an
 Original mod by Mayonesu0. All rights reserved, except the grants in its [LICENSE](https://github.com/Mayonesu0/chop/blob/main/LICENSE): players may use it unchanged, Horizon's registry may distribute it, and Horizon's reviewers may read it to review it."""
 authors = ["Mayonesu0", "Claude"]
 owners = ["Mayonesu0"]
+owner_ids = [350298764]
 license = "LicenseRef-Chop-1.0"
 source = "https://github.com/Mayonesu0/chop"
 icon = "https://raw.githubusercontent.com/Mayonesu0/chop/main/registry/icon.png"

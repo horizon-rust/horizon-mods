@@ -1,0 +1,36 @@
+id = "fast_items"
+kind = "native-mod"
+name = "Fast Items for Horizon"
+summary = "Optimize item rendering by transforming item entities to 2D"
+description = """
+Fast Items (2D Items)
+Optimizes item rendering by transforming items to 2D forms.
+
+For 2D items(such as potions), this mod avoids rendering their sides, so they are completely flat
+
+For 3D items(such as cube blocks), this mod makes them always face to camera, just as the same behaviour in Lunar Client/BLC."""
+authors = ["Lyvt (dc: _.lyvt)"]
+owners = ["Lyvt-Dev"]
+owner_ids = [138261776]
+license = "MIT"
+source = "https://github.com/Lyvt-Dev/FastItems-for-Horizon"
+icon = "https://github.com/Lyvt-Dev/FastItems-for-Horizon/tree/main/logo/fastitems.png"
+key = "RWQ84d8BvD1EaarVDgHgXyz+MDiL7ONsCZc0BUrJqTmqzXBItnJy918A"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-04"
+game = "26.3"
+file = "fast_items-0.1.0.hnmod"
+sha256 = "c3acd8adfeac6450c3a13b5172c8abb298cb3ceb355dfc539b4bdd653ef15502"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUQ84d8BvD1EaR6fPq1+iCBwAhUosfQDHMjVQLYQkIRcmU7I9Ls7Z3nC8wFUF4BOzgB4DaP5UonvlkAG4wqNMZH6EnRLmwaGqgw=\r
+trusted comment: Fast Items for Horizon 0.1.0; fast-items-0.1.0.hnmod\r
+iqcDMYeA2LekavHGy7yMhtCtH6kCyjq7x76cVPD994O+CYj0lfW4tZL1HSgtXQJFM+3Gw3h2xr55DndjcqFiAA=="""
+changelog = """
+Optimizes item rendering by transforming items to 2D forms.
+
+For 2D items(such as potions), this mod avoids rendering their sides, so they are completely flat
+
+For 3D items(such as cube blocks), this mod makes them always face to camera, just as the same behaviour in Lunar Client/BLC."""

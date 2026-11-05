@@ -51,3 +51,5 @@ pub mod smp_store;
 pub mod smp_switch;
 #[path = "../mixins/smp/smp_trade.rs"]
 pub mod smp_trade;
+#[path = "../mixins/smp/smp_vanish.rs"]
+pub mod smp_vanish;

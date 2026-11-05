@@ -1,6 +1,7 @@
 id = "rmotd"
 kind = "native-mod"
 owners = ["Vakarux12"]
+owner_ids = [167799729]
 key = "RWS5u/7lEyKbzVHC6uMJRlhM/N7vzKp5fZe2LCDUlHsDK4lvPupxJbqQ"
 name = "RMotd"
 summary = "Rotating server list MOTDs, managed in game with /randommotd and /motd."

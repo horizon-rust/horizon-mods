@@ -2,8 +2,8 @@
 // categories; a category's page its items, with what the market asks and
 // pays (in its name). A click buys one, a shift-click a stack of 64; a click on a stack in
 // your own inventory sells it; "Sell all" sells everything the market buys.
-// Buying and selling go through the market's own rules (its prices, today's
-// limits, items first then money, logged). This file only lays the pages out
+// Buying and selling go through the market's own rules (its prices,
+// items first then money, logged). This file only lays the pages out
 // and says what a click means; the glue opens the menu and moves the items.
 // No game types. Added to the game as `game::smp_shop`; also a module of this
 // crate, for its tests.
@@ -26,7 +26,6 @@ const HELP: usize = 46;
 const PREV: usize = 47;
 const BALANCE: usize = 48;
 const SELL_ALL: usize = 49;
-const LIMITS: usize = 50;
 const NEXT: usize = 51;
 const CLOSE: usize = 53;
 /// Where the first page puts the categories: the middle of rows 2 to 4.
@@ -183,7 +182,6 @@ pub enum Cell {
     Next,
     Balance,
     SellAll,
-    Limits,
     Help,
     Close,
 }
@@ -254,7 +252,6 @@ impl Shop {
         cells[HELP] = Cell::Help;
         cells[BALANCE] = Cell::Balance;
         cells[SELL_ALL] = Cell::SellAll;
-        cells[LIMITS] = Cell::Limits;
         cells[CLOSE] = Cell::Close;
         match page {
             Page::Main => {

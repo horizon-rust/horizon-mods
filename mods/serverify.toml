@@ -38,6 +38,7 @@ Install it from the launcher's Mods page, then press Build there, and play that 
 Native mods are not sandboxed. The source is public and licensed GPL-3.0-only: https://github.com/Louchatfroff/serverify/tree/main/horizon/serverify"""
 authors = ["Louchatfroff"]
 owners = ["Louchatfroff"]
+owner_ids = [87802271]
 license = "GPL-3.0-only"
 source = "https://github.com/Louchatfroff/serverify"
 icon = "icons/serverify.png"

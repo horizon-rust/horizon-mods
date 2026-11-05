@@ -1,0 +1,26 @@
+id = "wisdom_horizon_lite"
+kind = "shader"
+name = "Wisdom Shaders V3 Lite (Horizon port)"
+summary = "The LITE profile of bobcao3's Wisdom Shaders V3 for Horizon, made for integrated graphics."
+description = """
+The LITE profile of the unofficial Horizon port of **Wisdom Shaders V3 (Build 3300)** by bobcao3 (https://github.com/bobcao3/Wisdom-Shaders). Like the original, it is licensed under the Apache License 2.0. It is not an official Wisdom Shaders release.
+
+It has the same lighting, sky, clouds, fog and AgX tonemap as the full version (`wisdom_horizon`), tuned to Wisdom's LITE profile for integrated graphics:
+- a 1024 shadow map over 64 blocks, with single-tap shadows
+- no cloud shadows and no water mirror
+- no bloom and no FXAA
+
+The README in the repository lists everything that was ported and what changed."""
+authors = ["bobcao3", "tomasmendes01"]
+owners = ["tomasmendes01"]
+owner_ids = [68385376]
+license = "Apache-2.0"
+source = "https://github.com/tomasmendes01/wisdom-horizon"
+
+[[versions]]
+version = "1.1.0"
+published = "2026-11-04"
+game = "26.3"
+file = "wisdom_horizon_lite-1.1.0.hshader"
+sha256 = "662570653111bd34fec37a7482791b8b1d0bdcee1bcba5351c4137acababb818"
+changelog = "First release: the LITE profile of Wisdom Shaders V3 (Build 3300), ported to Horizon's shader API."

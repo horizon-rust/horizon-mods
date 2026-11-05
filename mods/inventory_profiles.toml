@@ -5,6 +5,7 @@ summary = "R-key & UI sorting (Category, A-Z, Count, ID), Auto-Refill depleted s
 description = "A 1:1 native Rust port of Inventory Profiles Next & Inventory Sorter for Horizon. Press R or click the UI sort buttons to merge partial stacks and sort chests or your inventory using 4 selectable modes: Category (Creative Tab), Alphabetical (A-Z), Stack Count (High-Low), or Item ID. Includes automatic hand stack refilling when placing blocks or consuming items, Tool Break Protection that swaps out low-durability tools before they break, and G-key Quick-Stacking to move matching items into open containers."
 authors = ["CayMac"]
 owners = ["CayMac97"]
+owner_ids = [197672048]
 license = "MIT"
 source = "https://github.com/CayMac97/inventory-profiles"
 key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"

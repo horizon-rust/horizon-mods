@@ -30,6 +30,7 @@ The engine's unit tests pass, and the modded client type-checks. Live, against P
 """
 authors = ["Nirokx"]
 owners = ["Nirokx"]
+owner_ids = [95123456]
 license = "MIT"
 source = "https://github.com/Nirokx/horizon-voice-chat"
 

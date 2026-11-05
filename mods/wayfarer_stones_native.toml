@@ -1,0 +1,34 @@
+id = "wayfarer_stones_native"
+kind = "native-mod"
+name = "Wayfarer Stones"
+summary = "Place stones around your world, activate them, and travel between the ones you know."
+description = """
+**This mod has two parts, and you need both.** Install this one and [Wayfarer Stones (assets)](https://playhorizon.dev/mods/wayfarer_stones), then press Build.
+
+- **Place** a stone, or find one in a village. Right-click it once to add it to your list.
+- **Travel** from any stone you know: pick a destination on the screen, or search for it. You land beside the stone, on solid ground.
+- **Pay** in experience levels: 1, plus 1 for each 500 blocks, up to 5. Travel between dimensions costs 3.
+- **Carry** a Wayfarer's Scroll to travel from anywhere. Each travel uses one up.
+- **Stones are safe:** only the owner or an operator can break one, and pistons won't move it.
+
+Every world has its own settings: cost, cooldown, warmup and more. English and Russian.
+
+**Commands:** `/wayfarer`, `/wayfarer list`, `/wayfarer to <name>`, `/wayfarer name <name>`, `/wayfarer forget <name>`. Operators also have `/wayfarer global <name>` and `/wayfarer remove <name>`.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to one Horizon Nightly and Horizon Mixins revision, named in each version's changelog.
+
+No Minecraft code or assets are included. MIT licensed."""
+authors = ["bioneisme"]
+owners = ["Bioneisme"]
+owner_ids = [92920845]
+license = "MIT"
+source = "https://github.com/Bioneisme/wayfarer-stones"
+icon = "https://raw.githubusercontent.com/Bioneisme/wayfarer-stones/main/content/assets/wayfarer_stones/textures/item/wayfarer_stone.png"
+
+[[versions]]
+version = "0.6.0"
+published = "2026-11-04"
+game = "26.3"
+file = "wayfarer_stones_native-0.6.0.hnmod"
+sha256 = "0c5929425bea6c570ad455229b519fc411ea2b769ef08be8a91bb8b7793d9dba"
+changelog = "First release. Pinned to Nightly 2026-11-04 (67dad0d) and Horizon Mixins e8cd0aa."

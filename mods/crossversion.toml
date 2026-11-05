@@ -7,6 +7,7 @@ Hop versions, offline.
 Uses ViaProxy as an inbetween for now."""
 authors = ["JustKarkat"]
 owners = ["JustKarkat"]
+owner_ids = [50185858]
 license = "MIT"
 source = "https://github.com/JustKarkat/horizon-crossversion/"
 icon = "https://github.com/JustKarkat/horizon-crossversion/blob/master/icon.png?raw=true"

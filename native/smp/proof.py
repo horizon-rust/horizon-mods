@@ -19,12 +19,13 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
   the pot;
 - after the server stops cleanly and starts again, the balances are the same, and audit.log holds every change;
 - an operator's /eco give, then the /shop menu: a category, one item bought by a click and a stack by
-  a shift-click, a stack of the player's own sold by clicking it, "Sell all" stopped by the daily limit (the rest
-  kept, the limit shown in the menu and in /worth, the day's sales in market.json), the close button;
-- after the restart, prices moving: a purchase and a sale with no tax (receipts), an item bought can't be sold
-  back while one found can, one price for diamond, moved down by a sale and up by a purchase as they go, /market's item
+  a shift-click, a stack of the player's own sold by clicking it, "Sell all", the close button;
+- after the restart, prices moving: a purchase and a sale with no tax (receipts), bought items can be sold
+  back immediately, one price for diamond, moved down by a sale and up by a purchase as they go, /market's item
   page buying, the 24 h chart given as a map and drawn in the player's hand (market-chart.png), web/market.json, and
   market_prices.json written when the world closes;
+- a farm's dump with no daily cap: 1,000 wheat (more than the old 640 a day) sold over four minutes, each minute's
+  sale stopped by the 5% band, the price lower after each, and /worth showing no daily limit;
 - the web pages (web/market.json, web/economy.json) sent gzipped with the token to a stand-in for Kira;
 - /invsee: an operator takes a stack from an offline player's saved inventory, logged before the move and summed up in
   staff.log;
@@ -32,7 +33,12 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
   protection (the economy refuses, the sidebar goes), then everything on again, each in audit.log;
 - nicknames, for operators only: a player can't pick one; an operator's refused ones (a player's name, too short, a
   bad character), the one given in the other's chat and Tab list, /realname, someone else's taken, the player taking
-  it off.
+  it off;
+- /rtp: refused in the Nether; in the Overworld the player lands 500 to 5,000 blocks from the spawn on solid ground
+  (and stays there), a second /rtp is refused with the time left, and the chunk it held loaded is let go.
+
+`SMP_PROOF=rtp` runs one /rtp alone on a normal (not flat) world's fresh land instead, and what it cost the server's
+ticks: a performance report (`horizon-report`) over the search and landing against one over the same time before it.
 
 The casino has its own proof (proof_casino.py): `SMP_PROOF=casino` runs it instead of this one.
 
@@ -100,10 +106,10 @@ def scratch_env(root):
 class Server:
     """`horizon-client --dedicated --nogui` in a scratch server folder, its console on stdin."""
 
-    def __init__(self, game, resources, folder, port):
+    def __init__(self, game, resources, folder, port, properties=None):
         self.folder, self.lines, self.game, self.resources, self.port = folder, [], game, resources, port
         folder.mkdir(parents=True, exist_ok=True)
-        props = dict(PROPERTIES, **{"server-port": str(port)})
+        props = dict(PROPERTIES, **(properties or {}), **{"server-port": str(port)})
         (folder / "server.properties").write_text("".join(f"{k}={v}\n" for k, v in props.items()))
         (folder / "eula.txt").write_text("eula=true\n")
         self.env = scratch_env(folder.parent / "server-env")
@@ -340,6 +346,135 @@ def places(server, alex, steve):
     r["rules"] = steve.say("/rules")
     assert any("1. Be respectful to everyone." in l for l in r["rules"]), r
     return r
+
+
+def landed(c, text, timeout=120):
+    """Waits for a chat line with `text` (an /rtp's end), up to `timeout` s; the line."""
+    end = time.time() + timeout
+    while time.time() < end:
+        hit = [l for l in c.chat()[-6:] if text in l or "/rtp couldn't" in l or "No safe spot" in l]
+        if hit:
+            return hit[-1]
+        time.sleep(1)
+    raise AssertionError(f"{c.name}: no {text!r} in {timeout} s: {c.chat()[-8:]}")
+
+
+FLAT_GROUND = "if block ~ ~-1 ~ minecraft:grass_block if block ~ ~ ~ minecraft:air if block ~ ~1 ~ minecraft:air"
+SOLID_GROUND = ("unless block ~ ~-1 ~ minecraft:air unless block ~ ~-1 ~ minecraft:water "
+                "unless block ~ ~-1 ~ minecraft:lava")
+
+
+def standing(server, c, at, tests=FLAT_GROUND):
+    """Whether the blocks round `at` pass `tests` (execute's conditions), as the server sees them: it says so."""
+    x, y, z = (math.floor(v) for v in at)
+    before = len(server.lines)
+    server.console(f"execute in minecraft:overworld positioned {x} {y} {z} {tests} run say rtp-ground-ok")
+    time.sleep(3)
+    seen = server.lines[before:] + c.chat()[-4:]
+    return any("rtp-ground-ok" in l for l in seen), seen
+
+
+def rtp(server, steve, data):
+    """/rtp: refused in the Nether; to a random spot 500..5000 blocks from the spawn, on the ground; then its cooldown."""
+    r = {}
+    spawn = json.loads((data / "places.json").read_text())["spawn"]
+    _, home, _ = where(steve)
+    server.console("execute in minecraft:the_nether run tp Steve 0.5 128 0.5")
+    time.sleep(5)
+    r["nether"] = steve.say("/rtp")
+    assert any("/rtp only works in the Overworld." in l for l in r["nether"]), r
+    server.console(f"execute in minecraft:overworld run tp Steve {home[0]:.2f} {home[1]:.2f} {home[2]:.2f}")
+    time.sleep(5)
+    start = len(server.lines)
+    r["asked"] = steve.say("/wild")
+    assert any("Teleporting in 2 s: don't move." in l for l in r["asked"]), r
+    r["landed"] = landed(steve, "Teleported to a random spot")
+    assert "Teleported to a random spot" in r["landed"], r
+    time.sleep(3)
+    dim, at, health = where(steve)
+    r["at"], r["distance"] = at, math.hypot(at[0] - spawn["x"], at[2] - spawn["z"])
+    assert dim == "minecraft:overworld" and 499 <= r["distance"] <= 5001, r
+    # On the ground, not falling: the same place a few seconds later, unhurt.
+    time.sleep(4)
+    _, still, health2 = where(steve)
+    assert near(at, still) and health2 >= health, (r, still, health2)
+    r["ground"], lines = standing(server, steve, at)
+    assert r["ground"], (r, lines)
+    log = [l for l in server.lines[start:] if "[smp] /rtp: Steve" in l]
+    assert log, server.lines[start:][-20:]
+    r["log"] = log[-1]
+    r["slow_ticks"] = [l for l in server.lines[start:] if "slow tick" in l or "Can't keep up" in l]
+    r["again"] = steve.say("/rtp")
+    assert any("Wait 30 min before your next /rtp." in l for l in r["again"]), r
+    # The chunk it held loaded is let go 10 s after the landing.
+    time.sleep(12)
+    saved = json.loads((data / "places.json").read_text())
+    assert not saved.get("forced") and len(saved.get("rtp", {})) == 1, saved
+    server.console(f"execute in minecraft:overworld run tp Steve {home[0]:.2f} {home[1]:.2f} {home[2]:.2f}")
+    time.sleep(3)
+    return r
+
+
+def report(server, seconds):
+    """A performance report over the next `seconds`: its ticks (`mspt`, `over_50_ms`...)."""
+    folder = server.folder / "reports"
+    before = set(folder.glob("perf-*.json")) if folder.exists() else set()
+    server.console(f"horizon-report {seconds}")
+    end = time.time() + seconds + 60
+    while time.time() < end:
+        made = set(folder.glob("perf-*.json")) - before if folder.exists() else set()
+        if made:
+            time.sleep(1)
+            return json.loads(made.pop().read_text())["ticks"]
+        time.sleep(1)
+    raise AssertionError(f"no report after {seconds} s: {server.lines[-20:]}")
+
+
+def rtp_alone(ctl, resources, out):
+    """SMP_PROOF=rtp: one /rtp on a normal world's fresh land (view distance 8, as the official server), with the
+    ticks' cost: a 30 s report from the /rtp on, against a 30 s report just before it."""
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    game = Path(ctl).with_name("horizon-client")
+    root = Path(tempfile.mkdtemp(prefix="smp-rtp-"))
+    port = free_port()
+    server = Server(game, resources, root / "server", port, {"level-type": "minecraft\\:normal", "view-distance": "8",
+                                                             "generate-structures": "true"})
+    server.env["HORIZON_SPIKES"] = "50"
+    steve = Client(ctl, resources, "Steve", root)
+    r = {}
+    try:
+        server.start()
+        steve.join(port)
+        # The spawn's land settles first.
+        time.sleep(30)
+        r["before"] = report(server, 30)
+        start = len(server.lines)
+        r["asked"] = steve.say("/rtp")
+        assert any("Teleporting in 3 s: don't move." in l for l in r["asked"]), r
+        server.console("horizon-report 30")
+        r["landed"] = landed(steve, "Teleported to a random spot", 90)
+        assert "Teleported to a random spot" in r["landed"], r
+        folder = server.folder / "reports"
+        end = time.time() + 120
+        while len(list(folder.glob("perf-*.json"))) < 2 and time.time() < end:
+            time.sleep(1)
+        r["during"] = json.loads(max(folder.glob("perf-*.json"), key=lambda f: f.stat().st_mtime).read_text())["ticks"]
+        time.sleep(5)
+        dim, at, _ = where(steve)
+        r["at"], r["distance"] = at, math.hypot(at[0], at[2])
+        assert dim == "minecraft:overworld" and 499 <= r["distance"] <= 5001, r
+        r["ground"], _ = standing(server, steve, at, SOLID_GROUND)
+        r["log"] = [l for l in server.lines[start:] if "[smp] /rtp: Steve" in l]
+        r["slow_ticks"] = [l for l in server.lines[start:] if "slow tick" in l or "Can't keep up" in l]
+        print(json.dumps({"proof": "rtp", "ok": True, **r}, indent=2))
+    finally:
+        (out / "server.log").write_text("\n".join(server.lines))
+        steve.quit()
+        server.stop()
+        if server.__dict__.get("process") and server.process.poll() is None:
+            server.process.kill()
+        shutil.rmtree(root, ignore_errors=True)
 
 
 def claims(server, alex, steve):
@@ -635,7 +770,7 @@ def nicks(server, alex, steve, out):
 
 def shop(server, alex):
     """Alex alone, op, in survival: given money (/eco give), then the /shop menu: a category, buying one and a stack,
-    selling a stack of hers, "Sell all" up to the daily limit, closing. Returns the coins it added, and the lines."""
+    selling a stack of hers, "Sell all" without a daily limit, closing. Returns the coins it added, and the lines."""
     results = {}
     # Only what the step gives her: "Sell all" would sell the rest too.
     server.console("clear Alex")
@@ -660,42 +795,40 @@ def shop(server, alex):
     alex.run("click-slot", 300 + 0, "shift")  # a stack of cobblestone
     time.sleep(1)
     assert alex.count("minecraft:cobblestone") == 64, alex.run("inventory")
-    # Along the price as the stack moves it: 64 at 1 coin come to 64.05, 65 whole coins.
+    # Along the price as the stack moves it (50 a 1%): 64 at 1 coin come to 64.41, 65 whole coins.
     results["stack"] = alex.chat()[-4:]  # an advancement may come after
     assert any("Bought 64 cobblestone at 1.02 coins each: 65 coins." in l for l in results["stack"]), results
     assert not any("Tax" in l for l in results["stack"]), results
-    # Her own stack of iron, clicked: the ingot she just bought stays (no buying to sell back), one she found sells.
+    # Clear the cobblestone so the later Sell all step only tests diamonds.
+    server.console("clear Alex minecraft:cobblestone 64")
+    time.sleep(1)
+    # The iron she just bought can be sold back immediately.
     alex.click(alex.slot_of("minecraft:iron_ingot"))
-    results["round_trip"] = alex.chat()[-1:]
-    assert any("You bought 1 iron ingot from the market in the last 24 h" in l for l in results["round_trip"]), results
+    results["round_trip"] = alex.chat()[-3:]
+    assert any("Sold 1 iron ingot at 15 coins each: 15 coins." in l for l in results["round_trip"]), results
+    assert alex.count("minecraft:iron_ingot") == 0
     server.console("give Alex minecraft:iron_ingot 1")
     time.sleep(2)
     alex.click(alex.slot_of("minecraft:iron_ingot"))
     results["sold"] = alex.chat()[-4:]
     # Sold at the price she bought at: one price.
     assert any("Sold 1 iron ingot at 15 coins each: 15 coins." in l for l in results["sold"]), results
-    assert any("1 iron ingot kept: bought from the market in the last 24 h." in l for l in results["sold"]), results
-    assert alex.count("minecraft:iron_ingot") == 1
-    # Sell all, up to the 2,000 coins a day: 1,984 left (1 from Steve's /pay in the nickname step: money received
-    # counts too; 15 for the iron), 9 diamonds at 200. Each one sold lowers the price: 40,000 * (1 - e^-0.045)
-    # = 1,760.1 for the 9.
-    server.console("give Alex minecraft:diamond 30")
+    assert alex.count("minecraft:iron_ingot") == 0
+    # Sell all nine diamonds, with no daily cap. Along the curve they earn
+    # 40,000 * (1 - e^-0.045) = 1,760.1, rounded down to 1,760 coins.
+    server.console("give Alex minecraft:diamond 9")
     time.sleep(2)
     alex.click(300 + 49)
     results["sell_all"] = alex.chat()[-8:]
     assert any("Sold 9 diamond at 196 coins each: 1,760 coins." in l for l in results["sell_all"]), results
     assert not any("Tax" in l for l in results["sell_all"]), results
-    assert any("21 diamond kept: today's selling limit." in l for l in results["sell_all"]), results
-    assert alex.count("minecraft:diamond") == 21, alex.run("inventory")
-    limits = alex.menu()[50]
-    results["limits"] = limits
-    # 1,984 - 1,760.
-    assert "224 coins left of your 2,000 coins a day" in json.dumps(limits), limits
+    assert alex.count("minecraft:diamond") == 0, alex.run("inventory")
+    assert alex.menu()[50]["item"] == "minecraft:gray_stained_glass_pane", alex.menu()
     alex.click(300 + 53)  # close
     assert not alex.menu()
     results["worth"] = alex.say("/worth diamond")
-    assert any("You may sell 631 more diamond today." in l for l in results["worth"]), results
-    return 2000 + 10 - 15 - 65 + 15 + 1760, results
+    assert any("diamond:" in l for l in results["worth"]), results
+    return 2000 + 10 - 15 - 65 + 15 + 15 + 1760, results
 
 
 def invsee(alex, data):
@@ -781,6 +914,47 @@ def market(server, alex, out, data):
     return paid, results
 
 
+def farm(server, alex):
+    """No daily sale cap: Alex sells 1,000 wheat, more than the old 640 a day, a minute at a time. Each minute's
+    sale stops at the 5% band (250 wheat at 50 a 1%), and the price is lower after each. Returns the coins and lines."""
+    results = {}
+
+    def worth():
+        lines = alex.say("/worth wheat")
+        line = next(l for l in lines if "wheat: " in l and "each, to buy or sell." in l)
+        return float(re.search(r"wheat: ([\d.,]+) coins? each", line)[1].replace(",", "")), lines
+
+    server.console("give Alex minecraft:wheat 1000")
+    time.sleep(2)
+    assert alex.count("minecraft:wheat") == 1000, alex.run("inventory")
+    price, lines = worth()
+    results["worth_before"] = lines
+    assert not any("today" in l for l in lines), lines
+    got, prices, sales = 0, [price], []
+    for minute in range(4):
+        if minute:
+            time.sleep(61)  # the next minute's band
+        lines = alex.say("/sell wheat")
+        sold = [re.search(r"Sold (\d+) wheat at [\d.,]+ coins? each: ([\d,]+) coins?\.", l) for l in lines]
+        sold = [m for m in sold if m]
+        assert len(sold) == 1, lines
+        n, coins = int(sold[0][1]), int(sold[0][2].replace(",", ""))
+        sales.append(n)
+        got += coins
+        # 250 a minute; what the band keeps stays in her inventory.
+        assert n == 250, lines
+        assert minute == 3 or any("kept: its price moved 5% this minute" in l for l in lines), lines
+        assert not any("limit" in l for l in lines), lines
+        price, wl = worth()
+        assert price < prices[-1], (prices, wl)
+        prices.append(price)
+    assert alex.count("minecraft:wheat") == 0, alex.run("inventory")
+    results["sales"], results["prices"], results["coins"] = sales, prices, got
+    # Four 5% steps down from 2 (a little drift back between): about 2 * e^-0.2 = 1.64.
+    assert 1.6 < prices[-1] < 1.7 and 1500 < got < 2000, results
+    return got, results
+
+
 def trades(server, alex, steve, port, ctl, resources, root):
     """Every way out of a trade, then one that goes through. Alex: 10 diamonds; Steve: 5 emeralds, 5 torches."""
     results = {}
@@ -859,6 +1033,46 @@ def trades(server, alex, steve, port, ctl, resources, root):
     return results, steve
 
 
+def vanish(server, alex, steve, out):
+    """/vanish: Alex (an operator) leaves Steve's world and Tab list, and reads a subtitle the whole time; Steve can't
+    reach her by name; /vanish again brings her back. Steve can't vanish."""
+    r = {}
+    players = lambda c: [e for e in c.run("entities", 64, "player")["entities"]]
+    subtitle = lambda c: c.run("messages", 1).get("subtitle") or ""
+    r["seen_before"] = len(players(steve))
+    r["refused"] = steve.say("/vanish")
+    assert any("Unknown" in l or "Only operators" in l or "permission" in l for l in r["refused"]), r
+    r["vanish"] = alex.say("/vanish")
+    assert any("You vanished" in l for l in r["vanish"]), r
+    time.sleep(2.5)
+    # Over a few seconds, not just once: the subtitle never lapses.
+    r["subtitles"] = []
+    for _ in range(4):
+        r["subtitles"].append(subtitle(alex))
+        time.sleep(1)
+    assert all(s == "Vanished: only operators see you" for s in r["subtitles"]), r
+    assert "Vanished" not in subtitle(steve), r
+    if r["seen_before"]:
+        assert not players(steve), "Steve no longer sees Alex"
+    alex.run("screenshot", str(Path(out).resolve() / "vanish-subtitle.png"))
+    steve.run("key", "tab", "down")
+    time.sleep(1)
+    steve.run("screenshot", str(Path(out).resolve() / "vanish-tab.png"))
+    steve.run("key", "tab", "up")
+    r["tpa"] = steve.say("/tpa Alex")
+    assert any("Alex is not on." in l or "Alex isn't on." in l for l in r["tpa"]), r
+    r["list"] = alex.say("/vanish list")
+    assert any("Vanished: Alex." in l for l in r["list"]), r
+    r["back"] = alex.say("/vanish")
+    assert any("You are visible again." in l for l in r["back"]), r
+    time.sleep(3)
+    assert "Vanished" not in subtitle(alex), r
+    if r["seen_before"]:
+        assert players(steve), "Steve sees Alex again"
+    time.sleep(6)  # the spam guard's window, for the steps after
+    return r
+
+
 def run(ctl, resources, out):
     if os.environ.get("SMP_PROOF") == "casino":
         # The casino's own proof (proof_casino.py), apart: it plays its games for a few minutes.
@@ -867,6 +1081,8 @@ def run(ctl, resources, out):
         casino = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(casino)
         return casino.run(ctl, resources, out)
+    if os.environ.get("SMP_PROOF") == "rtp":
+        return rtp_alone(ctl, resources, out)
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     game = Path(ctl).with_name("horizon-client")
@@ -930,12 +1146,10 @@ def run(ctl, resources, out):
         assert any("You paid 120 coins to Steve. Balance: 380 coins" in l for l in results["pay"]), results
         results["paid"] = steve.chat()[-3:]
         assert any("Alex paid you 120 coins." in l for l in results["paid"]), results
-        # 9999 is past what Steve may still receive today (2,000 a day, 120 received): money paid counts toward the
-        # same daily limit as selling, so alts can't sell for a main past it.
         results["refused"] = [alex.say(l) for l in ("/pay Steve 1500", "/pay Steve 9999", "/pay Alex 1",
                                                     "/pay Nobody 1")]
         for lines, error in zip(results["refused"], ("You only have 380 coins.",
-                                                     "Steve can only receive 1,880 coins more today",
+                                                     "You only have 380 coins.",
                                                      "You can't pay yourself.",
                                                      "No player named Nobody has an account.")):
             assert any(error in l for l in lines), results["refused"]
@@ -976,12 +1190,14 @@ def run(ctl, resources, out):
         results["trades"], steve = trades(server, alex, steve, port, ctl, resources, root)
         # Before the coinflips: their last offer must still wait when the server stops.
         results["places"] = places(server, alex, steve)
+        results["rtp"] = rtp(server, steve, data)
         results["claims"] = claims(server, alex, steve)
         results["world_guard"] = world_guard(server, alex, steve)
         results["board"] = board(alex, steve, out)
         results["polish"] = polish(server, alex, steve, out)
         results["presence"] = presence(server, alex, steve)
         results["nicks"] = nicks(server, alex, steve, out)
+        results["vanish"] = vanish(server, alex, steve, out)
         results["coinflip"], alex_wins = coinflips(alex, steve)
         results["lottery"], alex_lotto = lottery(alex, steve, alex_wins)
         alex_after = 415 + (100 if alex_wins else -100) + (20 if alex_lotto else -30)
@@ -1030,6 +1246,8 @@ def run(ctl, resources, out):
         assert not any("joined for the first time" in l for l in alex.chat()), alex.chat()
         added, results["shop"] = shop(server, alex)
         spent, results["market"] = market(server, alex, out, data)
+        farmed, results["farm"] = farm(server, alex)
+        added += farmed
         results["invsee"] = invsee(alex, data)
         results["switches"] = switches(alex, data)
         sent = {path: (auth, doc) for path, auth, doc in receiver.got}
@@ -1057,17 +1275,12 @@ def run(ctl, resources, out):
         assert not json.loads((data / "switches.json").read_text())["off"], "everything on again"
         kinds = [a["kind"] for a in audit if not a["kind"].startswith(("invsee_", "switch_"))]
         shop_kinds = ["eco_give", "buy 1 minecraft:iron_ingot", "buy 64 minecraft:cobblestone",
-                      "sell 1 minecraft:iron_ingot", "sell 9 minecraft:diamond", "buy 1 minecraft:diamond"]
+                      "sell 1 minecraft:iron_ingot", "sell 1 minecraft:iron_ingot", "sell 9 minecraft:diamond", "buy 1 minecraft:diamond",
+                      *["sell 250 minecraft:wheat"] * 4]
         assert kinds[-len(shop_kinds):] == shop_kinds, kinds[-8:]
         kinds = kinds[:-len(shop_kinds)]
         assert kinds[-2] in ("held_returned", "coinflip_cancel") and kinds[-1] == "daily_reward", kinds[-3:]
         results["stake_back"] = kinds[-2]
-        sold = json.loads((data / "market.json").read_text())["sold"]
-        # Steve's sales of the first run's day, and Alex's; coins received by /pay count too (#139): Steve got 120 + 1
-        # from Alex, Alex 1 from Steve.
-        assert sorted((s["coins"], s["items"]) for s in sold.values()) == [
-            (441, {"minecraft:diamond": 1, "minecraft:wheat": 60}),
-            (1776, {"minecraft:diamond": 9, "minecraft:iron_ingot": 1})], sold
         print(json.dumps({"proof": "smp", "ok": True, **results}, indent=2))
     finally:
         (out / "server.log").write_text("\n".join(server.lines))

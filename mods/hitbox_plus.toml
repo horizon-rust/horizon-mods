@@ -21,6 +21,7 @@ Press H to toggle hitboxes on/off.
 Access Options > Mods > Hitbox+ to customize all colors, thickness, and HUD positions."""
 authors = ["taxtii", "itzglecni"]
 owners = ["taxtii"]
+owner_ids = [347672997]
 license = "MIT"
 source = "https://github.com/taxtii/hitbox_plus.git"
 

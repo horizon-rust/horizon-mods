@@ -1,0 +1,33 @@
+id = "wisdom_horizon"
+kind = "shader"
+name = "Wisdom Shaders V3 (Horizon port)"
+summary = "bobcao3's Wisdom Shaders V3, ported to Horizon's own WGSL shader format."
+description = """
+An unofficial port of **Wisdom Shaders V3 (Build 3300)** by bobcao3 (https://github.com/bobcao3/Wisdom-Shaders) to Horizon's shader API (schema 1, API 0.1), translated from GLSL to WGSL. Wisdom Shaders is licensed under the Apache License 2.0, and so is this port. It is not an official Wisdom Shaders release.
+
+## Ported
+- Wisdom's sun, ambient and torch colours by time of day, and its exposure curve.
+- Oren-Nayar diffuse and GGX specular lighting, light through thin plants, and soft shadows from a jittered 3x3 kernel.
+- The atmosphere, 2D clouds and their shadows, the sun and moon discs, and height fog.
+- The AgX tonemap with its lookup table (ACES as an option), plus bloom, the vignette and waving foliage.
+
+## Changed for Horizon
+- Lighting runs per surface in the material stage, since Horizon has no G-buffers.
+- Shadows use Horizon's shadow map with PCF, and water and stained glass tint the light passing through them.
+- There is no SSAO, SSR, volumetric clouds, god rays, caustics or TAA. FXAA replaces TAA.
+- The water is rewritten for Horizon's translucent pass.
+
+The full list of changes is in the README. For integrated graphics there is a Lite version (`wisdom_horizon_lite`) based on Wisdom's LITE profile."""
+authors = ["bobcao3", "tomasmendes01"]
+owners = ["tomasmendes01"]
+owner_ids = [68385376]
+license = "Apache-2.0"
+source = "https://github.com/tomasmendes01/wisdom-horizon"
+
+[[versions]]
+version = "1.1.0"
+published = "2026-11-04"
+game = "26.3"
+file = "wisdom_horizon-1.1.0.hshader"
+sha256 = "2b7b4e11e3506b65e8c4162ed56fbf3c33bc51bbc56038a4b1297219d917dd1e"
+changelog = "First release: a port of Wisdom Shaders V3 (Build 3300) to Horizon's shader API."

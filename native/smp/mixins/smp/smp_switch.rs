@@ -98,7 +98,7 @@ impl Part {
             "invsee" | "endersee" => Part::Invsee,
             "spawn" | "setspawn" | "home" | "sethome" | "delhome" | "homes" | "warp" | "warps"
             | "setwarp" | "delwarp" | "tpa" | "tpaccept" | "tpdeny" | "rules" | "back"
-            | "playtime" => Part::Places,
+            | "playtime" | "rtp" | "wild" => Part::Places,
             _ => return None,
         })
     }

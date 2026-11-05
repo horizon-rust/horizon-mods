@@ -16,6 +16,7 @@ See in the dark without torches or night vision. MoreGamma lets you set the brig
 Client-side: the commands are handled by your game before anything reaches a server, so it works in single player, on LAN and on servers. Your brightness slider and `options.txt` are never changed, so turning it off gives your own brightness back. Settings are remembered between sessions."""
 authors = ["bezi5kt"]
 owners = ["bezi5kt"]
+owner_ids = [45046654]
 license = "MIT"
 source = "https://github.com/bezi5kt/gamma-rust"
 icon = "icons/fullbright.png"

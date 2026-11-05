@@ -26,6 +26,7 @@ Independently written Rust code; no upstream mod code or artwork is bundled. MIT
 """
 authors = ["levzzz5154"]
 owners = ["levzzz5154"]
+owner_ids = [86072227]
 license = "MIT"
 source = "https://github.com/levzzz5154/horizon-veinminer"
 

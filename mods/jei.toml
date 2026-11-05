@@ -37,6 +37,7 @@ Horizon JEI reads the game's tables, container interface, chat, and its own sett
 *Unofficial project. Not affiliated with mezz, Mojang, Microsoft, or the Horizon project.*"""
 authors = ["enderliker"]
 owners = ["enderliker"]
+owner_ids = [166346005]
 license = "MIT"
 source = "https://github.com/enderliker/horizon-jei"
 key = "RWRqzx718YYz/OHRM+pAnFWlDv8Rrgar5C4NszQg3EKJWQZWNel5Sslf"

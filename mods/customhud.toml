@@ -15,6 +15,7 @@ Shows the current survival day, an in-game clock and a color-shifting bar that f
 - English, Italian, German, Spanish, French and Portuguese."""
 authors = ["SCARABOCCHIO100"]
 owners = ["sonoFrangu"]
+owner_ids = [205944444]
 license = "MIT"
 source = "https://github.com/sonoFrangu/CustomHUD-Horizon"
 icon = "icons/customhud.png"

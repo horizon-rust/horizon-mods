@@ -1,6 +1,7 @@
 id = "killc"
 kind = "native-mod"
 owners = ["Vakarux12"]
+owner_ids = [167799729]
 key = "RWS5u/7lEyKbzVHC6uMJRlhM/N7vzKp5fZe2LCDUlHsDK4lvPupxJbqQ"
 name = "KillC"
 summary = "/killc, /killc <player> and /suicide, with an optional random respawn near (0, 0)."

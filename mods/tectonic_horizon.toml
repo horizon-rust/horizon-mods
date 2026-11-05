@@ -1,0 +1,31 @@
+id = "tectonic_horizon"
+kind = "native-mod"
+name = "Tectonic-Horizon"
+summary = "Unofficial native port of Tectonic: mountain ranges, underground rivers and configurable terrain."
+description = """
+Unofficial native Rust port of Tectonic 3.0.1 by Apollo (Apollounknowndev), revision 0761b561062de01b701d2571401f625c31059a9a under CC0-1.0. Not made or endorsed by Apollo or the Horizon project.
+
+Mountain ranges, terrain density recipes, underground rivers and configurable terrain for Horizon 26.3. Source-only native mod: install in the launcher, then Build; runs with the game's account permissions. No Minecraft code or assets are included.
+
+Enable under Options > Mods before opening a world. The mod's Settings page edits terrain and biome configuration. Config: config/tectonic-horizon.json in the game home. Invalid configuration logs a diagnostic and uses defaults. Restart after editing; new chunks only. Select increased height before world creation.
+
+Pins upstream Horizon 8dbbde43501924d16497d251e6e9d08f812eafcd and Mixins e8cd0aa38cffef49cb2e088ef716baa107148c02. See docs/REVIEW-0.3.4.md for current validation and docs/VALIDATION.md for historical checks with their original revisions.
+
+No block-for-block Java parity claim. Native river-decoration placement differs from Lithostitched. Java config UI and Terralith/CliffTree overlays are omitted. Other biome mods need their own Horizon ports.
+
+![Tectonic terrain](https://raw.githubusercontent.com/eltanschauung/tectonic-horizon/6f69f2b64a41f0cad09f87840cbdb104138c54c3/docs/screenshots/tectonic-landscape.png)
+
+Author-supplied screenshot captured November 1 in our Horizon fork; illustrative, not evidence of current upstream validation. Minimap is a separate mod. Original Tectonic by Apollo; Horizon adaptation by eltanschauung with Codex assistance. Source licenses, notices and provenance hashes retained."""
+authors = ["eltanschauung", "Apollo (original Tectonic)"]
+owners = ["eltanschauung"]
+owner_ids = [158000645]
+license = "CC0-1.0"
+source = "https://github.com/eltanschauung/tectonic-horizon"
+
+[[versions]]
+version = "0.3.4"
+published = "2026-11-04"
+game = "26.3"
+file = "tectonic_horizon-0.3.4.hnmod"
+sha256 = "590198d7df43b5c9474c41648db89a15bd4d388be0fe860a2f84a84b59285cec"
+changelog = "Revision of PR #160: removes unsupported runtime-toggle.json, falls back to defaults with a diagnostic for invalid/unreadable/oversized configuration, and fixes the GitHub formatting failure. Includes the 0.3.2 in-game settings editor and 0.3.3 upstream height adapter. Pins Horizon 8dbbde43501924d16497d251e6e9d08f812eafcd and Mixins e8cd0aa38cffef49cb2e088ef716baa107148c02. All 13 Rust tests, Clippy, formatting, native-package checking, reproducible packaging, mixin plan/apply, and the patched horizon-world compile check pass. No new interactive game test is claimed. Source: https://github.com/eltanschauung/tectonic-horizon/tree/6f69f2b64a41f0cad09f87840cbdb104138c54c3"

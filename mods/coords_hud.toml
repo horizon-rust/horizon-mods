@@ -18,6 +18,7 @@ rests at once, and the next build leaves it out. Its source is
 """
 authors = ["Horizon"]
 owners = ["ludovic111"]
+owner_ids = [136255825]
 license = "MIT"
 source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/coords-hud"
 icon = "icons/coords_hud.png"

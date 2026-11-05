@@ -12,6 +12,7 @@ Item count display for non-damageable held items (torches, food, blocks).
 Default position: Bottom Right (freely customizable in Options > Mods)."""
 authors = ["CayMac"]
 owners = ["CayMac97"]
+owner_ids = [197672048]
 license = "MIT"
 source = "https://github.com/CayMac97/armor-status"
 key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"

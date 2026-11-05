@@ -1,20 +1,35 @@
 id = "resourcify"
 kind = "native-mod"
-name = "Resourcify"
-summary = "Download resource packs in Horizon"
+name = "ResourcifyHorizon"
+summary = "Resourcify for Horizon"
 description = """
-Resourcify lets you browse and download resource packs without ever leaving Horizon.
+Find and install resource packs from Modrinth without leaving the game. By tariksabanuz.
 
-Features:
-- Browse resource packs right inside the game
-- One-click download and install
-- Search to find the pack you want quickly
-- Native Horizon mod, fast and lightweight"""
+A **+** button appears in the top right of the Resource Packs screen. It opens a browser with:
+
+- a search box that searches while you type, a sort button (Relevance, Downloads, Newest, Updated) and a switch between "for this game version" and "all versions";
+- a list of packs with pictures, authors and download counts, loaded as you scroll;
+- a detail pane with the versions of the selected pack and an **Install** button.
+
+Installing downloads the file from Modrinth's own server (`cdn.modrinth.com` only), checks it against the SHA-1 hash Modrinth provides, and saves it in `resourcepacks/`. Nothing is turned on for you.
+
+Source code: https://github.com/tariksabanuz/ResourcifyHorizon"""
 authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
+owner_ids = [332662152]
 license = "MIT"
 source = "https://github.com/tariksabanuz/ResourcifyHorizon"
 icon = "https://github.com/tariksabanuz/ResourcifyHorizon/blob/364648324ac0e67489a3f06faa716d96d24668ed/icon.png"
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-04"
+game = "26.3"
+file = "resourcify-0.1.1.hnmod"
+sha256 = "a6611819c9401dc7370dece7453cdda2356747f2a34c32940bf82ccd6abdcf53"
+changelog = """
+- Version 0.1.1.
+- Rebuilt and re-checked against the current Horizon revision."""
 
 [[versions]]
 version = "0.1.0"

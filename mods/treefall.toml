@@ -14,6 +14,7 @@ Cut one log of a natural tree with an axe and the whole tree comes down. Every l
 In the spirit of FallingTree; not affiliated, no code from it. Pinned to Horizon 142388e and horizon-mixins 0d6b103."""
 authors = ["d3grando"]
 owners = ["d3grando"]
+owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/treefall"
 icon = "icons/treefall.png"

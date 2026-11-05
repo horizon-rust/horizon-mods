@@ -5,6 +5,7 @@ summary = "Freecam mod ported for Horizon"
 description = "A rewrite for Horizon of the Freecam mod by the Freecam authors (https://github.com/MinecraftFreecam/Freecam, MIT; on Modrinth as freecam). Its licence notice is kept in the source."
 authors = ["hakergeniusz"]
 owners = ["hakergeniusz"]
+owner_ids = [117102435]
 license = "MIT"
 source = "https://github.com/hakergeniusz/freecam"
 key = "RWR4cJC6Jj3EWGi26o29Rs3hAIPWqf8koFdXV4bBLF/Tm84QPfRAYjO5"

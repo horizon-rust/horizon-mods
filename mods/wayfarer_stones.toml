@@ -1,0 +1,24 @@
+id = "wayfarer_stones"
+kind = "mod"
+name = "Wayfarer Stones (assets)"
+summary = "The textures, text, recipes and villages of Wayfarer Stones. Needs the Wayfarer Stones mod."
+description = """
+**This is one of the two parts of [Wayfarer Stones](https://playhorizon.dev/mods/wayfarer_stones_native), and does nothing alone.** Install both.
+
+It holds the mod's models and textures, its English and Russian text, its recipes and drops, and the stones villages build. It has no code. The code, and the description of what the mod does, are in Wayfarer Stones.
+
+All the art is original. No Minecraft assets are included. MIT licensed."""
+authors = ["bioneisme"]
+owners = ["Bioneisme"]
+owner_ids = [92920845]
+license = "MIT"
+source = "https://github.com/Bioneisme/wayfarer-stones"
+icon = "https://raw.githubusercontent.com/Bioneisme/wayfarer-stones/main/content/assets/wayfarer_stones/textures/item/wayfarer_stone.png"
+
+[[versions]]
+version = "0.6.0"
+published = "2026-11-04"
+game = "26.3"
+file = "wayfarer_stones-0.6.0.hmod"
+sha256 = "87bec46b6bbe05d95563a4bf7b8a3b92340ca1dd54c2d5709b6a0a41989d7176"
+changelog = "First release."

@@ -19,6 +19,7 @@ Options > Mods: it rests at once, and the next build leaves it out. Its source i
 """
 authors = ["Horizon"]
 owners = ["ludovic111"]
+owner_ids = [136255825]
 license = "MIT"
 source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/zoom"
 

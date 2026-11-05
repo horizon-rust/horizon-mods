@@ -8,6 +8,7 @@ description = """
 working schematics."""
 authors = ["_cykoo_"]
 owners = ["XnotCykoX"]
+owner_ids = [215324132]
 license = "MIT"
 source = "https://github.com/XnotCykoX/WorldEdit-Horizon"
 

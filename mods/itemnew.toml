@@ -13,6 +13,7 @@ Items you just got (picked up, crafted, taken from a chest, given) get a soft gl
 Settings: Options → Mods → Item New. Inspired by [Item Highlighter](https://modrinth.com/mod/item-highlighter); not affiliated, no code from it."""
 authors = ["d3grando"]
 owners = ["d3grando"]
+owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/itemnew"
 icon = "icons/itemnew.png"

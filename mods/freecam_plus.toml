@@ -8,6 +8,7 @@ Press U and your camera leaves your body. Fly it with WASD, Space and Shift, hol
 Since this is a native mod it will not work in v0.2.97 as there are no native hooks possible. This works on all nightly releases and LIKELY on version upwards from v0.2.97."""
 authors = ["_idom_"]
 owners = ["umbx-dot"]
+owner_ids = [203141410]
 license = "MIT"
 source = "https://github.com/umbx-dot/horizon-freecam"
 icon = "icons/freecam_plus.png"

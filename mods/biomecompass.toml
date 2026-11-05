@@ -14,6 +14,7 @@ Craft a **Biome Compass** (a compass with a sapling on each of its four sides, a
 Inspired by [Nature's Compass](https://modrinth.com/mod/natures-compass); not affiliated, no code from it."""
 authors = ["d3grando"]
 owners = ["d3grando"]
+owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/biomecompass"
 icon = "icons/biomecompass.png"

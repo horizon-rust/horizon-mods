@@ -11,6 +11,7 @@ Smooth 250ms brightness fade transition and HUD status notification.
 100% client-side lightmap modification, safe for multiplayer."""
 authors = ["CayMac"]
 owners = ["CayMac97"]
+owner_ids = [197672048]
 license = "MIT"
 source = "https://github.com/CayMac97/fullbright"
 key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"

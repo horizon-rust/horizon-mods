@@ -15,6 +15,7 @@ Cooldown Bar: Optional subtle weapon cooldown progress indicator below the cross
 Configurable: Easily customize styles, themes, and keybinds in Options > Mods > Crosshair Indicator."""
 authors = ["CayMac"]
 owners = ["CayMac97"]
+owner_ids = [197672048]
 license = "MIT"
 source = "https://github.com/CayMac97/crosshair-indicator"
 key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"

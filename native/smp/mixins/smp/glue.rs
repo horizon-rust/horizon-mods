@@ -2,7 +2,7 @@
 // between the game's types and the rules (smp_economy, smp_market, smp_shop,
 // smp_trade, smp_games, smp_lottery, smp_places, smp_claims). Added to
 // the game as `game::smp_glue`; the helpers (register.rs, command.rs,
-// tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs, destroy_block.rs,
+// tick.rs, level_tick.rs, lifecycle.rs, menu_clicked.rs, menu_closed.rs, destroy_block.rs,
 // right_click_block.rs, block_spread.rs, piston_move.rs,
 // explosion_detonate.rs, fill_bucket.rs, attack_entity.rs) call it from the
 // hook points.
@@ -29,6 +29,7 @@ use crate::game::{
     smp_store,
     smp_switch::{self, Part, Switches},
     smp_trade::{self, Act, Cell, Trades},
+    smp_vanish::{self, Vanish},
 };
 use horizon_client::{
     items::ItemStack,
@@ -40,7 +41,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.31.0";
+pub const VERSION: &str = "0.33.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -124,6 +125,12 @@ pub struct Smp {
     /// `/claim show`: whose chunk border is drawn (level, chunk x, chunk z)
     /// until when.
     shows: std::collections::HashMap<u128, (String, i32, i32, i64)>,
+    /// `/vanish`: an error when `vanish.json` can't be read (nobody is
+    /// hidden then, and the command says so).
+    vanish: Result<Vanish, String>,
+    /// The vanished players on who were sent the subtitle: cleared and
+    /// counted for sleeping again once they show themselves or leave.
+    vanish_titled: std::collections::HashSet<u128>,
     /// The parts operators turned off (`/smp off`).
     switches: Switches,
 }
@@ -136,6 +143,11 @@ static BUSY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(
 /// Sleep-count changes decided inside a player's command, for the next
 /// second's tick.
 static PENDING_SLEEP: Mutex<Vec<smp_presence::Act>> = Mutex::new(Vec::new());
+/// Whether an `/rtp` waits for its land: the Overworld's tick reads it then.
+static RTP: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+/// What each `/rtp`'s reads cost the Overworld's tick, by player: reads,
+/// total and longest (µs), for the line logged when they land.
+static RTP_COST: Mutex<Vec<(u128, u32, u64, u64)>> = Mutex::new(Vec::new());
 
 fn open(dir: PathBuf) -> Smp {
     let config_path = dir.join("config.json");
@@ -197,6 +209,10 @@ fn open(dir: PathBuf) -> Smp {
         Err(e) => log::error!("[smp] claims are off: {e}"),
     }
     let board = Board::open(&dir, config.board);
+    let vanish = Vanish::open(&dir);
+    if let Err(e) = &vanish {
+        log::error!("[smp] /vanish is off: {e}");
+    }
     if let Err(e) = &board {
         log::error!("[smp] the sidebar is off: {e}");
     }
@@ -254,6 +270,8 @@ fn open(dir: PathBuf) -> Smp {
         nicks,
         nicks_shown: Default::default(),
         shows: Default::default(),
+        vanish,
+        vanish_titled: Default::default(),
         switches,
     }
 }
@@ -292,9 +310,6 @@ fn save(smp: &mut Smp) {
     {
         log::error!("[smp] {err}");
     }
-    if let Err(err) = smp.market.save() {
-        log::error!("[smp] {err}");
-    }
     if let Ok(p) = &mut smp.places
         && let Err(err) = p.save(chrono::Utc::now().timestamp_millis())
     {
@@ -321,6 +336,11 @@ fn save(smp: &mut Smp) {
         log::error!("[smp] {err}");
     }
     if let Err(err) = smp.casino.save() {
+        log::error!("[smp] {err}");
+    }
+    if let Ok(v) = &mut smp.vanish
+        && let Err(err) = v.save()
+    {
         log::error!("[smp] {err}");
     }
     if let Err(err) = smp.switches.save() {
@@ -374,6 +394,8 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "tpdeny [player:word]",
         "rules",
         "back",
+        "rtp",
+        "wild",
         "playtime [player:word]",
         "claim",
         "claim info",
@@ -408,6 +430,8 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "setwarp <name:word>",
         "delwarp <name:word>",
         "nick <name:word> <nick:word>",
+        "vanish",
+        "vanish list",
     ] {
         commands.push(NativeCommand::op(usage, 3));
     }
@@ -572,18 +596,91 @@ const COMMANDS: [&str; 16] = [
     "lottery", "ah", "casino",
 ];
 
-/// `/pay <player> <amount>`'s receiver (account, name) and amount, as
-/// `Economy::pay` reads them; None for another command.
-fn pay_target(e: &Economy, line: &str) -> Option<(u128, String, i64)> {
-    let [cmd, who, amount] = line.split_whitespace().collect::<Vec<_>>()[..] else {
-        return None;
+/// The world border, from the Overworld's `world_border.dat` (the root's in
+/// older worlds), as the game last saved it; None without one (the default
+/// border, 60 million blocks wide).
+fn world_border(world: &std::path::Path) -> Option<smp_places::Bounds> {
+    let files = [
+        world.join("dimensions/minecraft/overworld/data/minecraft/world_border.dat"),
+        world.join("data/minecraft/world_border.dat"),
+    ];
+    let root = files
+        .iter()
+        .find_map(|f| horizon_world::datafix::files::read_saved_dat(f).ok().flatten())?;
+    let border = horizon_client::worldborder::WorldBorder::unpack(root.get("data")?);
+    Some(border.bounds())
+}
+
+/// After a level's tick: in the Overworld, each `/rtp` that waits reads the
+/// chunk it loads (the game reads only the level it ticks), five times a
+/// second. Columns in another player's claim are never a spot.
+pub(in crate::game) fn level_ticked(game: &mut Game<'_>, dimension: &str) {
+    use std::sync::atomic::Ordering::Relaxed;
+    if dimension != smp_places::OVERWORLD
+        || !RTP.load(Relaxed)
+        || TICKS.load(Relaxed) % 4 != 0
+        || !game.native_on(ID)
+    {
+        return;
+    }
+    let Some(dir) = game.native_world_dir() else {
+        return;
     };
-    if cmd != "pay" {
+    let mut guard = state(dir.join(smp_store::DIR));
+    let Some(smp) = guard.as_mut() else {
+        return;
+    };
+    let (Ok(places), claims) = (&mut smp.places, &smp.claims) else {
+        return;
+    };
+    let game = &*game;
+    let mut cost = RTP_COST.lock().unwrap_or_else(|e| e.into_inner());
+    places.rtp_look(&mut |uuid, (cx, cz)| {
+        let started = std::time::Instant::now();
+        let ground = read_chunk(game, claims, uuid, (cx, cz));
+        let us = started.elapsed().as_micros() as u64;
+        match cost.iter_mut().find(|c| c.0 == uuid) {
+            Some(c) => *c = (uuid, c.1 + 1, c.2 + us, c.3.max(us)),
+            None => cost.push((uuid, 1, us, us)),
+        }
+        ground
+    });
+    RTP.store(places.rtp_searching(), Relaxed);
+}
+
+/// Chunk `(cx, cz)` of the Overworld as `/rtp` reads it, None while it isn't
+/// loaded; no columns when another player claimed it.
+fn read_chunk(
+    game: &Game<'_>,
+    claims: &Result<Claims, String>,
+    uuid: u128,
+    (cx, cz): (i32, i32),
+) -> Option<smp_places::Ground> {
+    let columns: Vec<(i32, i32)> = (0..256).map(|i| (cx * 16 + i / 16, cz * 16 + i % 16)).collect();
+    let read = game
+        .native_read_columns(
+            smp_places::OVERWORLD,
+            &columns,
+            crate::game::native_world_edit::NativeHeightmap::MotionBlockingNoLeaves,
+            (1, 2),
+        )
+        .ok()?;
+    if read.bases.iter().any(Option::is_none) {
         return None;
     }
-    let amount = smp_economy::parse_amount(amount)?;
-    let (to, account) = e.find(who)?;
-    Some((to, account.name.clone(), amount))
+    let mut ground = smp_places::Ground { palette: read.palette, columns: Vec::new() };
+    let claimed = claims
+        .as_ref()
+        .ok()
+        .and_then(|c| c.owner(smp_places::OVERWORLD, cx * 16, cz * 16))
+        .is_some_and(|owner| owner != uuid);
+    if !claimed {
+        for (i, (&(x, z), base)) in columns.iter().zip(&read.bases).enumerate() {
+            let b = &read.blocks[i * 3..i * 3 + 3];
+            ground.columns.push((x, z, base.unwrap_or_default(), [b[0], b[1], b[2]]));
+        }
+    }
+    Some(ground)
 }
 
 /// The players on, as the places see them.
@@ -635,6 +732,7 @@ pub(in crate::game) fn perform(
         &smp_board::COMMANDS,
         &smp_presence::COMMANDS,
         &smp_nick::COMMANDS,
+        &smp_vanish::COMMANDS,
         &smp_switch::COMMANDS,
     ];
     if !game.native_on(ID) || !ours.iter().any(|c| c.contains(&word)) {
@@ -652,15 +750,22 @@ pub(in crate::game) fn perform(
     // Survival and adventure: a creative player could sell what they made.
     let trades = matches!(player.game_mode, 0 | 2);
     let players = game.native_server_players();
-    let online = |name: &str| {
-        players
-            .iter()
-            .find(|p| p.name.eq_ignore_ascii_case(name))
-            .map(|p| (p.uuid, p.name.clone(), matches!(p.game_mode, 0 | 2)))
-    };
     let now = chrono::Utc::now().timestamp_millis();
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
+    // A vanished player is out of reach (trades, teleports, bets) of those
+    // who don't see them.
+    let hidden: Vec<u128> = smp.vanish.as_ref().map_or_else(
+        |_| Vec::new(),
+        |v| players.iter().filter(|p| !v.sees(me.level, p.uuid)).map(|p| p.uuid).collect(),
+    );
+    let online = |name: &str| {
+        players
+            .iter()
+            .filter(|p| !hidden.contains(&p.uuid))
+            .find(|p| p.name.eq_ignore_ascii_case(name))
+            .map(|p| (p.uuid, p.name.clone(), matches!(p.game_mode, 0 | 2)))
+    };
     // The switches: `/smp` itself, then a part turned off answers alone.
     if let Some((out, changed)) = smp.switches.command(&me, now, line) {
         let out = switched(game, smp, &me, &players, changed, now, out);
@@ -704,7 +809,24 @@ pub(in crate::game) fn perform(
         n.resolve(line, &is_name, &name_of)
     });
     let line = resolved.as_deref().unwrap_or(line);
-    let out = if smp_nick::COMMANDS.contains(&word) {
+    let out = if smp_vanish::COMMANDS.contains(&word) {
+        let ops: Vec<u128> = players.iter().filter(|p| p.permission >= smp_vanish::LEVEL).map(|p| p.uuid).collect();
+        match &mut smp.vanish {
+            Ok(v) => {
+                let out = v.command(&me, &ops, line).unwrap_or_default();
+                // Hidden or shown at once; the subtitle comes with the next
+                // second (commands can't run inside a player's).
+                for (uuid, hidden) in v.changes() {
+                    game.native_hide_player(uuid, hidden.then_some(smp_vanish::LEVEL));
+                }
+                if let Ok(p) = &mut smp.presence {
+                    p.quiet = v.quiet();
+                }
+                out
+            }
+            Err(_) => vec![Out::Error("/vanish is off: vanish.json can't be read (see the server log).".into())],
+        }
+    } else if smp_nick::COMMANDS.contains(&word) {
         let names = ServerNames::read(&dir, smp.economy.as_ref().ok());
         match &mut smp.nicks {
             Ok(n) => {
@@ -774,7 +896,15 @@ pub(in crate::game) fn perform(
         }
     } else if smp_places::COMMANDS.contains(&word) {
         match &mut smp.places {
-            Ok(p) => p.command(&me, &bodies(&players), now, line).unwrap_or_default(),
+            Ok(p) => {
+                if matches!(word, "rtp" | "wild") {
+                    p.border = world_border(&dir);
+                    RTP_COST.lock().unwrap_or_else(|e| e.into_inner()).retain(|c| c.0 != me.uuid);
+                    BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
+                }
+                let seen: Vec<NativeServerPlayer> = players.iter().filter(|p| !hidden.contains(&p.uuid)).cloned().collect();
+                p.command(&me, &bodies(&seen), now, line).unwrap_or_default()
+            }
             Err(_) => vec![Out::Error(
                 "Homes and warps are off: their file can't be read (see the server log).".into(),
             )],
@@ -802,27 +932,7 @@ pub(in crate::game) fn perform(
             let report = smp.report.as_ref();
             report
                 .and_then(|r| r.command(e, line))
-                .or_else(|| {
-                    // A payment counts toward the receiver's daily selling
-                    // limit (alts can't sell for a main past it).
-                    let paid = pay_target(e, line);
-                    if let Some((to, name, amount)) = &paid
-                        && let Err(left) = smp.market.may_receive(*to, *amount, now)
-                    {
-                        return Some(vec![Out::Error(format!(
-                            "{name} can only receive {} more today: payments count toward the same daily limit as selling to the market.",
-                            e.money(left)
-                        ))]);
-                    }
-                    let before = paid.as_ref().map(|(to, ..)| e.balance(*to));
-                    let out = e.command(&me, &on, line);
-                    if let (Some((to, _, amount)), Some(b)) = (paid, before)
-                        && e.balance(to) == b + amount
-                    {
-                        smp.market.count_received(to, now, amount);
-                    }
-                    out
-                })
+                .or_else(|| e.command(&me, &on, line))
                 .or_else(|| smp.market.command(e, &me, trades, &mut bag, line))
                 .or_else(|| {
                     let (out, a) = smp.trades.command(e, &me, trades, &online, now, line)?;
@@ -1461,10 +1571,6 @@ fn shop_items(smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
                     button("minecraft:gold_ingot", &format!("Balance: {}", money(b)), "gold")
                 }
                 C::SellAll => button("minecraft:hopper", "Sell everything the market buys", "green"),
-                C::Limits => {
-                    let line = economy.and_then(|e| smp.market.limits_line(e, uuid));
-                    button("minecraft:clock", &line.unwrap_or_else(|| "No selling limit".into()), "aqua")
-                }
                 C::Help => button("minecraft:book", smp_shop::HELP_TEXT, "white"),
                 C::Close => button("minecraft:barrier", "Close", "red"),
             })
@@ -1645,9 +1751,6 @@ fn market_items(smp: &Smp, uuid: u128, now: i64) -> Vec<Option<ItemStack>> {
                     let mut lines = price_lines(smp, &id, now);
                     let base = smp.market.base(&id);
                     lines.push((format!("Base price: {}", money(base.buy.max(base.sell))), "gray"));
-                    if let Some(left) = smp.market.items_left(uuid, now, &id) {
-                        lines.push((format!("You may still sell {left} today"), "gray"));
-                    }
                     with_lore(button(&id, &name(&id), "white"), &lines)
                 }
                 C::Buy(id, n) => {
@@ -2192,6 +2295,28 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     };
     let now = chrono::Utc::now().timestamp_millis();
     let mut out = Vec::new();
+    // `/vanish`, once a second: the game told who is hidden (after a
+    // restart), and the subtitle sent to each vanished player on.
+    let vanished = smp.vanish.as_ref().map(|v| v.quiet()).unwrap_or_default();
+    let (mut subtitles, mut unvanished) = (Vec::new(), Vec::new());
+    if n % 20 == 0
+        && let Ok(v) = &mut smp.vanish
+    {
+        for (uuid, hidden) in v.changes() {
+            game.native_hide_player(uuid, hidden.then_some(smp_vanish::LEVEL));
+        }
+        for p in &players {
+            if vanished.contains(&p.uuid) {
+                subtitles.push((p.uuid, p.name.clone()));
+            } else if smp.vanish_titled.contains(&p.uuid) {
+                unvanished.push((p.uuid, p.name.clone()));
+            }
+        }
+        smp.vanish_titled = subtitles.iter().map(|s| s.0).collect();
+        if let Ok(p) = &mut smp.presence {
+            p.quiet = vanished.clone();
+        }
+    }
     // Teleports: each tick while one warms up; requests expire once a second.
     // With places off only the playtime counts.
     let places_on = smp.switches.on(Part::Places);
@@ -2223,8 +2348,20 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             {
                 log::warn!("[smp] no safe spot near the spawn: {spread}");
             }
+            if t.what == "a random spot" {
+                let mut cost = RTP_COST.lock().unwrap_or_else(|e| e.into_inner());
+                let (_, n, total, max) = cost.iter().find(|c| c.0 == t.uuid).copied().unwrap_or_default();
+                cost.retain(|c| c.0 != t.uuid);
+                log::info!(
+                    "[smp] /rtp: {} to {:.1} {:.1} {:.1} ({n} chunk reads on the tick: {total} µs, longest {max} µs)",
+                    t.name, t.to.x, t.to.y, t.to.z
+                );
+            }
             out.push(Out::Tell(t.uuid, t.done.clone()));
         }
+        // `/rtp`'s chunks: held loaded while it looks, let go after.
+        p.force(now, &mut |line| game.native_run_command(line));
+        RTP.store(p.rtp_searching(), Relaxed);
     }
     if let Ok(e) = &mut smp.economy
         && n % 20 == 0
@@ -2410,12 +2547,15 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 .unwrap_or_default(),
             played_seconds: places.as_ref().map_or(0, |p| p.played_seconds(uuid)),
         };
+        b.quiet = vanished.clone();
         sidebars = b.updates(now, &on, me);
         let to = b.tab_due(now, &on);
         if !to.is_empty() {
             let (rate, mspt) = game.native_tick_stats();
             let tps = f64::from(rate).min(1000.0 / mspt.max(0.001));
-            tab = Some((to, b.tab_lines(tps, mspt, on.len())));
+            // Vanished players aren't counted: the footer is everyone's.
+            let shown = on.iter().filter(|u| !b.quiet.contains(u)).count();
+            tab = Some((to, b.tab_lines(tps, mspt, shown)));
         }
     }
     // Nicknames: the changes asked for, then those of players who came on.
@@ -2475,6 +2615,23 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         if let smp_presence::Act::Sleep(uuid, ignored) = a {
             game.native_sleep_ignored(uuid, ignored);
         }
+    }
+    // A vanished player doesn't hold the night up; the subtitle lasts a
+    // little past the next second's (1.5 s), so it never blinks.
+    for (uuid, name) in subtitles {
+        game.native_sleep_ignored(uuid, true);
+        let subtitle = serde_json::json!({"text": smp_vanish::SUBTITLE, "color": "aqua"});
+        for line in [
+            format!("title {name} times 0 30 5"),
+            format!("title {name} subtitle {subtitle}"),
+            format!("title {name} title \"\""),
+        ] {
+            game.native_run_command(&line);
+        }
+    }
+    for (uuid, name) in unvanished {
+        game.native_sleep_ignored(uuid, false);
+        game.native_run_command(&format!("title {name} clear"));
     }
     for line in particles.into_iter().chain(casino) {
         game.native_run_command(&line);

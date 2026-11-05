@@ -1,0 +1,25 @@
+id = "armorhud"
+kind = "native-mod"
+name = "Armor HUD"
+summary = "Armor HUD mod"
+description = "A mod that adds 4 armor durability viewing slots to the hotbar."
+authors = ["Thomas9950"]
+owners = ["Thomas-Slot"]
+owner_ids = [265566914]
+license = "MIT"
+source = "https://github.com/Thomas-Slot/horizon-armor-hud"
+icon = "https://github.com/Thomas-Slot/horizon-armor-hud/blob/main/icon.png"
+key = "RWQNLUB+Hf9pa54kEx/ItgJHmDivzpAZxK9lqvv9wnecj34yzNVQHQur"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-04"
+game = "26.3"
+file = "armorhud-1.0.0.hnmod"
+sha256 = "8bd85e1584f307201bce5de2e60466d603b61d4807803d4ebc02772b4f6b704b"
+signature = """
+untrusted comment: signature from minisign secret key
+RUQNLUB+Hf9pa0KnzbNFmdhyi6xpMr56two0l9g3QlnoBYyrHFtJt5luXXEl9FnJQpP6GH7Y9KDqYUSAac7QZEQDejqrM2gA7A4=
+trusted comment: timestamp:1793750475\tfile:armorhud-1.0.0.hnmod\thashed
+q840egwiCqF5Ptn8MCP/0VqaPUQQgaWzyXwhnFhD47GLeblsZWdvPyaTnEUbsGxHCgHGT5FFrqJ54Mu1OSz/DQ=="""
+changelog = "First upload."

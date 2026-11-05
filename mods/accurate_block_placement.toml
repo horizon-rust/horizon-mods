@@ -18,6 +18,7 @@ Some servers see fast, accurate placing as a cheat: check their rules, or turn "
 A port of [Accurate Block Placement: Reborn](https://modrinth.com/mod/accurate-block-placement-reborn) (MIT) by Clayborn, Flourick, schwar and KadTheHunter, rewritten in Rust for Horizon."""
 authors = ["Lutziano888"]
 owners = ["Lutziano888"]
+owner_ids = [129792568]
 license = "MIT"
 source = "https://github.com/Lutziano888/horizon-accurate-block-placement"
 icon = "https://raw.githubusercontent.com/Lutziano888/horizon-accurate-block-placement/main/icon.png"

@@ -10,6 +10,7 @@ Each frame the mod works out every pixel's motion since the last frame (the worl
 Settings are in Options → Mods → Motion Blur: strength for moving things and the camera, shutter angle or a fixed exposure, the longest blur, quality, blurring yourself in third person, and a view that shows each pixel's motion."""
 authors = ["levzzz5154"]
 owners = ["levzzz5154"]
+owner_ids = [86072227]
 license = "MIT"
 source = "https://github.com/levzzz5154/horizon-motion-blur"
 

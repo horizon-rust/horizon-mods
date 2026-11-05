@@ -13,6 +13,7 @@ A native Horizon mod: the launcher builds it into the game (install it on the la
 Toggling is silent (no chat messages). Client-side: works in single player, on LAN and on servers. Settings are remembered between sessions."""
 authors = ["Nirokx"]
 owners = ["Nirokx"]
+owner_ids = [95123456]
 license = "MIT"
 source = "https://github.com/Nirokx/horizon-fullbright-nofog"
 

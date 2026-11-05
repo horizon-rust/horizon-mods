@@ -13,6 +13,7 @@ Every enchantment on books and gear gets a one-line description in its tooltip: 
 Settings: Options → Mods → Enchantment Hints. Inspired by [Enchantment Descriptions](https://modrinth.com/mod/enchantment-descriptions); not affiliated, no code or text from it."""
 authors = ["d3grando"]
 owners = ["d3grando"]
+owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/enchantmenthints"
 icon = "icons/enchantmenthints.png"

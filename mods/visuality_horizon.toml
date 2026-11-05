@@ -1,0 +1,30 @@
+id = "visuality_horizon"
+kind = "native-mod"
+name = "Visuality"
+summary = "Small pixel particles: hit fragments, slime blobs, creeper sparks, glints, soul wisps and rain ripples."
+description = """
+An original client-side Rust implementation of the effects of PinkGoosik's Visuality (MIT), with its own art made in Blender.
+
+Effects
+Hit fragments: bone chips from skeletons, strays and skeleton horses, dark chips from wither skeletons, feathers in each chicken variant's colours, emerald chips from villagers.
+Slime blobs: chunky blobs in three sizes when a slime lands, in a colour you choose (magma cubes are left alone).
+Charged creeper sparks, amethyst sparkles on full clusters, armor glints on gold and diamond armor, ore glints on uncovered faces only, soul wisps over soul sand and soil and when sprinting on them, and flat rain ripples on open water.
+
+Low preset by default, for integrated GPUs; Balanced and High add density. Settings in Options > Mods > Visuality, lists in config/visuality_horizon.toml.
+Client only: it sends nothing to the server and needs nothing installed there. Tested in single player on Windows; LAN, servers, Linux and macOS are not tested yet (see docs/VALIDATION.md).
+Pinned to Horizon c9d474d (Nightly 2026-11-01): it hooks private client functions, so it builds on that commit only.
+Not made or endorsed by Visuality's author."""
+authors = ["BenjiSyS"]
+owners = ["BenjiSyS"]
+owner_ids = [220019460]
+license = "MIT"
+source = "https://github.com/BenjiSyS/visuality-horizon"
+icon = "icons/visuality_horizon.png"
+
+[[versions]]
+version = "1.0.2"
+published = "2026-11-03"
+game = "26.3"
+file = "visuality_horizon-1.0.2.hnmod"
+sha256 = "b764f15a062e44b27c55f478b2d02e163bfb01c3d8e222fcd6d83bcc66f19a0d"
+changelog = "First release, for Horizon Nightly 2026-11-01 (c9d474d). 1.0.1: entity pass skips entities out of reach (client tick 20-31 us instead of 71-157 us); package entries stored, so the file is byte-identical whatever Python builds it. 1.0.2: atlas and notices carried as Rust source, so the bundle holds only .rs and .toml files."

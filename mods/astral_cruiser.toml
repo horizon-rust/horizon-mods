@@ -20,6 +20,7 @@ Weapons hurt the mobs they hit. With blasting turned on in the control panel (of
 Built for this Horizon commit only: `68ac6f647e7022b2c696e81863d7cface28c9416`."""
 authors = ["repositorykreml1n"]
 owners = ["repositorykreml1n"]
+owner_ids = [271232376]
 license = "MIT"
 source = "https://github.com/repositorykreml1n/astral-cruiser"
 

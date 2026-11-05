@@ -3,16 +3,21 @@ kind = "native-mod"
 name = "Visuality"
 summary = "Small pixel particles: hit fragments, slime blobs, creeper sparks, glints, soul wisps and rain ripples."
 description = """
-An original client-side Rust implementation of the effects of PinkGoosik's Visuality (MIT), with its own art made in Blender.
+An original client-side Rust implementation of the effects of PinkGoosik's
+[Visuality](https://github.com/PinkGoosik/visuality) (MIT), with its own art made in Blender: small pixel particles.
 
-Effects
-Hit fragments: bone chips from skeletons, strays and skeleton horses, dark chips from wither skeletons, feathers in each chicken variant's colours, emerald chips from villagers.
-Slime blobs: chunky blobs in three sizes when a slime lands, in a colour you choose (magma cubes are left alone).
-Charged creeper sparks, amethyst sparkles on full clusters, armor glints on gold and diamond armor, ore glints on uncovered faces only, soul wisps over soul sand and soil and when sprinting on them, and flat rain ripples on open water.
+- **Hit fragments**: bone chips from skeletons, strays and skeleton horses, dark chips from wither skeletons,
+  feathers in each chicken variant's colours, emerald chips from villagers.
+- **Slime blobs**: chunky blobs in three sizes when a slime lands, in a colour you choose (magma cubes are left
+  alone).
+- **Sparks and glints**: charged creeper sparks, amethyst sparkles on full clusters, armor glints on gold and
+  diamond armor, ore glints on uncovered faces only.
+- **Soul wisps** over soul sand and soil, and when sprinting on them; flat **rain ripples** on open water.
 
-Low preset by default, for integrated GPUs; Balanced and High add density. Settings in Options > Mods > Visuality, lists in config/visuality_horizon.toml.
-Client only: it sends nothing to the server and needs nothing installed there. Tested in single player on Windows; LAN, servers, Linux and macOS are not tested yet (see docs/VALIDATION.md).
-Pinned to Horizon c9d474d (Nightly 2026-11-01): it hooks private client functions, so it builds on that commit only.
+Low preset by default, for integrated GPUs; Balanced and High add density. Settings in Options > Mods > Visuality,
+lists in `config/visuality_horizon.toml`. Client only: it sends nothing to the server and needs nothing installed
+there.
+
 Not made or endorsed by Visuality's author."""
 authors = ["BenjiSyS"]
 owners = ["BenjiSyS"]
@@ -20,6 +25,8 @@ owner_ids = [220019460]
 license = "MIT"
 source = "https://github.com/BenjiSyS/visuality-horizon"
 icon = "icons/visuality_horizon.png"
+categories = ["decoration"]
+tags = ["particles", "effects", "visual", "port"]
 
 [[versions]]
 version = "1.0.2"

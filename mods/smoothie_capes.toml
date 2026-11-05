@@ -7,7 +7,18 @@ owners = ["dumbnully"]
 owner_ids = [268078454]
 license = "MIT"
 source = "https://github.com/dumbnully/smoothie-capes"
+icon = "icons/smoothie_capes.png"
+categories = ["decoration"]
+tags = ["capes", "cloth", "physics", "animation", "cosmetic"]
 key = "RWRJPBl24rTE23dFezewHWl465FAcgTsmeJnDkANtUPT19YfVmQ1gYCu"
+description = """
+Capes that move like cloth, as a native mod for Horizon inspired by Wavey Capes.
+
+It replaces how the game draws capes: each cape becomes a strip of 17 linked segments simulated every frame, so it
+trails out behind you when you run, swings to the side when you strafe or turn, lifts when you fall, and sways gently
+when you stand still. It works on every cape the game draws.
+
+Only how capes look changes; nothing is sent to a server. There are no settings: install it, build, and play."""
 
 [[versions]]
 version = "0.2.0"

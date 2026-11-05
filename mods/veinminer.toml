@@ -29,6 +29,9 @@ owners = ["levzzz5154"]
 owner_ids = [86072227]
 license = "MIT"
 source = "https://github.com/levzzz5154/horizon-veinminer"
+icon = "icons/veinminer.png"
+categories = ["game-mechanics", "utility"]
+tags = ["veinminer", "mining", "ores", "trees", "server-side", "port"]
 
 [[versions]]
 version = "0.3.0"

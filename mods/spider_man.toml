@@ -28,7 +28,9 @@ owners = ["wyddy7"]
 owner_ids = [172210694]
 license = "MIT"
 source = "https://github.com/wyddy7/minecraft-spider-man-rust"
-icon = "https://raw.githubusercontent.com/wyddy7/minecraft-spider-man-rust/main/docs/icon.png"
+icon = "icons/spider_man.png"
+categories = ["adventure", "transportation"]
+tags = ["spider-man", "web-swinging", "parkour", "wall-running", "movement"]
 
 [[versions]]
 version = "0.2.0"

@@ -21,6 +21,9 @@ owners = ["eltanschauung"]
 owner_ids = [158000645]
 license = "CC0-1.0"
 source = "https://github.com/eltanschauung/tectonic-horizon"
+icon = "icons/tectonic_horizon.png"
+categories = ["worldgen"]
+tags = ["terrain", "mountains", "rivers", "world-generation", "port"]
 
 [[versions]]
 version = "0.3.4"

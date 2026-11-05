@@ -7,7 +7,9 @@ authors = ["_idom_"]
 owners = ["umbx-dot"]
 license = "MIT"
 source = "https://github.com/umbx-dot/horizon-3d-skins"
-icon = "https://raw.githubusercontent.com/umbx-dot/horizon-3d-skins/main/icon.png"
+icon = "icons/skins_3d.png"
+categories = ["decoration"]
+tags = ["skins", "3d-skins", "players", "cosmetic"]
 key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
 
 [[versions]]

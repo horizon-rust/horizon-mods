@@ -23,6 +23,8 @@ owner_ids = [106024432]
 license = "MIT"
 source = "https://github.com/vstxx/shulkerpeek"
 icon = "icons/shulker_peek.png"
+categories = ["storage", "utility"]
+tags = ["shulker-box", "tooltip", "inventory", "preview"]
 
 [[versions]]
 version = "0.1.0"

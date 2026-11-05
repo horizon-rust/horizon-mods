@@ -18,6 +18,8 @@ owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/smartf3"
 icon = "icons/smartf3.png"
+categories = ["utility"]
+tags = ["f3", "debug-screen", "hud", "betterf3"]
 
 [[versions]]
 version = "0.1.0"

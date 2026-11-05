@@ -8,6 +8,9 @@ owners = ["CayMac97"]
 owner_ids = [197672048]
 license = "MIT"
 source = "https://github.com/CayMac97/toggle-sprint"
+icon = "icons/toggle_sprint.png"
+categories = ["utility"]
+tags = ["toggle-sprint", "toggle-sneak", "hud", "movement", "pvp"]
 key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
 
 [[versions]]

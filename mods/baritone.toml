@@ -1,0 +1,33 @@
+id = "baritone"
+kind = "native-mod"
+name = "Baritone"
+summary = "A Rust port of the Baritone pathfinder: #goto, #mine, #farm, #build, #explore, #follow, #elytra and the rest."
+description = """
+A port to Rust of Baritone 1.21.4 for Horizon, written from the Java source: the pathfinder (A* with walking, sprinting, parkour, bridging, pillaring, doors, ladders and water bucket landings), `#goto`, `#mine`, `#farm`, `#follow`, `#explore`, `#build` (schematics and shapes), `#tunnel`, `#elytra`, waypoints, and every setting and command of the Java mod. Type `#help` in chat. PARITY.md in the source lists every Java class and what became of it.
+
+What it does not do: it draws the cached chunks semitransparent (`renderCachedChunks`) only if Horizon later offers a renderer for it. Like the Java mod it plays for you, so many multiplayer servers ban it: that choice is the player's.
+
+For reviewers:
+- No network access of its own: nothing in the source opens a socket or an HTTP request.
+- It writes only its settings, cached chunks and waypoints under `horizon-mods/.horizon-mod-data/baritone/`, and reads the schematic and explore-filter files the player names in a command.
+- It starts an operating system program in two places, both in `src/utils/notification.rs`: desktop notifications (PowerShell on Windows, osascript on macOS, notify-send on Linux), which are off unless the player sets `desktopNotifications true`, and `#pizza`, which opens a web page in the browser (the Java mod has the same command).
+- The `.hnmod` is built from the source of the tagged release, `python tools/pack.py`, and is the same file every time.
+- Pinned to Nightly 2026-10-30 (ba6344a): the launcher builds the game on that commit, and so does not depend on the Nightly the player has."""
+authors = ["luhnox (this port); Baritone by leijurv and the Baritone contributors"]
+owners = ["luhnox"]
+license = "LGPL-3.0-or-later (a derivative of Baritone, https://github.com/cabaletta/baritone)"
+source = "https://github.com/luhnox/horizon-baritone"
+key = "RWRTLwnAmb4dyVYWM1egwotcybd6nw1ILTIWGHmQVwiMROClbjW0JoKZ"
+
+[[versions]]
+version = "1.1.38"
+published = "2026-11-04"
+game = "26.3"
+file = "baritone-1.1.38.hnmod"
+sha256 = "b1a79d09061c30f757f428d9702a1a9f39a3c11d7ad17c96d48e101150e98e0c"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURTLwnAmb4dyQdoJpJlo6cHKjQifEH+yI6oUn+h7Qt0U0nujno7s1PO+nfhF4AxS8m8SVGgPrTl6JPTLuVYXai08leFO6JlVAY=\r
+trusted comment: timestamp:1793793185\tfile:dist/baritone.hnmod\thashed\r
+Rur3Vc4xI4A+zxLLeLBlPg+T3D0yNMhoPgjOutE/SxtQJ9J1Mjh5LsceEF0Peql/fBP+Ja5+2s5iH7BJWCjfBA=="""
+changelog = "`#mine` and `#goto <block>` of a block that is not found underground now explore the surface instead of digging down; the full Mask family, IOpenSet and LinkedListOpenSet; the goal beam shows through terrain; 247 of 297 Baritone 1.21.4 classes ported, none missing (PARITY.md)."

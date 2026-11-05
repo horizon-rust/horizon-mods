@@ -3,20 +3,16 @@ kind = "native-mod"
 name = "Jade"
 summary = "The look-at tooltip: what you're pointing at, its mod, its details and its state."
 description = """
-An unofficial port of [Jade](https://github.com/Snownee/Jade) 26.3.5 by Snownee to Horizon: the look-at overlay for blocks and entities, with its providers, its settings under Options > Mods, its keys, and the `/jade` and `/jadec` commands.
+An unofficial port of [Jade](https://github.com/Snownee/Jade) 26.3.5 by Snownee to Horizon: the look-at overlay for blocks and entities, with its providers, themes, config screens, drag-to-place screen, profiles, keys, the `/jade` and `/jadec` commands and the `jade:max_position_deviation` game rule.
 
 Rewritten in Rust for Horizon's hooks, so no original code runs. Not made or endorsed by Snownee, so please report problems to this project, not to them.
 
-**Ported:** themes, opacity, text background, profiles, ignore lists, boss bar overlap, TTS, perspective mode, reach, icon positions, the item mod name and the plugin sub-options.
+**Missing or not the same:**
+- Java plugins for Jade can't run. Other mods register with this port's own provider functions.
+- The icon style of the energy line shows redstone dust, because Jade's energy sprite isn't in Horizon's atlas.
+- The game rule works through mixins on tables compiled into the game, so it is the part most likely to break on a Horizon update.
 
-**What differs from Jade:**
-- Themes are drawn with solid fills in the theme's colours, not Jade's sprites.
-- The position adjust screen is a setting you cycle through, not a screen you drag on.
-- The sniffer's dig cooldown isn't shown.
-- Energy Storage has nothing to show, because Horizon has no shared energy API for other mods.
-- Access variant and NPC details are approximate.
-
-Tested on Windows, in single player and on LAN with one guest. Dedicated servers don't build native mods, so "server" here means a LAN host.
+**Tested** on Windows, in single player, on LAN with one guest, and on a dedicated server with one client. Other platforms and Jade's mouse binds were not tested.
 
 Licence: CC BY-NC-SA 4.0, noncommercial use only, the same licence as Jade."""
 authors = ["Snownee", "Joeypc6"]
@@ -25,6 +21,20 @@ owner_ids = [35495484]
 license = "CC-BY-NC-SA-4.0"
 source = "https://github.com/Joeypc6/Jade-Horizon"
 icon = "https://media.forgecdn.net/avatars/thumbnails/207/323/256/256/636965628804677340.png"
+
+[[versions]]
+version = "26.3.6"
+published = "2026-11-05"
+game = "26.3"
+file = "jade-26.3.6.hnmod"
+sha256 = "5aa01e83aeda733b60b69d53cfa13fa1c9d4e66f83c54373c5cca4d77fa47087"
+changelog = """
+Still a port of Jade 26.3.5; 26.3.6 is this port's own version number, not a Jade release. Built and tested on Horizon commit 6475f62.
+
+- Jade's sprites in themes, the drag-to-place screen, the config screens, and the sniffer's dig cooldown.
+- `jade:max_position_deviation` is a real game rule.
+- Block aim follows the player's reach and Extended Reach.
+- Tested on a dedicated server."""
 
 [[versions]]
 version = "26.3.5"

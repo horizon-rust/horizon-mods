@@ -17,6 +17,7 @@ An unofficial, independently written Rust client compatible with Plasmo Voice 2.
 - Proximity voice with distance attenuation, stereo positioning, optional HRTF and noise suppression.
 - Push to talk over normal menus, a foreground microphone indicator, and configurable key bindings.
 - Six settings tabs, device selection, microphone preview, and per-player/source volume and mute.
+- Shift + RMB + scroll adjusts a targeted player; its volume indicator appears only after an actual change.
 - Pixel head icons with current-frame positioning, helmet clearance and block-shape visibility.
 - One native .hnmod with Linux x86_64 and Windows x64 runtimes; English and Russian UI.
 
@@ -28,9 +29,9 @@ Tested with Plasmo Voice 2.1.17: two-way synthetic audio and inventory/chest cas
 """
 
 [[versions]]
-version = "0.5.0"
+version = "0.5.1"
 published = "2026-11-05"
 game = "26.3"
-file = "plasmo-voice-0.5.0.hnmod"
-sha256 = "d27a18cc590d2829646579a443d45fb9b6e37f13952ab52c62604f9c80e80829"
-changelog = "Native Hooks/Host API 411 client. Proximity audio, PTT over menus, player controls and pixel indicators; bundled Linux/Windows runtimes. Five server versions tested; see source validation for upstream inventory and Windows testing limits."
+file = "plasmo-voice-0.5.1.hnmod"
+sha256 = "cbe3622669f5405e58418232c0091d76500f9e2c7d6ca2f1479658d50c59cedd"
+changelog = "Requires Shift + RMB + scroll for player volume. The indicator appears only after an actual change and expires while buttons stay held. API 411; five adapter regressions and Linux physical-input/HUD checks pass. See source validation for previous voice matrix and platform limits."

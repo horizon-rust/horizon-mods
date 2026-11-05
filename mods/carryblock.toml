@@ -19,6 +19,8 @@ owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/carryblock"
 icon = "icons/carryblock.png"
+categories = ["game-mechanics", "utility"]
+tags = ["carry", "chests", "pick-up", "animals"]
 
 [[versions]]
 version = "0.1.2"

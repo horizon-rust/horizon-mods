@@ -2,13 +2,23 @@ id = "chatheads"
 kind = "native-mod"
 name = "ChatHeads"
 summary = "A player's head left of every chat line they wrote."
-description = "Each chat line from a player gets their 8x8 skin face in the strip to its left; lines without a player stay as they are, and the face fades with its line. The switch lives in Options > Mods."
+description = """
+A player's 8x8 skin face left of every chat line they wrote, as a native mod for Horizon.
+
+- The face comes from the skin the game resolved for that player; with none, a default skin picked by the name, so a
+  player always keeps the same head.
+- System messages, `/me` lines and wrapped continuations get no head, and the head fades with its line.
+- F1 hides it as it hides the chat.
+
+Turn it on or off in Options > Mods > ChatHeads > Settings."""
 authors = ["Domanffe"]
 owners = ["Domanffe"]
 owner_ids = [94391234]
 license = "MIT"
 source = "https://github.com/Domanffe/chatheads"
-icon = "https://horizon-rust.github.io/horizon-mods/icons/chatheads.png"
+icon = "icons/chatheads.png"
+categories = ["social", "utility"]
+tags = ["chat", "player-heads", "skins"]
 
 [[versions]]
 version = "0.1.1"

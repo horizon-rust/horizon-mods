@@ -21,7 +21,9 @@ owners = ["Lutziano888"]
 owner_ids = [129792568]
 license = "MIT"
 source = "https://github.com/Lutziano888/horizon-accurate-block-placement"
-icon = "https://raw.githubusercontent.com/Lutziano888/horizon-accurate-block-placement/main/icon.png"
+icon = "icons/accurate_block_placement.png"
+categories = ["utility", "game-mechanics"]
+tags = ["building", "block-placement", "bridging", "port"]
 
 [[versions]]
 version = "1.0.0"

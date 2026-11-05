@@ -25,7 +25,9 @@ owners = ["Mayonesu0"]
 owner_ids = [350298764]
 license = "LicenseRef-Chop-1.0"
 source = "https://github.com/Mayonesu0/chop"
-icon = "https://raw.githubusercontent.com/Mayonesu0/chop/main/registry/icon.png"
+icon = "icons/chop.png"
+categories = ["game-mechanics"]
+tags = ["trees", "tree-felling", "axe", "lumberjack", "animation", "server-side"]
 key = "RWSwx1v4zUCUjQ8rssfZCXvXkvgVc9TbA60RJyCtVCeMx4lSTanIleIs"
 
 [[versions]]

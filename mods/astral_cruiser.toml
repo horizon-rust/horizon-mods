@@ -23,6 +23,9 @@ owners = ["repositorykreml1n"]
 owner_ids = [271232376]
 license = "MIT"
 source = "https://github.com/repositorykreml1n/astral-cruiser"
+icon = "icons/astral_cruiser.png"
+categories = ["transportation", "adventure"]
+tags = ["starship", "vehicle", "flying", "portals", "weapons", "dimensions"]
 
 [[versions]]
 version = "0.1.0"

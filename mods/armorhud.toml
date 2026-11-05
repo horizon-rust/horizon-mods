@@ -2,13 +2,23 @@ id = "armorhud"
 kind = "native-mod"
 name = "Armor HUD"
 summary = "Your worn armor and its durability in a column left to the off-hand slot."
-description = "A mod that adds 4 armor durability viewing slots to the hotbar. You can toggle durability numbers with 'K' or change it in the settings, and toggle low durability warnings in the mod settings."
+description = """
+Your worn armor and its durability in a column of four slots left of the hotbar's off-hand slot, as a
+native mod for Horizon.
+
+- **Durability numbers**: press **K** (rebindable in Options > Mods) to show or hide them; a notice above the
+  hotbar says which. Off by default.
+- **Low-durability alerts**: a piece about to break pulses so you notice it in time. On by default.
+
+Both switches are also on the mod's settings page (Options > Mods > Armor HUD)."""
 authors = ["Thomas9950"]
 owners = ["Thomas-Slot"]
 owner_ids = [265566914]
 license = "MIT"
 source = "https://github.com/Thomas-Slot/horizon-armor-hud"
-icon = "https://raw.githubusercontent.com/Thomas-Slot/horizon-armor-hud/main/icon.png"
+icon = "icons/armorhud.png"
+categories = ["utility", "equipment"]
+tags = ["hud", "armor", "durability"]
 key = "RWQNLUB+Hf9pa54kEx/ItgJHmDivzpAZxK9lqvv9wnecj34yzNVQHQur"
 
 [[versions]]

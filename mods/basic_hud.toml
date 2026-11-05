@@ -23,7 +23,9 @@ owners = ["repositorykreml1n"]
 owner_ids = [271232376]
 license = "MIT"
 source = "https://github.com/repositorykreml1n/the-basic-hud"
-icon = "https://raw.githubusercontent.com/repositorykreml1n/the-basic-hud/v0.5.0/icon.png"
+icon = "icons/basic_hud.png"
+categories = ["utility"]
+tags = ["hud", "hud-editor", "widgets", "coordinates", "fps", "status-effects", "durability", "tab-list"]
 
 [[versions]]
 version = "0.5.0"

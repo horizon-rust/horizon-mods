@@ -18,6 +18,8 @@ owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/biomecompass"
 icon = "icons/biomecompass.png"
+categories = ["utility", "adventure"]
+tags = ["compass", "biomes", "exploration", "navigation"]
 
 [[versions]]
 version = "0.2.2"

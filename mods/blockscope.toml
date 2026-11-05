@@ -2,13 +2,25 @@ id = "blockscope"
 kind = "native-mod"
 name = "Blockscope"
 summary = "The block under your crosshair: its name, id, distance and icon, plus hardness, states and a container's slots."
-description = "A Jade-style tooltip for Horizon: the block under your crosshair with its name in your language, block id, distance and icon, plus its hardness and the tool it wants, its state properties, a crop's growth and, for a container, its slots. Ten switches on its own settings page."
+description = """
+A Jade-style tooltip for Horizon: the block under your crosshair, in a small box you can place where you
+want.
+
+- Its name in your language, its block id and its distance, with its icon.
+- Its hardness and the tool it wants, and whether what you hold harvests it.
+- Its state properties, a crop's growth, and a container's slots laid out as its own screen has them.
+- Its coordinates on request, and a creature's name and health when you look at one.
+
+Nothing shows when you look at no block within reach, while a screen is open, or with the HUD hidden (F1). Ten
+switches on its settings page (Options > Mods > Blockscope > Settings) choose what the box shows."""
 authors = ["Domanffe"]
 owners = ["Domanffe"]
 owner_ids = [94391234]
 license = "MIT"
 source = "https://github.com/Domanffe/blockscope"
-icon = "https://horizon-rust.github.io/horizon-mods/icons/blockscope.png"
+icon = "icons/blockscope.png"
+categories = ["utility"]
+tags = ["tooltip", "hud", "block-info", "waila"]
 
 [[versions]]
 version = "0.3.1"

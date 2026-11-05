@@ -3,17 +3,20 @@ kind = "native-mod"
 name = "AppleSkin"
 summary = "1:1 Minecraft Java parity food value preview & saturation HUD overlay."
 description = """
-1:1 Minecraft Java parity port of AppleSkin for the native Horizon Rust client.
+A port of AppleSkin for Horizon, as a native mod, drawn to match the Java Edition HUD.
 
-Features
-Saturation Overlay: Golden border and glow around active saturation drumsticks matching original icons.png pixel art.
-Food Value Preview: Pulsing preview drumsticks and preview saturation border when holding edible items.
-Clean Integration: Easily toggled via Options > Mods > AppleSkin."""
+- **Saturation overlay**: a golden border and glow around the drumsticks your saturation covers.
+- **Food value preview**: pulsing preview drumsticks, and a preview of the saturation border, while you hold
+  something you can eat.
+- **On or off** at any time in Options > Mods > AppleSkin."""
 authors = ["CayMac"]
 owners = ["CayMac97"]
 owner_ids = [197672048]
 license = "MIT"
 source = "https://github.com/CayMac97/appleskin"
+icon = "icons/appleskin_horizon.png"
+categories = ["utility", "food"]
+tags = ["hud", "hunger", "saturation", "food", "port"]
 key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
 
 [[versions]]

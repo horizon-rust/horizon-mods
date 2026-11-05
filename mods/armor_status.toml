@@ -3,18 +3,24 @@ kind = "native-mod"
 name = "Armor Status"
 summary = "Displays equipped armor & held items with authentic Java durability colors."
 description = """
-A native ArmorStatusHUD mod for the Horizon Rust client.
+An ArmorStatusHUD-style overlay for Horizon, as a native mod: your armor and the items in your hands, with
+their durability, on the HUD.
 
-Features
-Displays all 4 armor slots plus main and off-hand items on the HUD.
-Authentic Java durability color coding (Green > Yellow > Orange > Red).
-Item count display for non-damageable held items (torches, food, blocks).
-Default position: Bottom Right (freely customizable in Options > Mods)."""
+- **All four armor slots** (helmet, chestplate, leggings, boots) plus the main hand and the off hand.
+- **Durability colours** as in Java Edition: green above 50%, yellow from 25%, orange from 10%, red below 10%.
+- **Stack counts** for held items that don't wear out (food, blocks, torches).
+
+**Settings** (Options > Mods > Armor Status): position (bottom right by default; hotbar left or right, top left or
+right, bottom left), durability as the remaining value, a percentage or a fraction, which hand items to show (both,
+main hand, off hand or armor only), and a translucent background box."""
 authors = ["CayMac"]
 owners = ["CayMac97"]
 owner_ids = [197672048]
 license = "MIT"
 source = "https://github.com/CayMac97/armor-status"
+icon = "icons/armor_status.png"
+categories = ["utility", "equipment"]
+tags = ["hud", "armor", "durability", "inventory-hud"]
 key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
 
 [[versions]]

@@ -263,7 +263,8 @@ a claim but to monsters and players: no button pressed, target lit, chorus or po
 pearl landed or animal hurt; a dispenser's counts as from the land it shot from, a mob's hurts animals only. Hitting
 or right clicking the claim's item frames, armour stands, paintings, boats, minecarts and animals (leads, saddles,
 shears, dyes, buckets, a frame's or a stand's items) does nothing for others (`claims.protected_entities`, entity
-ids; monsters and players aren't in it; villagers and wandering traders still trade). Not guarded yet, for want of a
+ids; monsters and players aren't in it; villagers and wandering traders still trade; end crystals are always guarded,
+even when a world's list predates them). Not guarded yet, for want of a
 Horizon hook: wind charges bursting outside a claim (they open doors inside), armour stands and vehicles in a blast,
 farmland trampled, a wither's or an enderman's own block changes. The server's `spawn-protection` (vanilla's) guards
 the spawn.

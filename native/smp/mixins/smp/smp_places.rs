@@ -62,8 +62,8 @@ impl Default for Config {
             ],
             spawn_radius: 250,
             rtp_min_distance: 500,
-            rtp_max_distance: 5000,
-            rtp_cooldown_seconds: 1800,
+            rtp_max_distance: 10_000,
+            rtp_cooldown_seconds: 300,
             rtp_attempts: 6,
             rtp_search_seconds: 30,
         }
@@ -1390,7 +1390,7 @@ mod tests {
             });
             assert_eq!(go.len(), 1);
             let t = &go[0];
-            assert!((500.0..=5000.0).contains(&distance(t)), "{:?}", t.to);
+            assert!((500.0..=10_000.0).contains(&distance(t)), "{:?}", t.to);
             assert!(t.to.x.abs() <= 984.0 && t.to.z.abs() <= 984.0, "{:?}", t.to);
             assert_eq!((t.to.dimension.as_str(), t.to.y), (OVERWORLD, 65.0));
             assert_eq!(t.spread_line(), None, "the spot is exact");
@@ -1432,14 +1432,14 @@ mod tests {
         );
         p.tick(&[body(A, 1.0)], 20_500);
         let out = p
-            .command(&player(A, 0), &here, 18 * 60_000 + 3_000, "rtp")
+            .command(&player(A, 0), &here, 3 * 60_000 + 3_000, "rtp")
             .unwrap();
         assert_eq!(
             out,
-            vec![Out::Error("Wait 12 min before your next /rtp.".into())]
+            vec![Out::Error("Wait 2 min before your next /rtp.".into())]
         );
         let out = p
-            .command(&player(A, 0), &here, 1_800_000 + 2_500, "wild")
+            .command(&player(A, 0), &here, 300_000 + 2_500, "wild")
             .unwrap();
         assert_eq!(
             out,
@@ -1452,11 +1452,9 @@ mod tests {
         let out = again.command(&player(A, 0), &here, 60_000, "rtp").unwrap();
         assert_eq!(
             out,
-            vec![Out::Error("Wait 30 min before your next /rtp.".into())]
+            vec![Out::Error("Wait 5 min before your next /rtp.".into())]
         );
-        let out = again
-            .command(&player(A, 0), &here, 1_803_000, "rtp")
-            .unwrap();
+        let out = again.command(&player(A, 0), &here, 303_000, "rtp").unwrap();
         assert!(
             matches!(&out[0], Out::Reply(_)),
             "allowed after it: {out:?}"

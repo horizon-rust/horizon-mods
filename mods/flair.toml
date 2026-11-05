@@ -8,7 +8,7 @@ owners = ["umbx-dot"]
 owner_ids = [203141410]
 license = "MIT"
 source = "https://github.com/umbx-dot/horizon-flair"
-icon = "https://raw.githubusercontent.com/umbx-dot/horizon-flair/main/icon.png"
+icon = "icons/flair.png"
 key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
 
 [[versions]]

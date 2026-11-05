@@ -1,0 +1,26 @@
+id = "speedrun_timer"
+kind = "native-mod"
+name = "Speedrun Timer"
+summary = "Speedrun Timer Is a mod made to count the time it took you to beat the Game"
+description = """
+Speedrun Timer Is a mod made to count the time it took you to beat the Game 
+An RTA timer in a corner: HH:MM:SS.mmm, starts on your first move, stops when you leave the End. Info gets saved locally."""
+authors = ["Demerobit"]
+owners = ["Demerobit"]
+license = "MIT"
+source = "https://github.com/Demerobit/Speedrun-Timer-Horizon-Rust-Minecraft"
+icon = "https://raw.githubusercontent.com/Demerobit/Speedrun-Timer-Horizon-Rust-Minecraft/main/icon.png"
+key = "RWREE8bzxgQZoRDo1MEbx56BjXA/udjM64FBEjMFmXQhhgx1Z6oSrt69"
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-04"
+game = "26.3"
+file = "speedrun_timer-1.0.1.hnmod"
+sha256 = "884efd123b6e3a99e783603fd18f94b4fe6cf4b2ce6297e8e58fbb81c699c22e"
+signature = """
+untrusted comment: signature from minisign secret key
+RUREE8bzxgQZoSnNYQKsFGHKDXOabxzO/Svz7gImNoBk9aoGEfRrGHq4Q8FEy4gK6kSdppg4BOj+ppW8+xSMZfFUldfYNXmJmwo=
+trusted comment: timestamp:1793811255\tfile:speedrun_timer-1.0.1.hnmod\thashed
+c8UAoVvQRjR97rkLv42ZqaAQkHZfjlICWRV+kEdV3ECDL7yrwICmImSwDTaV7KMl/fQcFouC8yvUbr4fpDWZAQ=="""
+changelog = "This is he first Release of the mod "

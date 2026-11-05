@@ -514,6 +514,7 @@ impl Economy {
         let entry = serde_json::json!({
             "time": self.now, "kind": kind, "amount": amount,
             "to_pool": pool, "pool_before": self.pool(pool), "reason": reason,
+            "flow": "minted",
         });
         self.audit.append(&entry)?;
         self.pool_add(pool, amount);
@@ -595,7 +596,10 @@ impl Economy {
             }
             None => {
                 let start = self.config.starting_balance.clamp(0, MAX_AMOUNT);
-                let entry = self.entry("open", None, Some(uuid), start, "");
+                let mut entry = self.entry("open", None, Some(uuid), start, "");
+                if start > 0 {
+                    entry["flow"] = "minted".into();
+                }
                 if self.audit.append(&entry).is_ok() {
                     self.accounts.accounts.insert(
                         key,
@@ -751,6 +755,10 @@ impl Economy {
         let mut entry = self.entry(kind, from, to, delta.abs(), by);
         if !reason.is_empty() {
             entry["reason"] = reason.into();
+        }
+        // Money the server made or destroyed, for `/ledger minted`.
+        if delta != 0 {
+            entry["flow"] = if delta > 0 { "minted" } else { "burned" }.into();
         }
         self.audit.append(&entry)?;
         self.accounts

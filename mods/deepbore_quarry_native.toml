@@ -1,0 +1,34 @@
+id = "deepbore_quarry_native"
+kind = "native-mod"
+name = "Deepbore Quarry"
+summary = "A machine that digs a square pit down to bedrock on furnace fuel and fills a chest, under a moving gantry with a drill."
+description = """
+**This mod has two parts, and you need both.** Install this one, the native part, and [Deepbore Quarry (assets)](https://playhorizon.dev/mods/deepbore_quarry), then press Build. If one is missing, the game says so in chat.
+
+- **Place** a quarry. The pit lies beyond it, the way you are looking, and goes from the quarry's own level down to bedrock.
+- **Put a chest** against another side of it, and fuel in its slot: anything a furnace burns. One coal digs eight blocks.
+- **Watch** the gantry: a drill runs over the pit on a moving bridge, row by row. The screen says what the quarry is doing, and why when it stands still.
+- **Choose** four upgrades: Area up to 17×17, Speed up to a block in 0.25 s, Fluids to plug water and lava and dig on, Chunk to keep working when you are away.
+- **Keep** what matters: it leaves bedrock and any block with contents, and only its owner or an operator can open or break it.
+
+English and Russian.
+
+**Commands:** operators have `/deepbore maxsize` and `/deepbore maxsize <5|9|13|17>`, the largest area a world allows.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to one Horizon Nightly and Horizon Mixins revision, named in each version's changelog.
+
+No Minecraft code or assets are included. MIT licensed."""
+authors = ["bioneisme"]
+owners = ["Bioneisme"]
+owner_ids = [92920845]
+license = "MIT"
+source = "https://github.com/Bioneisme/deepbore-quarry"
+icon = "https://raw.githubusercontent.com/Bioneisme/deepbore-quarry/main/icon.png"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-05"
+game = "26.3"
+file = "deepbore_quarry_native-0.1.0.hnmod"
+sha256 = "bda03ffe35cca7973ec8a19cbcd5b50dade5f698c30faea8f84b9343cfeb31ef"
+changelog = "First release. Pinned to Nightly 2026-11-04 (67dad0d) and Horizon Mixins e8cd0aa."

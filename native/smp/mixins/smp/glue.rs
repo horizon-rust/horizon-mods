@@ -11,6 +11,8 @@ use crate::game::{
     Game,
     smp_auction::{self, AuctionHouse},
     smp_report::{self, Report},
+    smp_ledger,
+    smp_reports::{self, Reports},
     native_server::{NativeCommand, NativeServerPlayer, NativeSidebar},
     smp_board::{self, Board, Line},
     smp_casino::{self, Casino},
@@ -41,7 +43,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.33.0";
+pub const VERSION: &str = "0.34.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -61,6 +63,8 @@ pub struct Config {
     pub nicks: smp_nick::Config,
     pub auction: smp_auction::Config,
     pub report: smp_report::Config,
+    /// `/report`: players telling the staff about another player.
+    pub reports: smp_reports::Config,
     pub web: WebPush,
 }
 
@@ -133,6 +137,8 @@ pub struct Smp {
     vanish_titled: std::collections::HashSet<u128>,
     /// The parts operators turned off (`/smp off`).
     switches: Switches,
+    /// `/report` and `/reports`.
+    reports: Reports,
 }
 
 static STATE: Mutex<Option<Smp>> = Mutex::new(None);
@@ -195,6 +201,7 @@ fn open(dir: PathBuf) -> Smp {
     }
     let auction = economy.as_ref().ok().map(|e| AuctionHouse::open(e, config.auction));
     let report = economy.as_ref().ok().map(|e| Report::open(e, config.report));
+    let reports = Reports::open(&dir, config.reports);
     let places = Places::open(&dir, config.places);
     if let Err(e) = &places {
         log::error!("[smp] homes and warps are off: {e}");
@@ -273,6 +280,7 @@ fn open(dir: PathBuf) -> Smp {
         vanish,
         vanish_titled: Default::default(),
         switches,
+        reports,
     }
 }
 
@@ -346,6 +354,7 @@ fn save(smp: &mut Smp) {
     if let Err(err) = smp.switches.save() {
         log::error!("[smp] {err}");
     }
+    smp.reports.save();
 }
 
 /// The commands, for every player's command tree.
@@ -422,6 +431,7 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "ah mail",
         "eco stats",
         "money stats",
+        "report <player:word> [reason:text]",
     ] {
         commands.push(NativeCommand::new(usage));
     }
@@ -432,6 +442,10 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "nick <name:word> <nick:word>",
         "vanish",
         "vanish list",
+        "reports [page:integer]",
+        "ledger",
+        "ledger minted",
+        "ledger <player:word> [page:integer]",
     ] {
         commands.push(NativeCommand::op(usage, 3));
     }
@@ -734,6 +748,8 @@ pub(in crate::game) fn perform(
         &smp_nick::COMMANDS,
         &smp_vanish::COMMANDS,
         &smp_switch::COMMANDS,
+        &smp_reports::COMMANDS,
+        &smp_ledger::COMMANDS,
     ];
     if !game.native_on(ID) || !ours.iter().any(|c| c.contains(&word)) {
         return;
@@ -809,7 +825,33 @@ pub(in crate::game) fn perform(
         n.resolve(line, &is_name, &name_of)
     });
     let line = resolved.as_deref().unwrap_or(line);
-    let out = if smp_vanish::COMMANDS.contains(&word) {
+    let out = if smp_reports::COMMANDS.contains(&word) {
+        let staff: Vec<u128> = players.iter().filter(|p| p.permission >= smp_reports::LEVEL).map(|p| p.uuid).collect();
+        let economy = smp.economy.as_ref().ok();
+        let find = |n: &str| {
+            let on = players.iter().find(|p| p.name.eq_ignore_ascii_case(n));
+            on.map(|p| (p.uuid, p.name.clone())).or_else(|| ServerNames::read(&dir, economy).find(n))
+        };
+        let at = |u: u128| {
+            let p = players.iter().find(|p| p.uuid == u)?;
+            let [x, y, z] = p.position.map(|v| v.floor() as i64);
+            Some(format!("{} {x} {y} {z}", p.dimension))
+        };
+        let out = smp.reports.command(&me, &find, &at, &staff, now, line).unwrap_or_default();
+        for l in smp.reports.logged.drain(..) {
+            log::info!("[smp] {l}");
+        }
+        out
+    } else if smp_ledger::COMMANDS.contains(&word) {
+        let economy = smp.economy.as_ref().ok();
+        let find = |n: &str| {
+            let on = players.iter().find(|p| p.name.eq_ignore_ascii_case(n));
+            on.map(|p| (p.uuid, p.name.clone())).or_else(|| economy?.find(n).map(|(u, a)| (u, a.name.clone())))
+        };
+        let name_of = |u: u128| economy?.name_of(u).map(str::to_owned);
+        let money = |n: i64| economy.map_or_else(|| n.to_string(), |e| e.money(n));
+        smp_ledger::command(&me, &smp.dir.join("audit.log"), &find, &name_of, &money, now, line).unwrap_or_default()
+    } else if smp_vanish::COMMANDS.contains(&word) {
         let ops: Vec<u128> = players.iter().filter(|p| p.permission >= smp_vanish::LEVEL).map(|p| p.uuid).collect();
         match &mut smp.vanish {
             Ok(v) => {
@@ -2517,6 +2559,11 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 a => sleeps.push(a),
             }
         }
+    }
+    // `/report`: operators who came on hear of the last day's reports.
+    if n % 20 == 0 {
+        let on: Vec<(u128, u8)> = players.iter().map(|p| (p.uuid, p.permission)).collect();
+        out.extend(smp.reports.staff_joined(&on, now));
     }
     // `/claim show`: the border once a second, to that player only.
     let mut particles = Vec::new();

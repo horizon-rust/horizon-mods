@@ -1,28 +1,31 @@
 id = "wisdom_horizon"
 kind = "shader"
 name = "Wisdom Shaders V3 (Horizon port)"
-summary = "bobcao3's Wisdom Shaders V3, ported to Horizon's own WGSL shader format."
+summary = "bobcao3's Wisdom Shaders V3 ported to Horizon's native shader API."
 description = """
-An unofficial port of **Wisdom Shaders V3 (Build 3300)** by bobcao3 (https://github.com/bobcao3/Wisdom-Shaders) to Horizon's shader API (schema 1, API 0.1), translated from GLSL to WGSL. Wisdom Shaders is licensed under the Apache License 2.0, and so is this port. It is not an official Wisdom Shaders release.
+bobcao3's Wisdom Shaders V3 (Build 3300) ported to Horizon's shader API: its sun, ambient and torch colours, Oren-Nayar and GGX lighting, jittered soft shadows, atmosphere, 2D clouds, fog and AgX tonemap, translated from GLSL to WGSL. Adds bloom, FXAA, mob and chest relighting, held light sources and a horizon haze as Horizon post passes.
 
-## Ported
-- Wisdom's sun, ambient and torch colours by time of day, and its exposure curve.
-- Oren-Nayar diffuse and GGX specular lighting, light through thin plants, and soft shadows from a jittered 3x3 kernel.
-- The atmosphere, 2D clouds and their shadows, the sun and moon discs, and height fog.
-- The AgX tonemap with its lookup table (ACES as an option), plus bloom, the vignette and waving foliage.
-
-## Changed for Horizon
-- Lighting runs per surface in the material stage, since Horizon has no G-buffers.
-- Shadows use Horizon's shadow map with PCF, and water and stained glass tint the light passing through them.
-- There is no SSAO, SSR, volumetric clouds, god rays, caustics or TAA. FXAA replaces TAA.
-- The water is rewritten for Horizon's translucent pass.
-
-The full list of changes is in the README. For integrated graphics there is a Lite version (`wisdom_horizon_lite`) based on Wisdom's LITE profile."""
+Unofficial port by tomasmendes01 (in-game name: iLoong). A lighter version for more FPS is published as `wisdom_horizon_lite`."""
 authors = ["bobcao3", "tomasmendes01"]
 owners = ["tomasmendes01"]
 owner_ids = [68385376]
 license = "Apache-2.0"
 source = "https://github.com/tomasmendes01/wisdom-horizon"
+
+[[versions]]
+version = "1.3.7"
+published = "2026-11-04"
+game = "26.3"
+file = "wisdom_horizon-1.3.7.hshader"
+sha256 = "3c1dc775e3eac9e67ced2e346bf7edd5cb83161b35eca7231ca9aff7725a40b4"
+changelog = """
+- Night: the sky and fog no longer turn black when rain hides the stars, rain streaks stay faint in the dark, and a "Night brightness" option raises the moonlight and night ambient light (3x Wisdom's by default).
+- Rain: lighter fog in the rain ("Rain fog", 0.5 by default; 1 is Wisdom's), the water gets the same fog as the land, and the sun's glint on water fades under rain clouds.
+- Water: its top stays flat (the waves are in the normals, as in Wisdom), and the mirror Horizon draws with vanilla's light is brought to this pack's light.
+- Mobs, items, chests and particles: a post pass relights them to match this pack's light on the terrain in view, eased over time ("Light mobs and chests", with a diagnostic view).
+- Held light sources light the terrain when Horizon's Dynamic lights extra is on.
+- Glowing blocks show their own colour instead of burning out to white at night ("Glowing blocks"), with extra bloom around them ("Glow bloom").
+- The far edge of the loaded terrain blends into the sky ("Horizon haze")."""
 
 [[versions]]
 version = "1.1.0"

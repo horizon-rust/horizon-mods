@@ -23,6 +23,8 @@ pub mod smp_economy;
 pub mod smp_games;
 #[path = "../mixins/smp/smp_invsee.rs"]
 pub mod smp_invsee;
+#[path = "../mixins/smp/smp_ledger.rs"]
+pub mod smp_ledger;
 #[path = "../mixins/smp/smp_lottery.rs"]
 pub mod smp_lottery;
 #[path = "../mixins/smp/smp_market.rs"]
@@ -45,6 +47,8 @@ pub mod smp_presence;
 pub mod smp_recipes;
 #[path = "../mixins/smp/smp_report.rs"]
 pub mod smp_report;
+#[path = "../mixins/smp/smp_reports.rs"]
+pub mod smp_reports;
 #[path = "../mixins/smp/smp_shop.rs"]
 pub mod smp_shop;
 #[path = "../mixins/smp/smp_store.rs"]

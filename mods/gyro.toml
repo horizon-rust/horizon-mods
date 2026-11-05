@@ -1,0 +1,50 @@
+id = "gyro"
+kind = "native-mod"
+name = "Gyro"
+summary = "Full 6DOF flight physics and immersive gyro camera tilt for Minecraft Horizon, inspired by Do a Barrel Roll."
+description = """
+**Fly an elytra like an aircraft.** Gyro swaps Horizon's locked horizon for full six-degree-of-freedom control: bank into a roll, pull through it to carve a turn, push the nose past vertical and loop. Inspired by the feel of the Java mod *Do a Barrel Roll*, written from scratch on Horizon's native hook points.
+
+| While gliding | What it does |
+|---|---|
+| Mouse left / right | Roll — a full 360° with no snap-back |
+| Mouse up / down | Pitch through your current bank, so a wing-down pull carves a turn |
+| `A` / `D` | Rudder yaw for fine heading corrections |
+
+In third person your avatar, elytra and held item stay pinned to the camera while the world, sky and entities roll around you. When you stop gliding, the view eases back to level and the mouse is an ordinary camera again. Everything else stays vanilla — no keybinds, no config, no setup, just one row in **Options > Mods**.
+
+**What it actually touches.** Client-side camera matrices and the player's own model only. There is no network, filesystem or process access anywhere in the source, no server hooks and no server component; the server never hears about the roll. It declares `hooks: 3`, so the launcher builds it on any Horizon whose native hook API is ≥ 3 rather than one pinned commit. Built and tested against Horizon `ba6344a` with horizon-mixins `d9c83d70`. The whole mod is seven short Rust files plus one mixin manifest under `mixins/gyro/` — read them before you build.
+
+*Native mods are unsandboxed code running with your account's permissions; install only from authors you trust.*
+
+Source & build guide: https://github.com/CGRLabs/gyro
+
+Community discovery & mod docs: https://horizon-hub-seven.vercel.app (independent, unofficial — indexes the official registry)
+"""
+authors = ["CGRLabs"]
+owners = ["CGRLabs"]
+license = "MIT"
+source = "https://github.com/CGRLabs/gyro"
+icon = "https://weaigubwhdajcehreyau.supabase.co/storage/v1/object/public/icons/gyro.png"
+key = "RWSjKGIJUKKXHvvhxzNN2VPPrXSEr47JXVgGpCwrOOHoneuQjTWWvk1g"
+
+[[versions]]
+version = "1.4.1"
+published = "2026-11-05"
+game = "26.3"
+file = "gyro-1.4.1.hnmod"
+sha256 = "2271d5b7e1559544a12e9198523c643bddd2551828ecf0a39b92f7d120b1921b"
+signature = """
+untrusted comment: signature from Horizon Hub signing key (CGRLabs)
+RUSjKGIJUKKXHmpe6jlROY1yCZ3ZOf3ud+zshvosQahcCBCr1PIsSnnLgeLiuaxjxr55MkO9i9r4pKIUqRkcIY8y/R3pfi+QSgY=
+trusted comment: timestamp:1793853001\tfile:gyro-1.4.1.hnmod
+uqpsuNh06lQVrKGSKBbJ9J6y4A3bg0TlGEepMy+5F3G3Iuokw6bu2WqSOjNWS7u8qZdzVBLXontxfjb6gzUkBQ=="""
+changelog = """
+The bundle now declares native hook points (`hooks: 3`), so the launcher builds it on any Horizon with native hook API v3 or newer instead of only the pinned commit.
+
+- Deterministic packaging: identical sources give identical bytes and SHA-256; `tools/package.py --check-hooks` cross-checks the pinned commit's real API.
+- Mod row (id, version, description) now comes from `runtime.rs` constants.
+- Added `proof.py`, an in-game proof harness driving the modded client on throwaway data folders.
+- Player-facing README rewrite.
+
+Client-side camera and player-model changes only; no network writes and no server component."""

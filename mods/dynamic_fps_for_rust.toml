@@ -1,0 +1,33 @@
+id = "dynamic_fps_for_rust"
+kind = "native-mod"
+name = "Dynamic FPS for rust"
+summary = "Reduce resource usage while Minecraft is in the background, idle, or on battery"
+description = """
+Dynamic FPS for Horizon: it lowers the frame rate, and optionally the volume, while the game window is in the background, hovered but not focused, minimised or idle, or while Horizon's battery mode is on.
+
+- Caps by default: 30 FPS hovered, 10 unfocused (after half a second), 1 minimised, 20 after a minute idle, 30 on battery; no cap while you play.
+- At 1 FPS the game still runs its input, network and ticks up to 20 times a second.
+- Volume lowering is off by default.
+- Settings: `config/dynamic-fps-for-rust.json` in the game folder, written with the defaults on first start. There is no settings screen yet.
+
+An independent implementation after the public description of Dynamic FPS; it holds none of its code. It changes no shared game settings and has no network access."""
+authors = ["Lyvt (dc: _.lyvt)"]
+owners = ["Lyvt-Dev"]
+license = "MIT"
+source = "https://github.com/Lyvt-Dev/dynamic-fps-for-rust"
+icon = "https://raw.githubusercontent.com/Lyvt-Dev/dynamic-fps-for-rust/main/logo/dynamic-fps.png"
+key = "RWQ84d8BvD1EaarVDgHgXyz+MDiL7ONsCZc0BUrJqTmqzXBItnJy918A"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-04"
+game = "26.3"
+file = "dynamic_fps_for_rust-0.1.0.hnmod"
+sha256 = "50fad9a8d1d481a3862479b313c04e0dc6f8494a84d4cd007583822f5671e17e"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUQ84d8BvD1EaVhURO1FuYGMB/oFMSego05WqzetlxYu+Xqw833gPsVaui5/duBbZ3lGVErA0gcc/vxslYvhhaGkPRciB+/40wg=\r
+trusted comment: Dynamic FPS for rust 0.1.0; dynamic-fps-for-rust-0.1.0.hnmod\r
+V1fosOt0MvcQQm5uFTaFubXeoX1nt3411VAeox/pIV+R/GbcsiJGGRO/p1NcY39sOFOFkF3qWg9pNt/J4EXaDA=="""
+changelog = """
+First release: frame rate and optional volume caps for an unfocused, hovered, minimised or idle window, and on battery."""

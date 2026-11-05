@@ -43,7 +43,7 @@ header and footer).
 | `/home [name]`, `/sethome [name]`, `/delhome [name]`, `/homes` | your homes (`home` when unnamed): go, set or move one where you stand, delete, list |
 | `/warp <name>`, `/warps` | to a warp, the list; `/setwarp <name>`, `/delwarp <name>` for operators of level 3 |
 | `/tpa <player>`, `/tpaccept [player]`, `/tpdeny [player]` | asks to go to a player (60 s to answer); answers a request |
-| `/rtp`, `/wild` | to a random safe spot 500 to 5,000 blocks from the spawn, in the Overworld only; once every 30 minutes |
+| `/rtp`, `/wild` | to a random safe spot 500 to 10,000 blocks from the spawn, in the Overworld only; once every 5 minutes |
 | `/rules` | the server's rules |
 | `/back` | back to where you died, or where your last teleport took you from (warmup and cooldown as any teleport) |
 | `/afk` | marks you away from the keyboard until you move, turn or run a command |
@@ -59,6 +59,9 @@ header and footer).
 | `/invsee <player>`, `/endersee <player>` | operators of level 3: the player's inventory (main, hotbar, armour, off hand) or ender chest in a chest menu, on or off the server; click one of theirs to take it, one of yours to give it; every move in `audit.log`, a summary in `staff.log` |
 | `/sidebar off`, `/sidebar on`, `/sidebar` | hides the scoreboard sidebar for you (remembered), shows it again |
 | `/smp status`, `/smp off [part\|all] [reason]`, `/smp on [part\|all]` | operators of level 3: the emergency switches (below) |
+| `/report <player> <reason>` | anyone: tells the staff about a player (a reason is needed; one report every `reports.cooldown_seconds`, 120). Operators of level 3 on read it at once; one who joins later is told how many came in the last 24 hours. Kept in `reports.log` and the server's log |
+| `/reports [page]` | operators of level 3: the reports, newest first (the last 100 kept in memory, read back from `reports.log` at the start) |
+| `/ledger [page]`, `/ledger <player> [page]`, `/ledger minted` | operators of level 3: the coin ledger (`audit.log`): the newest coin movements (who to whom, how much, why, when), one player's, or the coins the server made and destroyed in each of the last 6 hours and what made most of them. Reads the end of the file (1 MB) only when asked |
 
 The market trades only plain items (not worn, named or enchanted), and only with players in survival or adventure
 mode. Items move first, then money, both logged; a sale the log refuses gives the items back, and a purchase checks the
@@ -230,7 +233,7 @@ lines. `/spawn` lands on a random safe column within `spawn_radius` (250) blocks
 as any teleport does.
 
 `/rtp` (or `/wild`) draws `rtp_attempts` (6) chunks at random between `rtp_min_distance` (500) and `rtp_max_distance`
-(5000) blocks from the spawn (`/setspawn`'s point, 0 0 without one), uniform over the ring's area and at least 16 blocks
+(10000) blocks from the spawn (`/setspawn`'s point, 0 0 without one), uniform over the ring's area and at least 16 blocks
 inside the world border (as last saved in `world_border.dat`), then holds them loaded one after another with vanilla's
 `forceload` while the warmup runs: the game generates them on its worker threads, never on the server tick. Once a
 chunk is loaded, the Overworld's tick reads its 256 columns (`native_read_columns`, the top block below the
@@ -238,7 +241,7 @@ chunk is loaded, the Overworld's tick reads its 256 columns (`native_read_column
 whose top block is solid ground (no fluid, fire, cactus, magma, powder snow, berry bush or dripstone) with air or grass
 above it, outside another player's claim and still in the ring and the border; with none the next chunk is tried. With
 no spot after the six, or no land loaded `rtp_search_seconds` (30) after the warmup, it says so and nothing is spent.
-A teleport made starts `rtp_cooldown_seconds` (1800) for that player, kept in `places.json` over restarts ("Wait 12 min
+A teleport made starts `rtp_cooldown_seconds` (300) for that player, kept in `places.json` over restarts ("Wait 2 min
 before your next /rtp."); a teleport called off (a move, a hit, the game failing it) doesn't. Elsewhere than the
 Overworld it refuses. The chunks it forced are let go 10 s after the landing, or at the next start if the server
 stopped first; a chunk an operator forced already is used and left forced. `/back` returns from it as from any teleport.
@@ -349,6 +352,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `places.json` | the spawn, the warps, each player's homes, and the seconds each player has played (written once a minute) |
 | `nicks.json` | each player's nickname and when they last changed it |
 | `vanish.json` | the vanished operators by UUID, with their name |
+| `reports.log` | one JSON line per `/report`: `time`, `by`/`by_name`, `player`/`player_name`, `reason`, where each stood (`by_at`, `player_at` when on) |
 | `staff.log` | one line per `/invsee` or `/endersee` menu in which something moved: who, whose, what was taken and put |
 | `market_prices.json` | each item's price factor and history (minutes for 24 h, hours for 30 days: `[time, mid, traded, sold]`), the day's summary |
 | `web/market.json` | for the website (`/hub/market`, through Kira), written by a thread each minute prices move: `schema` 1, `generated`, `currency`, `tax_percent` (always 0, for older readers), `daily_summary` (`day`, `lines`), `items` (`id`, `name`, `category`, `price` (the one price; `buy` and `sell` repeat it on the sides the market trades, for older readers), `mid`, `base`, `change_1h`, `change_24h`, `volume_24h`, `day`: 5-minute points, `month`: hours, each `{step, t, price, volume}`). When `web.token` is set, the same thread POSTs each page of `web/` that changed (gzipped, `Authorization: Bearer <token>`) to `<web.url>/<name>`: Kira keeps the last one and serves it to the site; the server needs no inbound access and Kira no key to it |
@@ -357,7 +361,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `switches.json` | the parts operators turned off (`/smp off`): by whom, when and why |
 | `casino.json` | the day's ledger: each player's bets, wins and rounds today (the daily loss cap), the day's biggest wins, each game's totals, the pot's last sweep |
 | `claims.json` | each claimed chunk (`<dimension> <chunk x> <chunk z>`) with its owner, and whom each owner trusts |
-| `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `grant`, `ah_listing_fee`...), `amount`, `from`/`to` with their balance before, `by` for an operator, `to_pool`/`from_pool` with `pool_before` and `reason` for a pool's movement; a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
+| `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `grant`, `ah_listing_fee`...), `amount`, `from`/`to` with their balance before, `by` for an operator, `to_pool`/`from_pool` with `pool_before` and `reason` for a pool's movement, `flow` (`minted` or `burned`) for money the server made or destroyed (a market sale or purchase, the daily reward, `/eco give` and `take`); a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
 
 `economy.json` is written whole to a temporary file, flushed and renamed over the old one, at most once a server tick
 and when the world closes: a crash leaves the old file or the new one. If it can't be read, the economy stays off (the

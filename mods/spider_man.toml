@@ -1,0 +1,39 @@
+id = "spider_man"
+kind = "native-mod"
+name = "Spider-Man"
+summary = "Web swinging, zips, wall running and parkour, tuned against the console games' feel."
+description = """
+Swing through a city on webs. Hold **R** and jump: a web catches the nearest anchor ahead and you swing on it, let go
+to fly on, catch the next one.
+
+**Controls** (change them on the mod's page in Options > Mods):
+- **R**: hold to swing; on the ground, a parkour run, faster with **W**; on a wall, a wall run
+- **Z**: hold to zip to where you look
+- **Space** on a web: pump for speed; let go to jump off
+- **A / D** while swinging: lean to the side
+- **F5**: third person, where the poses, the web lines and the chase camera show
+
+**Settings** (Options > Mods > Spider-Man): how long a web flies before it bites. `/swingmode on|off|delay|view|debug`
+in chat does the same and more.
+
+Works in your own worlds: single player, or a LAN world you host. On other servers it stays off.
+
+What it changes in the game: the player's velocity and fall while swinging (own world only), the third-person camera
+and player pose, web lines drawn in the world, and the view's turn while running on a wall. It reads no files outside
+its settings and sends nothing over the network.
+
+Fan-made, not affiliated with Marvel, Sony or Insomniac Games."""
+authors = ["wyddy7"]
+owners = ["wyddy7"]
+owner_ids = [172210694]
+license = "MIT"
+source = "https://github.com/wyddy7/minecraft-spider-man-rust"
+icon = "https://raw.githubusercontent.com/wyddy7/minecraft-spider-man-rust/main/docs/icon.png"
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-03"
+game = "26.3"
+file = "spider_man-0.2.0.hnmod"
+sha256 = "06eefe89fa0f05cfdc6b331b38497d16b4dbc82931581940e127be081055cec8"
+changelog = "Native mod on Horizon's stable hook points: swing, zip, wall run, parkour, poses, web strands, chase camera and `/swingmode`. Pinned to Nightly 2026-11-03 (2944480) and horizon-mixins ddd9700. Release v0.2.0 of the repository."

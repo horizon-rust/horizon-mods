@@ -13,7 +13,14 @@ owners = ["tariksabanuz"]
 owner_ids = [332662152]
 license = "MIT"
 source = "https://github.com/tariksabanuz/ModMenuHorizon"
-icon = "https://raw.githubusercontent.com/tariksabanuz/ModMenuHorizon/main/icon.png"
+icon = "https://raw.githubusercontent.com/tariksabanuz/ModMenuHorizon/caec7c4c3a2c6c7746a97d137ccf8f8904801e72/icon.png"
+
+[[versions]]
+version = "0.3.3"
+published = "2026-11-05"
+game = "26.3"
+file = "mod_menu-0.3.3.hnmod"
+sha256 = "657b0b6ce1f1ac44afa8d7410aa5b16ccf9b6a271024b4e5c1767fa377f98825"
 
 [[versions]]
 version = "0.3.0"

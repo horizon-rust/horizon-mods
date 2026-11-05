@@ -1,0 +1,34 @@
+id = "create"
+kind = "native-mod"
+name = "Create for Horizon"
+summary = "Build rotating machines and small factories in Horizon with gears, belts, presses and fans."
+description = """
+An experimental Rust port of [Create](https://github.com/Creators-of-Create/Create).
+
+- Drive machines with water wheels, hand cranks or a Creative Motor.
+- Route power through shafts, gears, gearboxes, clutches and encased chain drives.
+- Move items on basic belts and depots. Press sheets, mill ingredients, mix in a Basin or process items with a fan.
+
+Install it as a native mod in Horizon Launcher and build the instance. It uses simple built-in models and standard Minecraft textures out of the box.
+
+**The original models and textures require the original Create 6.0.10 JAR for Minecraft 1.21.1 (NeoForge).** Place one copy in the instance's `horizon-mods/create-resources/` folder and restart Horizon. The JAR is optional and resources are imported locally. [Supported JAR](https://modrinth.com/mod/create/version/UjX6dr61)
+
+Moving contraptions, trains and Ponder are planned. [Setup and compatibility](https://github.com/Delete228/create-horizon)"""
+authors = ["Delete228"]
+owners = ["Delete228"]
+owner_ids = [31237303]
+license = "MIT"
+source = "https://github.com/Delete228/create-horizon/commit/236c87a889cd76f7e663d1d182c28dc1145f7b14"
+
+[[versions]]
+version = "0.7.0-alpha.2"
+published = "2026-11-05"
+game = "26.3"
+file = "create-0.7.0-alpha.2.hnmod"
+sha256 = "13638c5571ef7ac32be5bb19ddac90959796d6c102122de09f6a81d39be74d97"
+changelog = """
+First experimental registry submission for Minecraft 26.3. This build includes kinetic transmission, basic belts, depots, pressing, milling, Basin recipes, fans and stationary drilling. Built-in models use standard Minecraft textures. The optional original JAR is supplied by the player.
+
+Horizon is pinned to `9c7f9b2215dfed497aba5522c44f38926628648d` and Horizon Mixins to `e8cd0aa38cffef49cb2e088ef716baa107148c02`. The macOS ARM64 Launcher 0.2.42 Performance build completed after restoring a truncated source download. The player verified the built-in appearance and the original resources in that profile.
+
+Archive SHA-256: `13638c5571ef7ac32be5bb19ddac90959796d6c102122de09f6a81d39be74d97`. [Validation](https://github.com/Delete228/create-horizon/blob/236c87a889cd76f7e663d1d182c28dc1145f7b14/VALIDATION.md#optional-resources-in-070-alpha2)"""

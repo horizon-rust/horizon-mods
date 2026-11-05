@@ -1,0 +1,5 @@
+id = "montarc"
+kind = "shader"
+repo = "Muurrcc/montarc"
+owners = ["Muurrcc"]
+icon = "icons/montarc.png"

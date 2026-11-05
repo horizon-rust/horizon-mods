@@ -34,8 +34,10 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 - nicknames, for operators only: a player can't pick one; an operator's refused ones (a player's name, too short, a
   bad character), the one given in the other's chat and Tab list, /realname, someone else's taken, the player taking
   it off;
-- /rtp: refused in the Nether; in the Overworld the player lands 500 to 5,000 blocks from the spawn on solid ground
-  (and stays there), a second /rtp is refused with the time left, and the chunk it held loaded is let go.
+- /rtp: refused in the Nether; in the Overworld the player lands 500 to 10,000 blocks from the spawn on solid ground
+  (and stays there), a second /rtp is refused with the time left (5 minutes), and the chunk it held loaded is let go;
+- /report: a reason is needed; the report reaches the operator on and reports.log, a second one within two minutes is
+  refused; /reports and /ledger (one player's coin movements, the server's coins by hour) answer the operator only.
 
 `SMP_PROOF=rtp` runs one /rtp alone on a normal (not flat) world's fresh land instead, and what it cost the server's
 ticks: a performance report (`horizon-report`) over the search and landing against one over the same time before it.
@@ -375,7 +377,7 @@ def standing(server, c, at, tests=FLAT_GROUND):
 
 
 def rtp(server, steve, data):
-    """/rtp: refused in the Nether; to a random spot 500..5000 blocks from the spawn, on the ground; then its cooldown."""
+    """/rtp: refused in the Nether; to a random spot 500..10000 blocks from the spawn, on the ground; then its cooldown."""
     r = {}
     spawn = json.loads((data / "places.json").read_text())["spawn"]
     _, home, _ = where(steve)
@@ -393,7 +395,7 @@ def rtp(server, steve, data):
     time.sleep(3)
     dim, at, health = where(steve)
     r["at"], r["distance"] = at, math.hypot(at[0] - spawn["x"], at[2] - spawn["z"])
-    assert dim == "minecraft:overworld" and 499 <= r["distance"] <= 5001, r
+    assert dim == "minecraft:overworld" and 499 <= r["distance"] <= 10001, r
     # On the ground, not falling: the same place a few seconds later, unhurt.
     time.sleep(4)
     _, still, health2 = where(steve)
@@ -405,7 +407,7 @@ def rtp(server, steve, data):
     r["log"] = log[-1]
     r["slow_ticks"] = [l for l in server.lines[start:] if "slow tick" in l or "Can't keep up" in l]
     r["again"] = steve.say("/rtp")
-    assert any("Wait 30 min before your next /rtp." in l for l in r["again"]), r
+    assert any("Wait 5 min before your next /rtp." in l for l in r["again"]), r
     # The chunk it held loaded is let go 10 s after the landing.
     time.sleep(12)
     saved = json.loads((data / "places.json").read_text())
@@ -463,7 +465,7 @@ def rtp_alone(ctl, resources, out):
         time.sleep(5)
         dim, at, _ = where(steve)
         r["at"], r["distance"] = at, math.hypot(at[0], at[2])
-        assert dim == "minecraft:overworld" and 499 <= r["distance"] <= 5001, r
+        assert dim == "minecraft:overworld" and 499 <= r["distance"] <= 10001, r
         r["ground"], _ = standing(server, steve, at, SOLID_GROUND)
         r["log"] = [l for l in server.lines[start:] if "[smp] /rtp: Steve" in l]
         r["slow_ticks"] = [l for l in server.lines[start:] if "slow tick" in l or "Can't keep up" in l]
@@ -475,6 +477,36 @@ def rtp_alone(ctl, resources, out):
         if server.__dict__.get("process") and server.process.poll() is None:
             server.process.kill()
         shutil.rmtree(root, ignore_errors=True)
+
+
+def reports_and_ledger(server, alex, steve, data):
+    """/report (Steve, a player) reaches Alex (an operator) and reports.log; a reason is needed and two minutes pass
+    between reports; /reports and /ledger answer operators only; /ledger reads the coin movements audit.log holds."""
+    r = {}
+    r["no_reason"] = steve.say("/report Alex")
+    assert any("Say why: /report <player> <reason>" in l for l in r["no_reason"]), r
+    r["sent"] = steve.say("/report Alex proof report")
+    assert any("Thanks, your report on Alex was sent to the staff." in l for l in r["sent"]), r
+    time.sleep(1)
+    r["op_read"] = alex.chat()[-3:]
+    assert any("[Report] Steve reported Alex: proof report" in l for l in r["op_read"]), r
+    r["again"] = steve.say("/report Alex again")
+    assert any("before your next report." in l for l in r["again"]), r
+    saved = [json.loads(l) for l in (data / "reports.log").read_text().splitlines()]
+    assert len(saved) == 1 and saved[0]["reason"] == "proof report" and saved[0]["by_name"] == "Steve", saved
+    assert any("[smp] report by Steve on Alex: proof report" in l for l in server.lines), server.lines[-20:]
+    r["reports"] = alex.say("/reports")
+    assert any("Steve reported Alex: proof report" in l for l in r["reports"]), r
+    r["not_op"] = steve.say("/ledger")
+    assert not any("Coin movements" in l for l in r["not_op"]), r
+    r["ledger"] = alex.say("/ledger Steve")
+    assert any("Steve's coin movements, newest first" in l for l in r["ledger"]), r
+    # Alex's /pay of 120 at the start, unless ten newer movements of Steve's push it to a later page.
+    pages = r["ledger"] + alex.say("/ledger Steve 2") + alex.say("/ledger Steve 3")
+    assert any("pay: Alex → Steve, 120 coins" in l for l in pages), pages
+    r["minted"] = alex.say("/ledger minted")
+    assert any("Coins the server made and destroyed, by hour (UTC):" in l for l in r["minted"]), r
+    return r
 
 
 def claims(server, alex, steve):
@@ -1192,6 +1224,7 @@ def run(ctl, resources, out):
         results["places"] = places(server, alex, steve)
         results["rtp"] = rtp(server, steve, data)
         results["claims"] = claims(server, alex, steve)
+        results["reports_and_ledger"] = reports_and_ledger(server, alex, steve, data)
         results["world_guard"] = world_guard(server, alex, steve)
         results["board"] = board(alex, steve, out)
         results["polish"] = polish(server, alex, steve, out)

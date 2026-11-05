@@ -22,7 +22,7 @@ authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
 license = "MIT"
 source = "https://github.com/tariksabanuz/ContinuityHorizon"
-icon = "https://github.com/tariksabanuz/ContinuityHorizon/blob/cd5301759efef6b1819ed7a8590a0d76e15d6d7e/icon.png"
+icon = "https://raw.githubusercontent.com/tariksabanuz/ContinuityHorizon/cd5301759efef6b1819ed7a8590a0d76e15d6d7e/icon.png"
 
 [[versions]]
 version = "0.1.2"

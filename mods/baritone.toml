@@ -17,6 +17,9 @@ authors = ["luhnox (this port); Baritone by leijurv and the Baritone contributor
 owners = ["luhnox"]
 license = "LGPL-3.0-or-later (a derivative of Baritone, https://github.com/cabaletta/baritone)"
 source = "https://github.com/luhnox/horizon-baritone"
+icon = "icons/baritone.png"
+categories = ["utility", "transportation"]
+tags = ["pathfinding", "automation", "bot", "mining", "elytra", "port"]
 key = "RWRTLwnAmb4dyVYWM1egwotcybd6nw1ILTIWGHmQVwiMROClbjW0JoKZ"
 
 [[versions]]

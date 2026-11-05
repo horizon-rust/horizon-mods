@@ -20,6 +20,9 @@ Source: `horizon/` in https://github.com/Vakarux12/KillC, a fork of the original
 authors = ["adasjusk", "Vakarux12"]
 license = "CC-BY-SA-4.0"
 source = "https://github.com/Vakarux12/KillC/tree/main/horizon"
+icon = "icons/killc.png"
+categories = ["utility", "game-mechanics"]
+tags = ["commands", "kill", "respawn", "random-spawn", "port"]
 
 [[versions]]
 version = "5.1.0"

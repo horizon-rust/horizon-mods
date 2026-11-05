@@ -29,6 +29,8 @@ owner_ids = [332662152]
 license = "MIT"
 source = "https://github.com/tariksabanuz/PhysicsModHorizon"
 icon = "icons/horizon_physics.png"
+categories = ["decoration", "game-mechanics"]
+tags = ["physics", "ragdolls", "water", "waves", "particles", "capes"]
 
 [[versions]]
 version = "0.18.0"

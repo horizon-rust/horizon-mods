@@ -40,6 +40,9 @@ owners = ["enderliker"]
 owner_ids = [166346005]
 license = "MIT"
 source = "https://github.com/enderliker/horizon-jei"
+icon = "icons/jei.png"
+categories = ["utility"]
+tags = ["recipes", "item-browser", "recipe-viewer", "search", "port"]
 key = "RWRqzx718YYz/OHRM+pAnFWlDv8Rrgar5C4NszQg3EKJWQZWNel5Sslf"
 
 [[versions]]

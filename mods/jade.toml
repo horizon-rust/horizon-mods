@@ -20,7 +20,9 @@ owners = ["Joeypc6"]
 owner_ids = [35495484]
 license = "CC-BY-NC-SA-4.0"
 source = "https://github.com/Joeypc6/Jade-Horizon"
-icon = "https://media.forgecdn.net/avatars/thumbnails/207/323/256/256/636965628804677340.png"
+icon = "icons/jade.png"
+categories = ["utility"]
+tags = ["tooltip", "hud", "block-info", "waila", "port"]
 
 [[versions]]
 version = "26.3.6"

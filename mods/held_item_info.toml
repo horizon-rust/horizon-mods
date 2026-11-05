@@ -8,6 +8,9 @@ owners = ["AltMugen"]
 owner_ids = [108084724]
 license = "MIT"
 source = "https://github.com/AltMugen/horizon-held-item-info"
+icon = "icons/held_item_info.png"
+categories = ["utility"]
+tags = ["hud", "durability", "enchantments", "held-item"]
 
 [[versions]]
 version = "0.1.0"

@@ -41,7 +41,9 @@ owners = ["keksi2k"]
 owner_ids = [32579030]
 license = "MIT"
 source = "https://github.com/keksi2k/horizonmatica"
-icon = "https://raw.githubusercontent.com/keksi2k/horizonmatica/main/icon.png"
+icon = "icons/horizonmatica.png"
+categories = ["utility"]
+tags = ["schematics", "litematica", "building", "printer", "material-list", "port"]
 key = "RWS+BRoCJslNCFapck3cbG2VFQcjlr1MUH5m3+CWA8zhJecoBoja7X94"
 
 [[versions]]

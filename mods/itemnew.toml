@@ -17,6 +17,8 @@ owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/itemnew"
 icon = "icons/itemnew.png"
+categories = ["utility", "storage"]
+tags = ["inventory", "highlight", "new-items", "hotbar"]
 
 [[versions]]
 version = "0.1.1"

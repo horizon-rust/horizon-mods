@@ -25,7 +25,9 @@ authors = ["CGRLabs"]
 owners = ["CGRLabs"]
 license = "MIT"
 source = "https://github.com/CGRLabs/gyro"
-icon = "https://weaigubwhdajcehreyau.supabase.co/storage/v1/object/public/icons/gyro.png"
+icon = "icons/gyro.png"
+categories = ["transportation"]
+tags = ["elytra", "flight", "barrel-roll", "camera"]
 key = "RWSjKGIJUKKXHvvhxzNN2VPPrXSEr47JXVgGpCwrOOHoneuQjTWWvk1g"
 
 [[versions]]

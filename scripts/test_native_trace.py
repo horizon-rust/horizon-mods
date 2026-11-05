@@ -21,7 +21,7 @@ pub fn resolve(x: u8) -> u8 {
             let _ = r#"}"#;
             Some(MeshTables { base: x }.base)
         }
-        fast_mesh_resolve(x)
+        fast_mesh_resolve(x, [0.0; 3])
     } {
         return v;
     }
@@ -65,6 +65,9 @@ class Trace(unittest.TestCase):
     def test_an_error_in_a_support_module_names_its_mod(self):
         self.assertEqual(self.tracer().owner(span(STAGED, "t.missing")), "carryblock")
 
+    def test_an_error_in_the_generated_call_to_a_helper_names_its_mod(self):
+        self.assertEqual(self.tracer().owner(span(STAGED, "[0.0; 3]")), "fast_mesh")
+
     def test_an_error_in_horizons_own_code_names_no_mod(self):
         self.assertIsNone(self.tracer().owner(span(STAGED, "MeshTables { base: 1 }")))
         self.assertIsNone(self.tracer().owner(span(STAGED, "return v")))
@@ -87,7 +90,7 @@ class Trace(unittest.TestCase):
     def test_braces_in_literals_and_comments_are_not_code(self):
         code = masked(STAGED.encode())
         (start, end), = item_ranges(code, "fn", "fast_mesh_resolve")
-        self.assertTrue(STAGED.encode()[start:end].endswith(b"}.base)\n        }"))
+        self.assertTrue(STAGED.encode()[start:end].endswith(b"}.base)\n        }\n        fast_mesh_resolve(x, [0.0; 3])\n    }"))
         self.assertEqual(len(code), len(STAGED.encode()))
 
     def test_cargo_json_errors(self):

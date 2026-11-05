@@ -104,10 +104,20 @@ def item_ranges(code, keyword, name):
             elif code[k] == ord("}"):
                 depth -= 1
                 if depth == 0:
-                    ranges.append((m.start(), k + 1))
+                    ranges.append(_with_call(code, name, m.start(), k + 1) if keyword == "fn" else (m.start(), k + 1))
                     break
             k += 1
     return ranges
+
+
+def _with_call(code, name, start, end):
+    """The block horizon-mixins wraps a helper in, `{ fn NAME(…) { … } NAME(…) }`, when that is all the block holds:
+    an error in the generated call (an argument the helper's signature no longer takes) is the helper's too."""
+    before = re.search(rb"\{\s*(?:#\[[^\]]*\]\s*)*\Z", code[max(0, start - 400):start])
+    after = re.match(rb"\s*%s\s*\([^{}]*\)\s*;?\s*\}" % re.escape(name.encode()), code[end:])
+    if before and after:
+        return start - (len(before.group(0))), end + after.end()
+    return start, end
 
 
 def helper_name(source):

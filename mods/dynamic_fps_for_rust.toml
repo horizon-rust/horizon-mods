@@ -3,15 +3,14 @@ kind = "native-mod"
 name = "Dynamic FPS for rust"
 summary = "Reduce resource usage while Minecraft is in the background, idle, or on battery"
 description = """
-Dynamic FPS
-Reduce resource usage while Minecraft is in the background, idle, or on battery.
+Dynamic FPS for Horizon: it lowers the frame rate, and optionally the volume, while the game window is in the background, hovered but not focused, minimised or idle, or while Horizon's battery mode is on.
 
-Features
-Dynamic FPS will detect whether the Minecraft window is currently active, being hovered over, unfocused, or invisible.
-For each of these states you're able to adjust the frame rate, volume, and whether toast notifications are temporarily paused.
+- Caps by default: 30 FPS hovered, 10 unfocused (after half a second), 1 minimised, 20 after a minute idle, 30 on battery; no cap while you play.
+- At 1 FPS the game still runs its input, network and ticks up to 20 times a second.
+- Volume lowering is off by default.
+- Settings: `config/dynamic-fps-for-rust.json` in the game folder, written with the defaults on first start. There is no settings screen yet.
 
-You can also configure these settings for when you're idling (with a custom timeout) or while your laptop / handheld is on battery.
-Optionally you may also display the current battery status on the in-game HUD and receive toast notifications about battery activity."""
+An independent implementation after the public description of Dynamic FPS; it holds none of its code. It changes no shared game settings and has no network access."""
 authors = ["Lyvt (dc: _.lyvt)"]
 owners = ["Lyvt-Dev"]
 license = "MIT"
@@ -31,11 +30,4 @@ RUQ84d8BvD1EaVhURO1FuYGMB/oFMSego05WqzetlxYu+Xqw833gPsVaui5/duBbZ3lGVErA0gcc/vxs
 trusted comment: Dynamic FPS for rust 0.1.0; dynamic-fps-for-rust-0.1.0.hnmod\r
 V1fosOt0MvcQQm5uFTaFubXeoX1nt3411VAeox/pIV+R/GbcsiJGGRO/p1NcY39sOFOFkF3qWg9pNt/J4EXaDA=="""
 changelog = """
-Reduce resource usage while Minecraft is in the background, idle, or on battery.
-
-Features
-Dynamic FPS will detect whether the Minecraft window is currently active, being hovered over, unfocused, or invisible.
-For each of these states you're able to adjust the frame rate, volume, and whether toast notifications are temporarily paused.
-
-You can also configure these settings for when you're idling (with a custom timeout) or while your laptop / handheld is on battery.
-Optionally you may also display the current battery status on the in-game HUD and receive toast notifications about battery activity."""
+First release: frame rate and optional volume caps for an unfocused, hovered, minimised or idle window, and on battery."""

@@ -3,11 +3,12 @@ id = "smp"
 version = "0.35.0"
 priority = 100
 
-# The commit of horizon it was tested on (the official server's engine, r9.1): it needs the projectile impact,
+# The commit of horizon CI tests it on (the minimap's: mods on the newest hooks share one; the official server's
+# engine, r9.1 52882c1, descends from it with the same hooks): it needs the projectile impact,
 # hanging break, entity join and dispenser hooks (API 359), the entity handles and native_player_chat (in its source,
 # stamped later on main as API 399), on top of native_hide_player (API 314) and horizon#6106's helpers.
 [compatibility]
-horizon_revision = "52882c1e8cbfa0d08e34471d2e9cbf6793933a85"
+horizon_revision = "eaa7da4fb1e1c580ed618bc7cfd1758858c0b878"
 
 [[module]]
 id = "store"

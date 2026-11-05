@@ -13,8 +13,10 @@
 Popular mods that don't apply on that Nightly are left out, as the launcher leaves them out, and listed.
 
 `health` applies every native mod's newest version on the newest Nightly and writes the ones horizon-mixins
-refuses, with only the mods they need, with its diagnostic: the publish job adds them to the index (`broken_on`), and the launcher warns
-before an install.
+refuses with only the mods they need; then `cargo check`s the rest together, rounds leaving out the mods the errors
+are in (scripts/native_trace.py, as the launcher traces them), and writes those too, each with its first error. An
+error of the kind two mods cause together (a name defined twice...) is checked again with that mod alone. The publish
+job adds them all to the index (`broken_on`), and the launcher warns before an install.
 
 horizon-mixins only reads the bundles; `cargo check` runs a mod crate's build script, if it has one, so
 `check` runs in a job whose token can only read (native-compat.yml). Horizon's source comes from GitHub's archive.
@@ -34,6 +36,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "native" / "tools"))
 import native  # noqa: E402  (native/tools/native.py: source, latest_nightly, get, log)
+import native_trace  # noqa: E402
 
 INDEX = "https://horizon-rust.github.io/horizon-mods/index.json"
 REGISTRY = "horizon-rust/horizon-mods"
@@ -60,6 +63,10 @@ class Bundle:
         self.modules = {(m["file"], m["name"]) for m in manifest.get("module", [])}
         self.needs = [d for d, v in manifest.get("dependencies", {}).items()
                       if not (isinstance(v, dict) and v.get("optional"))]
+        # The launcher rewrites these before horizon-mixins and stages API packages for them (native_mods/inject.rs,
+        # api.rs), which this script doesn't: they are applied here, not compiled.
+        self.api = "api" in manifest or any(isinstance(i, dict) and "trait_method" in i
+                                            for i in manifest.get("injection", []))
 
     def unpack(self, into, revision):
         out = into / self.id
@@ -172,15 +179,85 @@ def apply(tool, tree, bundles, revision, name):
     return None, refused
 
 
-def compiles(stage):
-    """`cargo check` of the game in `stage`, as the launcher compiles it."""
+# Errors two mods' code can cause together, while each alone compiles.
+PAIR_CODES = {"E0119", "E0201", "E0252", "E0254", "E0255", "E0260", "E0428", "E0592"}
+COMPILE_ROUNDS = 6
+
+
+def check_errors(stage):
+    """`cargo check` of the game in `stage` as the launcher compiles it (with Horizon's `mods` feature when it has
+    one): None when it compiles, else its errors (native_trace.errors). The workspace is synced into one folder
+    first, so cargo's incremental state survives between rounds."""
+    work = WORK / "check"
+    work.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["rsync", "-a", "--checksum", "--delete", f"{stage}/", f"{work}/"], check=True)
+    command = ["cargo", "check", "--locked", "--message-format=json", "-p", "horizon-client", "--bin", "horizon-client"]
+    client = tomllib.loads((work / "crates/horizon-client/Cargo.toml").read_text())
+    if "mods" in client.get("features", {}):
+        command += ["--features", "horizon-client/mods"]
     env = dict(os.environ, CARGO_TARGET_DIR=str(WORK / "cargo"))
-    run = subprocess.run(["cargo", "check", "--locked", "-p", "horizon-client", "--bin", "horizon-client"],
-                         cwd=stage, env=env, capture_output=True, text=True)
-    if run.returncode != 0:
-        errors = [line for line in run.stderr.splitlines() if line.startswith("error")]
-        log("\n".join(errors[:10]) or run.stderr[-3000:])
-    return run.returncode == 0
+    run = subprocess.run(command, cwd=work, env=env, capture_output=True, text=True)
+    if run.returncode == 0:
+        return None
+    found = native_trace.errors(run.stdout)
+    for e in found[:10]:
+        log(e["rendered"].rstrip())
+    return found or [{"code": "E_CARGO", "message": run.stderr[-2000:], "rendered": run.stderr[-2000:], "spans": []}]
+
+
+def compiles(stage):
+    return stage is not None and check_errors(stage) is None
+
+
+def traced(errors, tree, mods):
+    """{id: its first error} for the errors in `mods`' own code (native_trace)."""
+    tracer = native_trace.Tracer(WORK / "check", tree, {(b.id, b.version) for b in mods})
+    found = {}
+    for e in errors:
+        for span in e["spans"]:
+            owner = tracer.owner(span)
+            if owner and owner not in found:
+                where = f" ({span['file_name']}:{span.get('line_start')})"
+                found[owner] = {"code": e["code"], "message": e["message"] + where}
+    return found
+
+
+def broken_compiling(tool, tree, mods, revision, needed):
+    """The mods of `mods` (all applying) whose own code doesn't compile on `revision`: {id: error}."""
+    by_id = {b.id: b for b in mods}
+    left, broken = list(mods), {}
+    for _ in range(COMPILE_ROUNDS):
+        stage, _ = apply(tool, tree, left, revision, "health-compile")
+        if stage is None:
+            break
+        errors = check_errors(stage)
+        if errors is None:
+            log(f"  {len(left)} native mods compile together")
+            return broken
+        found = traced(errors, tree, left)
+        if not found:
+            log("  the errors are in no mod's code: stopping the compile check here")
+            break
+        for i, error in sorted(found.items()):
+            if error["code"] in PAIR_CODES:
+                alone = [by_id[n] for n in sorted(needed(by_id[i], set())) if n in by_id] + [by_id[i]]
+                stage, _ = apply(tool, tree, alone, revision, f"health-alone-{i}")
+                if stage is None or i not in traced(check_errors(stage) or [], tree, alone):
+                    log(f"  {i}: {error['code']} only next to other mods: not broken")
+                    continue
+            log(f"  {i} {by_id[i].version}: {error['code']}: {error['message']}")
+            broken[i] = error
+        gone = set(found)
+        while True:
+            more = {b.id for b in left if b.id not in gone and any(n in gone for n in b.needs)}
+            if not more:
+                break
+            for i in more:
+                if any(n in broken for n in by_id[i].needs):
+                    broken[i] = {"code": "E_DEPENDENCY", "message": f"needs {', '.join(by_id[i].needs)}"}
+            gone |= more
+        left = [b for b in left if b.id not in gone]
+    return broken
 
 
 def new_entries(base, head):
@@ -284,15 +361,27 @@ def health(args):
             refused[i] = alone[i]
         else:
             log(f"  {i} applies without the others: not broken")
+    # The rest, compiled; without the mods the launcher prepares differently (Bundle.api) and those needing them.
+    skipped = {b.id for b in registry if b.api}
+    while more := {b.id for b in registry if b.id not in skipped and any(n in skipped for n in b.needs)}:
+        skipped |= more
+    if skipped:
+        log(f"  not compiled here (an API the launcher prepares): {', '.join(sorted(skipped))}")
+    compiling = [b for b in registry if b.id not in refused and b.id not in skipped]
+    failed = broken_compiling(tool, tree, compiling, revision, needed) if args.compile else {}
+    broken = {i: dict(d, stage="apply") for i, d in refused.items()}
+    broken |= {i: dict(d, stage="compile") for i, d in failed.items()}
     report = {
         "horizon": revision,
         "mixins": tool.parent.parent.name,
-        "broken": {i: {"version": by_id[i].version, "code": d.get("code"), "message": d.get("message")}
-                   for i, d in sorted(refused.items())},
+        "broken": {i: {"version": by_id[i].version, "code": d.get("code"), "message": d.get("message"),
+                       "stage": d["stage"]}
+                   for i, d in sorted(broken.items())},
     }
     Path(args.out).write_text(json.dumps(report, indent=2) + "\n")
-    print(f"{len(refused)} of {len(registry)} native mods don't apply on Horizon {revision[:7]}: "
-          + ", ".join(sorted(refused)))
+    print(f"{len(broken)} of {len(registry)} native mods don't build on Horizon {revision[:7]}: "
+          f"{len(refused)} don't apply ({', '.join(sorted(refused))}), {len(failed)} don't compile "
+          f"({', '.join(sorted(failed))}).")
     return 0
 
 
@@ -309,6 +398,7 @@ def main():
     n.add_argument("head")
     h = sub.add_parser("health")
     h.add_argument("--out", required=True)
+    h.add_argument("--no-compile", dest="compile", action="store_false")
     for p in (c, h):
         p.add_argument("--horizon", default="latest", help="a Horizon commit, or `latest` (the newest Nightly)")
     args = parser.parse_args()

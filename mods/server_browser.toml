@@ -13,7 +13,9 @@ owners = ["Musti3214"]
 owner_ids = [266587196]
 license = "MIT"
 source = "https://github.com/Musti3214/Horizon-Server-Browser/tree/8a467654699ca83ebdf901498fe3dc73c46dbe69/mod"
-icon = "https://raw.githubusercontent.com/Musti3214/Horizon-Server-Browser/182284c36b0e53c12757e110a345413cc80b0e9c/docs/server-atlas-icon.png"
+icon = "icons/server_browser.png"
+categories = ["social", "utility"]
+tags = ["server-list", "servers", "multiplayer", "browser", "favorites"]
 
 [[versions]]
 version = "2.2.1"

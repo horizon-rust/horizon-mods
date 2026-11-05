@@ -1,0 +1,24 @@
+id = "viahorizon"
+kind = "native-mod"
+name = "ViaHorizon"
+summary = "Connect to older Minecraft servers using Horizon 26.3."
+description = """
+ViaHorizon lets Horizon 26.3 connect to Minecraft Release servers from 1.7.2 through 26.3.
+
+This native source mod runs with the game's permissions. It saves settings, checks selected servers, and translates network packets. Authentication remains handled by Horizon.
+
+in Options > Mods, choose Auto or your server version.
+
+An Rust port of ViaFabricPlus"""
+authors = ["hhhhsffd"]
+owners = ["hhhhsffd"]
+license = "GPL-3.0-or-later"
+source = "https://github.com/hhhhsffd/viahorizon"
+
+[[versions]]
+version = "0.8.5-dev"
+published = "2026-11-04"
+game = "26.3"
+file = "viahorizon-0.8.5-dev.hnmod"
+sha256 = "b87fe3bf8ebd71b4c11c555b8e8825e43ebfe9e29eaef9142b704760d401a96c"
+changelog = "Horizon Mod which allows you to join older Minecraft server version's"

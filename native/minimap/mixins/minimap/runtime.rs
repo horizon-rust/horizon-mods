@@ -31,6 +31,8 @@ pub struct Settings {
     pub round: bool,
     pub zoom: usize,
     pub rotate: bool,
+    pub show_coordinates: bool,
+    pub outline: usize,
 }
 
 impl Settings {
@@ -52,6 +54,12 @@ impl Settings {
             round: get("shape").as_deref() == Some("round"),
             zoom: find("zoom", &zooms, 1),
             rotate: get("rotate").as_deref() == Some("true"),
+            show_coordinates: get("show_coordinates").as_deref() == Some("true"),
+            outline: find(
+                "outline",
+                &["black".into(), "stone".into(), "bamboo".into()],
+                0,
+            ),
         }
     }
     pub fn labels(&self) -> Vec<String> {
@@ -72,10 +80,26 @@ impl Settings {
                 "Turn with the player: {}",
                 if self.rotate { "ON" } else { "OFF" }
             ),
+            format!(
+                "Show Coordinates: {}",
+                if self.show_coordinates { "ON" } else { "OFF" }
+            ),
+            format!(
+                "Minimap Outline: {}",
+                ["Black", "Stone", "Bamboo"][self.outline]
+            ),
         ]
     }
     pub fn click(&mut self, i: usize) {
         let next = |i: usize, n: usize| (i + 1) % n;
+        if i == 5 {
+            self.show_coordinates = !self.show_coordinates;
+            return;
+        }
+        if i == 6 {
+            self.outline = next(self.outline, 3);
+            return;
+        }
         match i {
             0 => self.corner = next(self.corner, CORNERS.len()),
             1 => self.size = next(self.size, SIZES.len()),
@@ -85,7 +109,7 @@ impl Settings {
             _ => {}
         }
     }
-    pub fn stored(&self) -> [(&'static str, String); 5] {
+    pub fn stored(&self) -> [(&'static str, String); 7] {
         [
             ("corner", CORNERS[self.corner].0.to_owned()),
             ("size", SIZES[self.size].0.to_string()),
@@ -97,6 +121,11 @@ impl Settings {
             (
                 "rotate",
                 if self.rotate { "true" } else { "false" }.to_owned(),
+            ),
+            ("show_coordinates", self.show_coordinates.to_string()),
+            (
+                "outline",
+                ["black", "stone", "bamboo"][self.outline].to_owned(),
             ),
         ]
     }
@@ -154,7 +183,9 @@ mod tests {
                 "Size: Large",
                 "Shape: Round",
                 "Zoom: ½ block per pixel",
-                "Turn with the player: ON"
+                "Turn with the player: ON",
+                "Show Coordinates: OFF",
+                "Minimap Outline: Black"
             ]
         );
         s.click(3);
@@ -163,5 +194,43 @@ mod tests {
         let round = s.stored();
         let back = Settings::read(|k: &str| round.iter().find(|f| f.0 == k).map(|f| f.1.clone()));
         assert_eq!(back, s);
+    }
+
+    #[test]
+    fn optional_features_keep_the_original_appearance_by_default() {
+        let settings = Settings::read(|_| None);
+        assert_eq!(settings.view(), (96.0, 1.0));
+        assert!(!settings.show_coordinates);
+        assert_eq!(settings.outline, 0);
+        let invalid = Settings::read(|key| match key {
+            "outline" => Some("unknown".into()),
+            "show_coordinates" => Some("invalid".into()),
+            _ => None,
+        });
+        assert_eq!(invalid, settings);
+    }
+
+    #[test]
+    fn coordinates_and_each_outline_toggle_and_round_trip() {
+        let mut settings = Settings::read(|_| None);
+        for expected in ["stone", "bamboo", "black"] {
+            settings.click(5);
+            settings.click(6);
+            let stored = settings.stored();
+            assert_eq!(
+                stored.iter().find(|(key, _)| *key == "outline").unwrap().1,
+                expected
+            );
+            let restored = Settings::read(|key| {
+                stored
+                    .iter()
+                    .find(|(k, _)| *k == key)
+                    .map(|(_, v)| format!("{v}\n"))
+            });
+            assert_eq!(restored, settings);
+        }
+        assert!(settings.show_coordinates);
+        settings.click(5);
+        assert!(!settings.show_coordinates);
     }
 }

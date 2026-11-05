@@ -3,15 +3,16 @@ id = "minimap"
 version = "2.0.0"
 priority = 100
 
-# The commit it was tested on. It uses only the native hook points (hooks 1 in
-# compatibility.json): the launcher builds it on any Horizon that has them.
+# Tested renderer layout. The map uses a stable hook; its outline/coordinate
+# drawing also injects around extras_hud::draw_minimap.
 [compatibility]
-horizon_revision = "6f8c7a0e5d531d3834c4d0be4659a1db8e7e5c2a"
+horizon_revision = "eaa7da4fb1e1c580ed618bc7cfd1758858c0b878"
 
 [[module]]
 id = "runtime"
 file = "crates/horizon-client/src/game.rs"
 name = "official_minimap"
+visibility = "pub(crate)"
 source = "runtime.rs"
 
 [[injection]]
@@ -54,3 +55,33 @@ bindings = [
   { name = "game", ty = "&crate::game::Game<'_>", value = "&*self" },
   { name = "minimap", ty = "&mut Option<crate::game::native_hooks::NativeMinimap>", value = "&mut *minimap" },
 ]
+
+[[injection]]
+id = "coordinates-before"
+kind = "HEAD"
+target = "horizon_client_lib::extras_hud::draw_minimap"
+helper = "coordinates_before.rs"
+bindings = [
+  { name = "corners", ty = "&mut Corners", value = "&mut *corners" },
+  { name = "look", ty = "&MinimapLook", value = "look" },
+]
+
+[[injection]]
+id = "coordinates-after"
+kind = "RETURN"
+target = "horizon_client_lib::extras_hud::draw_minimap"
+helper = "coordinates_after.rs"
+bindings = [
+  { name = "_result", ty = "()", value = "$value" },
+  { name = "corners", ty = "&mut Corners", value = "&mut *corners" },
+  { name = "look", ty = "&MinimapLook", value = "look" },
+  { name = "batch", ty = "&mut HudBatch", value = "&mut *batch" },
+  { name = "atlas", ty = "&HudAtlas", value = "atlas" },
+]
+
+[[module]]
+id = "coordinate-state"
+file = "crates/horizon-client/src/extras_hud.rs"
+name = "minimap_coordinates"
+visibility = "pub"
+source = "coordinate_state.rs"

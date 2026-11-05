@@ -174,9 +174,11 @@ def cargo(stage_dir, action):
     jobs = os.environ.get("FLEET_LOAD_JOBS") or os.environ.get("CARGO_BUILD_JOBS")
     command = ["cargo", action, "--locked", "-p", "horizon-client", "--bin", "horizon-client"]
     if action == "build":
-        # horizon-ctl is a bin of horizon-client-lib (its path is the client's src/bin), so it
-        # cannot be named under `-p horizon-client`.
-        command += ["-p", "horizon-client-lib", "--bin", "horizon-ctl", "--profile", "fast"]
+        # Newer Horizon moved the control tool into the reusable client library.
+        library = stage_dir / "crates/horizon-client-lib/Cargo.toml"
+        if library.is_file() and any(b.get("name") == "horizon-ctl" for b in tomllib.loads(library.read_text()).get("bin", [])):
+            command += ["-p", "horizon-client-lib"]
+        command += ["--bin", "horizon-ctl", "--profile", "fast"]
     if os.environ.get("NATIVE_NO_DEFAULT_FEATURES"):
         command.append("--no-default-features")
     if jobs:

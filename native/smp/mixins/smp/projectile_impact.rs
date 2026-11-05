@@ -1,5 +1,4 @@
 // A projectile hits something: in another's claim, only a member's shot acts.
-#[allow(clippy::too_many_arguments)]
 fn smp_projectile_impact(
     game: &mut crate::game::Game<'_>,
     dimension: &str,

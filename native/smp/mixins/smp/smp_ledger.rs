@@ -53,9 +53,17 @@ pub fn command(
     let page = |w: Option<&&str>| w.and_then(|p| p.parse::<usize>().ok()).unwrap_or(1).max(1);
     let (who, page) = match words[1..] {
         ["minted"] => {
-            let mut out = minted(newest, money, now);
-            if audit.metadata().is_ok_and(|m| m.len() > TAIL) {
-                out.insert(1, Out::Reply("Partial totals: only the newest 1 MiB of the ledger was read; older movements may be missing.".into()));
+            let (mut out, covered) = minted(newest, money, now);
+            // The end read didn't reach the window's start: the oldest
+            // hours may miss movements.
+            if !covered && audit.metadata().is_ok_and(|m| m.len() > TAIL) {
+                out.insert(
+                    1,
+                    Out::Reply(
+                        "Partial totals: only the newest 1 MiB of the ledger was read; older movements may be missing."
+                            .into(),
+                    ),
+                );
             }
             return Some(out);
         }
@@ -133,18 +141,21 @@ fn row(
 }
 
 /// `/ledger minted`: what the server made and destroyed in each of the last
-/// hours (UTC), and what made most of it.
+/// hours (UTC), and what made most of it; and whether the lines read
+/// reached back past the first hour's start.
 fn minted(
     newest: impl Iterator<Item = Value>,
     money: &dyn Fn(i64) -> String,
     now: i64,
-) -> Vec<Out> {
+) -> (Vec<Out>, bool) {
     let first = (now.div_euclid(HOUR_MS) - (HOURS - 1)) * HOUR_MS;
+    let mut covered = false;
     let mut hours =
         vec![(0i64, 0i64, std::collections::BTreeMap::<String, i64>::new()); HOURS as usize];
     for e in newest {
         let t = e["time"].as_i64().unwrap_or(0);
         if t < first {
+            covered = true;
             break;
         }
         let i = ((t - first) / HOUR_MS).clamp(0, HOURS - 1) as usize;
@@ -182,7 +193,7 @@ fn minted(
             money(*gone)
         )));
     }
-    out
+    (out, covered)
 }
 
 #[cfg(test)]
@@ -337,6 +348,33 @@ mod tests {
             run()
                 .iter()
                 .any(|o| matches!(o, Out::Reply(s) if s.starts_with("Partial totals:")))
+        );
+        let _ = std::fs::remove_dir_all(d);
+    }
+
+    #[test]
+    fn a_long_ledger_whose_end_covers_the_hours_is_not_partial() {
+        let d = dir();
+        let audit = d.join("audit.log");
+        let now = 1_793_880_000_000i64;
+        // 1.5 MiB of yesterday's lines, then this hour's: the end read
+        // reaches back past the six hours.
+        let old = "{\"amount\":1,\"flow\":\"minted\",\"kind\":\"sell\",\"time\":1793793600000,\"to\":\"00000000-0000-0000-0000-000000000001\"}\n";
+        let mut text = old.repeat((3 * TAIL as usize / 2) / old.len());
+        text.push_str(
+            &old.replace("1793793600000", &now.to_string())
+                .replace("\"amount\":1", "\"amount\":42"),
+        );
+        std::fs::write(&audit, text).unwrap();
+        let out = command(&op(), &audit, &find, &name_of, &money, now, "ledger minted").unwrap();
+        assert!(
+            !out.iter()
+                .any(|o| matches!(o, Out::Reply(s) if s.starts_with("Partial"))),
+            "{out:?}"
+        );
+        assert_eq!(
+            out[1],
+            Out::Reply("12:00: made 42 coins, mostly sell, destroyed 0 coins".into())
         );
         let _ = std::fs::remove_dir_all(d);
     }

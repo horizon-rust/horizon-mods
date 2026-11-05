@@ -13,7 +13,9 @@ owners = ["Bioneisme"]
 owner_ids = [92920845]
 license = "MIT"
 source = "https://github.com/Bioneisme/deepbore-quarry"
-icon = "https://raw.githubusercontent.com/Bioneisme/deepbore-quarry/main/icon.png"
+icon = "icons/deepbore_quarry.png"
+categories = ["technology", "library"]
+tags = ["quarry", "mining", "machine", "assets"]
 
 [[versions]]
 version = "0.1.0"

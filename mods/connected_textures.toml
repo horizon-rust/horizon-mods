@@ -3,26 +3,25 @@ kind = "native-mod"
 name = "ContinuityHorizon"
 summary = "Continuity for Horizon"
 description = """
-By tariksabanuz
+Continuity-style connected textures for Horizon, as a native mod: blocks of the same kind join up into one
+surface instead of showing a border on every block. It works with the game's own textures; no resource pack needed.
 
-ContinuityHorizon brings Continuity-style connected textures to Horizon. Neighbouring blocks of the same kind join up into one seamless surface instead of showing a border on every block.
+- **Glass and stained glass** (all 16 colours and tinted glass): the frame between two blocks of the same glass goes
+  away, so a window is one pane with one frame round it.
+- **Glass panes**: the same, between panes of the same colour.
+- **Bookshelves, cut and chiseled sandstone** (red too): joined left and right into one long shelf or band.
+- **Sandstone and red sandstone**: a wall or pillar loses the band between its blocks; the top row keeps it.
 
-What it connects
-- Glass and glass panes
-- Bookshelves
-- Sandstone
+Options > Mods > Connected Textures turns it on and off, and each part on its own; the world is redrawn at once.
 
-Notes
-- Works with the game's own textures; no resource pack needed.
-- Native Horizon mod, built from source by the launcher.
-- Inspired by Continuity (MIT licensed), recreated for Horizon.
-
-Source code: https://github.com/tariksabanuz/ContinuityHorizon"""
+Inspired by Continuity (MIT), recreated for Horizon."""
 authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
 license = "MIT"
 source = "https://github.com/tariksabanuz/ContinuityHorizon"
-icon = "https://raw.githubusercontent.com/tariksabanuz/ContinuityHorizon/cd5301759efef6b1819ed7a8590a0d76e15d6d7e/icon.png"
+icon = "icons/connected_textures.png"
+categories = ["decoration", "utility"]
+tags = ["connected-textures", "glass", "visual", "port"]
 
 [[versions]]
 version = "0.1.2"

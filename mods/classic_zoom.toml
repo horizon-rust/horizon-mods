@@ -41,6 +41,8 @@ owner_ids = [92383635]
 license = "GPL-3.0-or-later"
 source = "https://github.com/SU4G3/classic-zoom"
 icon = "icons/classic_zoom.png"
+categories = ["utility"]
+tags = ["zoom", "camera"]
 key = "RWTOxMcIG6MtC0QQnhWEMC+nLKJ6+u4trV/rF+4juSRuow8W4b5P+CPS"
 
 [[versions]]

@@ -19,6 +19,9 @@ owners = ["Fernandes585"]
 owner_ids = [344517364]
 license = "MIT"
 source = "https://github.com/Fernandes585/Compass-Enhanced"
+icon = "icons/compass_bar.png"
+categories = ["utility", "adventure"]
+tags = ["compass", "hud", "navigation", "death-points"]
 key = "RWScU5xtTnTnu55tXSTPbhM2BQ6KG2FLeMD9aTeX111NlQPh7cCafm1w"
 
 [[versions]]

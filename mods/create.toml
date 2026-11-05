@@ -19,6 +19,9 @@ owners = ["Delete228"]
 owner_ids = [31237303]
 license = "MIT"
 source = "https://github.com/Delete228/create-horizon/commit/236c87a889cd76f7e663d1d182c28dc1145f7b14"
+icon = "icons/create.png"
+categories = ["technology"]
+tags = ["machines", "automation", "rotation", "gears", "belts", "factory", "port"]
 
 [[versions]]
 version = "0.7.0-alpha.2"

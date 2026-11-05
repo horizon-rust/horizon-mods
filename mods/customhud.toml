@@ -19,6 +19,8 @@ owner_ids = [205944444]
 license = "MIT"
 source = "https://github.com/sonoFrangu/CustomHUD-Horizon"
 icon = "icons/customhud.png"
+categories = ["utility"]
+tags = ["day-counter", "clock", "hud", "day-night", "moon-phase", "port"]
 
 [[versions]]
 version = "1.6.0"

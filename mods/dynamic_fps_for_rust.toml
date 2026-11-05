@@ -15,7 +15,9 @@ authors = ["Lyvt (dc: _.lyvt)"]
 owners = ["Lyvt-Dev"]
 license = "MIT"
 source = "https://github.com/Lyvt-Dev/dynamic-fps-for-rust"
-icon = "https://raw.githubusercontent.com/Lyvt-Dev/dynamic-fps-for-rust/main/logo/dynamic-fps.png"
+icon = "icons/dynamic_fps_for_rust.png"
+categories = ["optimization", "utility"]
+tags = ["fps", "performance", "battery", "background", "idle"]
 key = "RWQ84d8BvD1EaarVDgHgXyz+MDiL7ONsCZc0BUrJqTmqzXBItnJy918A"
 
 [[versions]]

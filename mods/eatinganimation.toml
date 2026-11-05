@@ -16,6 +16,8 @@ owner_ids = [47915535]
 license = "MIT"
 source = "https://github.com/soufied/EatingAnimation-Horizon"
 icon = "icons/eatinganimation.png"
+categories = ["food", "decoration"]
+tags = ["eating", "animation", "food", "port"]
 key = "RWT6eNq4e5WfVDA2lzOOi6XCm/+jJgilqT1+HUUM33ie5MCjcRfSg760"
 
 [[versions]]

@@ -24,6 +24,9 @@ owners = ["denizsahin7744"]
 owner_ids = [144704661]
 license = "LGPL-3.0-only"
 source = "https://github.com/denizsahin7744/distant-horizons-for-horizon-client"
+icon = "icons/distant_horizons.png"
+categories = ["utility", "optimization"]
+tags = ["lod", "render-distance", "far-terrain", "port"]
 
 [[versions]]
 version = "0.1.0"

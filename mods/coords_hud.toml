@@ -22,6 +22,8 @@ owner_ids = [136255825]
 license = "MIT"
 source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/coords-hud"
 icon = "icons/coords_hud.png"
+categories = ["utility"]
+tags = ["coordinates", "hud", "position"]
 
 [[versions]]
 version = "2.0.0"

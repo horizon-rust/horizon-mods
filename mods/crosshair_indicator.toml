@@ -3,21 +3,25 @@ kind = "native-mod"
 name = "Crosshair Indicator"
 summary = "Dynamic target reach awareness: visual feedback on your crosshair when hovering over an entity in attack range."
 description = """
-Crosshair Indicator
+A port of the Java Crosshair Indicator mod (AmerDz01) for Horizon, as a native mod: your crosshair tells you
+when the mob or player you aim at is within attack reach (3 blocks).
 
-A native Horizon mod by CayMac that ports the popular Java Crosshair Indicator mod into Horizon:
+- **Four styles**: corner brackets around the crosshair (the default), a centre dot, diamond pips, or a chevron above
+  it.
+- **Colour themes**: classic white, dynamic (green when your weapon is fully charged, orange while it charges), combat
+  red, pink, diamond cyan and gold.
+- **Cooldown bar**: an optional thin weapon-cooldown bar below the crosshair.
 
-Dynamic Target Reach Awareness: Real-time visual feedback directly on your crosshair when hovering over an entity in attack reach (<= 3.0 blocks).
-Iconic PvP Target Reticle: Default crisp white corner brackets [ + ] hugging the crosshair, matching classic competitive PvP clients.
-Multiple Styles: Choose between Brackets [ + ], Center Dot, Diamond, and Tactical Chevron.
-Custom Color Themes: Classic White (Default), Dynamic (Green/Orange cooldown awareness), Combat Red, Pink Aesthetic, Diamond Cyan, and Gold.
-Cooldown Bar: Optional subtle weapon cooldown progress indicator below the crosshair.
-Configurable: Easily customize styles, themes, and keybinds in Options > Mods > Crosshair Indicator."""
+Settings are in Options > Mods > Crosshair Indicator; a key to turn it on or off can be bound there (unbound by
+default)."""
 authors = ["CayMac"]
 owners = ["CayMac97"]
 owner_ids = [197672048]
 license = "MIT"
 source = "https://github.com/CayMac97/crosshair-indicator"
+icon = "icons/crosshair_indicator.png"
+categories = ["utility"]
+tags = ["crosshair", "pvp", "combat", "hud", "port"]
 key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
 
 [[versions]]

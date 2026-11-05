@@ -13,7 +13,7 @@
 Popular mods that don't apply on that Nightly are left out, as the launcher leaves them out, and listed.
 
 `health` applies every native mod's newest version on the newest Nightly and writes the ones horizon-mixins
-refuses, with its diagnostic: the publish job adds them to the index (`broken_on`), and the launcher warns
+refuses, with only the mods they need, with its diagnostic: the publish job adds them to the index (`broken_on`), and the launcher warns
 before an install.
 
 horizon-mixins only reads the bundles; `cargo check` runs a mod crate's build script, if it has one, so
@@ -265,12 +265,29 @@ def health(args):
     revision = native.latest_nightly() if args.horizon == "latest" else args.horizon
     tree = native.source(revision)
     tool = mixins_tool([])
-    _, refused = apply(tool, tree, registry, revision, "health")
-    versions = {b.id: b.version for b in registry}
+    _, together = apply(tool, tree, registry, revision, "health")
+    # A mod refused only next to another (both overwrite one function, both name one module) builds for a
+    # player without that other one: broken on this Horizon is what horizon-mixins refuses with only the mods
+    # it needs.
+    by_id = {b.id: b for b in registry}
+    def needed(bundle, seen):
+        for n in bundle.needs:
+            if n in by_id and n not in seen:
+                seen.add(n)
+                needed(by_id[n], seen)
+        return seen
+    refused = {}
+    for i in sorted(together):
+        mods = [by_id[n] for n in sorted(needed(by_id[i], set()))] + [by_id[i]]
+        _, alone = apply(tool, tree, mods, revision, f"health-{i}")
+        if i in alone:
+            refused[i] = alone[i]
+        else:
+            log(f"  {i} applies without the others: not broken")
     report = {
         "horizon": revision,
         "mixins": tool.parent.parent.name,
-        "broken": {i: {"version": versions[i], "code": d.get("code"), "message": d.get("message")}
+        "broken": {i: {"version": by_id[i].version, "code": d.get("code"), "message": d.get("message")}
                    for i, d in sorted(refused.items())},
     }
     Path(args.out).write_text(json.dumps(report, indent=2) + "\n")

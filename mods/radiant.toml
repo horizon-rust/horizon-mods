@@ -1,5 +1,32 @@
 id = "radiant"
 kind = "shader"
-repo = "expensiverest/radiant"
+name = "Radiant"
+summary = "Cinematic but playable: warm sun, soft shadows, light shafts, golden haze, sunset clouds, wet rainy ground and a filmic grade."
+description = """
+A cinematic shader pack for Horizon that is built to be played in, not just screenshotted.
+
+- **Light and shadow:** soft sun and moon shadows, light through leaves, coloured block light, flickering torches, ambient occlusion.
+- **Sky:** deep blue days, layered gold, pink and violet sunsets, a round sun, drifting clouds, twinkling stars and a faint Milky Way.
+- **Light shafts:** god rays through canopies and sun shafts fanning out from a low sun, from the moon at night too.
+- **Atmosphere:** golden distance haze toward a low sun, morning mist, clear water when you're underwater, heat shimmer above lava.
+- **Water:** refraction, reflections, a sun path that hides behind hills, glitter, shore foam and raindrop rings.
+- **Rain:** wet, darker ground with a sheen, puddles that spread as it rains, see-through rain.
+- **Camera:** filmic highlights, eye adaptation, five looks (Natural, Cinematic, Warm film, Moody, Vivid), bloom and optional lens effects.
+
+Every effect has a setting. About 7-8 ms of GPU time per frame; above 60 FPS on an RX 570."""
+authors = ["Daniel"]
 owners = ["expensiverest"]
 owner_ids = [281485024]
+license = "MIT"
+source = "https://github.com/expensiverest/radiant"
+icon = "icons/radiant.png"
+categories = ["realistic", "atmosphere", "high"]
+tags = ["cinematic", "god-rays", "shadows", "rain", "puddles", "bloom", "filmic"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-03"
+game = "26.3"
+file = "radiant-1.0.0.hshader"
+sha256 = "4d079d8ee411a6a70189c3d12b415b96531532fe3cd46be0a778114db08a1605"
+changelog = "First release. Release v1.0.0 of the repository."

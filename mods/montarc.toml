@@ -1,5 +1,45 @@
 id = "montarc"
 kind = "shader"
-repo = "Muurrcc/montarc"
+name = "Montarc"
+summary = "Bright, colorful shader pack: soft shadows, colored light, living water, wind, and own look for the Nether and the End."
+description = """
+Bright, colorful shader pack for Horizon. Horizon had no shaders on the registry, so I made one. Style is close to Complementary Reimagined, but the code is mine, written from scratch in WGSL.
+
+## What you get
+
+- **Soft shadows.** Sun and moon cast them. Water and stained glass tint the light that goes through.
+- **Sky and fog match.** Blue day, orange sunsets, dark blue night. Far terrain fades into the sky, no hard line at the horizon.
+- **Colored light.** Torches are warm, soul fire is blue, redstone is red, sea lanterns are cyan, amethyst is purple.
+- **Water that looks like water.** Waves, depth color, reflections, sun glitter and foam on the shore.
+- **Wind.** Grass, flowers, crops and leaves move. Rain makes it stronger.
+- **Nether and End look different.** Nether is hot and hazy, with heat shimmer. End is cold and purple.
+- **29 options.** Everything can be tuned or turned off in game.
+
+## Slow? Try this
+
+- Shadow quality: Low
+- Water reflections: off
+- Bloom: off
+- Shadows: off. Biggest gain.
+
+## Known problems
+
+- Horizon shader API is 0.1, experimental. It can change.
+- Entities, block entities and particles are not shaded yet. There is no stage for them.
+- Nether and End sky is vanilla. The sky stage only draws in the Overworld.
+- Shadow bias may need tuning on some GPUs. If you see stripes on surfaces, change `Shadow bias`."""
+authors = ["Muurrcc"]
 owners = ["Muurrcc"]
+license = "MIT"
+source = "https://github.com/Muurrcc/montarc"
 icon = "icons/montarc.png"
+categories = ["semi-realistic", "colored-lighting", "shadows"]
+tags = ["colorful", "shadows", "water", "wind", "bloom", "fxaa"]
+
+[[versions]]
+version = "1.1.1"
+published = "2026-11-04"
+game = "26.3"
+file = "montarc-1.1.1.hshader"
+sha256 = "3d6b4a457d84db15b63c9b77df887bb1887190901b9e2303e5a2a7d8a2bac01b"
+changelog = "First release: soft shadows from the sun and the moon, sky and fog that match, colored block light, water with waves, reflections and foam, wind on plants and leaves, an own look for the Nether and the End, 29 options. Needs the nightly build of Horizon (2026-11-04 or newer). Release v1.1.1 of the repository."

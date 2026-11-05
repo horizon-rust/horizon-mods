@@ -1,5 +1,34 @@
 id = "daybreak"
 kind = "shader"
-repo = "hildlabs/horizon-shaders"
+name = "Daybreak"
+summary = "Sun shadows, reflective water, waving plants, coloured light, sun rays and bloom, built to cost as little GPU time as possible."
+description = """
+Daybreak is a shader pack in Horizon's own format. It runs inside Horizon's renderer, so Horizon's culling, batching and LOD stay in charge, and it adds as little GPU time as it can.
+
+- Sun and moon shadows with smooth edges
+- Warm sunlight, blue sky light in the shade, a dim blue night
+- Coloured block light: soul fire blue, redstone red, copper green, froglights
+- Light from torches in your hand (turn on Horizon's Dynamic lights in Extras)
+- Waving leaves, grass, flowers and crops
+- Water with waves, reflections, refraction and the sun's glint
+- A deeper sky with warm sunsets, sun rays, sun glare and haze
+- Mobs take the sun's shadow; the Nether and the End get their own light
+
+Every effect can be changed or turned off in the game: Options > Horizon Settings > Shader Packs > Shader Options. The quality is yours to pick there too: turn shadows off for the least GPU time, or choose the shadow map's detail (1024 to 4096) and distance (64 to 160 blocks). The defaults are soft shadows over 96 blocks with water reflections.
+
+Original code, no Minecraft assets. Source: https://github.com/hildlabs/horizon-shaders"""
+authors = ["hildlabs"]
 owners = ["hildlabs"]
+license = "MIT"
+source = "https://github.com/hildlabs/horizon-shaders"
 icon = "icons/daybreak.png"
+categories = ["semi-realistic", "shadows", "medium"]
+tags = ["shadows", "water", "reflections", "waving-plants", "sun-rays", "bloom", "lightweight"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-03"
+game = "26.3"
+file = "daybreak-0.1.1.hshader"
+sha256 = "beb3c3de486e1c09c0136f13106f665acfbc4cdcd0826f51fd9fc269447e5cb5"
+changelog = "First release: sun and moon shadows, warm sunlight and blue shade, coloured block light, waving plants, reflective water with waves, a deeper sky, sun rays, sun glare, haze, bloom and a colour grade. The High preset (soft shadows over 96 blocks, water reflections). Needs a Horizon build from 2026-11-03 or newer (Nightly 2944480 and later). Release v0.1.1 of the repository."

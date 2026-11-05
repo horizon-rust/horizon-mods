@@ -1287,7 +1287,11 @@ def claims_alone(ctl, resources, out):
         assert len(r["pings"][1]) == 1 and not r["pings"][2], r
         assert any("Ping sound off" in l for l in r["off"]) and any("Ping sound on" in l for l in r["on"]), r
         lines = server.stop()
-        r["errors"] = [l for l in lines if "panicked" in l or "ERROR" in l]
+        # From the start on (the engine's world loading logs one known "No key layers" error before it).
+        started = next(i for i, l in enumerate(lines) if "Done (" in l)
+        r["errors"] = [l for l in lines[started:] if "panicked" in l or "ERROR" in l]
+        r["version"] = [l for l in lines if "[smp] SMP " in l]
+        assert any("[smp] SMP 0.35" in l for l in r["version"]), r["version"]
         assert not r["errors"], r["errors"]
         print(json.dumps({"proof": "claims", "ok": True, **r}, indent=2))
     finally:

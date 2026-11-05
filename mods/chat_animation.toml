@@ -20,7 +20,7 @@ authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
 license = "MIT"
 source = "https://github.com/tariksabanuz/ChatAnimationHorizon"
-icon = "https://github.com/tariksabanuz/ChatAnimationHorizon/blob/3794c3c1ede07a1c7ebb80856b246a1ad4339101/icon.png"
+icon = "https://raw.githubusercontent.com/tariksabanuz/ChatAnimationHorizon/3794c3c1ede07a1c7ebb80856b246a1ad4339101/icon.png"
 
 [[versions]]
 version = "0.1.0"

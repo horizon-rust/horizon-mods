@@ -16,6 +16,7 @@ Pinned to Horizon c9d474d (Nightly 2026-11-01): it hooks private client function
 Not made or endorsed by Visuality's author."""
 authors = ["BenjiSyS"]
 owners = ["BenjiSyS"]
+owner_ids = [220019460]
 license = "MIT"
 source = "https://github.com/BenjiSyS/visuality-horizon"
 icon = "icons/visuality_horizon.png"

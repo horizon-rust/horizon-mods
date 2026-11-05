@@ -13,6 +13,7 @@ description = """
 Everything goes through the game's own container clicks, so servers accept it. Each trick is a setting (Options → Mods → Mouse Tricks). Inspired by [Mouse Tweaks](https://modrinth.com/mod/mouse-tweaks); not affiliated, no code from it."""
 authors = ["d3grando"]
 owners = ["d3grando"]
+owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/mousetricks"
 icon = "icons/mousetricks.png"

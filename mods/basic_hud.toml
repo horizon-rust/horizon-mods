@@ -20,6 +20,7 @@ Client-side only: unknown health stays unknown, unobserved totem uses cannot be 
 Release notes and verification: https://github.com/repositorykreml1n/the-basic-hud/releases/tag/v0.5.0"""
 authors = ["repositorykreml1n"]
 owners = ["repositorykreml1n"]
+owner_ids = [271232376]
 license = "MIT"
 source = "https://github.com/repositorykreml1n/the-basic-hud"
 icon = "https://raw.githubusercontent.com/repositorykreml1n/the-basic-hud/v0.5.0/icon.png"

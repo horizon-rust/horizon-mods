@@ -10,6 +10,7 @@ Adds a Mods button next to Accessibility on the title screen. It opens a Mod Men
 - Open Mods Folder and Done at the bottom, as in the Java mod."""
 authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
+owner_ids = [332662152]
 license = "MIT"
 source = "https://github.com/tariksabanuz/ModMenuHorizon"
 icon = "https://raw.githubusercontent.com/tariksabanuz/ModMenuHorizon/main/icon.png"

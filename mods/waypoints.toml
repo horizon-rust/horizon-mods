@@ -15,6 +15,7 @@ Waypoints for Horizon.
 Pinned to Horizon `c9d474d`, because it reads the world folder, server address and last frame's camera from the game itself."""
 authors = ["Nirokx"]
 owners = ["Nirokx"]
+owner_ids = [95123456]
 license = "MIT"
 source = "https://github.com/Nirokx/horizon-waypoints"
 

@@ -18,6 +18,7 @@ No block-for-block Java parity claim. Native river-decoration placement differs 
 Author-supplied screenshot captured November 1 in our Horizon fork; illustrative, not evidence of current upstream validation. Minimap is a separate mod. Original Tectonic by Apollo; Horizon adaptation by eltanschauung with Codex assistance. Source licenses, notices and provenance hashes retained."""
 authors = ["eltanschauung", "Apollo (original Tectonic)"]
 owners = ["eltanschauung"]
+owner_ids = [158000645]
 license = "CC0-1.0"
 source = "https://github.com/eltanschauung/tectonic-horizon"
 

@@ -4,6 +4,7 @@ name = "Smoothie Capes"
 summary = "An Wavey Capes inspired mod for Horizon"
 authors = ["Nully"]
 owners = ["dumbnully"]
+owner_ids = [268078454]
 license = "MIT"
 source = "https://github.com/dumbnully/smoothie-capes"
 key = "RWRJPBl24rTE23dFezewHWl465FAcgTsmeJnDkANtUPT19YfVmQ1gYCu"

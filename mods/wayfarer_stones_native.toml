@@ -20,6 +20,7 @@ Native source mod: install it on the launcher's Mods page, press Build there, an
 No Minecraft code or assets are included. MIT licensed."""
 authors = ["bioneisme"]
 owners = ["Bioneisme"]
+owner_ids = [92920845]
 license = "MIT"
 source = "https://github.com/Bioneisme/wayfarer-stones"
 icon = "https://raw.githubusercontent.com/Bioneisme/wayfarer-stones/main/content/assets/wayfarer_stones/textures/item/wayfarer_stone.png"

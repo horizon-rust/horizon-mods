@@ -5,6 +5,7 @@ summary = "Armor HUD mod"
 description = "A mod that adds 4 armor durability viewing slots to the hotbar."
 authors = ["Thomas9950"]
 owners = ["Thomas-Slot"]
+owner_ids = [265566914]
 license = "MIT"
 source = "https://github.com/Thomas-Slot/horizon-armor-hud"
 icon = "https://github.com/Thomas-Slot/horizon-armor-hud/blob/main/icon.png"

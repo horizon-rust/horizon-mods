@@ -20,6 +20,7 @@ An unofficial port of **Wisdom Shaders V3 (Build 3300)** by bobcao3 (https://git
 The full list of changes is in the README. For integrated graphics there is a Lite version (`wisdom_horizon_lite`) based on Wisdom's LITE profile."""
 authors = ["bobcao3", "tomasmendes01"]
 owners = ["tomasmendes01"]
+owner_ids = [68385376]
 license = "Apache-2.0"
 source = "https://github.com/tomasmendes01/wisdom-horizon"
 

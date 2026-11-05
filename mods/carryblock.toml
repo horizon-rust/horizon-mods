@@ -15,6 +15,7 @@ Sneak and right-click with an empty hand to pick up a block with its contents (c
 Inspired by [Carry On](https://modrinth.com/mod/carry-on); not affiliated, no code from it."""
 authors = ["d3grando"]
 owners = ["d3grando"]
+owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/carryblock"
 icon = "icons/carryblock.png"

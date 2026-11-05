@@ -34,6 +34,7 @@ The idea, the way it's used, the file format and the behaviour come from **[Lite
 Menus built with [horizon-menus](https://github.com/keksi2k/horizon-menus). MIT licensed."""
 authors = ["keksi2k"]
 owners = ["keksi2k"]
+owner_ids = [32579030]
 license = "MIT"
 source = "https://github.com/keksi2k/horizonmatica"
 icon = "https://raw.githubusercontent.com/keksi2k/horizonmatica/main/icon.png"

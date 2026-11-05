@@ -11,6 +11,7 @@ For 2D items(such as potions), this mod avoids rendering their sides, so they ar
 For 3D items(such as cube blocks), this mod makes them always face to camera, just as the same behaviour in Lunar Client/BLC."""
 authors = ["Lyvt (dc: _.lyvt)"]
 owners = ["Lyvt-Dev"]
+owner_ids = [138261776]
 license = "MIT"
 source = "https://github.com/Lyvt-Dev/FastItems-for-Horizon"
 icon = "https://github.com/Lyvt-Dev/FastItems-for-Horizon/tree/main/logo/fastitems.png"

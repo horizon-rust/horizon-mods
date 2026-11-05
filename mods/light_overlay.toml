@@ -5,6 +5,7 @@ summary = "1:1 Light Overlay & MiniHUD (F7): visualizes mob-spawnable blocks wit
 description = "A 1:1 native Rust port of Light Overlay and MiniHUD's F7 Light Level Overlay for Horizon. Press F7 during gameplay to scan nearby spawnable block surfaces and render depth-tested 3D markers directly on block tops. Red markers indicate blocks where hostile mobs can spawn at any time (caves/indoor darkness), Yellow markers indicate blocks where hostile mobs can spawn at night, and optional Green markers show safe blocks. Supports Crosses (X), 3D Numbers (0-15), or Both, with configurable scan radius (8 to 20 blocks) and Modern (== 0) or Legacy (<= 7) spawn thresholds."
 authors = ["CayMac"]
 owners = ["CayMac97"]
+owner_ids = [197672048]
 license = "MIT"
 source = "https://github.com/CayMac97/light-overlay"
 key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"

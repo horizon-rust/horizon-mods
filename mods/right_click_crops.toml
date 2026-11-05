@@ -30,6 +30,7 @@ This is a native mod: install only if you trust its source and accept the launch
 """
 authors = ["AyanoKaito"]
 owners = ["AyanoKaito"]
+owner_ids = [82058189]
 license = "MIT"
 source = "https://github.com/AyanoKaito/horizon-right-click-crops"
 icon = "icons/right_click_crops.png"

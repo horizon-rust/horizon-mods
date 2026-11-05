@@ -18,6 +18,7 @@ Needs the Performance build in the launcher. Inspired by PhysicsMod by Haubna; t
 Horizon and contains none of its code or assets. It uses your own game's textures at runtime, and the icon is my own."""
 authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
+owner_ids = [332662152]
 license = "MIT"
 source = "https://github.com/tariksabanuz/PhysicsModHorizon"
 icon = "icons/horizon_physics.png"

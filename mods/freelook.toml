@@ -7,6 +7,7 @@ Freelook is a Freelook/Perspective Mod for Fabric, allowing you to move your cam
 Camera distance can be adjusted by scrolling."""
 authors = ["Krzysix17"]
 owners = ["Krzysix17"]
+owner_ids = [350813197]
 license = "MIT"
 source = "https://github.com/Krzysix17/horizon-freelook"
 

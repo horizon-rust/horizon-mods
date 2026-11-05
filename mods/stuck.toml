@@ -1,6 +1,7 @@
 id = "stuck"
 kind = "native-mod"
 owners = ["Vakarux12"]
+owner_ids = [167799729]
 key = "RWS5u/7lEyKbzVHC6uMJRlhM/N7vzKp5fZe2LCDUlHsDK4lvPupxJbqQ"
 name = "Stuck?"
 summary = "/stuck and /escape move you to a safe spot nearby, off the Nether roof too."

@@ -5,6 +5,7 @@ summary = "Right-click a ripe crop to pick it and sow it again."
 description = "With an empty hand, right-click a ripe wheat, carrot, potato, beetroot or nether wart: the crop is harvested with the game's own drops, sound and statistics, and sown again from a seed in your inventory."
 authors = ["Domanffe"]
 owners = ["Domanffe"]
+owner_ids = [94391234]
 license = "MIT"
 source = "https://github.com/Domanffe/rightharvest"
 icon = "https://horizon-rust.github.io/horizon-mods/icons/rightharvest.png"

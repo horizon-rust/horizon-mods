@@ -10,6 +10,7 @@ It holds the mod's models and textures, its English and Russian text, its recipe
 All the art is original. No Minecraft assets are included. MIT licensed."""
 authors = ["bioneisme"]
 owners = ["Bioneisme"]
+owner_ids = [92920845]
 license = "MIT"
 source = "https://github.com/Bioneisme/wayfarer-stones"
 icon = "https://raw.githubusercontent.com/Bioneisme/wayfarer-stones/main/content/assets/wayfarer_stones/textures/item/wayfarer_stone.png"

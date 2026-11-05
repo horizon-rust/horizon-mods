@@ -12,6 +12,7 @@ The frames come from a resource pack you build from your own copy of the EatingA
 ~~Or you can just download it from GitHub Releases...~~"""
 authors = ["soufi"]
 owners = ["soufied"]
+owner_ids = [47915535]
 license = "MIT"
 source = "https://github.com/soufied/EatingAnimation-Horizon"
 icon = "icons/eatinganimation.png"

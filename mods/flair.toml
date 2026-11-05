@@ -5,6 +5,7 @@ summary = "Custom accessory mod"
 description = "A cosmetics catalog for Horizon. Open it from the title screen or the pause menu and wear HD capes that move like cloth, animated bandanas with Japanese script, hats, wings, shoulder pets and auras with colour themes. Turn your player in a live preview, hide your armor, and add your own capes and Blockbench cosmetics with animations. Only you see them."
 authors = ["_idom_"]
 owners = ["umbx-dot"]
+owner_ids = [203141410]
 license = "MIT"
 source = "https://github.com/umbx-dot/horizon-flair"
 icon = "https://raw.githubusercontent.com/umbx-dot/horizon-flair/main/icon.png"

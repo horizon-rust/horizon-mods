@@ -16,6 +16,7 @@ A compass bar at the top of your screen that shows where you are facing, in degr
 Settings are in Options → Mods → Compass Bar. Death points are not saved: they vanish when you close the game."""
 authors = ["Isaac"]
 owners = ["Fernandes585"]
+owner_ids = [344517364]
 license = "MIT"
 source = "https://github.com/Fernandes585/Compass-Enhanced"
 key = "RWScU5xtTnTnu55tXSTPbhM2BQ6KG2FLeMD9aTeX111NlQPh7cCafm1w"

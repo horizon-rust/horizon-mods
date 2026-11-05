@@ -5,6 +5,7 @@ summary = "Selected-item durability, count and enchantment names above the hotba
 description = "Minimal client-only selected-item text HUD for Horizon 26.3. Displays remaining/maximum durability, stack count and up to six translated enchantment names; long strings are shortened to GUI width. Original MIT implementation inspired by A5b84/held-item-info; no LGPL source was read or included. Potion details, layout options and fading are not implemented. Existing Armor Status covers equipped-item icons/durability; this mod focuses on selected-item text and enchantment names. See the source for validation and exact engine/mixin pins."
 authors = ["AltMugen"]
 owners = ["AltMugen"]
+owner_ids = [108084724]
 license = "MIT"
 source = "https://github.com/AltMugen/horizon-held-item-info"
 

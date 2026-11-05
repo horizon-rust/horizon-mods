@@ -13,6 +13,7 @@ It has the same lighting, sky, clouds, fog and AgX tonemap as the full version (
 The README in the repository lists everything that was ported and what changed."""
 authors = ["bobcao3", "tomasmendes01"]
 owners = ["tomasmendes01"]
+owner_ids = [68385376]
 license = "Apache-2.0"
 source = "https://github.com/tomasmendes01/wisdom-horizon"
 

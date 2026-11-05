@@ -21,6 +21,7 @@ While flying, your player doesn't move, attack, mine or use items.
 Some servers don't allow freecam, so check their rules first."""
 authors = ["Lutziano888"]
 owners = ["Lutziano888"]
+owner_ids = [129792568]
 license = "MIT"
 source = "https://github.com/Lutziano888/horizon-freecam"
 icon = "icons/fair_freecam.png"

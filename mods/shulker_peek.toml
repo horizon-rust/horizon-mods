@@ -19,6 +19,7 @@ It never changes items, inventories or worlds. Turn it off any time in Options >
 This is a native mod built for Horizon Nightly 2026-10-29 (`5e391eb`). It builds together with Horizon's official native mods (FPS Counter, Zoom, Minimap, Recipes and others)."""
 authors = ["vstxx"]
 owners = ["vstxx"]
+owner_ids = [106024432]
 license = "MIT"
 source = "https://github.com/vstxx/shulkerpeek"
 icon = "icons/shulker_peek.png"

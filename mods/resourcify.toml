@@ -16,6 +16,7 @@ Installing downloads the file from Modrinth's own server (`cdn.modrinth.com` onl
 Source code: https://github.com/tariksabanuz/ResourcifyHorizon"""
 authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
+owner_ids = [332662152]
 license = "MIT"
 source = "https://github.com/tariksabanuz/ResourcifyHorizon"
 icon = "https://github.com/tariksabanuz/ResourcifyHorizon/blob/364648324ac0e67489a3f06faa716d96d24668ed/icon.png"

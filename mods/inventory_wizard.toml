@@ -20,6 +20,7 @@ description = """
   server**: every sort is made of ordinary left clicks, as a player could click them, so a vanilla server accepts it"""
 authors = ["VanishingTacos"]
 owners = ["VanishingTacos"]
+owner_ids = [16919284]
 license = "MIT"
 source = "https://github.com/VanishingTacos/InventoryWizard-Horizon"
 icon = "https://cdn.modrinth.com/data/cU0ynk3p/21b58402405493964af438e3e3b9551676b68433.png"

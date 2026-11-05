@@ -21,6 +21,7 @@ Known limits: heavy at 256+ chunks (about 30–40 fps on an Apple M5 MacBook Pro
 LGPL-3.0, as Distant Horizons; its copyright notices are kept. Not made or endorsed by the Distant Horizons team. No Minecraft code or assets are included. Ported by Deniz Şahin with Claude (Anthropic)."""
 authors = ["denizsahin7744", "Deniz7744"]
 owners = ["denizsahin7744"]
+owner_ids = [144704661]
 license = "LGPL-3.0-only"
 source = "https://github.com/denizsahin7744/distant-horizons-for-horizon-client"
 

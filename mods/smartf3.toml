@@ -14,6 +14,7 @@ The F3 debug screen, grouped into 14 modules: FPS, server, coordinates, chunk, f
 Settings: Options → Mods → SmartF3. Inspired by [BetterF3](https://modrinth.com/mod/betterf3); not affiliated, no code from it."""
 authors = ["d3grando"]
 owners = ["d3grando"]
+owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/smartf3"
 icon = "icons/smartf3.png"

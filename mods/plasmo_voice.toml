@@ -19,6 +19,7 @@ An unofficial, independently written Rust client compatible with Plasmo Voice 2.
 - Six settings tabs, device selection, microphone preview, and per-player/source volume and mute.
 - Shift + RMB + scroll adjusts a targeted player; its volume indicator appears only after an actual change.
 - Pixel head icons with current-frame positioning, helmet clearance and block-shape visibility.
+- No connection indicator on servers without Plasmo Voice; stalled handshakes stop animating.
 - One native .hnmod with Linux x86_64 and Windows x64 runtimes; English and Russian UI.
 
 The launcher compiles the mod into the game. It communicates with the connected server's advertised voice endpoint, uses the selected audio devices, and keeps per-instance settings. It does not implement or enable Minecraft older-version adapters.
@@ -29,9 +30,9 @@ Tested with Plasmo Voice 2.1.17: two-way synthetic audio and inventory/chest cas
 """
 
 [[versions]]
-version = "0.5.1"
-published = "2026-11-05"
+version = "0.5.2"
+published = "2026-11-06"
 game = "26.3"
-file = "plasmo-voice-0.5.1.hnmod"
-sha256 = "cbe3622669f5405e58418232c0091d76500f9e2c7d6ca2f1479658d50c59cedd"
-changelog = "Requires Shift + RMB + scroll for player volume. The indicator appears only after an actual change and expires while buttons stay held. API 411; five adapter regressions and Linux physical-input/HUD checks pass. See source validation for previous voice matrix and platform limits."
+file = "plasmo-voice-0.5.2.hnmod"
+sha256 = "be65eeece5fec8b0069c99d03ed64dc6a0777d2886ef0c5a167c8379d910497c"
+changelog = "Hides the activation HUD on servers without Plasmo Voice. Only real handshakes animate; stalled stages stop after 15 seconds and errors use static warnings. Six adapter and 23 engine tests, Windows cross-check and isolated Linux HUD/input checks pass. API 411."

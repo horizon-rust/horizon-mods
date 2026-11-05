@@ -14,7 +14,7 @@ This is the Horizon port of [MineLights](https://github.com/megabytesme/MineLigh
 authors = ["MegaBytesMe"]
 owners = ["megabytesme"]
 license = "CC-BY-NC-SA-4.0"
-source = "https://github.com/megabytesme/MineLights/tree/ca8442e69a0d76ebe03d8fc63fa6c5aeac5c9c66/horizon"
+source = "https://github.com/megabytesme/MineLights/tree/d54efd40ce642d73dc23be582d1872af676095cd/horizon"
 icon = "https://raw.githubusercontent.com/megabytesme/MineLights/master/assets/icon.png"
 key = "RWQXM9P921f9AnO4kAKnVMu+2UdAr6BeAdM70P6PjbT7xxxmJbVb/qlN"
 

@@ -2,4 +2,5 @@
 fn smp_register_commands(commands: &mut Vec<crate::game::native_server::NativeCommand>) {
     crate::game::smp_glue::commands(commands);
     crate::game::smp_invsee_glue::commands(commands);
+    crate::game::smp_ping_glue::commands(commands);
 }

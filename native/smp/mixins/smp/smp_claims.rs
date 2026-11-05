@@ -12,7 +12,7 @@ use super::smp_economy::{Out, Player};
 use super::smp_places::Place;
 use super::smp_store;
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 /// `config.json`'s `claims` section.
@@ -146,8 +146,24 @@ pub struct Claims {
     /// `data.chunks` by dimension, then (chunk x, chunk z): asked on every
     /// fluid flow, so a lookup allocates nothing.
     owners: HashMap<String, HashMap<(i32, i32), u128>>,
+    /// `data.trust` as (owner, trusted) pairs: asked on every flow across a
+    /// border between two claims, so a lookup allocates nothing.
+    trusted: HashSet<(u128, u128)>,
     /// When each player was last told a chunk isn't theirs.
     told: HashMap<u128, i64>,
+}
+
+/// What sent a projectile, for `Claims::impact_allowed`.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum Source {
+    /// A player (UUID, operator level).
+    Player(u128, u8),
+    /// A mob (a skeleton's arrow, a blaze's fireball).
+    Mob,
+    /// Nobody (a dispenser's arrow): the block it was launched from.
+    Launched([i32; 3]),
+    /// Nobody, launched from where isn't known.
+    Unknown,
 }
 
 fn key(dimension: &str, cx: i32, cz: i32) -> String {
@@ -177,12 +193,19 @@ impl Claims {
             };
             owners.entry(d.to_owned()).or_default().insert((x, z), u);
         }
+        let trusted = data
+            .trust
+            .iter()
+            .filter_map(|(o, set)| Some((smp_store::parse_uuid(o)?, set)))
+            .flat_map(|(o, set)| set.iter().filter_map(move |t| Some((o, smp_store::parse_uuid(t)?))))
+            .collect();
         Ok(Self {
             config,
             path,
             data,
             changed: false,
             owners,
+            trusted,
             told: HashMap::new(),
         })
     }
@@ -279,10 +302,62 @@ impl Claims {
     }
 
     fn trusts(&self, owner: u128, who: u128) -> bool {
-        self.data
-            .trust
-            .get(&smp_store::uuid_string(owner))
-            .is_some_and(|t| t.contains(&smp_store::uuid_string(who)))
+        self.trusted.contains(&(owner, who))
+    }
+
+    /// Whether any claim lies within `r` blocks (x and z) of `at`: four
+    /// chunk lookups for `r` < 16, so a blast far from every claim costs
+    /// nothing more.
+    pub fn near(&self, dimension: &str, at: [i32; 3], r: i32) -> bool {
+        if !self.config.enabled {
+            return false;
+        }
+        let Some(chunks) = self.owners.get(dimension).filter(|c| !c.is_empty()) else {
+            return false;
+        };
+        let (x0, x1, z0, z1) = ((at[0] - r) >> 4, (at[0] + r) >> 4, (at[2] - r) >> 4, (at[2] + r) >> 4);
+        (x0..=x1).any(|cx| (z0..=z1).any(|cz| chunks.contains_key(&(cx, cz))))
+    }
+
+    /// Whether lava may set fire at `pos`: lava lights blocks up to 3 blocks
+    /// away (x and z; `LavaFluid.randomTick`) and the hook doesn't say from
+    /// where, so a claimed block within 3 blocks of land of another owner is
+    /// kept, and lava deeper inside a claim still lights its owner's blocks.
+    pub fn lava_may_ignite(&self, dimension: &str, pos: [i32; 3]) -> bool {
+        [[-3, -3], [-3, 3], [3, -3], [3, 3]]
+            .iter()
+            .all(|[dx, dz]| self.spread_allowed(dimension, [pos[0] + dx, pos[1], pos[2] + dz], pos))
+    }
+
+    /// Whether a projectile from `source` may hit what is at `at`: a block
+    /// (`entity` None) or an entity of type `entity` (`minecraft:cow`).
+    /// Free land, entities claims don't protect (monsters, players), a
+    /// member's (or an operator's) shot and a mob's hit on an entity are
+    /// allowed; a shot from nobody counts as from the land it was launched
+    /// from (a dispenser inside the claim is its owner's).
+    pub fn impact_allowed(
+        &self,
+        dimension: &str,
+        at: [i32; 3],
+        entity: Option<&str>,
+        source: Source,
+    ) -> bool {
+        if !self.config.enabled {
+            return true;
+        }
+        let Some(owner) = self.owner(dimension, at[0], at[2]) else {
+            return true;
+        };
+        // An entity Horizon doesn't name (a painting, a frame) counts as kept.
+        if entity.is_some_and(|k| !k.is_empty() && !self.protects(k)) {
+            return true;
+        }
+        match source {
+            Source::Player(u, level) => level >= 3 || u == owner || self.trusts(owner, u),
+            Source::Mob => entity.is_some(),
+            Source::Launched(from) => self.spread_allowed(dimension, from, at),
+            Source::Unknown => false,
+        }
     }
 
     /// Whether `who` may break or use the block at `pos`. When not, the line
@@ -459,8 +534,10 @@ impl Claims {
                 Some((u, name)) => {
                     let set = self.data.trust.entry(me_key.clone()).or_default();
                     let changed = if command == "trust" {
+                        self.trusted.insert((me.uuid, u));
                         set.insert(smp_store::uuid_string(u))
                     } else {
+                        self.trusted.remove(&(me.uuid, u));
                         set.remove(&smp_store::uuid_string(u))
                     };
                     if set.is_empty() {
@@ -594,6 +671,58 @@ mod tests {
         c.save().unwrap();
         let again = Claims::open(&d, Config::default()).unwrap();
         assert_eq!(again.owner(ow, 8, 8), None);
+        let _ = std::fs::remove_dir_all(d);
+    }
+
+    #[test]
+    fn shots_lava_and_blasts_from_outside_spare_a_claim() {
+        let d = dir();
+        let mut c = Claims::open(&d, Config::default()).unwrap();
+        // Alex holds chunk 0 0 (x 0 to 15, z 0 to 15).
+        c.command(&player(A, 0), &at(8.0, 8.0), 0, &find, &name_of, "claim")
+            .unwrap();
+        let ow = "minecraft:overworld";
+        let (cow, zombie) = (Some("minecraft:cow"), Some("minecraft:zombie"));
+        // Steve's arrow: not on Alex's blocks or cows, yes on a zombie there
+        // and on anything outside; Alex's own and an operator's pass.
+        let steve = Source::Player(B, 0);
+        assert!(!c.impact_allowed(ow, [5, 64, 5], None, steve));
+        assert!(!c.impact_allowed(ow, [5, 64, 5], cow, steve));
+        assert!(!c.impact_allowed(ow, [5, 64, 5], Some(""), steve));
+        assert!(c.impact_allowed(ow, [5, 64, 5], zombie, steve));
+        assert!(c.impact_allowed(ow, [16, 64, 5], cow, steve));
+        assert!(c.impact_allowed(ow, [5, 64, 5], cow, Source::Player(A, 0)));
+        assert!(c.impact_allowed(ow, [5, 64, 5], None, Source::Player(B, 3)));
+        // A skeleton's arrow hurts the cow but sticks in no block; a
+        // dispenser shoots in from its own land only.
+        assert!(c.impact_allowed(ow, [5, 64, 5], cow, Source::Mob));
+        assert!(!c.impact_allowed(ow, [5, 64, 5], None, Source::Mob));
+        assert!(c.impact_allowed(ow, [5, 64, 5], None, Source::Launched([2, 64, 2])));
+        assert!(!c.impact_allowed(ow, [5, 64, 5], None, Source::Launched([20, 64, 2])));
+        assert!(!c.impact_allowed(ow, [5, 64, 5], cow, Source::Unknown));
+        // Trusted, Steve shoots in.
+        c.command(&player(A, 0), &at(8.0, 8.0), 0, &find, &name_of, "trust steve")
+            .unwrap();
+        assert!(c.impact_allowed(ow, [5, 64, 5], None, steve));
+        c.command(&player(A, 0), &at(8.0, 8.0), 0, &find, &name_of, "untrust steve")
+            .unwrap();
+        assert!(!c.impact_allowed(ow, [5, 64, 5], None, steve));
+        // Lava lights claimed blocks only 4 or more blocks from the border.
+        assert!(!c.lava_may_ignite(ow, [13, 64, 8]));
+        assert!(!c.lava_may_ignite(ow, [8, 64, 2]));
+        assert!(c.lava_may_ignite(ow, [8, 64, 8]));
+        assert!(c.lava_may_ignite(ow, [30, 64, 8]));
+        // A blast near the claim is told apart from one far away.
+        assert!(c.near(ow, [20, 64, 8], 6));
+        assert!(!c.near(ow, [40, 64, 8], 6));
+        assert!(!c.near("minecraft:the_nether", [8, 64, 8], 6));
+        // The trust index comes back with the file.
+        c.command(&player(A, 0), &at(8.0, 8.0), 0, &find, &name_of, "trust steve")
+            .unwrap();
+        c.save().unwrap();
+        let again = Claims::open(&d, Config::default()).unwrap();
+        assert!(again.impact_allowed(ow, [5, 64, 5], None, steve));
+        assert!(again.spread_allowed(ow, [5, 64, 5], [6, 64, 5]));
         let _ = std::fs::remove_dir_all(d);
     }
 

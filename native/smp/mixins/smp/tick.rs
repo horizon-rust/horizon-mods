@@ -9,5 +9,6 @@ fn smp_server_tick(
     ) {
         crate::game::smp_glue::tick(game);
         crate::game::smp_invsee_glue::tick(game);
+        crate::game::smp_ping_glue::tick(game);
     }
 }

@@ -35,6 +35,8 @@ pub mod smp_market_menu;
 pub mod smp_market_prices;
 #[path = "../mixins/smp/smp_nick.rs"]
 pub mod smp_nick;
+#[path = "../mixins/smp/smp_ping.rs"]
+pub mod smp_ping;
 #[path = "../mixins/smp/smp_places.rs"]
 pub mod smp_places;
 #[path = "../mixins/smp/smp_presence.rs"]

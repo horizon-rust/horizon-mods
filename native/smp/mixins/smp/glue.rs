@@ -1055,6 +1055,25 @@ pub(in crate::game) fn explosion(game: &Game<'_>, dimension: &str, blocks: &mut 
     }
 }
 
+/// `f` on the open claims, when claims are on: None while the SMP's state
+/// is busy (a hook inside the SMP's own call), before it opened, or with
+/// claims off (`smp_claims_glue`).
+pub(in crate::game) fn with_claims<R>(f: impl FnOnce(&Claims) -> R) -> Option<R> {
+    let state = STATE.try_lock().ok()?;
+    let smp = state.as_ref().filter(|s| s.switches.on(Part::Claims))?;
+    smp.claims.as_ref().ok().map(f)
+}
+
+/// Whether the SMP runs in this world.
+pub(in crate::game) fn claims_live(game: &Game<'_>) -> bool {
+    game.native_on(ID)
+}
+
+/// The server ticks counted so far: the same number all through one tick.
+pub(in crate::game) fn ticks() -> u64 {
+    TICKS.load(std::sync::atomic::Ordering::Relaxed)
+}
+
 /// An item named `name` (not in italics, as a name the game gives).
 fn button(item: &str, name: &str, color: &str) -> ItemStack {
     let mut stack = ItemStack {

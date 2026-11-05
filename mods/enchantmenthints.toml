@@ -17,6 +17,8 @@ owner_ids = [36463198]
 license = "MIT"
 source = "https://github.com/d3grando/enchantmenthints"
 icon = "icons/enchantmenthints.png"
+categories = ["utility", "magic"]
+tags = ["enchantments", "tooltip", "descriptions"]
 
 [[versions]]
 version = "0.1.0"

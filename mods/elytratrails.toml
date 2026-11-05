@@ -53,7 +53,9 @@ authors = ["soufi"]
 owners = ["soufied"]
 license = "MIT"
 source = "https://github.com/soufied/ElytraTrails-Horizon"
-icon = "https://raw.githubusercontent.com/soufied/ElytraTrails-Horizon/refs/heads/main/icons/elytratrails.png"
+icon = "icons/elytratrails.png"
+categories = ["transportation", "decoration"]
+tags = ["elytra", "trails", "flying", "cosmetic", "port"]
 key = "RWT6eNq4e5WfVDA2lzOOi6XCm/+jJgilqT1+HUUM33ie5MCjcRfSg760"
 
 [[versions]]

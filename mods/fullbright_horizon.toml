@@ -3,17 +3,19 @@ kind = "native-mod"
 name = "Fullbright"
 summary = "Toggle maximum 1000% gamma cave and night brightness with smooth fade via keybind G."
 description = """
-Maximum brightness and night illumination for the Horizon Rust client.
+Full brightness in caves and at night, as a native mod for Horizon.
 
-Features
-Press G (rebindable in Options > Mods > Fullbright) to immediately toggle 1000% Gamma cave and night illumination without shadows.
-Smooth 250ms brightness fade transition and HUD status notification.
-100% client-side lightmap modification, safe for multiplayer."""
+- Press **G** (rebindable in Options > Mods > Fullbright) to turn maximum brightness (1000% gamma) on or off.
+- A smooth 250 ms fade, and a notice on the HUD saying which way it went.
+- Client-side only: it changes your lightmap, nothing sent to a server."""
 authors = ["CayMac"]
 owners = ["CayMac97"]
 owner_ids = [197672048]
 license = "MIT"
 source = "https://github.com/CayMac97/fullbright"
+icon = "icons/fullbright_horizon.png"
+categories = ["utility"]
+tags = ["fullbright", "gamma", "brightness"]
 key = "RWS411U2KXdTN4/y5bQhqBYxNlZvCtSZ5lNy46eeSAcgy0cxSJo2+Sm3"
 
 [[versions]]

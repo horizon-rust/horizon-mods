@@ -3,18 +3,25 @@ kind = "native-mod"
 name = "Fast Items for Horizon"
 summary = "Optimize item rendering by transforming item entities to 2D"
 description = """
-Fast Items (2D Items)
-Optimizes item rendering by transforming items to 2D forms.
+Flat, camera-facing dropped items for Horizon, as a native mod inspired by Noryea's
+[Fast Items](https://modrinth.com/mod/fast-items) (independently written; no code from it).
 
-For 2D items(such as potions), this mod avoids rendering their sides, so they are completely flat
+- **Flat items** (potions, tools...): the sprite's edges and hidden back face are dropped, so each layer is one flat
+  quad. Multi-layer textures, tint, lighting and glint stay.
+- **Block items** keep their 3D model and turn to face the camera, as in Lunar Client and Badlion.
+- Item bobbing, stacks, pickup animation, culling and glow outlines work as before.
+- Optionally turns off dropped items' blob shadows.
 
-For 3D items(such as cube blocks), this mod makes them always face to camera, just as the same behaviour in Lunar Client/BLC."""
+Only dropped items change: inventory icons, held items, item frames and servers stay as they are. Settings are in
+`config/fast-items.json` in the game folder, created on first use; restart the game after editing it."""
 authors = ["Lyvt (dc: _.lyvt)"]
 owners = ["Lyvt-Dev"]
 owner_ids = [138261776]
 license = "MIT"
 source = "https://github.com/Lyvt-Dev/FastItems-for-Horizon"
-icon = "https://github.com/Lyvt-Dev/FastItems-for-Horizon/tree/main/logo/fastitems.png"
+icon = "icons/fast_items.png"
+categories = ["optimization"]
+tags = ["items", "rendering", "performance", "2d-items", "port"]
 key = "RWQ84d8BvD1EaarVDgHgXyz+MDiL7ONsCZc0BUrJqTmqzXBItnJy918A"
 
 [[versions]]

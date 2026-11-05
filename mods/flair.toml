@@ -9,6 +9,8 @@ owner_ids = [203141410]
 license = "MIT"
 source = "https://github.com/umbx-dot/horizon-flair"
 icon = "icons/flair.png"
+categories = ["decoration"]
+tags = ["cosmetics", "capes", "hats", "wings", "pets", "blockbench"]
 key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
 
 [[versions]]

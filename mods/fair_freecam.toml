@@ -25,6 +25,8 @@ owner_ids = [129792568]
 license = "MIT"
 source = "https://github.com/Lutziano888/horizon-freecam"
 icon = "icons/fair_freecam.png"
+categories = ["utility"]
+tags = ["freecam", "camera", "spectator"]
 
 [[versions]]
 version = "1.2.0"

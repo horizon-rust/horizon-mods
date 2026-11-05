@@ -21,6 +21,9 @@ owners = ["ludovic111"]
 owner_ids = [136255825]
 license = "MIT"
 source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/fps-overlay"
+icon = "icons/fps_overlay.png"
+categories = ["utility"]
+tags = ["fps", "hud", "performance", "frame-time"]
 
 [[versions]]
 version = "2.0.0"

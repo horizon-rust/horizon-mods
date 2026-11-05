@@ -3,13 +3,19 @@ kind = "native-mod"
 name = "Freelook"
 summary = "Hold a key for a third person camera you can look around in"
 description = """
-Freelook is a Freelook/Perspective Mod for Fabric, allowing you to move your camera freely without changing your player's rotation.
-Camera distance can be adjusted by scrolling."""
+Hold **X** (rebindable in Options > Mods) for a third-person view you can look around in, while your
+character keeps walking and facing the way it was. Let go and the camera goes back to what it was.
+
+Scroll while holding the key to move the camera closer or farther, from 1 to 24 blocks (the game's own third person
+is 4). A native mod for Horizon, in the spirit of the Freelook and Perspective mods."""
 authors = ["Krzysix17"]
 owners = ["Krzysix17"]
 owner_ids = [350813197]
 license = "MIT"
 source = "https://github.com/Krzysix17/horizon-freelook"
+icon = "icons/freelook.png"
+categories = ["utility"]
+tags = ["freelook", "perspective", "camera", "third-person"]
 
 [[versions]]
 version = "0.3.1"

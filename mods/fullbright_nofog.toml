@@ -16,6 +16,9 @@ owners = ["Nirokx"]
 owner_ids = [95123456]
 license = "MIT"
 source = "https://github.com/Nirokx/horizon-fullbright-nofog"
+icon = "icons/fullbright_nofog.png"
+categories = ["utility"]
+tags = ["fullbright", "gamma", "brightness", "fog", "no-fog"]
 
 [[versions]]
 version = "1.0.0"

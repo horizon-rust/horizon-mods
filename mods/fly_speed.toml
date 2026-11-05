@@ -24,6 +24,9 @@ owners = ["ImmortalWhisper"]
 owner_ids = [147957682]
 license = "All Rights Reserved"
 source = "https://github.com/ImmortalWhisper/Fly-Speed"
+icon = "icons/fly_speed.png"
+categories = ["utility"]
+tags = ["flying", "speed", "creative", "commands"]
 key = "RWSy3RAfbzD2a0WMm0tQlVl+3GHigjwvwXKvzvnwfmoYrIAoIffbrSbP"
 
 [[versions]]

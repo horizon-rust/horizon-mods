@@ -20,6 +20,8 @@ owner_ids = [45046654]
 license = "MIT"
 source = "https://github.com/bezi5kt/gamma-rust"
 icon = "icons/fullbright.png"
+categories = ["utility"]
+tags = ["fullbright", "gamma", "brightness", "night-vision"]
 
 [[versions]]
 version = "1.0.0"

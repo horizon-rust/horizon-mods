@@ -399,7 +399,7 @@ helper = "dispense_item.rs"
 bindings = [
   { name = "dimension", ty = "&str", value = "dimension" },
   { name = "pos", ty = "[i32; 3]", value = "pos" },
-  { name = "front", ty = "[i32; 3]", value = "facing.normal()" },
+  { name = "facing", ty = "horizon_core::geometry::Direction", value = "facing" },
   { name = "stack", ty = "&horizon_client::items::ItemStack", value = "stack" },
   { name = "answer", ty = "&mut Option<horizon_client::mod_api::NativeDispensed>", value = "&mut *answer" },
 ]

@@ -51,6 +51,7 @@ header and footer).
 | `/claim`, `/claim info`, `/unclaim` | claims the chunk you stand in (all its height), says whose it is, frees it (operators of level 3: anyone's) |
 | `/claim show` | draws the border of the chunk you stand in for 10 s, for you only: green yours or a trusting owner's, red someone else's, white free |
 | `/claims` | your chunks, how many you may hold, and who you trust |
+| `/pingsound`, `/pingsound on`, `/pingsound off` | whether you hear a ding when someone names you in chat or `/msg`s you; turns it on or off |
 | `/trust <player>`, `/untrust <player>` | lets a player (or no longer) build and use things on all your land |
 | `/nick <name>`, `/nick off`, `/nick` | operators of level 3 (with `ops_only`, the default): another name for you in chat and the Tab list, shown as `~name` (hovering it gives your real one); `/nick off` (anyone with a nickname) takes it off; `/nick` alone says how |
 | `/nick <player> <name\|off>` | operators of level 3: sets or takes off a player's nickname |
@@ -253,11 +254,23 @@ nothing, and the action bar says whose land it is. The chunks a player may hold 
 turns them off. `claims.free_radius` (0, none) keeps the land within that many blocks of 0 0, in every dimension, free
 for all: no one claims a chunk that touches it, and claims already there are dropped at start (each logged). The world stays out too: no water or lava flows, no fire spreads or burns, and no piston pushes into
 a claim from land that isn't its owner's (or a player's they trust), and explosions break no claimed block, whoever
-lit them. Buckets are guarded where they fill or empty, and hitting the claim's item frames, armour stands,
-paintings, boats, minecarts and animals does nothing for others (`claims.protected_entities`, entity ids; monsters
-and players aren't in it). Not guarded yet: right clicking an entity (rotating a frame's item, an armour stand's
-items, shearing, leads), which waits for Horizon's hook (#4648). The server's `spawn-protection` (vanilla's) guards
+lit them (a TNT cannon, a creeper, a crystal, a bed, a wither skull), nor the claim's animals, paintings and item
+frames. Buckets are guarded where they fill or empty; nothing is placed against a claim's border from outside (a
+block, fire, a spawn egg, an armour stand); a dispenser does nothing to the block in front of it in another's
+claim; lava outside a claim lights none of its blocks (lava 4 or more blocks inside still lights its owner's). A
+projectile of someone not trusted (an arrow, a trident, a snowball, a pearl, a potion, a fire charge) does nothing in
+a claim but to monsters and players: no button pressed, target lit, chorus or pot broken, TNT lit, crystal set off,
+pearl landed or animal hurt; a dispenser's counts as from the land it shot from, a mob's hurts animals only. Hitting
+or right clicking the claim's item frames, armour stands, paintings, boats, minecarts and animals (leads, saddles,
+shears, dyes, buckets, a frame's or a stand's items) does nothing for others (`claims.protected_entities`, entity
+ids; monsters and players aren't in it; villagers and wandering traders still trade). Not guarded yet, for want of a
+Horizon hook: wind charges bursting outside a claim (they open doors inside), armour stands and vehicles in a blast,
+farmland trampled, a wither's or an enderman's own block changes. The server's `spawn-protection` (vanilla's) guards
 the spawn.
+
+**Chat pings.** A chat line that names an online player (a whole word, any case: `alex`, `@Alex`) plays the
+experience orb pickup sound to that player alone, and so does a `/msg`, `/tell` or `/w` to them; never the sender, at
+most once each 3 s per player. `/pingsound off` turns it off for oneself (`pings.json`), `/pingsound on` back.
 
 **The scoreboard.** A sidebar on the right, titled `board.title` ("Horizon SMP"): your own block first (your name, or
 your nickname; your balance, `125.4k`, `3.2M`; your playtime, `2h 05m`; the players online), then `board.footer`
@@ -360,6 +373,7 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 | `board.json` | the players who hid the sidebar (`/sidebar off`) |
 | `switches.json` | the parts operators turned off (`/smp off`): by whom, when and why |
 | `casino.json` | the day's ledger: each player's bets, wins and rounds today (the daily loss cap), the day's biggest wins, each game's totals, the pot's last sweep |
+| `pings.json` | the players who turned chat pings off (`/pingsound off`) |
 | `claims.json` | each claimed chunk (`<dimension> <chunk x> <chunk z>`) with its owner, and whom each owner trusts |
 | `audit.log` | one JSON line per change, written before the change: `time` (ms), `kind` (`open`, `pay`, `grant`, `ah_listing_fee`...), `amount`, `from`/`to` with their balance before, `by` for an operator, `to_pool`/`from_pool` with `pool_before` and `reason` for a pool's movement, `flow` (`minted` or `burned`) for money the server made or destroyed (a market sale or purchase, the daily reward, `/eco give` and `take`); a trade's line (`trade`: both players, their items and money) comes before its swap, `trade_failed` after one that didn't go through |
 

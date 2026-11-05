@@ -108,14 +108,26 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 .map(|(s, name)| (s, Said::Whisper(name))),
         );
     let said: Vec<(u128, Said)> = said.collect();
-    let targets = with_pings(game, |p| {
+    let pings = with_pings(game, |p| {
         said.iter()
-            .flat_map(|(s, what)| p.pinged(*s, what, &online, now))
-            .collect::<Vec<u128>>()
+            .flat_map(|(s, what)| {
+                p.pinged(*s, what, &online, now)
+                    .into_iter()
+                    .map(move |t| (*s, t))
+            })
+            .collect::<Vec<(u128, u128)>>()
     })
     .unwrap_or_default();
-    for uuid in targets {
+    let name = |u: u128| {
+        players
+            .iter()
+            .find(|p| p.uuid == u)
+            .map_or("?", |p| p.name.as_str())
+    };
+    for &(sender, uuid) in &pings {
         if let Some(p) = players.iter().find(|p| p.uuid == uuid) {
+            // At most one line each 3 s per player: the log shows pings work.
+            log::info!("[smp] ping: {} by {}", p.name, name(sender));
             game.native_send(uuid, ping_sound(p.position, now));
         }
     }

@@ -1156,7 +1156,7 @@ def run(ctl, resources, out):
         time.sleep(2)
         config = json.loads((data / "config.json").read_text())
         results["config_keys"] = sorted(config)
-        assert results["config_keys"] == ["auction", "board", "casino", "claims", "currency", "gambling", "market", "nicks", "places", "presence", "report", "shop",
+        assert results["config_keys"] == ["auction", "board", "casino", "claims", "currency", "gambling", "market", "nicks", "places", "presence", "report", "reports", "shop",
                                           "starting_balance", "web"], config
         results["welcome"] = steve.chat()
         assert any("Welcome to the server, Steve!" in l for l in results["welcome"]), results["welcome"]

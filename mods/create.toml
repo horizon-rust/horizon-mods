@@ -3,7 +3,7 @@ kind = "native-mod"
 name = "Create for Horizon"
 summary = "Build rotating machines and small factories in Horizon with gears, belts, presses and fans."
 description = """
-An experimental Rust port of [Create](https://github.com/Creators-of-Create/Create).
+An unofficial, experimental Rust port of [Create](https://github.com/Creators-of-Create/Create), made by Delete228. It is not made or endorsed by the Create team; their original code is MIT and is credited in the mod's NOTICE.
 
 - Drive machines with water wheels, hand cranks or a Creative Motor.
 - Route power through shafts, gears, gearboxes, clutches and encased chain drives.

@@ -1,0 +1,24 @@
+id = "deepbore_quarry"
+kind = "mod"
+name = "Deepbore Quarry (assets)"
+summary = "The textures, text and recipes of Deepbore Quarry. Needs the Deepbore Quarry native mod."
+description = """
+**This is one of the two parts of [Deepbore Quarry](https://playhorizon.dev/mods/deepbore_quarry_native), and does nothing alone.** Install both: this one, the assets, and the native part. If one is missing, the game says so in chat.
+
+It holds the mod's models and textures, its English and Russian text, its recipes and drops, and its screen's menu. It has no code. The code, and the description of what the mod does, are in Deepbore Quarry.
+
+All the art is original. No Minecraft assets are included. MIT licensed."""
+authors = ["bioneisme"]
+owners = ["Bioneisme"]
+owner_ids = [92920845]
+license = "MIT"
+source = "https://github.com/Bioneisme/deepbore-quarry"
+icon = "https://raw.githubusercontent.com/Bioneisme/deepbore-quarry/main/icon.png"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-05"
+game = "26.3"
+file = "deepbore_quarry-0.1.0.hmod"
+sha256 = "2a75f3adc59aaf273fd833545c50a63a7f829916156b74d85bebbb6273b0d8b6"
+changelog = "First release."

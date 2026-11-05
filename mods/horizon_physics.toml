@@ -1,11 +1,11 @@
 id = "horizon_physics"
 kind = "native-mod"
 name = "PhysicsModHorizon"
-summary = "Physics Mod for Horizon"
+summary = "Physics for Horizon, inspired by PhysicsMod: ragdolls, waves, physical particles and capes."
 description = """
 By tariksabanuz
 
-Physics for Horizon, inspired by PhysicsMod. Everything is built as a native Horizon mod, so no other mods or loaders are needed.
+Physics for Horizon, inspired by PhysicsMod by Haubna. It is a clean-room version for Horizon: it contains none of PhysicsMod's code or assets and is not made or endorsed by Haubna. Everything is built as a native Horizon mod, so no other mods or loaders are needed.
 
 Features
 
@@ -27,7 +27,7 @@ authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
 license = "MIT"
 source = "https://github.com/tariksabanuz/PhysicsModHorizon"
-icon = "https://github.com/tariksabanuz/PhysicsModHorizon/blob/0f71d86095618535670313e3ee8ce374d402ab31/main.gif"
+icon = "icons/horizon_physics.png"
 
 [[versions]]
 version = "0.18.0"

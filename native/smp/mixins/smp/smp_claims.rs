@@ -197,7 +197,10 @@ impl Claims {
             .trust
             .iter()
             .filter_map(|(o, set)| Some((smp_store::parse_uuid(o)?, set)))
-            .flat_map(|(o, set)| set.iter().filter_map(move |t| Some((o, smp_store::parse_uuid(t)?))))
+            .flat_map(|(o, set)| {
+                set.iter()
+                    .filter_map(move |t| Some((o, smp_store::parse_uuid(t)?)))
+            })
             .collect();
         Ok(Self {
             config,
@@ -315,7 +318,12 @@ impl Claims {
         let Some(chunks) = self.owners.get(dimension).filter(|c| !c.is_empty()) else {
             return false;
         };
-        let (x0, x1, z0, z1) = ((at[0] - r) >> 4, (at[0] + r) >> 4, (at[2] - r) >> 4, (at[2] + r) >> 4);
+        let (x0, x1, z0, z1) = (
+            (at[0] - r) >> 4,
+            (at[0] + r) >> 4,
+            (at[2] - r) >> 4,
+            (at[2] + r) >> 4,
+        );
         (x0..=x1).any(|cx| (z0..=z1).any(|cz| chunks.contains_key(&(cx, cz))))
     }
 
@@ -701,11 +709,25 @@ mod tests {
         assert!(!c.impact_allowed(ow, [5, 64, 5], None, Source::Launched([20, 64, 2])));
         assert!(!c.impact_allowed(ow, [5, 64, 5], cow, Source::Unknown));
         // Trusted, Steve shoots in.
-        c.command(&player(A, 0), &at(8.0, 8.0), 0, &find, &name_of, "trust steve")
-            .unwrap();
+        c.command(
+            &player(A, 0),
+            &at(8.0, 8.0),
+            0,
+            &find,
+            &name_of,
+            "trust steve",
+        )
+        .unwrap();
         assert!(c.impact_allowed(ow, [5, 64, 5], None, steve));
-        c.command(&player(A, 0), &at(8.0, 8.0), 0, &find, &name_of, "untrust steve")
-            .unwrap();
+        c.command(
+            &player(A, 0),
+            &at(8.0, 8.0),
+            0,
+            &find,
+            &name_of,
+            "untrust steve",
+        )
+        .unwrap();
         assert!(!c.impact_allowed(ow, [5, 64, 5], None, steve));
         // Lava lights claimed blocks only 4 or more blocks from the border.
         assert!(!c.lava_may_ignite(ow, [13, 64, 8]));
@@ -717,8 +739,15 @@ mod tests {
         assert!(!c.near(ow, [40, 64, 8], 6));
         assert!(!c.near("minecraft:the_nether", [8, 64, 8], 6));
         // The trust index comes back with the file.
-        c.command(&player(A, 0), &at(8.0, 8.0), 0, &find, &name_of, "trust steve")
-            .unwrap();
+        c.command(
+            &player(A, 0),
+            &at(8.0, 8.0),
+            0,
+            &find,
+            &name_of,
+            "trust steve",
+        )
+        .unwrap();
         c.save().unwrap();
         let again = Claims::open(&d, Config::default()).unwrap();
         assert!(again.impact_allowed(ow, [5, 64, 5], None, steve));

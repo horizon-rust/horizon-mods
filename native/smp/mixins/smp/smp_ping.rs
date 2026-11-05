@@ -78,7 +78,11 @@ impl Pings {
     pub fn open(dir: &Path) -> Result<Self, String> {
         let path = dir.join("pings.json");
         let data: Data = smp_store::read_json(&path)?;
-        let off = data.off.iter().filter_map(|u| smp_store::parse_uuid(u)).collect();
+        let off = data
+            .off
+            .iter()
+            .filter_map(|u| smp_store::parse_uuid(u))
+            .collect();
         Ok(Self {
             path,
             data,
@@ -133,7 +137,10 @@ impl Pings {
                 if let Err(e) = self.write() {
                     return Some(vec![Out::Error(e)]);
                 }
-                vec![Out::Reply("Ping sound on: you hear a ding when someone names you in chat or /msg's you.".into())]
+                vec![Out::Reply(
+                    "Ping sound on: you hear a ding when someone names you in chat or /msg's you."
+                        .into(),
+                )]
             }
             Some(["off"]) => {
                 self.off.insert(uuid);
@@ -141,11 +148,17 @@ impl Pings {
                 if let Err(e) = self.write() {
                     return Some(vec![Out::Error(e)]);
                 }
-                vec![Out::Reply("Ping sound off. /pingsound on turns it back on.".into())]
+                vec![Out::Reply(
+                    "Ping sound off. /pingsound on turns it back on.".into(),
+                )]
             }
             Some([]) => vec![Out::Reply(format!(
                 "Ping sound is {}. /pingsound on|off",
-                if self.off.contains(&uuid) { "off" } else { "on" }
+                if self.off.contains(&uuid) {
+                    "off"
+                } else {
+                    "on"
+                }
             ))],
             _ => vec![Out::Error("Usage: /pingsound on|off".into())],
         })
@@ -165,7 +178,11 @@ mod tests {
     const C: u128 = 3;
 
     fn online() -> Vec<(u128, String)> {
-        vec![(A, "Alex".into()), (B, "Steve_99".into()), (C, "jaszka".into())]
+        vec![
+            (A, "Alex".into()),
+            (B, "Steve_99".into()),
+            (C, "jaszka".into()),
+        ]
     }
 
     #[test]
@@ -175,7 +192,11 @@ mod tests {
         assert!(named("alexander steve jaszkas", &online()).is_empty());
         assert_eq!(whisper_to("msg Steve_99 hi there"), Some("Steve_99"));
         assert_eq!(whisper_to("minecraft:w alex hi"), Some("alex"));
-        assert_eq!(whisper_to("msg alex"), None, "no message: the command fails");
+        assert_eq!(
+            whisper_to("msg alex"),
+            None,
+            "no message: the command fails"
+        );
         assert_eq!(whisper_to("tp alex"), None);
     }
 
@@ -188,15 +209,24 @@ mod tests {
         assert_eq!(p.pinged(A, &chat("alex steve_99"), &online(), 0), vec![B]);
         // Steve again within 3 s: nothing; after: pinged.
         assert!(p.pinged(C, &chat("steve_99?"), &online(), 2_999).is_empty());
-        assert_eq!(p.pinged(C, &Said::Whisper("STEVE_99".into()), &online(), 3_000), vec![B]);
+        assert_eq!(
+            p.pinged(C, &Said::Whisper("STEVE_99".into()), &online(), 3_000),
+            vec![B]
+        );
         // Off, then kept across a restart.
-        assert!(matches!(&p.command(B, "pingsound off").unwrap()[0], Out::Reply(_)));
+        assert!(matches!(
+            &p.command(B, "pingsound off").unwrap()[0],
+            Out::Reply(_)
+        ));
         assert!(p.pinged(A, &chat("steve_99"), &online(), 60_000).is_empty());
         let mut again = Pings::open(&dir).unwrap();
         assert!(again.pinged(A, &chat("steve_99"), &online(), 0).is_empty());
         again.command(B, "pingsound on").unwrap();
         assert_eq!(again.pinged(A, &chat("steve_99"), &online(), 0), vec![B]);
-        assert!(matches!(&again.command(B, "pingsound maybe").unwrap()[0], Out::Error(_)));
+        assert!(matches!(
+            &again.command(B, "pingsound maybe").unwrap()[0],
+            Out::Error(_)
+        ));
         assert!(again.command(B, "ping").is_none());
         let _ = std::fs::remove_dir_all(dir);
     }

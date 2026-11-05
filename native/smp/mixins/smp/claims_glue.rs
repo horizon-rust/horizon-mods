@@ -22,7 +22,9 @@ fn same_chunk(a: [i32; 3], b: [i32; 3]) -> bool {
 /// (the face's side): a block, fire, a mob, an entity to place.
 fn places_beside(game: &Game<'_>, stack: &ItemStack) -> bool {
     let id = &*stack.item;
-    game.items().get(&stack.item).is_some_and(|i| i.block.is_some())
+    game.items()
+        .get(&stack.item)
+        .is_some_and(|i| i.block.is_some())
         || id.ends_with("_spawn_egg")
         || id.ends_with("_boat")
         || id.ends_with("_raft")
@@ -185,7 +187,11 @@ pub(in crate::game) fn impact(
     if *canceled {
         return;
     }
-    let target = if entity.is_some() { block_of(at) } else { block };
+    let target = if entity.is_some() {
+        block_of(at)
+    } else {
+        block
+    };
     if smp_glue::with_claims(|c| c.owner(dimension, target[0], target[2]).is_some()) != Some(true) {
         return;
     }
@@ -241,7 +247,11 @@ pub(in crate::game) fn blast(game: &Game<'_>, dimension: &str, center: [f64; 3])
             .iter()
             .filter(|m| !m.removed && m.alive())
             .filter(|m| {
-                let d = [m.position.x - center[0], m.position.y - center[1], m.position.z - center[2]];
+                let d = [
+                    m.position.x - center[0],
+                    m.position.y - center[1],
+                    m.position.z - center[2],
+                ];
                 d[0] * d[0] + d[1] * d[1] + d[2] * d[2] <= REACH * REACH
             })
             .filter(|m| {
@@ -312,11 +322,17 @@ pub(in crate::game) fn hanging_break(
         let b = BLASTS.lock().unwrap_or_else(|e| e.into_inner());
         b.tick == smp_glue::ticks()
             && b.centres.iter().any(|(d, c)| {
-                let q = [f64::from(pos[0]) + 0.5 - c[0], f64::from(pos[1]) + 0.5 - c[1], f64::from(pos[2]) + 0.5 - c[2]];
+                let q = [
+                    f64::from(pos[0]) + 0.5 - c[0],
+                    f64::from(pos[1]) + 0.5 - c[1],
+                    f64::from(pos[2]) + 0.5 - c[2],
+                ];
                 d == dimension && q[0] * q[0] + q[1] * q[1] + q[2] * q[2] <= REACH * REACH
             })
     };
-    if blasted && smp_glue::with_claims(|c| c.owner(dimension, pos[0], pos[2]).is_some()) == Some(true) {
+    if blasted
+        && smp_glue::with_claims(|c| c.owner(dimension, pos[0], pos[2]).is_some()) == Some(true)
+    {
         *cancel = true;
     }
 }

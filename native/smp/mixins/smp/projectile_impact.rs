@@ -12,6 +12,14 @@ fn smp_projectile_impact(
     canceled: &mut bool,
 ) {
     crate::game::smp_claims_glue::impact(
-        game, dimension, projectile, owner, entity, entity_kind, block, at, canceled,
+        game,
+        dimension,
+        projectile,
+        owner,
+        entity,
+        entity_kind,
+        block,
+        at,
+        canceled,
     );
 }

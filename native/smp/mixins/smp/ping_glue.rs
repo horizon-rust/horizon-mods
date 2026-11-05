@@ -57,7 +57,11 @@ pub(in crate::game) fn perform(
     *ran = true;
     let out = with_pings(game, |p| p.command(player.uuid, command))
         .flatten()
-        .unwrap_or_else(|| vec![Out::Error("Pings are off: pings.json can't be read (see the server log).".into())]);
+        .unwrap_or_else(|| {
+            vec![Out::Error(
+                "Pings are off: pings.json can't be read (see the server log).".into(),
+            )]
+        });
     for o in out {
         let line = match o {
             Out::Reply(s) => Text::literal(s).with_color(text::GREEN),
@@ -98,7 +102,11 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     let said = chat
         .into_iter()
         .map(|(s, line)| (s, Said::Chat(line)))
-        .chain(whispers.into_iter().map(|(s, name)| (s, Said::Whisper(name))));
+        .chain(
+            whispers
+                .into_iter()
+                .map(|(s, name)| (s, Said::Whisper(name))),
+        );
     let said: Vec<(u128, Said)> = said.collect();
     let targets = with_pings(game, |p| {
         said.iter()

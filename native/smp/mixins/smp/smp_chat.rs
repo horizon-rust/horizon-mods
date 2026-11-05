@@ -1,7 +1,7 @@
-//! The SMP's chat pings (horizon-mods native/smp, smp_ping.rs): the hub
-//! hears a player's chat line (`native_player_chat`) away from the game, so
-//! the line is only queued here, and the SMP reads the queue at the end of
-//! the tick. Added to the client library as `smp_chat`.
+// The SMP's chat pings (horizon-mods native/smp, smp_ping.rs): the hub
+// hears a player's chat line (`native_player_chat`) away from the game, so
+// the line is only queued here, and the SMP reads the queue at the end of
+// the tick. Added to the client library as `smp_chat`.
 
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, Ordering::Relaxed};

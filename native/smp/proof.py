@@ -42,6 +42,8 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
 `SMP_PROOF=rtp` runs one /rtp alone on a normal (not flat) world's fresh land instead, and what it cost the server's
 ticks: a performance report (`horizon-report`) over the search and landing against one over the same time before it.
 
+`SMP_PROOF=claims` runs the land claims against everything that may come in from outside, and the chat pings.
+
 The casino has its own proof (proof_casino.py): `SMP_PROOF=casino` runs it instead of this one.
 
 Everything runs in fresh temporary folders (the server's, each client's home, launcher and XDG folders), no audio.
@@ -1105,6 +1107,198 @@ def vanish(server, alex, steve, out):
     return r
 
 
+def server_sees(server, test, tag):
+    """Whether `execute <test>` passes on the server (it says `tag` when it does)."""
+    before = len(server.lines)
+    server.console(f"execute in minecraft:overworld {test} run say {tag}")
+    time.sleep(2)
+    return any(tag in l for l in server.lines[before:])
+
+
+def health_at(c, x, z, kind="cow"):
+    """The health of the `kind` nearest x z (as `c`'s client sees it), 0 when it's gone."""
+    near = [e for e in c.run("entities", 64, kind)["entities"]
+            if abs(e["pos"][0] - x) < 1.5 and abs(e["pos"][2] - z) < 1.5]
+    return near[0]["health"] if near else 0
+
+
+def claims_alone(ctl, resources, out):
+    """SMP_PROOF=claims: Alex claims a chunk and Steve, never trusted until the end, tries every way in from outside:
+    a block placed and fire lit against its border, a dispenser's water and arrows, a snowball on an end crystal, an
+    ender pearl, TNT by its animals and frames, shears on its sheep; each with a control that works outside (or for
+    Alex). Then chat pings: Steve named in chat or /msg'd hears a ding (one server log line each), at most one each
+    3 s, never for one's own name, none once /pingsound is off."""
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    game = Path(ctl).with_name("horizon-client")
+    root = Path(tempfile.mkdtemp(prefix="smp-claims-"))
+    port = free_port()
+    server = Server(game, resources, root / "server", port)
+    alex = Client(ctl, resources, "Alex", root)
+    steve = Client(ctl, resources, "Steve", root)
+    r = {}
+    try:
+        server.start()
+        for line in ("difficulty peaceful", "gamerule spawn_monsters false", "kill @e[type=minecraft:slime]"):
+            server.console(line)
+        alex.join(port)
+        steve.join(port)
+        _, (_, y, _), _ = where(alex)
+        y = math.floor(y)
+        x0, z0 = 64, 64
+        block = lambda x, yy, z: json.dumps(steve.run("block", x, yy, z))
+        server.console(f"tp Alex {x0 + 8.5} {y} {z0 + 8.5}")
+        server.console("gamemode creative Alex")
+        time.sleep(3)
+        r["claim"] = alex.say("/claim")
+        assert any("Claimed this chunk" in l for l in r["claim"]), r
+        # 1. Against the border from outside: Steve (inside, walking is free) clicks the east face of stone in the
+        # next chunk west: the block would land in the claim. The top face (outside) takes it.
+        server.console(f"setblock {x0 - 1} {y} {z0 + 4} minecraft:stone")
+        server.console(f"tp Steve {x0 + 2.5} {y} {z0 + 4.5}")
+        for item in ("oak_planks 8", "flint_and_steel", "snowball 4", "ender_pearl 2", "shears"):
+            server.console(f"give Steve minecraft:{item}")
+        time.sleep(3)
+        steve.run("select", "minecraft:oak_planks")
+        steve.run("look-at-block", x0 - 1, y, z0 + 4, "east")
+        steve.run("use-item")
+        time.sleep(0.5)
+        said = json.dumps(steve.run("messages", 5))
+        steve.run("select", "minecraft:flint_and_steel")
+        steve.run("look-at-block", x0 - 1, y, z0 + 4, "east")
+        steve.run("use-item")
+        time.sleep(1.5)
+        r["border"] = [block(x0, y, z0 + 4), said]
+        assert '"block": "minecraft:air"' in r["border"][0], r
+        assert "This land is claimed by Alex." in said, r
+        steve.run("select", "minecraft:oak_planks")
+        steve.run("look-at-block", x0 - 1, y, z0 + 4, "up")
+        steve.run("use-item")
+        time.sleep(1.5)
+        r["border_control"] = block(x0 - 1, y + 1, z0 + 4)
+        assert "oak_planks" in r["border_control"], r
+        # 2. Dispensers outside: water into the claim fails, water away from it pours; an arrow from 3 blocks out
+        # spares a cow in the claim, one fired outside hurts a cow there.
+        water = '{Items:[{Slot:0b,id:"minecraft:water_bucket",count:1}]}'
+        arrows = '{Items:[{Slot:0b,id:"minecraft:arrow",count:4}]}'
+        for line in (f"setblock {x0 - 1} {y} {z0 + 8} minecraft:dispenser[facing=east]{water}",
+                     f"setblock {x0 - 1} {y} {z0 + 11} minecraft:dispenser[facing=west]{water}",
+                     f"summon minecraft:cow {x0 + 1.5} {y} {z0 + 14.5} {{NoAI:1b}}",
+                     f"summon minecraft:cow {x0 - 9.5} {y} {z0 + 14.5} {{NoAI:1b}}",
+                     f"setblock {x0 - 4} {y} {z0 + 14} minecraft:dispenser[facing=east]{arrows}",
+                     f"setblock {x0 - 6} {y} {z0 + 14} minecraft:dispenser[facing=west]{arrows}"):
+            server.console(line)
+        time.sleep(2)
+        for x, z in ((x0 - 1, z0 + 8), (x0 - 1, z0 + 11), (x0 - 4, z0 + 14), (x0 - 6, z0 + 14)):
+            server.console(f"setblock {x} {y + 1} {z} minecraft:redstone_block")
+        time.sleep(4)
+        r["dispensers"] = [block(x0, y, z0 + 8), block(x0 - 2, y, z0 + 11),
+                           health_at(steve, x0 + 1.5, z0 + 14.5), health_at(steve, x0 - 9.5, z0 + 14.5)]
+        assert "water" not in r["dispensers"][0] and "water" in r["dispensers"][1], r
+        assert r["dispensers"][2] == 10 and r["dispensers"][3] < 10, r
+        # 3. A snowball on an end crystal in the claim: it stays for Steve (outside), goes off for Alex.
+        crystal = (x0 + 12.5, y, z0 + 4.5)
+        server.console("summon minecraft:end_crystal %s %s %s {ShowBottom:0b}" % crystal)
+        server.console(f"tp Steve {x0 + 12.5} {y} {z0 - 3.5}")
+        time.sleep(3)
+        steve.run("select", "minecraft:snowball")
+        steve.run("look-at", crystal[0], y + 1, crystal[2])
+        steve.run("use-item")
+        time.sleep(3)
+        there = "if entity @e[type=minecraft:end_crystal,x=%s,y=%s,z=%s,distance=..2]" % crystal
+        r["crystal"] = [server_sees(server, there, "crystal-there-1")]
+        assert r["crystal"][0], r
+        server.console("give Alex minecraft:snowball 4")
+        server.console(f"tp Alex {x0 + 12.5} {y} {z0 + 0.5}")
+        time.sleep(3)
+        alex.run("select", "minecraft:snowball")
+        alex.run("look-at", crystal[0], y + 1, crystal[2])
+        alex.run("use-item")
+        time.sleep(3)
+        r["crystal"].append(server_sees(server, there, "crystal-there-2"))
+        assert not r["crystal"][1], r
+        # 4. Steve's pearl onto the claim's ground: no teleport; onto the ground outside: he lands.
+        steve.run("select", "minecraft:ender_pearl")
+        _, before, _ = where(steve)
+        steve.run("look-at", x0 + 12.5, y, z0 + 5.5)
+        steve.run("use-item")
+        time.sleep(4)
+        _, after, _ = where(steve)
+        r["pearl"] = [before, after]
+        assert near(before, after), r
+        steve.run("look-at", x0 + 12.5, y, z0 - 9.5)
+        steve.run("use-item")
+        time.sleep(4)
+        _, moved, _ = where(steve)
+        r["pearl"].append(moved)
+        assert not near(before, moved), r
+        # 5. TNT just outside the claim: its cow and item frame stay, a cow outside is hurt.
+        for line in (f"setblock {x0 + 15} {y} {z0 + 11} minecraft:stone",
+                     f"summon minecraft:item_frame {x0 + 14.5} {y + 0.5} {z0 + 11.5} {{Facing:4b}}",
+                     f"summon minecraft:cow {x0 + 14.5} {y} {z0 + 14.5} {{NoAI:1b}}",
+                     f"summon minecraft:cow {x0 + 20.5} {y} {z0 + 14.5} {{NoAI:1b}}",
+                     f"tp Steve {x0 + 8.5} {y} {z0 + 12.5}"):
+            server.console(line)
+        time.sleep(3)
+        frame = f"if entity @e[type=minecraft:item_frame,x={x0 + 14.5},y={y + 0.5},z={z0 + 11.5},distance=..1.5]"
+        r["tnt"] = [server_sees(server, frame, "frame-before")]
+        server.console(f"summon minecraft:tnt {x0 + 17.5} {y} {z0 + 13.5} {{fuse:1}}")
+        time.sleep(4)
+        r["tnt"] += [server_sees(server, frame, "frame-after"), health_at(steve, x0 + 14.5, z0 + 14.5),
+                     health_at(steve, x0 + 20.5, z0 + 14.5), block(x0 + 17, y - 1, z0 + 13)]
+        assert r["tnt"][0] and r["tnt"][1] and r["tnt"][2] == 10 and r["tnt"][3] < 10, r
+        assert "grass" not in r["tnt"][4], "the blast broke the land outside"
+        # 6. Shears on the claim's sheep: no wool, until Alex trusts Steve.
+        server.console(f"summon minecraft:sheep {x0 + 5.5} {y} {z0 + 10.5} {{NoAI:1b}}")
+        server.console(f"tp Steve {x0 + 5.5} {y} {z0 + 8.5}")
+        time.sleep(3)
+        sheep = [e for e in steve.run("entities", 8, "sheep")["entities"]][0]
+        steve.run("select", "minecraft:shears")
+        steve.run("interact-entity", sheep["id"])
+        time.sleep(2)
+        wool = lambda: [e for e in steve.run("entities", 8)["entities"] if e.get("kind") == "item"]
+        r["sheep"] = [wool()]
+        alex.say("/trust Steve")
+        steve.run("interact-entity", sheep["id"])
+        time.sleep(2)
+        r["sheep"].append(wool())
+        assert not r["sheep"][0] and r["sheep"][1], r
+        # 7. Pings: one log line each (the clients run without audio).
+        pinged = lambda who, since: [l for l in server.lines[since:] if f"[smp] ping: {who} by" in l]
+        time.sleep(4)
+        start = len(server.lines)
+        alex.say("hey steve, look")
+        alex.say("/msg Steve and again")
+        time.sleep(1)
+        r["pings"] = [pinged("Steve", start)]
+        time.sleep(3.5)
+        start = len(server.lines)
+        alex.say("/msg Steve a whisper")
+        steve.say("I'm Steve")
+        r["pings"].append(pinged("Steve", start))
+        r["off"] = steve.say("/pingsound off")
+        time.sleep(3.5)
+        start = len(server.lines)
+        alex.say("Steve?")
+        time.sleep(1)
+        r["pings"].append(pinged("Steve", start))
+        r["on"] = steve.say("/pingsound on")
+        assert len(r["pings"][0]) == 1 and "by Alex" in r["pings"][0][0], r
+        assert len(r["pings"][1]) == 1 and not r["pings"][2], r
+        assert any("Ping sound off" in l for l in r["off"]) and any("Ping sound on" in l for l in r["on"]), r
+        lines = server.stop()
+        r["errors"] = [l for l in lines if "panicked" in l or "ERROR" in l]
+        assert not r["errors"], r["errors"]
+        print(json.dumps({"proof": "claims", "ok": True, **r}, indent=2))
+    finally:
+        (out / "server.log").write_text("\n".join(server.lines))
+        for c in (alex, steve):
+            c.quit()
+        if server.__dict__.get("process") and server.process.poll() is None:
+            server.process.kill()
+        shutil.rmtree(root, ignore_errors=True)
+
+
 def run(ctl, resources, out):
     if os.environ.get("SMP_PROOF") == "casino":
         # The casino's own proof (proof_casino.py), apart: it plays its games for a few minutes.
@@ -1115,6 +1309,8 @@ def run(ctl, resources, out):
         return casino.run(ctl, resources, out)
     if os.environ.get("SMP_PROOF") == "rtp":
         return rtp_alone(ctl, resources, out)
+    if os.environ.get("SMP_PROOF") == "claims":
+        return claims_alone(ctl, resources, out)
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     game = Path(ctl).with_name("horizon-client")

@@ -67,6 +67,7 @@ const PROTECTED: &[&str] = &[
     "glow_item_frame",
     "armor_stand",
     "painting",
+    "end_crystal",
     "leash_knot",
     "minecart",
     "chest_minecart",
@@ -299,9 +300,11 @@ impl Claims {
     }
 
     /// Whether entities of type `kind` (`minecraft:cow`) are kept from
-    /// players a claim's owner doesn't trust.
+    /// players a claim's owner doesn't trust. End crystals always are, as
+    /// worlds whose config.json predates them keep their own list: one hit
+    /// sets a crystal off.
     pub fn protects(&self, kind: &str) -> bool {
-        self.config.protected_entities.iter().any(|e| e == kind)
+        kind == "minecraft:end_crystal" || self.config.protected_entities.iter().any(|e| e == kind)
     }
 
     fn trusts(&self, owner: u128, who: u128) -> bool {
@@ -729,6 +732,10 @@ mod tests {
         )
         .unwrap();
         assert!(!c.impact_allowed(ow, [5, 64, 5], None, steve));
+        // A snowball on a crystal in the claim sets it off for members only.
+        let crystal = Some("minecraft:end_crystal");
+        assert!(!c.impact_allowed(ow, [5, 64, 5], crystal, steve));
+        assert!(c.impact_allowed(ow, [5, 64, 5], crystal, Source::Player(A, 0)));
         // Lava lights claimed blocks only 4 or more blocks from the border.
         assert!(!c.lava_may_ignite(ow, [13, 64, 8]));
         assert!(!c.lava_may_ignite(ow, [8, 64, 2]));
@@ -787,6 +794,11 @@ mod tests {
         c.spare(ow, &mut blocks);
         assert_eq!(blocks, vec![[40, 64, 0], [-1, 64, 0]]);
         assert!(c.protects("minecraft:item_frame") && c.protects("minecraft:cow"));
+        c.config.protected_entities = vec!["minecraft:cow".into()];
+        assert!(
+            c.protects("minecraft:end_crystal"),
+            "a list from before crystals"
+        );
         assert!(!c.protects("minecraft:zombie") && !c.protects("minecraft:player"));
         let _ = std::fs::remove_dir_all(d);
     }

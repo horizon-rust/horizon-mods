@@ -1,0 +1,24 @@
+id = "optizoom"
+kind = "native-mod"
+repo = "BnCatt/horizon-optizoom"
+owners = ["BnCatt"]
+owner_ids = [262346062]
+name = "OptiZoom"
+summary = "OptiFine-style zoom: hold C for a quarter of the view with the cinematic camera, hand hidden; scroll to zoom more."
+description = """
+Zoom the way OptiFine does it, for Horizon.
+
+- **Hold C** (rebind in Options > Mods > OptiZoom): the field of view drops to a quarter at once, no easing.
+- The **cinematic camera** is on while you zoom and goes back to what it was when you let go. Turning is not slowed at 4x: the cinematic camera calms it, as in OptiFine.
+- No zoom while a screen is open; close it with the key still held and the zoom comes back.
+- The **hand** (and the item in it) is hidden while zoomed.
+- The **mouse wheel** zooms further in or out while you hold the key (1x to 10x); each new press starts at 4x. The hotbar keeps the wheel otherwise.
+
+It hears its own key, the mouse wheel while zooming, and turns the cinematic camera on and off: nothing else. It contains no OptiFine code and is not affiliated with OptiFine.
+
+Pinned to Horizon f319701: the cinematic camera is the one internal it touches (camera.rs).
+"""
+authors = ["BnCatt"]
+license = "MIT"
+categories = ["utility"]
+tags = ["zoom", "camera", "optifine", "cinematic"]

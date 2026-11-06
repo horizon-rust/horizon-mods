@@ -1,0 +1,44 @@
+id = "worldmap"
+kind = "native-mod"
+name = "World Map"
+summary = "A full screen, self-writing world map with a minimap, waypoints (groups, import and export), day and night, cave layers and teleport."
+description = """
+A full screen map that writes itself as you explore, with a minimap in the corner of the game.
+
+- **Self-writing map.** The terrain you have seen stays on the map after you leave, kept per world, dimension and cave layer, in the vanilla map colours. Dark at night, and lit blocks (torches, lava, lanterns) shine.
+- **Minimap.** In a corner of the game: the map round you, turning with you with the sides of the world on its edge (or north up), your waypoints, other players as dots, dark at night. Under a roof or in a cave it shows the floor at your height.
+- **Smooth.** Drag to move (the map glides on when you let go), scroll to zoom towards the pointer; far zoom blurs instead of flickering.
+- **Cave layers.** Under a roof, in a cave or in the Nether the map shows the floor round you; layered or full, with a Top Y slider from -64 to 319.
+- **Dimensions.** One button shows the Overworld, the Nether or the End from any of them, with the other world's coordinates of the place under the pointer.
+- **Waypoints.** Right-click for a menu: add, rename, 16 colours, three shapes, group, teleport (/tp), delete. Waypoints show in the world as a square with a letter, with their name and distance; a waypoint is made where you die; a list with search (L) and groups you can hide; Export and Import of the list (it reads other map mods' waypoints files too).
+- **Also:** the biome under the pointer, other players on the map, go to coordinates (J), a chunk grid, your trail, and an export of the whole map as a PNG.
+- **Keys.** A World Map section in Options > Controls > Key Binds (with Reset), twelve keys, all rebindable. Open the map with M.
+- **Russian** interface when the game is in Russian.
+
+**What it does and doesn't do:** it reads the chunks the game has loaded around you and the game's own state, draws on its own screen and in the game's HUD, and keeps files in `config/worldmap/` (the explored chunks and a waypoints file for each world). It sends `/tp` in chat when you choose Teleport. It makes no network connection and needs no other mod.
+
+**Native mod, pinned** to Horizon Nightly `66f3981` (Minecraft 26.3): it adds rows to the game's Key Binds screen and reuses the minimap's colour scan, so it builds on that revision."""
+authors = ["Px228-Da-Da"]
+owners = ["Px228-Da-Da"]
+owner_ids = [160890712]
+license = "MIT"
+source = "https://github.com/Px228-Da-Da/horizon-worldmap"
+icon = "icons/worldmap.png"
+categories = ["utility", "adventure"]
+tags = ["map", "worldmap", "waypoints", "navigation", "caves", "minimap"]
+screenshots = ["screenshots/worldmap/1.jpg", "screenshots/worldmap/2.png", "screenshots/worldmap/3.jpg", "screenshots/worldmap/4.png", "screenshots/worldmap/5.png", "screenshots/worldmap/6.png"]
+
+[[versions]]
+version = "0.6.0"
+published = "2026-11-06"
+game = "26.3"
+file = "worldmap-0.6.0.hnmod"
+sha256 = "460af1e08fd353cc7455fc32c4b4bd543572e68f6791c03910ae356725904a40"
+changelog = """
+- **Minimap** in a corner of the game, with your waypoints and the night. It turns with you (the way you face is up) with the sides of the world on its edge, or keeps north up. Under a roof or in a cave it shows the floor at your height, at every block, a jump too. Other players are dots on it. Corner and size are in Options > Mods; keys N (on and off) and Z (scale).
+- **Day and night on the map:** the surface of the Overworld is dark at night, and lit blocks keep their light.
+- **Waypoints in the world** are a square of their colour with their first letter, name and distance under it; they follow the view smoothly.
+- **Waypoint groups:** give a waypoint a group in its menu, click the group's heading in the list to hide or show them all.
+- **Export and Import** of waypoints (exports/waypoints.txt, exports/import.txt); the import also reads the waypoints file of other map mods.
+- **Smoother map:** it glides on when you let go of a drag, and reads the world faster while it is open.
+- **Fixed:** worlds with the same name (New World, New World (1)...) and friends' worlds no longer share one map and one set of waypoints."""

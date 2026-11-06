@@ -1,0 +1,43 @@
+id = "projecte_core"
+kind = "native-mod"
+name = "ProjectE for Horizon"
+summary = "Unofficial port of ProjectE: EMC, transmutation tables, collectors, condensers, dark and red matter tools and armour."
+description = """
+**This mod has two parts, and you need both.** Install this one, the native part, and [ProjectE for Horizon (assets)](https://playhorizon.dev/mods/projecte), then press Build.
+
+An **unofficial** port of [ProjectE](https://github.com/sinkillerj/ProjectE) to Horizon. It isn't made or supported by the ProjectE team, so please report its bugs here, not to them.
+
+Break items down into EMC and turn that EMC into new items:
+
+- **Transmutation Table and Tablet**: burn an item to learn it and gain its EMC, then make more of anything you've learned. Your EMC and knowledge are saved per player.
+- **Philosopher's Stone**: changes blocks in the world, with charge and modes, and works as a crafting tool.
+- **EMC devices**: Energy Collectors MK1-3, Anti-Matter Relays MK1-3, Energy Condensers MK1 and MK2, Dark and Red Matter Furnaces, Klein Stars.
+- **Fuels and matter**: Alchemical Coal, Mobius and Aeternalis Fuel, Dark and Red Matter, covalence dusts.
+- **Gear**: unbreakable dark and red matter tools that dig wider as they charge, the katar and morning star, dark matter, red matter and gem armour.
+- **Trinkets**: rings, stones, amulets, the Repair Talisman, Gem of Eternal Density, Watch of Flowing Time, divining rods, lenses, the pedestal, the Interdiction Torch, Nova explosives, Alchemical Chest and the 16 Alchemical Bags.
+
+Keys: V charge, G mode, C extra function, R fire projectile.
+
+The menus are chest and furnace screens, not ProjectE's own. Some things are simplified or missing: Swiftwolf's Rending Gale gives speed and slow falling, not flight; projectiles act at once; rings cost no EMC; the Mercurial Eye isn't ported. EMC values are a fixed table worked out from ProjectE's defaults, so they don't adapt to other mods. The [README](https://github.com/d3xc0/projecte-horizon#simplified-or-left-out) has the full list.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions.
+
+**Credits.** All credit for the design goes to [ProjectE](https://github.com/sinkillerj/ProjectE) (MIT, Copyright (c) 2020 Sin Tachikawa) by SinKillerJ, pupnewfster, MaPePeR, MozeIntel and its contributors, a rewrite of Equivalent Exchange 2 by x3n0ph0b3. Its recipes, EMC conversions and names are used under its MIT licence; see [CREDITS.md](https://github.com/d3xc0/projecte-horizon/blob/main/CREDITS.md).
+
+The textures are original work made for this port, inspired by ProjectE's look; ProjectE's and EE2's art isn't included. No Minecraft code or assets are included. MIT licensed."""
+authors = ["Arthur Black"]
+owners = ["d3xc0"]
+owner_ids = [136307382]
+license = "MIT"
+source = "https://github.com/d3xc0/projecte-horizon"
+icon = "icons/projecte_core.png"
+categories = ["technology", "game-mechanics", "magic"]
+tags = ["emc", "transmutation", "alchemy", "tools"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-06"
+game = "26.3"
+file = "projecte_core-0.1.0.hnmod"
+sha256 = "ea0cd9cdb85cb8f3bd9f35a99d7b2c8e4f95ea2c0ba321509be02ee8f4b3df85"
+changelog = "First release. Tested on Horizon Nightly 66f3981 and Horizon Mixins e8cd0aa."

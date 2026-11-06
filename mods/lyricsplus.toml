@@ -1,0 +1,27 @@
+id = "lyricsplus"
+kind = "native-mod"
+name = "Lyrics+"
+summary = "See 3D text on your screen from ur spotify, youtube, soundcloud playing."
+description = """
+LyricsPlus shows synced lyrics for whatever you're listening to, word by word, right inside Minecraft. Lines can float in the world, sit on your HUD, or show in a rounded island at the top of the screen. It works with Spotify, YouTube, SoundCloud and most music apps, or your own MP3s through the built-in player.
+
+Words jump, wave or rock as they're sung, and sparks fly from the last word. Pick the colours, gradient, font and layout you like. There's also a PvP mode that keeps the lyrics beside your crosshair, an elytra mode, and a now-playing card with the album cover.
+
+Press **K** in game to open the menu. Ported from FRK's Fabric mod LyricsPlus (MIT)."""
+authors = ["bart"]
+owners = ["bartekchomik26-dotcom"]
+owner_ids = [333072545]
+license = "MIT"
+source = "https://github.com/bartekchomik26-dotcom/Lyrics--rust"
+icon = "icons/lyricsplus.png"
+categories = ["decoration", "technology"]
+tags = ["lyrics", "music"]
+screenshots = ["screenshots/lyricsplus/1.jpg"]
+
+[[versions]]
+version = "3.0.0"
+published = "2026-11-06"
+game = "26.3"
+file = "lyricsplus-3.0.0.hnmod"
+sha256 = "9597e3600ec64f373e090f8547036ee4f7e5ebe39398596522ea35d49f70fd38"
+changelog = "bebe"

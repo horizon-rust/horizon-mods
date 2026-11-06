@@ -1,0 +1,35 @@
+id = "simple_chat_rust"
+kind = "native-mod"
+repo = "BnCatt/simple-chat-rust"
+owners = ["BnCatt"]
+owner_ids = [262346062]
+name = "Simple Chat Rust"
+summary = "Proximity voice chat that talks with the Simple Voice Chat mod and plugin: groups, push to talk, noise suppression, a menu (V)."
+description = """
+Talk with players who use the **Simple Voice Chat** mod, on any server with its mod or plugin (protocols 2.6.x and 2.7). Unofficial.
+
+- **Menu (V):** microphone and voice chat on/off, groups, settings, and **Adjust Volumes** for each player.
+- **Settings:** voice volume, microphone amplification, voice activation level with a live meter, push to talk or voice activation, **noise suppression** (rnnoise), microphone and speaker by name, hide icons, chat messages on/off, the group list, group names above players, the protocol.
+- **Talking:** hold Caps Lock (push to talk) or use voice activation; voices come from where players stand, quieter with distance and panned.
+- **Keys** (Options > Mods > Simple Chat Rust): menu (V), push to talk (Caps Lock), whisper, mute (J), voice chat off/on (K), **hide icons (H)**.
+- **On screen:** a status icon bottom left, a speaker over whoever talks, your group's members.
+- **Your own icons:** PNGs in `horizon-mods/.horizon-mod-data/simple_chat_rust/icons/` replace the built-in ones.
+
+## What it needs and touches
+
+- **libopus**, and **rnnoise** for noise suppression, loaded at run time: on Windows put `opus.dll` and `rnnoise.dll` (from the releases, BSD-3-Clause) in `horizon-mods/.horizon-mod-data/simple_chat_rust/`.
+- It reads the server's `voicechat:*` payloads and sends its own; it opens one UDP connection to the server's voice port, encrypted with the secret the server sends. It contacts no other host.
+- Pinned to Horizon f319701: it reads the joined address and other players' positions inside `game::remote` (one module, `world.rs`).
+
+## Credits
+
+Based on [Nirokx/horizon-voice-chat](https://github.com/Nirokx/horizon-voice-chat) (MIT, Nirokx). Screens, HUD icons and noise suppression by guvum; hook points, Windows libraries, hide-icons key, chat-messages setting and custom icons by BnCatt.
+
+## Not affiliated
+
+Not made, endorsed or supported by Max Henkel or the Simple Voice Chat project; it ships none of Simple Voice Chat's code or assets. "Simple Voice Chat" is named to say which mod and plugin it works with.
+"""
+authors = ["Nirokx", "guvum", "BnCatt"]
+license = "MIT"
+categories = ["social"]
+tags = ["voice-chat", "proximity-chat", "simple-voice-chat", "multiplayer", "push-to-talk"]

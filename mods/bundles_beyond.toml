@@ -1,0 +1,27 @@
+id = "bundles_beyond"
+kind = "native-mod"
+repo = "BnCatt/horizon-bundles-beyond"
+owners = ["BnCatt"]
+owner_ids = [262346062]
+name = "Bundles Beyond"
+summary = "Bundle tooltips that show every item in a growing grid, with wheel, arrow-key and WASD selection of any item."
+description = """
+An unofficial port of the behaviour of [Bundles Beyond](https://github.com/O7410/Bundles-Beyond) by O7410 to Horizon. Client side; works on any server.
+
+- A bundle's tooltip shows **every** item, not 12 and a `+N`: the grid is at least 4 wide and grows about square.
+- The **mouse wheel** selects any item in the bundle, so a click takes out the one you picked.
+- Over a bundle in an inventory, the **arrow keys** and your **movement keys** (W A S D by default) move the selection through the grid.
+- The fullness bar is as wide as the grid and reads `n/64`.
+
+**Not ported yet:** the Space key click, slot size `+`/`-`, the scroll-axis modes, reverse view, container-style slots and the on/off key.
+
+It changes only how bundles are shown and selected: the bundle tooltip layout and drawing, the bundle's shown item count, the hovered-bundle tick and the screen key hook. No original code runs (rewritten in Rust); not made or endorsed by O7410, so please report problems to this project, not to them.
+
+Pinned to Horizon Nightly 2026-11-04 (`3fb4c31`); it also builds on 2026-11-05 (`f319701`).
+
+Licence: CC BY-NC-SA 4.0, noncommercial use only, the same licence as Bundles Beyond.
+"""
+authors = ["O7410", "BnCatt"]
+license = "CC-BY-NC-SA-4.0"
+categories = ["utility"]
+tags = ["bundle", "inventory", "tooltip", "storage"]

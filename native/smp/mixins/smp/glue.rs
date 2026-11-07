@@ -151,6 +151,8 @@ static BUSY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(
 static PENDING_SLEEP: Mutex<Vec<smp_presence::Act>> = Mutex::new(Vec::new());
 /// Whether an `/rtp` waits for its land: the Overworld's tick reads it then.
 static RTP: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+/// The owner of the chunk tickets `/rtp` holds while it looks for land.
+const RTP_TICKET: &str = "smp:rtp";
 /// What each `/rtp`'s reads cost the Overworld's tick, by player: reads,
 /// total and longest (µs), for the line logged when they land.
 static RTP_COST: Mutex<Vec<(u128, u32, u64, u64)>> = Mutex::new(Vec::new());
@@ -2442,8 +2444,14 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             }
             out.push(Out::Tell(t.uuid, t.done.clone()));
         }
-        // `/rtp`'s chunks: held loaded while it looks, let go after.
-        p.force(now, &mut |line| game.native_run_command(line));
+        // `/rtp`'s chunks: held loaded while it looks (a ticket, which never
+        // waits for the chunk), let go after.
+        let legacy = p.force(now, &mut |(x, z), hold| {
+            game.native_force_chunk_in(RTP_TICKET, smp_places::OVERWORLD, [x, z], hold)
+        });
+        for line in legacy {
+            game.native_run_command(&line);
+        }
         RTP.store(p.rtp_searching(), Relaxed);
     }
     if let Ok(e) = &mut smp.economy

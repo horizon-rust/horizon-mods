@@ -1,0 +1,25 @@
+id = "camerautils"
+kind = "native-mod"
+name = "Camera Utils (Horizon Port)"
+summary = "Unofficial Camera Utils port for Horizon"
+description = "Adds features such as Zoom, Camera Detachment, two customizable third-person perspectives and more"
+authors = ["Nully", "henkelmax"]
+owners = ["dumbnully"]
+owner_ids = [268078454]
+license = "MIT"
+source = "https://github.com/dumbnully/camera-utils-horizon"
+icon = "icons/camerautils.png"
+categories = ["game-mechanics", "utility"]
+key = "RWRJPBl24rTE23dFezewHWl465FAcgTsmeJnDkANtUPT19YfVmQ1gYCu"
+
+[[versions]]
+version = "1.1.1"
+published = "2026-11-06"
+game = "26.3"
+file = "camerautils-1.1.1.hnmod"
+sha256 = "098dc237bd466b0d7e4bf3da7740fccb12166920c06b790388eb54e02d0ca20e"
+signature = """
+untrusted comment: signature from minisign secret key
+RURJPBl24rTE2whQlZuVwU32I6Kkur8zJKeQO0KHL1DlMq3AkZ9LdZbS08ncIWl/N80ImjHx9UIYnL4kX/LUDrz8E9iYeAuEFAo=
+trusted comment: timestamp:1793925523\tfile:camera-utils-1.1.1.hnmod\thashed
+XSyvGW1jcFWY2PTVAYvZITaJECcwjl3dWxqaR/rIb2M7B0hgR4uZ1w2Rl8ycENZCNlQk3S8M6bMaOo519oDFBQ=="""

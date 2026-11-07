@@ -20,19 +20,19 @@ An unofficial, independently written Rust client compatible with Plasmo Voice 2.
 - Shift + RMB + scroll adjusts a targeted player; its volume indicator appears only after an actual change.
 - Pixel head icons with current-frame positioning, helmet clearance and block-shape visibility.
 - No connection indicator on servers without Plasmo Voice; stalled handshakes stop animating.
-- One native .hnmod with Linux x86_64 and Windows x64 runtimes; English and Russian UI.
+- One source-only native .hnmod for Linux x86_64 and Windows x64; English and Russian UI.
 
-The launcher compiles the mod into the game. It communicates with the connected server's advertised voice endpoint, uses the selected audio devices, and keeps per-instance settings. It does not implement or enable Minecraft older-version adapters.
+The launcher compiles the mod and its Opus/RNNoise/OpenAL dependencies from verified upstream sources. Building needs C/C++ and CMake; Windows GNU additionally needs Ninja on PATH. The launcher provides Rust/MinGW but does not currently install CMake/Ninja. It communicates with the connected server's advertised voice endpoint, uses the selected audio devices, and keeps per-instance settings. It does not implement or enable Minecraft older-version adapters.
 
 This is not an official Plasmo Voice or Horizon release. Original Plasmo Voice implementation sources and graphics were not read or copied. Upstream project: https://github.com/plasmoapp/plasmo-voice.
 
-Tested with Plasmo Voice 2.1.17: two-way synthetic audio and inventory/chest cases on Paper 1.21.10, 1.21.11, 26.1.2, 26.2 and 26.3, plus earlier Fabric 1.21.11 UI checks. Older protocols require Horizon's explicit opt-in; an explicit goat-horn instrument still fails in the tested 1.21.x core adapters (upstream PR #10038). Linux live checks and Windows x64 cross-checking pass; actual Windows GUI and physical audio-device testing are outstanding. See the repository validation record for scope.
+Historical 0.5.0 voice checks with Plasmo Voice 2.1.17 cover two-way synthetic audio and inventory/chest cases on Paper 1.21.10, 1.21.11, 26.1.2, 26.2 and 26.3, plus earlier Fabric 1.21.11 UI checks. Minecraft protocol compatibility follows Horizon's adapters. Version 0.5.3 verifies source-built codec/DSP operation on Linux and Windows; Windows GUI and physical audio-device testing remain outstanding. See the repository validation record for exact revisions and scope.
 """
 
 [[versions]]
-version = "0.5.2"
-published = "2026-11-06"
+version = "0.5.3"
+published = "2026-11-07"
 game = "26.3"
-file = "plasmo-voice-0.5.2.hnmod"
-sha256 = "be65eeece5fec8b0069c99d03ed64dc6a0777d2886ef0c5a167c8379d910497c"
-changelog = "Hides the activation HUD on servers without Plasmo Voice. Only real handshakes animate; stalled stages stop after 15 seconds and errors use static warnings. Six adapter and 23 engine tests, Windows cross-check and isolated Linux HUD/input checks pass. API 411."
+file = "plasmo-voice-0.5.3.hnmod"
+sha256 = "146fe53cb5e5da5e07e0a47ff8553aa8ecdc24c05d4491b55fe8da15ae991d9e"
+changelog = "Removes all six prebuilt libraries. Cargo verifies and builds Opus, RNNoise and OpenAL Soft from complete upstream sources; no build-time downloads. Retains source, licenses and HRTF. Source-only inspection, Linux tests and Windows codec/DSP verification. Requires C/C++ and CMake (Windows GNU also Ninja). API 411."

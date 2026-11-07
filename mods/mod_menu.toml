@@ -3,23 +3,50 @@ kind = "native-mod"
 name = "Mod Menu"
 summary = "ModMenu For Horizon"
 description = """
-A Mods button on the title screen, in the icon row after Accessibility, opening a screen laid out like the
-Java [Mod Menu](https://modrinth.com/mod/modmenu)'s: every mod you have installed, with its icon, name, version and
-description. A clean-room native mod for Horizon, with no Mod Menu code.
+**Mod Menu** shows every mod you have installed in Horizon and gives quick access to each mod's settings. It is a clean-room Horizon version of what the Java [Mod Menu](https://modrinth.com/mod/modmenu) does, and it contains no code from it.
 
-- **Search** by name, id or description, and **filter** by all, on, off, native or content mods.
-- **Pick a mod** to see its version, type, description and any problems, turn it on or off, or open its own settings
-  page.
-- **Open Mods Folder** and **Done** at the bottom, as in the Java mod.
-- The keyboard works too: type to search, arrows and Page Up/Down to pick a mod, Escape to leave."""
+## What it does
+
+- Adds a **Mods** button (three bars) to the title screen, in the icon row after Accessibility.
+- Opens a **Mods screen** laid out like the Java Mod Menu's:
+  - a search box (name, id and description) and a filter button (all, on, off, native, content)
+  - "Showing N mods" and a list of every installed mod with its icon, name, badges and description
+  - a detail pane for the selected mod with its version, type, description and any problems
+  - a **Turn on/off** button and a **Settings** button that opens the mod's own settings page
+  - **Open Mods Folder** and **Done** buttons at the bottom
+- Mod Menu's own entry has its own icon and can't be turned off from the list.
+
+## How to use it
+
+Click the **Mods** button on the title screen. Type to search, use Up/Down/PageUp/PageDown/Home/End to pick a mod, scroll with the mouse wheel, and press Escape to leave. Ctrl+V, Ctrl+C and Ctrl+X work in the search box.
+
+## Good to know
+
+- There is no key or command: the title screen button is the only way in.
+- Horizon mods have no icon files, so each mod gets a coloured block as its icon.
+- There is no update checker, and no website or issues buttons, because Horizon's mod manifests don't carry that information. Updates are done in the launcher's Mods page.
+- The mod hooks into the title screen and Options screen, which have no mod API, so it is pinned to one Horizon revision and needs a rebuild for another."""
 authors = ["tariksabanuz"]
 owners = ["tariksabanuz"]
 owner_ids = [332662152]
 license = "MIT"
 source = "https://github.com/tariksabanuz/ModMenuHorizon"
 icon = "icons/mod_menu.png"
-categories = ["utility", "management"]
-tags = ["mod-menu", "mods-list", "settings", "ui", "port"]
+categories = ["library", "management", "utility"]
+tags = ["modmenu", "mod", "menu", "managment", "extra", "horizon"]
+
+[[versions]]
+version = "0.3.4"
+published = "2026-11-07"
+game = "26.3"
+file = "mod_menu-0.3.4.hnmod"
+sha256 = "b9bd2216a5eabb7ac956d59399646d520d5c35c7ff13aaf6fd772c42af91cd41"
+changelog = """
+## Changelog
+
+**0.3.4** fixes the Mods icon showing on the Minecraft Realms button instead of on the Mods button.
+
+Source code and license: MIT, see the GitHub repository."""
 
 [[versions]]
 version = "0.3.3"

@@ -302,41 +302,61 @@ fn state(dir: PathBuf) -> std::sync::MutexGuard<'static, Option<Smp>> {
 }
 
 fn save(smp: &mut Smp) {
+    use horizon_client::spans::guard;
+    let _span = guard("smp_save");
     // The report's state is written with the balances, in the same file.
-    if let (Some(r), Ok(e)) = (&mut smp.report, &mut smp.economy) {
-        r.store(e);
-    }
-    // So are the auction house's listings, bids and mail.
-    if let (Some(a), Ok(e)) = (&mut smp.auction, &mut smp.economy) {
-        a.store(e);
-        for p in a.problems.drain(..) {
-            log::error!("[smp] {p}");
+    {
+        let _s = guard("smp_save_report_store");
+        if let (Some(r), Ok(e)) = (&mut smp.report, &mut smp.economy) {
+            r.store(e);
         }
     }
-    if let Ok(e) = &mut smp.economy
-        && let Err(err) = e.save()
+    // So are the auction house's listings, bids and mail.
     {
-        log::error!("[smp] {err}");
+        let _s = guard("smp_save_auction_store");
+        if let (Some(a), Ok(e)) = (&mut smp.auction, &mut smp.economy) {
+            a.store(e);
+            for p in a.problems.drain(..) {
+                log::error!("[smp] {p}");
+            }
+        }
     }
-    if let Ok(p) = &mut smp.places
-        && let Err(err) = p.save(chrono::Utc::now().timestamp_millis())
     {
-        log::error!("[smp] {err}");
+        let _s = guard("smp_save_economy");
+        if let Ok(e) = &mut smp.economy
+            && let Err(err) = e.save()
+        {
+            log::error!("[smp] {err}");
+        }
     }
-    if let Ok(c) = &mut smp.claims
-        && let Err(err) = c.save()
     {
-        log::error!("[smp] {err}");
+        let _s = guard("smp_save_places");
+        if let Ok(p) = &mut smp.places
+            && let Err(err) = p.save(chrono::Utc::now().timestamp_millis())
+        {
+            log::error!("[smp] {err}");
+        }
+    }
+    {
+        let _s = guard("smp_save_claims");
+        if let Ok(c) = &mut smp.claims
+            && let Err(err) = c.save()
+        {
+            log::error!("[smp] {err}");
+        }
     }
     if let Ok(b) = &mut smp.board
         && let Err(err) = b.save()
     {
         log::error!("[smp] {err}");
     }
-    if let Ok(p) = &mut smp.presence
-        && let Err(err) = p.save()
     {
-        log::error!("[smp] {err}");
+        let _s = guard("smp_save_presence");
+        if let Ok(p) = &mut smp.presence
+            && let Err(err) = p.save()
+        {
+            log::error!("[smp] {err}");
+        }
     }
     if let Ok(n) = &mut smp.nicks
         && let Err(err) = n.save()
@@ -2363,6 +2383,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     if n % 20 == 0
         && let Ok(v) = &mut smp.vanish
     {
+        let _span = horizon_client::spans::guard("smp_vanish");
         for (uuid, hidden) in v.changes() {
             game.native_hide_player(uuid, hidden.then_some(smp_vanish::LEVEL));
         }
@@ -2384,6 +2405,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     if let Ok(p) = &mut smp.places
         && (n % 20 == 0 || warming)
     {
+        let _span = horizon_client::spans::guard("smp_places");
         if n % 20 == 0 {
             let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
             p.played(&on, now);
@@ -2427,6 +2449,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     if let Ok(e) = &mut smp.economy
         && n % 20 == 0
     {
+        let _span = horizon_client::spans::guard("smp_economy");
         for p in &players {
             e.seen(p.uuid, &p.name);
         }
@@ -2460,6 +2483,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         if let Some(r) = &mut smp.report
             && r.due(now)
         {
+            let _span = horizon_client::spans::guard("smp_report");
             let (o, web) = r.tick(e, now);
             out.extend(o);
             if web {
@@ -2477,11 +2501,13 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     // The market's minute: prices move, open menus and carried charts
     // follow, the files are written by threads; once a day, the movers.
     if n % 20 == 0 {
+        let _span = horizon_client::spans::guard("smp_market");
         for w in smp.market.warnings.drain(..) {
             log::warn!("[smp] market: {w}");
         }
         let moved = smp.market.tick(now);
         if moved || now - smp.market_web >= 5 * 60_000 {
+            let _span = horizon_client::spans::guard("smp_market_minute");
             smp.market_web = now;
             market_minute(game, smp, &players, now);
         }
@@ -2531,6 +2557,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         && smp.switches.on(Part::Presence)
         && let Ok(pr) = &mut smp.presence
     {
+        let _span = horizon_client::spans::guard("smp_presence");
         let seen: Vec<smp_presence::Seen> = players
             .iter()
             .map(|p| smp_presence::Seen {
@@ -2596,6 +2623,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         && smp.switches.on(Part::Board)
         && let Ok(b) = &mut smp.board
     {
+        let _span = horizon_client::spans::guard("smp_board");
         let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
         if let Ok(e) = &smp.economy
             && b.due(now, e.revision())
@@ -2629,6 +2657,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         && smp.switches.on(Part::Nicks)
         && let Ok(nicks) = &mut smp.nicks
     {
+        let _span = horizon_client::spans::guard("smp_nicks");
         let pending = std::mem::take(&mut nicks.pending);
         // The files behind the real names are read only when a change waits.
         let names = (!pending.is_empty()).then(|| ServerNames::read(&dir, smp.economy.as_ref().ok()));
@@ -2662,6 +2691,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     // The casino: its frames and rounds each tick while one moves (5
     // pictures a second at most), otherwise once a second for the sweep.
     let mut casino = Vec::new();
+    let casino_span = horizon_client::spans::guard("smp_casino");
     if let Ok(e) = &mut smp.economy
         && (n % 20 == 0 || smp.casino.animating())
     {
@@ -2670,6 +2700,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         let online = (n % 20 == 0).then_some(&on[..]);
         casino = smp_casino_glue::tick(game, &mut smp.casino, e, now, online);
     }
+    drop(casino_span);
     let title = smp.board.as_ref().map(|b| b.config.title.clone()).unwrap_or_default();
     let busy = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty())
         || !smp.trades.open.is_empty()

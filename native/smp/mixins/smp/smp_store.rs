@@ -321,6 +321,13 @@ mod tests {
         dir
     }
 
+    /// The writer is shared by every test in the crate: other modules' tests queue saves into folders they
+    /// remove, and their errors surface in whichever `flush` runs next. Keep only this test's.
+    fn flush_in(dir: &Path) -> Vec<String> {
+        let dir = dir.to_string_lossy().into_owned();
+        flush().into_iter().filter(|e| e.starts_with(&dir)).collect()
+    }
+
     #[test]
     fn atomic_writes_replace_the_file_and_leave_no_temporary() {
         let dir = scratch("atomic");
@@ -362,7 +369,7 @@ mod tests {
             save_json(&a, &vec![i]).unwrap();
             save_json(&b, &vec![i, i]).unwrap();
         }
-        assert!(flush().is_empty());
+        assert!(flush_in(&dir).is_empty());
         // Nothing waits once flushed: the files hold the last saves.
         assert_eq!(fs::read_to_string(&a).unwrap(), "[\n  49\n]\n");
         assert_eq!(read_json::<Vec<u32>>(&b).unwrap(), [49, 49]);
@@ -396,7 +403,7 @@ mod tests {
         fs::write(&blocker, b"not a folder").unwrap();
         let path = blocker.join("nicks.json");
         save_json(&path, &vec![1u32]).unwrap();
-        let errors = flush();
+        let errors = flush_in(&dir);
         assert!(
             !errors.is_empty() && errors.iter().all(|e| e.contains("nicks.json")),
             "{errors:?}"
@@ -404,7 +411,7 @@ mod tests {
         // Once the folder can be made, the next save lands.
         fs::remove_file(&blocker).unwrap();
         save_json(&path, &vec![2u32]).unwrap();
-        assert!(flush().is_empty());
+        assert!(flush_in(&dir).is_empty());
         assert_eq!(read_json::<Vec<u32>>(&path).unwrap(), [2]);
         fs::remove_dir_all(dir).unwrap();
     }

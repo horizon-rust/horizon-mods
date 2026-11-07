@@ -15,7 +15,7 @@
 pub const ID: &str = "recipes";
 pub const NAME: &str = "Recipes";
 pub const VERSION: &str = "2.0.0";
-pub const DESCRIPTION: &str = "Every item beside your inventory, with a search box. R over an item shows its recipes, U its uses, and + fills the crafting grid with a recipe you know. Horizon's own.";
+pub const DESCRIPTION: &str = "Every item beside your inventory, with a search box. R over an item shows its recipes, U its uses, and + moves ingredients into the crafting grid. Horizon's own.";
 /// Its keys: name, label, default (the WebAssembly mod's).
 pub const KEYS: [[&str; 3]; 2] = [
     ["recipe", "Show recipes", "key.keyboard.r"],
@@ -335,7 +335,7 @@ impl Viewer {
         }
     }
 
-    fn view(&self, r: &Recipe, known: &[i32]) -> View {
+    fn view(&self, r: &Recipe, _known: &[i32]) -> View {
         let mut slots: Vec<Vec<Stack>> = (r.slots.iter())
             .map(|s| s.iter().take(MAX_STACKS).map(|s| self.convert(s)).collect())
             .collect();
@@ -364,8 +364,11 @@ impl Viewer {
             Kind::Smithing => (Layout::Smithing, 3, 1, String::new()),
             Kind::Brewing => (Layout::Brewing, 2, 1, String::new()),
         };
-        // + only for what the recipe book shows; greyed until the book has it.
-        let action = (r.book_id >= 0).then(|| known.contains(&r.book_id));
+        // Transfer only crafting recipes with a display ID. The open grid
+        // and the player's actual ingredients are checked by the host.
+        let action = (r.book_id >= 0
+            && matches!(r.kind, Kind::CraftingShaped | Kind::CraftingShapeless))
+        .then_some(true);
         View {
             layout,
             width,
@@ -573,7 +576,7 @@ mod tests {
             (views[0].layout, views[0].width, views[0].note.as_str()),
             (Layout::Grid, 1, "Shapeless")
         );
-        assert_eq!(views[0].action, Some(false));
+        assert_eq!(views[0].action, Some(true));
         let furnace = v.handle(Event::Tab(1), false, false, &[]);
         let Out::Recipes { views, .. } = &furnace[0] else {
             panic!()

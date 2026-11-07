@@ -21,7 +21,7 @@ use super::smp_casino_crash::{self as crash, Crash};
 use super::smp_casino_roulette::{self as roulette, Roulette};
 use super::smp_casino_slots::{self as slots, Slots};
 use super::smp_economy::{Economy, Out, Player};
-use super::smp_store::{read_json, uuid_string, save_json};
+use super::smp_store::{read_json, save_json, uuid_string};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
 use std::path::{Path, PathBuf};

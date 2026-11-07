@@ -625,7 +625,11 @@ impl Places {
     /// `setChunkForced` loads it), and froze the server for every `/rtp`.
     /// Returns the commands that let go, once, of the chunks an older SMP
     /// forced and saved.
-    pub fn force(&mut self, now: i64, hold: &mut dyn FnMut((i32, i32), bool) -> bool) -> Vec<String> {
+    pub fn force(
+        &mut self,
+        now: i64,
+        hold: &mut dyn FnMut((i32, i32), bool) -> bool,
+    ) -> Vec<String> {
         let mut run = Vec::new();
         if !self.data.forced.is_empty() {
             for (x, z) in std::mem::take(&mut self.data.forced) {
@@ -1581,8 +1585,19 @@ mod tests {
     }
 
     /// `force` with a fake game: the tickets held, and the commands run.
-    fn force_into(p: &mut Places, now: i64, held: &mut BTreeSet<(i32, i32)>, ran: &mut Vec<String>) {
-        ran.extend(p.force(now, &mut |c, hold| if hold { held.insert(c) } else { held.remove(&c) }));
+    fn force_into(
+        p: &mut Places,
+        now: i64,
+        held: &mut BTreeSet<(i32, i32)>,
+        ran: &mut Vec<String>,
+    ) {
+        ran.extend(p.force(now, &mut |c, hold| {
+            if hold {
+                held.insert(c)
+            } else {
+                held.remove(&c)
+            }
+        }));
     }
 
     #[test]
@@ -1643,7 +1658,10 @@ mod tests {
         let mut again = Places::open(&d, Config::default()).unwrap();
         let (mut held, mut ran) = (BTreeSet::new(), Vec::new());
         force_into(&mut again, 0, &mut held, &mut ran);
-        assert_eq!(ran, vec!["execute in minecraft:overworld run forceload remove 80 -112".to_owned()]);
+        assert_eq!(
+            ran,
+            vec!["execute in minecraft:overworld run forceload remove 80 -112".to_owned()]
+        );
         assert!(held.is_empty());
         // Saved without them: the next start lets go of nothing.
         again.save(0).unwrap();

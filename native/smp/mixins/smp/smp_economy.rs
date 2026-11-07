@@ -6,7 +6,7 @@
 // answers. Added to the game as `game::smp_economy`; also a module of this
 // crate, for its tests.
 
-use super::smp_store::{Audit, read_json, uuid_string, save_json};
+use super::smp_store::{Audit, read_json, save_json, uuid_string};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, path::PathBuf};
 

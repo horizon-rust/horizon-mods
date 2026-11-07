@@ -107,7 +107,13 @@ pub fn exists(path: &Path) -> bool {
 
 /// The errors of writes the writer thread failed since the last call.
 pub fn take_errors() -> Vec<String> {
-    std::mem::take(&mut WRITER.queue.lock().unwrap_or_else(|e| e.into_inner()).errors)
+    std::mem::take(
+        &mut WRITER
+            .queue
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .errors,
+    )
 }
 
 struct Writer {
@@ -157,7 +163,9 @@ fn writer() {
             q = WRITER.changed.wait(q).unwrap_or_else(|e| e.into_inner());
             continue;
         };
-        let Some(bytes) = q.bytes.remove(&path) else { continue };
+        let Some(bytes) = q.bytes.remove(&path) else {
+            continue;
+        };
         q.writing = Some(path.clone());
         drop(q);
         let result = write_atomic(&path, &bytes);
@@ -171,7 +179,11 @@ fn writer() {
                 q.order.push_back(path);
             }
             WRITER.changed.notify_all();
-            q = WRITER.changed.wait_timeout(q, Duration::from_secs(1)).unwrap_or_else(|e| e.into_inner()).0;
+            q = WRITER
+                .changed
+                .wait_timeout(q, Duration::from_secs(1))
+                .unwrap_or_else(|e| e.into_inner())
+                .0;
             continue;
         }
         WRITER.changed.notify_all();
@@ -354,7 +366,10 @@ mod tests {
         // Nothing waits once flushed: the files hold the last saves.
         assert_eq!(fs::read_to_string(&a).unwrap(), "[\n  49\n]\n");
         assert_eq!(read_json::<Vec<u32>>(&b).unwrap(), [49, 49]);
-        let names: Vec<_> = fs::read_dir(&dir).unwrap().map(|e| e.unwrap().file_name()).collect();
+        let names: Vec<_> = fs::read_dir(&dir)
+            .unwrap()
+            .map(|e| e.unwrap().file_name())
+            .collect();
         assert_eq!(names.len(), 2, "no temporary left: {names:?}");
         fs::remove_dir_all(dir).unwrap();
     }
@@ -382,7 +397,10 @@ mod tests {
         let path = blocker.join("nicks.json");
         save_json(&path, &vec![1u32]).unwrap();
         let errors = flush();
-        assert!(!errors.is_empty() && errors.iter().all(|e| e.contains("nicks.json")), "{errors:?}");
+        assert!(
+            !errors.is_empty() && errors.iter().all(|e| e.contains("nicks.json")),
+            "{errors:?}"
+        );
         // Once the folder can be made, the next save lands.
         fs::remove_file(&blocker).unwrap();
         save_json(&path, &vec![2u32]).unwrap();

@@ -1,0 +1,33 @@
+id = "sunset"
+kind = "native-mod"
+name = "Sunset"
+summary = "A utility client for Horizon on Minecraft 26.3."
+description = """
+153 modules across Combat, Movement, Player, Render, World and Client. ` or Right Shift opens the menu, left click turns a module on or off, right click opens its settings and bind. Chat commands start with . and .help lists them.
+
+Install: open the Horizon launcher once, unzip, then run install.ps1 (Windows) or install.sh (Linux/macOS). Running it again updates Sunset and keeps your settings and profiles.
+
+**https://sunset-client.pages.dev**"""
+authors = ["PointOfPressure", "vstxx", "zackmsa777-a11y"]
+owners = ["PointOfPressure"]
+owner_ids = [191872611]
+license = "Polyform Strict"
+source = "https://github.com/PointOfPressure/sunset-client"
+icon = "icons/sunset.png"
+categories = ["utility"]
+tags = ["utility", "pvp", "combat", "client", "hud"]
+screenshots = ["screenshots/sunset/1.png", "screenshots/sunset/2.png", "screenshots/sunset/3.png", "screenshots/sunset/4.png", "screenshots/sunset/5.png"]
+key = "RWRtKizkKK1a9o2bkHCAn0WU5Btquixc9htOH2hmSjekyQJZcQPFqMw2"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-07"
+game = "26.3"
+file = "sunset-1.0.0.hnmod"
+sha256 = "4d912c32862a0a45b5690e985d8140a6fafe8bd3e19d498c478d36a23619960e"
+signature = """
+untrusted comment: signature from minisign secret key
+RURtKizkKK1a9ql92KjCp8V8fHGlYiNZoOVVBTjAOs9dIgzaTPjxnL0cgYlYRVomUqo8P2NvG8vkElL4IhXQ9a7Mhf6witezIQE=
+trusted comment: sunset 1.0.0
+u3ps9TdhNoJVILoKnjf8wpydiVvcr+IYBtLeAWx2XeelaSGxuG4hjvZK0kgbhWSjz5mSHpT1l+gf5ZHbtkd7BA=="""
+changelog = "v1.0.0, the first release on Horizon mods."

@@ -1,0 +1,36 @@
+id = "shield_fixes"
+kind = "native-mod"
+name = "Shield Fixes & Status HUD"
+summary = "Always-active shield status HUD, durability tracker, 5-tick warmup indicator, axe break detection, and sound fixes."
+description = """
+# Shield Fixes & Status HUD for Horizon
+
+A complete native mod for modern Minecraft combat that adds real-time shield telemetry, durability indicators, and accurate opponent shield disable tracking.
+
+### Key Features:
+- **Shield Status HUD**: Displays current shield readiness (Ready, Blocking, Raising Warmup, Disabled Cooldown) even when the shield is in your inventory.
+- **Durability Tracker**: Real-time shield durability counter rendered directly on your HUD.
+- **5-Tick Warmup Indicator**: Visual cues showing the exact 5-tick delay before shield blocking engages.
+- **Accurate Opponent Cooldowns**: Opponent shields are tracked with exact axe disable mechanics (5-second cooldown timer).
+- **Sound Fixes**: Authentic shield disable and block sound triggers.
+- **Customizable HUD Corner**: Move the HUD to Top-Left, Top-Right, Bottom-Left, or Bottom-Right via mod settings.
+
+### Controls:
+- Configurable via **Options > Mods > Shield Fixes**."""
+authors = ["taxtii", "itzglecni"]
+owners = ["taxtii"]
+license = "MIT"
+source = "https://github.com/taxtii/shield_fixes.git"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-03"
+game = "26.3"
+file = "shield_fixes-1.0.0.hnmod"
+sha256 = "f6f31b970deb75b3e658b3891d838b94a72cfa45b499a64126879e935b37d1fc"
+changelog = """
+- Initial release of Shield Fixes & Status HUD for Horizon.
+- Always-ready shield status tracking (detects shield in inventory, off-hand, or hotbar).
+- Accurate axe-break detection: opponent shields only turn red on genuine axe disables.
+- Real-time durability tracker and 5-tick warmup indicator.
+- Comprehensive sound fixes and customizable on-screen HUD placement."""

@@ -1,0 +1,38 @@
+# Catalog submission metadata; listing requires maintainer acceptance.
+id = "plasmo_voice"
+kind = "native-mod"
+source = "https://github.com/rison1337/horizon-plasmo-voice"
+owners = ["rison1337"]
+owner_ids = [225131806]
+icon = "icons/plasmo_voice.png"
+name = "Plasmo Voice for Horizon"
+summary = "Proximity voice for Plasmo Voice 2.1 servers, built natively for Horizon. Spatial audio, push to talk, and player controls."
+authors = ["rison1337"]
+license = "MIT"
+categories = ["utility"]
+tags = ["voice-chat", "proximity", "audio", "multiplayer"]
+description = """
+An unofficial, independently written Rust client compatible with Plasmo Voice 2.1 servers.
+
+- Proximity voice with distance attenuation, stereo positioning, optional HRTF and noise suppression.
+- Push to talk over normal menus, a foreground microphone indicator, and configurable key bindings.
+- Six settings tabs, device selection, microphone preview, and per-player/source volume and mute.
+- Shift + RMB + scroll adjusts a targeted player; its volume indicator appears only after an actual change.
+- Pixel head icons with current-frame positioning, helmet clearance and block-shape visibility.
+- No connection indicator on servers without Plasmo Voice; stalled handshakes stop animating.
+- One source-only native .hnmod for Linux x86_64 and Windows x64; English and Russian UI.
+
+The launcher compiles the mod and its Opus/RNNoise/OpenAL dependencies from verified upstream sources. Building needs C/C++ and CMake; Windows GNU additionally needs Ninja on PATH. The launcher provides Rust/MinGW but does not currently install CMake/Ninja. It communicates with the connected server's advertised voice endpoint, uses the selected audio devices, and keeps per-instance settings. It does not implement or enable Minecraft older-version adapters.
+
+This is not an official Plasmo Voice or Horizon release. Original Plasmo Voice implementation sources and graphics were not read or copied. Upstream project: https://github.com/plasmoapp/plasmo-voice.
+
+Historical 0.5.0 voice checks with Plasmo Voice 2.1.17 cover two-way synthetic audio and inventory/chest cases on Paper 1.21.10, 1.21.11, 26.1.2, 26.2 and 26.3, plus earlier Fabric 1.21.11 UI checks. Minecraft protocol compatibility follows Horizon's adapters. Version 0.5.3 verifies source-built codec/DSP operation on Linux and Windows; Windows GUI and physical audio-device testing remain outstanding. See the repository validation record for exact revisions and scope.
+"""
+
+[[versions]]
+version = "0.5.3"
+published = "2026-11-07"
+game = "26.3"
+file = "plasmo-voice-0.5.3.hnmod"
+sha256 = "146fe53cb5e5da5e07e0a47ff8553aa8ecdc24c05d4491b55fe8da15ae991d9e"
+changelog = "Removes all six prebuilt libraries. Cargo verifies and builds Opus, RNNoise and OpenAL Soft from complete upstream sources; no build-time downloads. Retains source, licenses and HRTF. Source-only inspection, Linux tests and Windows codec/DSP verification. Requires C/C++ and CMake (Windows GNU also Ninja). API 411."

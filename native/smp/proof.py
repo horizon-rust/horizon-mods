@@ -1068,27 +1068,30 @@ def trades(server, alex, steve, port, ctl, resources, root):
 
 
 def vanish(server, alex, steve, out):
-    """/vanish: Alex (an operator) leaves Steve's world and Tab list, and reads a subtitle the whole time; Steve can't
+    """/vanish: Alex (an operator) leaves Steve's world and Tab list, and reads a line above the hotbar the whole time; Steve can't
     reach her by name; /vanish again brings her back. Steve can't vanish."""
     r = {}
     players = lambda c: [e for e in c.run("entities", 64, "player")["entities"]]
-    subtitle = lambda c: c.run("messages", 1).get("subtitle") or ""
+    actionbar = lambda c: c.run("messages", 1).get("actionbar") or ""
+    centre = lambda c: (c.run("messages", 1).get("subtitle") or "") + (c.run("messages", 1).get("title") or "")
     r["seen_before"] = len(players(steve))
     r["refused"] = steve.say("/vanish")
     assert any("Unknown" in l or "Only operators" in l or "permission" in l for l in r["refused"]), r
     r["vanish"] = alex.say("/vanish")
     assert any("You vanished" in l for l in r["vanish"]), r
     time.sleep(2.5)
-    # Over a few seconds, not just once: the subtitle never lapses.
-    r["subtitles"] = []
+    # Over a few seconds, not just once: the line never lapses.
+    r["actionbar"] = []
     for _ in range(4):
-        r["subtitles"].append(subtitle(alex))
+        r["actionbar"].append(actionbar(alex))
         time.sleep(1)
-    assert all(s == "Vanished: only operators see you" for s in r["subtitles"]), r
-    assert "Vanished" not in subtitle(steve), r
+    assert all(s == "Vanished: only operators see you" for s in r["actionbar"]), r
+    # On the action bar only: nothing in the middle of the screen.
+    assert "Vanished" not in centre(alex), r
+    assert "Vanished" not in actionbar(steve), r
     if r["seen_before"]:
         assert not players(steve), "Steve no longer sees Alex"
-    alex.run("screenshot", str(Path(out).resolve() / "vanish-subtitle.png"))
+    alex.run("screenshot", str(Path(out).resolve() / "vanish-actionbar.png"))
     steve.run("key", "tab", "down")
     time.sleep(1)
     steve.run("screenshot", str(Path(out).resolve() / "vanish-tab.png"))
@@ -1100,7 +1103,7 @@ def vanish(server, alex, steve, out):
     r["back"] = alex.say("/vanish")
     assert any("You are visible again." in l for l in r["back"]), r
     time.sleep(3)
-    assert "Vanished" not in subtitle(alex), r
+    assert "Vanished" not in actionbar(alex), r
     if r["seen_before"]:
         assert players(steve), "Steve sees Alex again"
     time.sleep(6)  # the spam guard's window, for the steps after

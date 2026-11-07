@@ -1,0 +1,59 @@
+id = "ae2"
+kind = "native-mod"
+name = "Applied Energistics 2"
+summary = "Unofficial port of Applied Energistics 2 15.4.12: ME networks, autocrafting, spatial storage and more."
+description = """
+An unofficial port of Applied Energistics 2 15.4.12 to Horizon, not made or endorsed by its authors. Please report problems to this port, not to them.
+
+Rewritten in Rust: ME networks, storage cells, autocrafting, the cable bus with facades, P2P tunnels, spatial storage, the guide and the Fluix Researcher.
+
+**One file, no separate content mod.**
+
+### Optional integrations
+Each is compiled in only when its mod is in the same build, so adding or removing JEI or Jade takes effect at the next build.
+- **With JEI:** AE2's recipes and information pages, "+" transfer into terminals, and dragging items onto config slots.
+- **With Jade:** network state, channels, P2P links, charge, crafting and stored power.
+
+### Missing or not the same
+- **No spatial dimension.** Horizon mods can't add one. A player in a spatial cell goes to a walled plot far out in the End, so `/tp` and F3 say `minecraft:the_end`. A swap with a player takes up to about a second.
+- **No Java addons.** AE2's Java API isn't available, and the integrations work only with the Horizon ports of JEI and Jade.
+- **Two storage buses on one inventory:** only the first reaches it.
+- **Moving items** costs power through terminals, interfaces, export buses and wireless terminals. An IO port and the crafting terminal's refills pay nothing yet.
+- **Power** is judged once a second, so a network with too little goes down at the next look and comes back after about 40 ticks, where AE2's is at once and 32.
+- **Unformed crafting, quantum and spatial blocks** join a network before they're formed.
+- **Autocrafting gaps:** a pattern input of more than one is a single template, so some plans report items missing that AE2 would find. Blocking mode looks at all six sides, provider priority is ignored, and a machine's request for more than it can make crafts nothing.
+- **Other differences:** machines have 6 or 4 orientations rather than 24, menus are in English, fluix tools are diamond tools, and guide scenes have no annotations.
+- **Crafting ETA is an estimate:** 1.1% off on average on the test rig, 2.0% at worst.
+- **Nested P2P error** is an approximation.
+- **World height:** parts on cables assume -64 to 319.
+
+The Fluix Researcher and its trades rely on mixins, so they are the part most likely to break on a Horizon update.
+
+### Tested
+Tested on Horizon commit 6475f62, on Windows, in single player, on LAN with one guest, and on a dedicated server with one client, including attacks by a non-operator with a modified client. This version is built for Horizon commit 66f3981, where AE2 alone compiles but hasn't been run, and the JEI and Jade integrations haven't been compiled. Other platforms, more than one guest, pipes from other mods and speed against the Java mod were not tested.
+
+### Known issue
+In some test runs, placing a part into a cable cell did nothing. It isn't one specific part, and it's probably lost test clicks, but that isn't proven.
+
+Textures and models are CC BY-NC-SA 3.0: noncommercial use only."""
+authors = ["AlgorithmX2", "TeamAppliedEnergistics", "Joeypc6"]
+owners = ["Joeypc6"]
+owner_ids = [35495484]
+license = "LGPL-3.0-only AND CC-BY-NC-SA-3.0"
+source = "https://github.com/Joeypc6/AE2-Horizon"
+icon = "icons/ae2.png"
+categories = ["technology", "utility", "storage"]
+tags = ["ae2", "applied-energistics", "storage", "autocrafting", "automation"]
+
+[[versions]]
+version = "15.4.14"
+published = "2026-11-06"
+game = "26.3"
+file = "ae2-15.4.14.hnmod"
+sha256 = "584ec574b2620ccb9810a61f30b8bc4e639b5bf819bef7c3612835efbbdc278f"
+changelog = """
+First release on the registry, ported from AE2 15.4.12 (Fabric). 15.4.14 is this port's own version number, not an AE2 release.
+
+Built for Horizon commit 66f3981. It compiles on that Horizon but wasn't run there; it was last tested on 6475f62.
+
+One file: the blocks, items and textures, and the JEI and Jade integrations, are all in this mod. This replaces the earlier submissions, and fixes the `ae2:debug` vulnerability reported on them, along with others found by further reviews, and many defects from an outside review (PLAN.md, Rounds 24 to 26)."""

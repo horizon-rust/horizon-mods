@@ -1,0 +1,28 @@
+id = "holdmyitems"
+kind = "native-mod"
+name = "Hold my Items"
+summary = "Hold my Items port to horizon"
+description = """
+## Features
+- Ported Hold My Items (HMI) 5.1.1 to Horizon (Rust Minecraft 26.3).
+- Added first-person hand and item overhaul.
+- Implemented spring-damper viewmodel physics and smooth hand animations.
+- Added per-weapon swing animations and combat choreography.
+- Added per-item model articulation and liquid bucket animations.
+- Added weapon inspection with 360-degree rotation.
+- Added first-person particles and dynamic hand lighting.
+- Added in-game configuration and `/hmi` commands."""
+authors = ["iuaititi"]
+owners = ["iuaiti"]
+owner_ids = [142555133]
+license = "MIT"
+source = "https://github.com/iuaiti/Hold-my-items-horizon"
+icon = "icons/holdmyitems.png"
+categories = ["equipment", "game-mechanics", "decoration"]
+
+[[versions]]
+version = "5.1.1"
+published = "2026-11-06"
+game = "26.3"
+file = "holdmyitems-5.1.1.hnmod"
+sha256 = "fff1b3e68d836cdac36486f8207e6b609165f04d5fbf78851fdd9878c00d1165"

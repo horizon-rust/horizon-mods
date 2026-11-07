@@ -325,7 +325,10 @@ mod tests {
     /// remove, and their errors surface in whichever `flush` runs next. Keep only this test's.
     fn flush_in(dir: &Path) -> Vec<String> {
         let dir = dir.to_string_lossy().into_owned();
-        flush().into_iter().filter(|e| e.starts_with(&dir)).collect()
+        flush()
+            .into_iter()
+            .filter(|e| e.starts_with(&dir))
+            .collect()
     }
 
     #[test]

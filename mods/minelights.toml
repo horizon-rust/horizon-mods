@@ -15,7 +15,8 @@ authors = ["MegaBytesMe"]
 owners = ["megabytesme"]
 license = "CC-BY-NC-SA-4.0"
 source = "https://github.com/megabytesme/MineLights/tree/246c37d4c0c29832fb66236a366265e20a0c70f2/horizon"
-icon = "https://raw.githubusercontent.com/megabytesme/MineLights/master/assets/icon.png"
+icon = "icons/minelights.png"
+categories = ["utility", "technology"]
 key = "RWQXM9P921f9AnO4kAKnVMu+2UdAr6BeAdM70P6PjbT7xxxmJbVb/qlN"
 
 [[versions]]

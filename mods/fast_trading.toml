@@ -1,0 +1,30 @@
+## Horizon registry entry for Fast Trading (port of bendy1234/FastTrading).
+id = "fast_trading"
+kind = "native-mod"
+name = "Fast Trading"
+summary = "A speed-trade button on the merchant screen repeats the selected trade as fast as the settings allow."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- Speed trade button on the merchant screen repeats the selected trade quickly.
+- Settings control how fast it repeats; a command opens the controls.
+
+Port of [FastTrading](https://github.com/bendy1234/FastTrading) by bendy1234 (MIT); credited upstream, original license preserved. Feature gaps vs upstream are documented in the port README and tracked on horizon-rust/horizon.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-fast-trading"
+categories = ["utility"]
+tags = ["trading", "villagers", "gui", "qol"]
+
+icon = "icons/fast_trading.png"
+
+[[versions]]
+published = "2026-11-06"
+version = "1.0.0"
+game = "26.3"
+file = "fast_trading-1.0.0.hnmod"
+sha256 = "0e215cd7eab59d37d235d8a97dd26608aa8a77c087df703143f0ef3c0bc40938"
+changelog = "First release: trade-repeat loop on the merchant screen, command + frame + draw hooks wired."

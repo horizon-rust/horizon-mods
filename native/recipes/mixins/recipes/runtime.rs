@@ -82,6 +82,7 @@ pub struct Ingredient {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Recipe {
+    pub id: String,
     pub kind: Kind,
     pub width: u32,
     pub height: u32,
@@ -121,6 +122,7 @@ pub enum Layout {
 /// A recipe as the panel lays it out.
 #[derive(Clone, Debug, PartialEq)]
 pub struct View {
+    pub id: String,
     pub layout: Layout,
     pub width: u32,
     pub height: u32,
@@ -152,6 +154,7 @@ pub enum Event {
     },
     Tab(usize),
     Action(usize),
+    OpenBookmark(String),
     Back,
 }
 
@@ -176,6 +179,7 @@ pub enum Out {
 /// A recipe page: an item's recipes or its uses, on one station's tab.
 #[derive(Clone, Debug, PartialEq)]
 struct Page {
+    bookmark: Option<String>,
     item: Stack,
     uses: bool,
     tab: usize,
@@ -266,7 +270,9 @@ impl Viewer {
     fn found(&self, page: &Page) -> Vec<&Recipe> {
         (self.all.iter())
             .filter(|r| {
-                if page.uses {
+                if let Some(id) = &page.bookmark {
+                    r.id == *id
+                } else if page.uses {
                     r.slots
                         .iter()
                         .flatten()
@@ -281,11 +287,31 @@ impl Viewer {
     /// Opens a page, pushing it on the history; nothing when it is empty.
     fn open(&mut self, item: Stack, uses: bool, known: &[i32]) -> Option<Out> {
         let item = Stack { count: 1, ..item };
-        let page = Page { item, uses, tab: 0 };
+        let page = Page {
+            bookmark: None,
+            item,
+            uses,
+            tab: 0,
+        };
         if self.found(&page).is_empty() {
             return None;
         }
         self.history.push(page);
+        Some(self.show(known))
+    }
+
+    fn open_bookmark(&mut self, id: String, known: &[i32]) -> Option<Out> {
+        let recipe = self.all.iter().find(|recipe| recipe.id == id)?;
+        let item = self.convert(recipe.results.first()?);
+        let page = Page {
+            bookmark: Some(id),
+            item,
+            uses: false,
+            tab: 0,
+        };
+        if self.history.last() != Some(&page) {
+            self.history.push(page);
+        }
         Some(self.show(known))
     }
 
@@ -367,6 +393,7 @@ impl Viewer {
         // + only for what the recipe book shows; greyed until the book has it.
         let action = (r.book_id >= 0).then(|| known.contains(&r.book_id));
         View {
+            id: r.id.clone(),
             layout,
             width,
             height,
@@ -410,6 +437,7 @@ impl Viewer {
                 Some(&book) if book >= 0 => vec![Out::Place(book)],
                 _ => Vec::new(),
             },
+            Event::OpenBookmark(id) => self.open_bookmark(id, known).into_iter().collect(),
             Event::Back => {
                 self.history.pop();
                 vec![self.show(known)]
@@ -475,6 +503,7 @@ mod tests {
             components: String::new(),
         };
         let planks = Recipe {
+            id: String::new(),
             kind: Kind::CraftingShapeless,
             width: 0,
             height: 0,
@@ -485,6 +514,7 @@ mod tests {
             book_id: 7,
         };
         let sticks = Recipe {
+            id: String::new(),
             kind: Kind::CraftingShaped,
             width: 1,
             height: 2,
@@ -494,6 +524,7 @@ mod tests {
             ..planks.clone()
         };
         let charcoal = Recipe {
+            id: String::new(),
             kind: Kind::Smelting,
             width: 0,
             height: 0,
@@ -504,6 +535,35 @@ mod tests {
             book_id: 9,
         };
         (items, vec![planks, sticks, charcoal])
+    }
+
+    #[test]
+    fn a_bookmark_reopens_only_its_recipe_and_preserves_the_action_index() {
+        let (items, mut recipes) = tables();
+        recipes[0].id = "example:planks".into();
+        recipes[2].id = "example:charcoal".into();
+        recipes.push(Recipe {
+            id: "example:campfire_charcoal".into(),
+            kind: Kind::Campfire,
+            ..recipes[2].clone()
+        });
+        let (mut viewer, _) = Viewer::new(items, recipes);
+        let open = |viewer: &mut Viewer, id: &str| {
+            viewer.handle(Event::OpenBookmark(id.into()), false, false, &[])
+        };
+        let opened = open(&mut viewer, "example:campfire_charcoal");
+        let [Out::Recipes { tabs, views, .. }] = opened.as_slice() else {
+            panic!("{opened:?}");
+        };
+        assert_eq!(tabs[0].item, "minecraft:campfire");
+        assert_eq!(views.len(), 1);
+        assert_eq!(views[0].id, "example:campfire_charcoal");
+        assert!(open(&mut viewer, "example:removed").is_empty());
+        open(&mut viewer, "example:planks");
+        assert_eq!(
+            viewer.handle(Event::Action(0), false, false, &[]),
+            vec![Out::Place(7)],
+        );
     }
 
     fn ids(out: &Out) -> Vec<&str> {
@@ -568,7 +628,7 @@ mod tests {
             [STATIONS[0], STATIONS[1]]
         );
         assert_eq!(*tab, 0);
-        // Shapeless planks laid out in a 1 x 1 grid; the book doesn't hold it yet.
+        // Shapeless planks laid out in a 1 x 1 grid; transfer is offered without learning the recipe.
         assert_eq!(
             (views[0].layout, views[0].width, views[0].note.as_str()),
             (Layout::Grid, 1, "Shapeless")

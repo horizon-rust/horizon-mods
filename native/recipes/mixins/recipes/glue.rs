@@ -37,6 +37,7 @@ fn recipe(r: &NativeRecipe) -> m::Recipe {
         NativeRecipeKind::Brewing => m::Kind::Brewing,
     };
     m::Recipe {
+        id: r.id.clone(),
         kind,
         width: r.width,
         height: r.height,
@@ -147,6 +148,7 @@ pub(super) fn event(game: &mut Game<'_>, event: &NativePanelEvent) {
         NativePanelEvent::Tab(i) => m::Event::Tab(*i as usize),
         NativePanelEvent::Action(i) => m::Event::Action(*i as usize),
         NativePanelEvent::Back => m::Event::Back,
+        NativePanelEvent::OpenRecipeBookmark(id) => m::Event::OpenBookmark(id.clone()),
         _ => return,
     };
     let give = m::gives(game.native_setting(m::ID, "give"));
@@ -175,13 +177,22 @@ fn apply(game: &mut Game<'_>, out: m::Out) {
             tabs,
             tab,
             views,
-        } => game.native_panel_recipes(
-            m::ID,
-            &title,
-            tabs.iter().map(native).collect(),
-            tab as u32,
-            views.iter().map(view).collect(),
-        ),
+        } => {
+            let mut page = crate::game::native_panel_recipes::RecipePage::new(
+                &title,
+                tabs.iter().map(native).collect(),
+                tab as u32,
+                views.iter().map(view).collect(),
+            );
+            if let Some(page) = &mut page {
+                page.bookmark_ids = views
+                    .into_iter()
+                    .take(page.recipes.len())
+                    .map(|v| v.id)
+                    .collect();
+            }
+            game.panel.show_recipes(m::ID, page);
+        }
         m::Out::Give { item, count } => {
             let _ = game.native_give(&item, count);
         }

@@ -14,6 +14,7 @@ source = "https://github.com/tomasmendes01/wisdom-horizon"
 icon = "icons/wisdom_horizon_lite.png"
 categories = ["semi-realistic", "atmosphere", "low"]
 tags = ["wisdom", "lite", "performance", "port"]
+screenshots = ["screenshots/wisdom_horizon_lite/1.png", "screenshots/wisdom_horizon_lite/2.png", "screenshots/wisdom_horizon_lite/3.png"]
 
 [[versions]]
 version = "1.3.7"

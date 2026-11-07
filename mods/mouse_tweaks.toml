@@ -1,0 +1,30 @@
+## Horizon registry entry for Mouse Tweaks (port of YaLTeR/MouseTweaks).
+id = "mouse_tweaks"
+kind = "native-mod"
+name = "Mouse Tweaks"
+summary = "Left-drag pickup, right-drag distribute, and wheel push/pull of items between slots."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- Left-drag picks items up, right-drag distributes them, wheel pushes and pulls between slots.
+- Same behavior as the original with its config keys; settings are driven by the /mousetweaks command instead of a config file.
+
+Port of [MouseTweaks](https://github.com/YaLTeR/MouseTweaks) by Ivan Molodetskikh (BSD 3-Clause, (c) 2023); credited upstream, original license preserved. Degradations are documented in the port README and tracked on horizon-rust/horizon (#9606).
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "BSD-3-Clause"
+source = "https://github.com/Sparticle62ops/horizon-mouse-tweaks"
+categories = ["utility"]
+tags = ["inventory", "mouse", "gui", "qol"]
+
+icon = "icons/mouse_tweaks.png"
+
+[[versions]]
+published = "2026-11-06"
+version = "1.0.0"
+game = "26.3"
+file = "mouse_tweaks-1.0.0.hnmod"
+sha256 = "574da0de1c3f10c494b7fa08196968f0e3c282690ad484bc344ed393414a2239"
+changelog = "First release: drag pickup/distribute, wheel push/pull, /mousetweaks settings command."

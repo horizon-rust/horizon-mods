@@ -1,0 +1,34 @@
+id = "horizon_essentials"
+kind = "native-mod"
+name = "Essentials"
+summary = "A native port of EssentialsX for Horizon (Minecraft 26.3) with 163 commands, economy, teleportation, kits, and moderation."
+description = """
+A complete native port of **EssentialsX** to **Horizon** (Minecraft: Java Edition 26.3 rewritten in Rust).
+
+### Features
+
+- **All 163 EssentialsX commands**: `/home`, `/sethome`, `/spawn`, `/warp`, `/tpa`, `/back`, `/fly`, `/god`, `/heal`, `/feed`, `/workbench`, `/kit`, `/balance`, `/pay`, `/ban`, `/mute`, `/jail`, and more.
+- **Works with vanilla clients**: Players connect using standard Minecraft 26.3 clients with no mods required.
+- **Singleplayer Support**: Works in local singleplayer worlds with host OP level 4 and isolated saves under `<world>/essentials/`.
+- **Full Configuration & Permissions**: Uses standard Essentials configuration formats (`config.yml`, `permissions.yml`, `kits.yml`)."""
+authors = ["LmVictor20"]
+owners = ["LmVictor20"]
+owner_ids = [110595671]
+license = "GLP-3.0"
+source = "https://github.com/LmVictor20/horizon-essentials"
+icon = "icons/horizon_essentials.png"
+categories = ["management", "utility"]
+tags = ["commands", "administration"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-06"
+game = "26.3"
+file = "horizon_essentials-0.2.0.hnmod"
+sha256 = "1f388d1ef0c83d083e43a7a836cebcc17c95945fbc55ac6061a4f5201f2ec85f"
+changelog = """
+Initial release:
+      - 163 EssentialsX commands ported to Horizon 26.3
+      - Full singleplayer and client integration
+      - Dedicated server engine support
+      - Teleportation, moderation, economy, kits, and user data management"""

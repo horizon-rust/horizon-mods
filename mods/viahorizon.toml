@@ -21,6 +21,22 @@ categories = ["utility", "social"]
 tags = ["multiplayer", "protocol", "old-servers", "viafabricplus", "port"]
 
 [[versions]]
+version = "0.8.7-dev"
+published = "2026-11-05"
+game = "26.3"
+file = "viahorizon-0.8.7-dev.hnmod"
+sha256 = "2eb3f53e0193cc92d7786f32e83fed536500398f6cafabf994e959f997b2d948"
+changelog = """
+- Default new configurations to Auto server version detection; keep saved targets and per-server overrides.
+- Retry temporary authentication-service failures during server login.
+- Fix legacy bed jumping and landing, predicted crafting output in both crafting grids, and sword blocking duration and animation.
+- Preserve explosion lighting and partial chunk/block updates, and mesh loaded chunks at the edge of the server view.
+- Reject items unavailable on the selected server before equipping or using them; handle closed launcher log pipes safely.
+
+Validated with 353 automated tests, strict Clippy, Horizon's package checker, and 33 isolated live gameplay checks on vanilla 1.7.2 and 1.19.2 (Auto). Validation: https://github.com/hhhhsffd/viahorizon/blob/v0.8.7-dev/docs/validation/0.8.7/summary.json
+Release and source: https://github.com/hhhhsffd/viahorizon/releases/tag/v0.8.7-dev"""
+
+[[versions]]
 version = "0.8.5-dev"
 published = "2026-11-04"
 game = "26.3"

@@ -173,7 +173,7 @@ impl Board {
 
     pub fn save(&mut self) -> Result<(), String> {
         if self.changed {
-            smp_store::write_json(&self.path, &self.data)?;
+            smp_store::save_json(&self.path, &self.data)?;
             self.changed = false;
         }
         Ok(())

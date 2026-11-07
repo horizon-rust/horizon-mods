@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.35.0"
+version = "0.35.1"
 priority = 100
 
 # The commit of horizon CI tests it on (the minimap's: mods on the newest hooks share one; the official server's

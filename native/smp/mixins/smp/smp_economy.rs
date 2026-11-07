@@ -6,7 +6,7 @@
 // answers. Added to the game as `game::smp_economy`; also a module of this
 // crate, for its tests.
 
-use super::smp_store::{Audit, read_json, uuid_string, write_json};
+use super::smp_store::{Audit, read_json, uuid_string, save_json};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, path::PathBuf};
 
@@ -572,7 +572,7 @@ impl Economy {
         if !self.dirty {
             return Ok(());
         }
-        write_json(&self.path, &self.accounts)?;
+        save_json(&self.path, &self.accounts)?;
         self.dirty = false;
         Ok(())
     }
@@ -1196,6 +1196,7 @@ mod tests {
             .collect();
         assert_eq!(kinds, ["bank_closed", "bank_closed", "futures_closed"]);
         e.save().unwrap();
+        assert!(super::super::smp_store::flush().is_empty());
         let saved = fs::read_to_string(dir.join("economy.json")).unwrap();
         assert!(!saved.contains("treasury"), "{saved}");
         // Only once.

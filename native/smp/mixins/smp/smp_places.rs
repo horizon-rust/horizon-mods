@@ -376,7 +376,7 @@ impl Places {
         if !self.changed && !played {
             return Ok(());
         }
-        smp_store::write_json(&self.path, &self.data)?;
+        smp_store::save_json(&self.path, &self.data)?;
         self.changed = false;
         self.played_at = None;
         Ok(())

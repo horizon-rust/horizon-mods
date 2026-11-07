@@ -43,7 +43,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.35.0";
+pub const VERSION: &str = "0.35.1";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -292,8 +292,7 @@ fn state(dir: PathBuf) -> std::sync::MutexGuard<'static, Option<Smp>> {
     let mut state = STATE.lock().unwrap_or_else(|e| e.into_inner());
     if state.as_ref().is_none_or(|s| s.dir != dir) {
         if let Some(old) = state.as_mut() {
-            flush_book(old);
-            save(old);
+            save_now(old);
         }
         *state = Some(open(dir));
     }
@@ -377,6 +376,19 @@ fn save(smp: &mut Smp) {
         log::error!("[smp] {err}");
     }
     smp.reports.save();
+    // The files above are written by the SMP's writer thread.
+    for err in smp_store::take_errors() {
+        log::error!("[smp] {err}");
+    }
+}
+
+/// Every file of `smp` on disk now (the world closes, another opens).
+fn save_now(smp: &mut Smp) {
+    flush_book(smp);
+    save(smp);
+    for err in smp_store::flush() {
+        log::error!("[smp] {err}");
+    }
 }
 
 /// The commands, for every player's command tree.
@@ -2871,8 +2883,7 @@ fn flush_book(smp: &mut Smp) {
 pub fn closed() {
     let mut state = STATE.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(smp) = state.as_mut() {
-        flush_book(smp);
-        save(smp);
+        save_now(smp);
     }
     *state = None;
 }

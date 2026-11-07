@@ -5,9 +5,12 @@
 // `game::smp_store`; also a module of this crate, for its tests.
 
 use std::{
+    collections::{BTreeMap, VecDeque},
     fs::{self, File, OpenOptions},
     io::{self, Write},
     path::{Path, PathBuf},
+    sync::{Condvar, Mutex},
+    time::Duration,
 };
 
 /// The folder of the SMP's files in a world's folder.
@@ -37,6 +40,7 @@ pub fn write_atomic(path: &Path, bytes: &[u8]) -> io::Result<()> {
 /// exists but can't be read, so that a damaged file is never replaced by an
 /// empty one.
 pub fn read_json<T: serde::de::DeserializeOwned + Default>(path: &Path) -> Result<T, String> {
+    wait_for(path);
     match fs::read(path) {
         Ok(bytes) => serde_json::from_slice(&bytes).map_err(|e| format!("{}: {e}", path.display())),
         Err(e) if e.kind() == io::ErrorKind::NotFound => Ok(T::default()),
@@ -49,6 +53,129 @@ pub fn write_json<T: serde::Serialize>(path: &Path, value: &T) -> Result<(), Str
     let mut bytes = serde_json::to_vec_pretty(value).map_err(|e| e.to_string())?;
     bytes.push(b'\n');
     write_atomic(path, &bytes).map_err(|e| format!("{}: {e}", path.display()))
+}
+
+/// A JSON document saved like [`write_json`], but written by the SMP's
+/// writer thread so the server's tick doesn't wait for the disk: the bytes
+/// are made now, and a newer save of the same file replaces one still
+/// waiting. [`flush`] writes what waits (the world closes); [`read_json`]
+/// waits for the file it reads. A failed write is tried again a second
+/// later, its error kept for [`take_errors`].
+pub fn save_json<T: serde::Serialize>(path: &Path, value: &T) -> Result<(), String> {
+    let mut bytes = serde_json::to_vec_pretty(value).map_err(|e| e.to_string())?;
+    bytes.push(b'\n');
+    let mut q = WRITER.queue.lock().unwrap_or_else(|e| e.into_inner());
+    if q.bytes.insert(path.to_path_buf(), bytes).is_none() {
+        q.order.push_back(path.to_path_buf());
+    }
+    if !q.thread {
+        q.thread = std::thread::Builder::new()
+            .name("smp-writer".into())
+            .spawn(writer)
+            .is_ok();
+    }
+    drop(q);
+    WRITER.changed.notify_all();
+    Ok(())
+}
+
+/// Writes every save still waiting, on this thread, once the one being
+/// written is done; the errors of those that failed.
+pub fn flush() -> Vec<String> {
+    let mut q = WRITER.queue.lock().unwrap_or_else(|e| e.into_inner());
+    while q.writing.is_some() {
+        q = WRITER.changed.wait(q).unwrap_or_else(|e| e.into_inner());
+    }
+    let mut errors = std::mem::take(&mut q.errors);
+    while let Some(path) = q.order.pop_front() {
+        if let Some(bytes) = q.bytes.remove(&path)
+            && let Err(e) = write_atomic(&path, &bytes)
+        {
+            errors.push(format!("{}: {e}", path.display()));
+        }
+    }
+    drop(q);
+    WRITER.changed.notify_all();
+    errors
+}
+
+/// Whether `path` exists once its last save is on disk.
+pub fn exists(path: &Path) -> bool {
+    wait_for(path);
+    path.exists()
+}
+
+/// The errors of writes the writer thread failed since the last call.
+pub fn take_errors() -> Vec<String> {
+    std::mem::take(&mut WRITER.queue.lock().unwrap_or_else(|e| e.into_inner()).errors)
+}
+
+struct Writer {
+    queue: Mutex<Queue>,
+    changed: Condvar,
+}
+
+/// Files waiting, in the order first saved, and the newest bytes of each.
+struct Queue {
+    order: VecDeque<PathBuf>,
+    bytes: BTreeMap<PathBuf, Vec<u8>>,
+    writing: Option<PathBuf>,
+    errors: Vec<String>,
+    thread: bool,
+}
+
+static WRITER: Writer = Writer {
+    queue: Mutex::new(Queue {
+        order: VecDeque::new(),
+        bytes: BTreeMap::new(),
+        writing: None,
+        errors: Vec::new(),
+        thread: false,
+    }),
+    changed: Condvar::new(),
+};
+
+/// Returns once `path` holds its last save: the one being written is done,
+/// the one waiting is written here.
+fn wait_for(path: &Path) {
+    let mut q = WRITER.queue.lock().unwrap_or_else(|e| e.into_inner());
+    while q.writing.as_deref() == Some(path) {
+        q = WRITER.changed.wait(q).unwrap_or_else(|e| e.into_inner());
+    }
+    if let Some(bytes) = q.bytes.remove(path) {
+        q.order.retain(|p| p != path);
+        if let Err(e) = write_atomic(path, &bytes) {
+            q.errors.push(format!("{}: {e}", path.display()));
+        }
+    }
+}
+
+fn writer() {
+    let mut q = WRITER.queue.lock().unwrap_or_else(|e| e.into_inner());
+    loop {
+        let Some(path) = q.order.pop_front() else {
+            q = WRITER.changed.wait(q).unwrap_or_else(|e| e.into_inner());
+            continue;
+        };
+        let Some(bytes) = q.bytes.remove(&path) else { continue };
+        q.writing = Some(path.clone());
+        drop(q);
+        let result = write_atomic(&path, &bytes);
+        q = WRITER.queue.lock().unwrap_or_else(|e| e.into_inner());
+        q.writing = None;
+        if let Err(e) = result {
+            q.errors.push(format!("{}: {e}", path.display()));
+            // Tried again unless a newer save came meanwhile.
+            if !q.bytes.contains_key(&path) {
+                q.bytes.insert(path.clone(), bytes);
+                q.order.push_back(path);
+            }
+            WRITER.changed.notify_all();
+            q = WRITER.changed.wait_timeout(q, Duration::from_secs(1)).unwrap_or_else(|e| e.into_inner()).0;
+            continue;
+        }
+        WRITER.changed.notify_all();
+    }
 }
 
 /// `value` as compact JSON in `path`, atomically (large files: the
@@ -207,6 +334,60 @@ mod tests {
         assert!(read_json::<Vec<u32>>(&path).is_err());
         write_json(&path, &vec![1u32, 2]).unwrap();
         assert_eq!(read_json::<Vec<u32>>(&path).unwrap(), [1, 2]);
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    /// The writer is one for the process: its tests take turns.
+    static WRITER_TESTS: Mutex<()> = Mutex::new(());
+
+    #[test]
+    fn saves_reach_the_disk_newest_last_and_flush_waits_for_them() {
+        let _turn = WRITER_TESTS.lock().unwrap_or_else(|e| e.into_inner());
+        let dir = scratch("later");
+        let a = dir.join("economy.json");
+        let b = dir.join("places.json");
+        for i in 0..50u32 {
+            save_json(&a, &vec![i]).unwrap();
+            save_json(&b, &vec![i, i]).unwrap();
+        }
+        assert!(flush().is_empty());
+        // Nothing waits once flushed: the files hold the last saves.
+        assert_eq!(fs::read_to_string(&a).unwrap(), "[\n  49\n]\n");
+        assert_eq!(read_json::<Vec<u32>>(&b).unwrap(), [49, 49]);
+        let names: Vec<_> = fs::read_dir(&dir).unwrap().map(|e| e.unwrap().file_name()).collect();
+        assert_eq!(names.len(), 2, "no temporary left: {names:?}");
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn a_read_sees_the_save_before_it() {
+        let _turn = WRITER_TESTS.lock().unwrap_or_else(|e| e.into_inner());
+        let dir = scratch("read-after");
+        let path = dir.join("claims.json");
+        for i in 0..20u32 {
+            save_json(&path, &vec![i]).unwrap();
+            assert_eq!(read_json::<Vec<u32>>(&path).unwrap(), [i]);
+        }
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn a_failed_save_is_reported_and_kept_for_the_next_try() {
+        let _turn = WRITER_TESTS.lock().unwrap_or_else(|e| e.into_inner());
+        let dir = scratch("failed");
+        fs::create_dir_all(&dir).unwrap();
+        // A file where the folder should be: every write under it fails.
+        let blocker = dir.join("sub");
+        fs::write(&blocker, b"not a folder").unwrap();
+        let path = blocker.join("nicks.json");
+        save_json(&path, &vec![1u32]).unwrap();
+        let errors = flush();
+        assert!(!errors.is_empty() && errors.iter().all(|e| e.contains("nicks.json")), "{errors:?}");
+        // Once the folder can be made, the next save lands.
+        fs::remove_file(&blocker).unwrap();
+        save_json(&path, &vec![2u32]).unwrap();
+        assert!(flush().is_empty());
+        assert_eq!(read_json::<Vec<u32>>(&path).unwrap(), [2]);
         fs::remove_dir_all(dir).unwrap();
     }
 

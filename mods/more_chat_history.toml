@@ -1,0 +1,28 @@
+id = "more_chat_history"
+kind = "native-mod"
+name = "More Chat History"
+summary = "More Chat History allows you to scroll further then 100 lines in Minecraft Chat"
+description = """
+More Chat History allows you to scroll further then 100 lines in Minecraft Chat 
+This Mod will not be shown in mods menu """
+authors = ["Demerobit"]
+owners = ["Demerobit"]
+owner_ids = [193929759]
+license = "MIT"
+source = "https://github.com/Demerobit/More-Chat-History"
+icon = "icons/more_chat_history.png"
+categories = ["game-mechanics", "utility"]
+tags = ["chat"]
+key = "RWSFMcL2Aq41gyFqJXfhKLk4v4oB8YMy+FTg3CakQUMEu+ZeuQcwkSgv"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-07"
+game = "26.3"
+file = "more_chat_history-0.1.0.hnmod"
+sha256 = "fc0b975bed440a975dcf237797fa4ff1481c5939fe17d5b90a9137dd1fd18188"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUSFMcL2Aq41gz2HY3Ek3asfaHBdOrGjmlaUAc/ENSOQ9cmy3/w21pdVHXHH236tCTc3nwsawgxdMpvnonRilA0fKPwzyVspIgM=\r
+trusted comment: timestamp:1794049930\tfile:more_chat_history-0.1.0.hnmod\thashed\r
+E6lbsh2pxZD5K1rQi75+rV38B+weyNhwXwrS/63pEfmexc8Vx4kXPQK0ZcT4EnSoPNFkAKfbAy4C9sqr2fNxDg=="""

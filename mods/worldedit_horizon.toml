@@ -1,0 +1,161 @@
+id = "worldedit_horizon"
+kind = "native-mod"
+name = "WorldEdit"
+summary = "A WorldEdit-style building toolkit for the Horizon Minecraft client — native mod (.hnmod)"
+description = """
+✨ Features 
+🪓 Wooden axe wand — left click = pos 1, right click = pos 2. Outside creative it is a normal axe. 
+🎨 Creative only — every command works only in /gamemode creative. 
+🧱 Fill, replace, walls, faces, hollow, overlay, naturalize, line 
+⚪ Shapes — spheres, cylinders, pyramids, solid or hollow (hcyl, hsphere, hpyramid). 
+🌊 Terrain tools — drain, fixwater, fixlava, smooth.
+📋 Clipboard — copy, cut, paste, rotate, flip, stack, move. 
+↩️ Undo / redo with configurable history. 
+🎲 Patterns — stone, 0 (air), stone,dirt, 30%stone,dirt. 
+🔧 In-game limits — /we limit changes block, radius and history limits live. 
+🔇 No item drops — edits do not pop torches/flowers (toggle with /we physics). 
+
+📦 Installation 
+Method 1: Automatic 
+Copy the URL of this GitHub repository from your browser's address bar.
+Open the Horizon launcher, go to Mods -> Install from Link.
+Simply paste this GitHub link directly inside the launcher, and the mod will install automatically!
+
+Method 2:
+1. Open the Horizon launcher → Mods → Add mods and pick the file. 
+2. Enable Settings → Native mods (experimental) and press Build (the first build takes a while). 
+3. Launch the Native mods instance, enter a world and switch to creative: /gamemode creative.
+
+
+
+📖 Commands
+
+All commands start with /we. They work only in creative mode (/gamemode creative).
+
+Selection
+
+
+Command\tEN
+/we\tShow help
+/we wand\tGive the wooden axe: left click = pos 1, right click = pos 2. Outside creative it is a normal axe
+/we pos1, /we pos2\tSet a corner at the block you stand on
+/we sel (or desel)\tClear the selection
+/we size\tShow selection size and block count
+/we expand <n> [direction]\tGrow the selection by n blocks. No direction = the way you look
+/we contract <n> [direction]\tShrink the selection from that side
+/we outset <n>\tGrow the selection by n blocks on all sides
+/we inset <n>\tShrink the selection by n blocks on all sides
+/we chunk\tSelect the whole chunk you stand in (height -64 to 319)
+/we shift <n> [direction]\tMove the selection itself
+
+📖 WorldEdit Commands
+⚠️ Important: All commands start with /we. They work only in Creative Mode (/gamemode creative).
+
+📐 Selection (Выделение области)
+• /we — Show help manual.
+• /we wand — Give the selection tool (wooden axe).
+\t• Left Click on a block sets Position 1.
+\t• Right Click sets Position 2.
+\t• Note: Outside of creative mode, it acts as a regular axe.
+• /we pos1 / /we pos2 — Set position 1 or 2 at the exact block you are standing on.
+• /we sel (or /we desel) — Clear the current selection.
+• /we size — Show the dimensions and total block count of the selected area.
+• /we chunk — Select the entire chunk you are standing in (from height -64 to 319).
+
+🔀 Modifying the Selection Size
+• /we expand <n> [direction] — Expand the selection area by n blocks. If no direction is specified, it expands in the direction you are looking.
+• /we contract <n> [direction] — Shrink the selection by n blocks from the specified side.
+• /we outset <n> — Expand the selection by n blocks in all 6 directions simultaneously.
+• /we inset <n> — Shrink the selection by n blocks from all 6 sides simultaneously.
+• /we shift <n> [direction] — Move the selection area itself without moving the blocks inside it.
+🧭 Available Directions: north, south, east, west, up, down (or shortcuts: n, s, e, w, u, d).
+
+🛠️ Area Editing (Изменение блоков)
+• /we set <pattern> — Fill the selection with a specific block type. Use /we set 0 to delete all blocks (fill with air).
+• /we replace <from> <to> — Replace specific blocks inside the selection (e.g., /we replace dirt,grass_block stone).
+• /we replace !<blocks> <to> — Replace everything except the listed blocks (the ! symbol acts as "not").
+• /we walls <pattern> — Build walls using only the 4 vertical sides of the selection.
+• /we faces <pattern> — Create a hollow box using all 6 outer sides of the selection.
+• /we hollow — Hollow out the inside of the selection, leaving a 1-block thick shell.
+• /we overlay <pattern> — Place a single layer of a block on top of the highest block in each column.
+• /we naturalize — Generate a natural terrain look: grass on top, 3 layers of dirt below, and stone underneath.
+• /we line <pattern> — Draw a straight line of blocks between Position 1 and Position 2.
+• /we smooth [n] — Smooth out the terrain landscape inside the selection. Optional n sets the number of passes (from 1 to 50, default is 1).
+• /we count <blocks> — Count how many blocks of a specific type are inside the selection.
+
+💧 Fluid Control
+• /we drain — Instantly remove all water, lava, and aquatic plants within the selection.
+• /we fixwater — Level out flowing water within the selection, converting it into full water source blocks.
+• /we fixlava — Same as above, but converts flowing lava into stable source blocks.
+
+🟢 Shapes Generation 
+💡 Note: These commands do not require you to select an area first. Shapes are generated relative to your character's position.
+• /we sphere <pattern> <radius> [true] — Create a solid sphere. Add true at the end to make it hollow.
+• /we hsphere <pattern> <radius> — Create a hollow sphere.
+• /we cyl <pattern> <radius> [height] [true] — Create a cylinder (default height is 1). Add true to make it a hollow cylinder with top and bottom caps.
+• /we hcyl <pattern> <radius> [height] — Create a hollow cylinder without top and bottom caps (using height 1 creates a ring).
+• /we pyramid <pattern> <size> — Create a solid pyramid with a specified number of layers.
+• /we hpyramid <pattern> <size> — Create a completely hollow pyramid.
+
+📋 Clipboard & Moving 
+• /we copy — Copy the selected area to your clipboard (saves objects relative to your position).
+• /we cut — Copy the selected area to your clipboard and immediately delete it from the world.
+• /we paste [true] — Paste the clipboard contents at your feet. Add true to paste without copying air blocks (preserves existing structures).
+• /we clearclipboard — Clear everything currently saved in your clipboard.
+• /we rot <degrees> — Rotate the clipboard contents (must be multiples of 90, e.g., 90, 180, 270).
+• /we flip [direction] — Mirror/flip the clipboard contents across a specific direction.
+• /we stack <n> [direction] — Repeat and stack the selection n times in a given direction.
+• /we move <n> [direction] — Physically shift both the blocks and the selection grid by n spaces.
+
+
+⏳ History & Limits 
+• /we undo [n] — Undo the last n actions performed (tracks up to 20 edits).
+• /we redo [n] — Redo actions that were previously undone.
+
+⚙️ Performance Controls
+• /we limit — Display your current operational limits.
+• /we limit blocks <n> — Set the maximum number of blocks a single command can alter (range: 1 to 20,000,000).
+• /we limit radius <n> — Set the maximum allowed radius or size for generating shapes (range: 1 to 1,024).
+• /we limit history <n> — Change the number of past actions the /we undo command remembers (range: 1 to 200).
+• /we limit reset — Restore all limits back to their original default settings.
+• Note: Limits are shared globally by all active players and completely reset whenever the world or game server restarts.
+
+
+⚛️ Block Physics
+• /we physics — View the current block physics state.
+• /we physics off — (Default settings) Disables block updates. Neighboring blocks won't react (e.g., torches or flowers floating in the air won't fall down as items after a /we set 0 command).
+• /we physics on — Enables normal Minecraft block updates. Floating items or unstable blocks will instantly pop off and drop into the world.
+
+
+🔍 How to Find Block IDs in Minecraft
+🛠️ Built-in Debug Tooltips 
+This is the fastest way to check IDs directly inside the game without leaving the window.
+1. Activate Tooltips: Press the F3 + H key combination on your keyboard while in-game.
+\t• Confirmation: A system message will appear in the chat saying Advanced tooltips: shown.
+2. Check the ID: Open your inventory and hover your cursor over any block.
+3. Copy the Text: Beneath the regular name (e.g., Stone), a gray text line will display its technical ID — for example, minecraft:stone or minecraft:grass_block.
+💡 WorldEdit Tip: You can skip the minecraft: prefix entirely. Just type stone or grass_block directly into the command.
+
+
+
+"""
+authors = ["Kowge"]
+owners = ["Kowge"]
+owner_ids = [100377856]
+license = "MIT"
+source = "https://github.com/Kowge/WorldEdit_Horizon"
+icon = "icons/worldedit_horizon.png"
+categories = ["utility", "game-mechanics", "equipment"]
+tags = ["worldedit", "minecraft", "horizon", "bedrock", "tool", "builder", "editor", "building", "mod"]
+
+[[versions]]
+version = "0.6.0"
+published = "2026-11-05"
+game = "26.3"
+file = "worldedit_horizon-0.6.0.hnmod"
+sha256 = "c63d45d9fa8baec0df74e222f54b762122690dae351e6a7efba917a2d1fb5aa5"
+changelog = """
+What changed in v0.6.0:
+• Added full English localization for all WorldEdit commands.
+• Improved command structure and categorization for Horizon engine.
+• Fixed minor selection bugs in creative mode."""

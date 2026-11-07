@@ -1,0 +1,55 @@
+id = "lumina"
+kind = "shader"
+name = "Lumina"
+summary = "High performance with real-time shadows, physical water, roof overhang occlusion, volumetric 3D clouds, and sharp anti-aliasing"
+description = """
+Native shaders designed for high frame rates and clean, balanced visuals without post-processing blur. All options are fully configurable directly in the shader settings menu.
+
+**Lighting & Overhang Shading**
+- Balanced daytime lighting with warm sun and clean azure shadows.
+- Directional sky dome occlusion: accurate contrast between ground, walls, and ceilings.
+- Non-linear ambient occlusion under house roofs, eaves, porches, and balconies.
+- Selective midtone vibrance on grass and foliage without clipping bright highlights.
+- Foliage subsurface scattering and sun-facing rim lighting.
+
+**Shadows**
+- Real-time sun and moon shadow maps with distortion-aware filtering.
+- Acne-free shadows on terrain, blocks, and thin grass at any distance.
+- Selectable shadow map resolution: 512, 1024, 1536, or 2048.
+
+**Clarity Anti-Aliasing (FXAA)**
+- Edge-selective geometric smoothing on block silhouettes, roofs, and stairs.
+- Flat surfaces, textures, wood, stone, and UI remain 100% sharp with zero blurring.
+- Modes: Sharp, Smooth, or Off.
+
+**Water & Underwater**
+- High-speed Screen Space Reflections (SSR) combined with planar mirror reflections.
+- Physics-based Beer-Lambert light absorption with depth-dependent color transition.
+- Snell's window when looking up from underwater with total internal reflection.
+- Animated seabed caustics, wave refraction, and underwater depth fog.
+
+**Clouds & Atmosphere**
+- Raymarched procedural 3D cumulus clouds with Fast, Balanced, and Cinematic presets.
+- Volumetric god rays through terrain and trees.
+- Procedural rain puddles on grass and dirt with raindrop impact ripples.
+- Custom weather rendering for rain and snow particles.
+- Native block emission and dynamic colored lighting support.
+
+**Setup Note:**
+Set Clouds to OFF in your video settings to let the custom 3D clouds render properly."""
+authors = ["cosmo-jar"]
+owners = ["cosmo-jar"]
+owner_ids = [246506206]
+license = "GPL-3.0"
+source = "https://github.com/cosmo-jar/Lumina-Shader-Pack-for-Horizon-Minecraft-on-Rust"
+icon = "icons/lumina.png"
+categories = ["atmosphere", "shadows", "semi-realistic"]
+tags = ["shadows", "water", "reflections", "volumetric", "clouds", "atmosphere", "optimized", "lighting", "god", "rays"]
+screenshots = ["screenshots/lumina/1.jpg", "screenshots/lumina/2.jpg", "screenshots/lumina/3.jpg", "screenshots/lumina/4.jpg", "screenshots/lumina/5.jpg", "screenshots/lumina/6.jpg"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-06"
+game = "26.3"
+file = "lumina-1.0.0.hshader"
+sha256 = "3b81722173fc4c4476def75fbfeff964ccd8a2fde0e31b49507078ea7616dd43"

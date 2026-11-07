@@ -16,6 +16,7 @@ source = "https://github.com/Bioneisme/deepbore-quarry"
 icon = "icons/deepbore_quarry.png"
 categories = ["technology", "library"]
 tags = ["quarry", "mining", "machine", "assets"]
+screenshots = ["screenshots/deepbore_quarry/1.jpg", "screenshots/deepbore_quarry/2.jpg", "screenshots/deepbore_quarry/3.png"]
 
 [[versions]]
 version = "0.1.0"

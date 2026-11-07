@@ -1,0 +1,33 @@
+id = "pastel_mystic"
+kind = "shader"
+name = "Pastel Mystic"
+summary = "A soft pastel, dreamlike world with auroras, lavender mist and a breathing light from what you hold."
+description = """
+A soft pastel, dreamlike shader pack in Horizon's own format, written from scratch in WGSL.
+
+- **Pastel sky:** periwinkle overhead and blush at the horizon by day, coral and lilac at dawn and dusk.
+- **Mystic nights:** a deep violet sky with a slowly drifting aurora curtain in mint, lavender and pink, and twinkling stars.
+- **Light in your hand:** what you hold glows in its own pastel colour (torches peach, soul torches mint, amethyst and ender items lilac, glowstone cream, sea lanterns aqua, redstone rose) and gently breathes and shimmers. Dropped glowing items light up too. Turn on **Dynamic lights** in Options > Extras.
+- **Soft light:** peach-and-cream sunlight, lavender shade, soft shadows that never go fully black, a violet night instead of a black one.
+- **Atmosphere:** lavender mist lying low in the valleys (thicker at night and dawn), a pastel haze in the distance and a dreamy glow around light sources.
+- **Pastel grade:** lifted lavender shadows, blush highlights, softer contrast and a violet vignette.
+- Plants sway in a slow breeze, water is a clear pastel aqua with gentle waves, fireflies glow lilac.
+
+Everything is adjustable in Options > Horizon Settings > Shader Packs > Shader Options (Light, Light in hand, Sky, Mist, Dream). Kept light for integrated graphics (tested on Intel Iris Xe): no reflections pass, a small shadow map and quarter-resolution glow."""
+authors = ["palladium7048"]
+owners = ["platinum7048"]
+owner_ids = [328277117]
+license = "MIT"
+source = "https://github.com/platinum7048/pastel-mystic"
+icon = "icons/pastel_mystic.png"
+categories = ["fantasy", "atmosphere", "low"]
+tags = ["pastel", "dreamy", "aurora", "mist", "dynamic-lights", "held-light", "fantasy", "soft-shadows"]
+screenshots = ["screenshots/pastel_mystic/1.jpg", "screenshots/pastel_mystic/2.jpg", "screenshots/pastel_mystic/3.jpg", "screenshots/pastel_mystic/4.jpg", "screenshots/pastel_mystic/5.jpg"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-06"
+game = "26.3"
+file = "pastel_mystic-1.0.0.hshader"
+sha256 = "12df7984da6a1f8f6f06eb74267f83ec4e5abe495e0aa547e5fd09951ecb161e"
+changelog = "First release."

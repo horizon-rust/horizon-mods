@@ -1,0 +1,26 @@
+id = "chat_heads_rust"
+kind = "native-mod"
+name = "Chat Heads Horizon"
+summary = "Chat Heads displays player heads in the chat before the players name making it easier to see who is writing"
+description = "Chat Heads displays player heads in the chat before the players name making it easier to see who is writing. with options being to turn off your own head display "
+authors = ["Demerobit"]
+owners = ["Demerobit"]
+owner_ids = [193929759]
+license = "MIT"
+source = "https://github.com/Demerobit/Chat-Heads-For-Horizon"
+icon = "icons/chat_heads_rust.png"
+categories = ["utility", "optimization", "decoration"]
+tags = ["optimization", "display"]
+key = "RWQ8B3u8yfza0a/X/QmiRXnrl8+l/dZFkWlWTSPsfshlLWbzHlb3AjU4"
+
+[[versions]]
+version = "1.0.2"
+published = "2026-11-06"
+game = "26.3"
+file = "chat_heads_rust-1.0.2.hnmod"
+sha256 = "b4dd7f7b8e5689dc0718821d7926ff3e3c9107fc11737903c195aed19c6cb7a1"
+signature = """
+untrusted comment: signature from minisign secret key
+RUQ8B3u8yfza0SgDJ0cjYatSuZ4rK5ILraOltdS3g0iq0usoRVymHortTv33u7Qxer3I0NXrTup0b7DIvbfB3Wa3VP587yFlbQI=
+trusted comment: timestamp:1793952467\tfile:chat_heads_rust-1.0.2.hnmod\thashed
+U+qTKpDMR7PFaX5fsvLfLvhVeS23ypKgCBavykz5gTUEPDNzQNzzB9mIOt4DLi0v3Sezb6F06Mhw07EsJmzgDA=="""

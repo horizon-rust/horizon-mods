@@ -5,8 +5,9 @@
 #   (`cargo check`): the ones horizon-mixins refuses alone and the ones whose own code doesn't compile go
 #   to the `native-health` release, which publish adds to the index (`broken_on`) so the launcher warns
 #   before an install.
-# The check compiles the submission, whose crates may have build scripts: it runs with a token that can
-# only read, and main's script, never the pull request's.
+# Both compile other people's crates, whose build scripts run: those jobs hold a token that can only read and
+# run main's script, never the pull request's. The daily result goes to the release from a separate job that
+# runs nothing of theirs and restores no cache (a build can write cache entries on main).
 name: native-compat
 on:
   pull_request:
@@ -66,17 +67,18 @@ jobs:
     runs-on: ubuntu-latest
     # Each mod horizon-mixins refuses costs one more apply of the whole set.
     timeout-minutes: 300
+    # Read only: every registry native mod's build script runs in this job.
     permissions:
-      contents: write
-    env:
-      GH_TOKEN: ${{ github.token }}
-      GH_REPO: ${{ github.repository }}
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - run: python3 -m unittest discover -s scripts -p 'test_*.py'
       - run: rustup toolchain install $RUST --profile minimal && rustup default $RUST
       - run: sudo apt-get update && sudo apt-get install -y libasound2-dev libudev-dev pkg-config
       # Yesterday's dependencies, checked, and horizon-mixins: only Horizon's own crates and the mods compile again.
+      # Safe only because this job holds nothing: it builds untrusted code anyway.
       - uses: actions/cache@v4
         with:
           path: |
@@ -94,10 +96,35 @@ jobs:
         run: |
           set -o pipefail
           python3 scripts/native_compat.py health --horizon "$HORIZON" --out native-health.json | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-health
+          path: native-health.json
+          if-no-files-found: error
+  health-publish:
+    needs: health
+    if: inputs.upload != 'false'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: native-health
+          path: health
       - name: Keep it for publish
-        if: inputs.upload != 'false'
         run: |
+          set -euo pipefail
+          # Data from a job that ran other people's code: only the one file, only the shape publish reads.
+          [ "$(cd health && find . -mindepth 1 -printf '%y %P\n')" = "f native-health.json" ]
+          jq -e '(.horizon | type == "string" and test("^[0-9a-f]{40}$"))
+            and (.broken | type == "object")
+            and ([.broken | to_entries[] | (.key | test("^[a-z0-9_-]+$")) and (.value.version | type == "string")] | all)' \
+            health/native-health.json > /dev/null
           gh release view native-health >/dev/null 2>&1 \
             || gh release create native-health --prerelease --title "Native mods' health" \
                  --notes "native-health.json: the native mods that don't apply on the newest Nightly (native-compat.yml). publish adds them to the index as broken_on."
-          gh release upload native-health native-health.json --clobber
+          gh release upload native-health health/native-health.json --clobber

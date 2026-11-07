@@ -4,3 +4,9 @@
 *            @ludovic111 @horizon-rust/horizon-team
 /.github/    @ludovic111
 /revoked.toml @ludovic111
+# What decides which builds the native-builds environment signs, and under which key (native-build.yml,
+# horizon#11859): the signing key's owner reviews it.
+/scripts/native_build.py      @ludovic111
+/scripts/test_native_build.py @ludovic111
+/prebuilt.toml                @ludovic111
+/.github/workflows/native-build.yml @ludovic111

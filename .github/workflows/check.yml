@@ -29,13 +29,9 @@ jobs:
         with:
           path: head
           persist-credentials: false
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin
-            ~/.cargo/horizon-rev
-          key: cargo-horizon-mod-${{ env.HORIZON_REV }}
-      # main's scripts, not the pull request's.
+      # main's scripts, not the pull request's. No actions/cache: this job decides whether a submission passes,
+      # and main's cache entries can be written by runs that build other people's code (native-build.yml), so
+      # the tool is built fresh and the files are checked against their SHA-256 (fetch.sh).
       - run: base/scripts/install-tool.sh
       - name: Who submitted it
         id: author
@@ -60,13 +56,8 @@ jobs:
             | tee -a "$GITHUB_STEP_SUMMARY" || status=1
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           exit $status
-      # main's files, kept by publish: each download from a release counts as a
-      # player's.
-      - uses: actions/cache/restore@v4
-        with:
-          path: files
-          key: files-${{ hashFiles('head/mods/*.toml') }}
-          restore-keys: files-
+      # Published files come from the registry-files release publish keeps: downloads from a mod's own
+      # release would count as a player's.
       - name: Download its files
         run: base/scripts/fetch.sh head
       - name: Check each new file

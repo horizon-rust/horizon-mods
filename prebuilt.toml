@@ -1,0 +1,21 @@
+# The native mod sets the registry prebuilds on each new Nightly (.github/workflows/native-build.yml, horizon#11859):
+# a player whose turned-on native mods are exactly one of these sets downloads the game instead of compiling it.
+# Each set is built for every target (Linux, Windows x64 and ARM64, macOS ARM and Intel) on GitHub's runners,
+# about 20-30 minutes per target. A mod is named by its id (its newest version) or `id@version`.
+# Keep the list short: every set costs five builds per Nightly.
+
+[[set]]
+name = "Horizon's own client mods"
+mods = ["zoom", "fps_overlay", "minimap", "coords_hud", "keystrokes", "recipes"]
+
+[[set]]
+name = "Zoom"
+mods = ["zoom"]
+
+[[set]]
+name = "FPS overlay"
+mods = ["fps_overlay"]
+
+[[set]]
+name = "Minimap"
+mods = ["minimap"]

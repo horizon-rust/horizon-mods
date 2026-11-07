@@ -1,0 +1,269 @@
+# Prebuilt native builds (horizon#11859): the game compiled for one exact set of registry native mods, signed, so
+# players' launchers download it instead of compiling for 30 to 60 minutes.
+# - Every day after the Nightly, `dispatch` starts one run per set of prebuilt.toml on the newest Nightly. A run
+#   builds ONE set, and only a set prebuilt.toml lists (`plan` and `sign` both refuse any other).
+# - On GitHub's runners only:
+#   plan  (no secrets): resolves the Nightly and each mod against the published index (newest unrevoked version,
+#         not broken_on that commit), computes each target's request key as the launcher does, leaves out what is
+#         published, downloads the mods' files and the launcher release named by vars.NATIVE_BUILD_LAUNCHER and
+#         checks that release's signed SHA256SUMS against Horizon's release keys (pinned below, by SHA-256).
+#   build (no secrets, a token that can only read, no cache): runs that launcher headless
+#         (`native-build --prebuilt-out`): its pinned Rust, the Nightly's source, the release profile, the same
+#         pins, hook points and left-out mods as a player's build. A mod crate's build script runs here, so this
+#         job is UNTRUSTED: with the runner's own token it can replace any artifact of the run (`plan` included)
+#         and write cache entries on main.
+#   sign  (environment `native-builds`, main only): trusts nothing a build job could touch. What it signs comes
+#         from the plan job's OUTPUTS only (no later job can change them); it recomputes each key from the base,
+#         the mods and the target, derives every file name from key and target, downloads `build-<target>` by
+#         its exact name and refuses anything in it but that one archive. It runs only Horizon's
+#         tools/ci/sign_native_build.sh (sha256sum and OpenSSL) at a pinned commit, checked by SHA-256 before
+#         the key is in reach. A build can only ever be signed as its own set's.
+# Caches: no job here restores one, and no job of horizon-mods that holds a write token may restore one either
+# (publish.yml, native-compat.yml): the build job above can write cache entries on main, and restoring an entry
+# unpacks a tar anywhere on the runner.
+name: native-build
+on:
+  schedule:
+    - cron: "30 19 * * *"
+  workflow_dispatch:
+    inputs:
+      mods:
+        description: "One set of prebuilt.toml, exactly as listed (`id` or `id@version`, space-separated). Empty: every set (one run each)"
+        default: ""
+      base:
+        description: "The Nightly: `latest` or nightly-<date>-<short>"
+        default: latest
+      targets:
+        description: "`all`, or target triples separated by commas"
+        default: all
+permissions:
+  contents: read
+concurrency:
+  group: native-build-${{ inputs.mods || 'dispatch' }}-${{ inputs.base || 'latest' }}
+  cancel-in-progress: false
+env:
+  # A launcher release with `native-build --prebuilt-out` (Horizon #11859), e.g. launcher@0.2.50.
+  LAUNCHER: ${{ vars.NATIVE_BUILD_LAUNCHER }}
+  # The Horizon commit this workflow takes its signer and keys from: its own pin, never vars.HORIZON_REV (shared with
+  # publish and the checks) and never a branch. Each file is checked against its SHA-256 here before it is used.
+  # Moving the pin means reviewing the files' diff and updating the three hashes (`sha256sum`).
+  SIGN_REV: c794b87841b58f72ade9842b46757d843246054c
+  SIGN_SCRIPT_SHA256: 95ebefe4b0beeb1b4282a09352260c48f1793b13e370414e91175aa789fc2278   # tools/ci/sign_native_build.sh
+  SIGN_KEYS_SHA256: f75dc6fe23343a4e97fe2453853e67f20ddcce1bc1f2c240a56b8b6d6681f611     # crates/horizon-release-sign/native-build-keys.txt
+  RELEASE_KEYS_SHA256: bb1f43a3eb14a2c0d89d7d823a3352dd4b7ac01f50d55451e282ea178fb61f6f  # crates/horizon-release-sign/release-keys.txt
+  # The largest archive signed: the launcher refuses bigger ones before checking (launcher/src/native_prebuilt.rs).
+  MAX_ARCHIVE: "536870912"
+jobs:
+  dispatch:
+    # Idle until a launcher with native-build --prebuilt-out is released and named.
+    if: (github.event_name == 'schedule' || inputs.mods == '') && vars.NATIVE_BUILD_LAUNCHER != ''
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: One run per set
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE: ${{ inputs.base || 'latest' }}
+        run: |
+          python3 scripts/native_build.py sets | while read -r set; do
+            echo "native-build: $set"
+            gh workflow run native-build.yml --repo "$GITHUB_REPOSITORY" --ref main -f mods="$set" -f base="$BASE"
+          done
+  plan:
+    if: github.event_name == 'workflow_dispatch' && inputs.mods != ''
+    runs-on: ubuntu-latest
+    # The sign job reads these, never the `plan` artifact: build jobs can replace an artifact, not a job's outputs.
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      any: ${{ steps.plan.outputs.any }}
+      tag: ${{ steps.plan.outputs.tag }}
+      base: ${{ steps.plan.outputs.base }}
+      mods: ${{ steps.plan.outputs.mods }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: python3 -m unittest scripts/test_native_build.py
+      - id: plan
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          MODS: ${{ inputs.mods }}
+          BASE: ${{ inputs.base }}
+          TARGETS: ${{ inputs.targets }}
+        run: python3 scripts/native_build.py plan --mods "$MODS" --base "$BASE" --targets "$TARGETS" --out plan
+      - name: The launcher, checked against Horizon's release keys
+        if: steps.plan.outputs.any == 'true'
+        run: |
+          set -euo pipefail
+          [ -n "$LAUNCHER" ] || { echo "::error::vars.NATIVE_BUILD_LAUNCHER names no launcher release"; exit 1; }
+          mkdir -p plan/launcher && cd plan/launcher
+          base="https://github.com/horizon-rust/horizon/releases/download/$LAUNCHER"
+          curl -sSfLO "$base/SHA256SUMS" && curl -sSfLO "$base/SHA256SUMS.sig"
+          for asset in $(jq -r '.builds[].launcher' ../plan.json | sort -u); do curl -sSfLO "$base/$asset"; done
+          curl -sSfL -o release-keys.txt \
+            "https://raw.githubusercontent.com/horizon-rust/horizon/$SIGN_REV/crates/horizon-release-sign/release-keys.txt"
+          echo "$RELEASE_KEYS_SHA256  release-keys.txt" | sha256sum -c
+          grep -v '^#' release-keys.txt | grep . > keys
+          { printf 'horizon release %s\n' "$LAUNCHER"; cat SHA256SUMS; } > message
+          ok=
+          while read -r key; do
+            { printf '\x30\x2a\x30\x05\x06\x03\x2b\x65\x70\x03\x21\x00'; echo "$key" | base64 -d; } > pub.der
+            while read -r sig; do
+              echo "$sig" | base64 -d > sig.bin
+              openssl pkeyutl -verify -rawin -pubin -keyform DER -inkey pub.der -in message -sigfile sig.bin >/dev/null 2>&1 && ok=1
+            done < SHA256SUMS.sig
+          done < keys
+          [ -n "$ok" ] || { echo "::error::$LAUNCHER: SHA256SUMS isn't signed by a Horizon release key"; exit 1; }
+          sha256sum --ignore-missing -c SHA256SUMS
+          rm -f message pub.der sig.bin keys release-keys.txt SHA256SUMS SHA256SUMS.sig
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plan
+          path: plan
+  build:
+    needs: plan
+    if: needs.plan.outputs.any == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.plan.outputs.matrix) }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan
+          path: plan
+      - if: runner.os == 'Linux'
+        # The game's ALSA and udev headers; the launcher links xkbcommon and xcb even headless.
+        run: sudo apt-get update && sudo apt-get install -y libasound2-dev libudev-dev pkg-config libxkbcommon-x11-0 libxcb1
+      - name: Build the set as a player's launcher would
+        env:
+          TARGET: ${{ matrix.target }}
+          KEY: ${{ matrix.key }}
+          LAUNCHER_ASSET: ${{ matrix.launcher }}
+          ARCHIVE: ${{ matrix.archive }}
+          TAG: ${{ needs.plan.outputs.tag }}
+        run: |
+          set -euo pipefail
+          scratch="$RUNNER_TEMP/native"
+          mkdir -p "$scratch/launcher" "$scratch/out"
+          case "$LAUNCHER_ASSET" in
+            *.tar.gz) tar xzf "plan/launcher/$LAUNCHER_ASSET" -C "$scratch/launcher"; launcher="$scratch/launcher/horizon-launcher" ;;
+            *macos*) unzip -q "plan/launcher/$LAUNCHER_ASSET" -d "$scratch/launcher"; launcher="$scratch/launcher/Horizon.app/Contents/MacOS/horizon-launcher" ;;
+            *) unzip -q "plan/launcher/$LAUNCHER_ASSET" -d "$scratch/launcher"; launcher="$scratch/launcher/horizon-launcher.exe" ;;
+          esac
+          export HORIZON_LAUNCHER_HOME="$scratch/home" HORIZON_HOME="$scratch/game" XDG_DATA_HOME="$scratch/data" \
+            XDG_CONFIG_HOME="$scratch/config" HORIZON_LAUNCHER_NO_SELF_UPDATE=1 HORIZON_NO_AUDIO=1
+          py=$(command -v python3 || command -v python)  # Windows runners name it python
+          "$launcher" install "$TAG"
+          "$launcher" native-build --prebuilt-out "$scratch/out/build" --version "$TAG" --profile release \
+            --trust-native-code plan/hnmods
+          got=$("$py" -c 'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest())' "$scratch/out/build/request.txt")
+          [ "$got" = "$KEY" ] || { echo "::error::the launcher built request $got, the plan asked for $KEY"; exit 1; }
+          mkdir -p dist
+          tar czf "dist/$ARCHIVE" -C "$scratch/out/build" .
+          ls -l dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.target }}
+          path: dist/${{ matrix.archive }}
+          if-no-files-found: error
+  sign:
+    needs: [plan, build]
+    if: always() && needs.plan.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    environment: native-builds
+    permissions:
+      contents: write
+      actions: read
+    env:
+      # Job outputs of plan, the only input of this job besides the archives themselves.
+      BASE: ${{ needs.plan.outputs.base }}
+      TAG: ${{ needs.plan.outputs.tag }}
+      MODS: ${{ needs.plan.outputs.mods }}
+      MATRIX: ${{ needs.plan.outputs.matrix }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/native_build.py
+            prebuilt.toml
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+          path: registry
+      - name: The signer, at its pinned commit and hashes
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/signer" && cd "$RUNNER_TEMP/signer"
+          raw="https://raw.githubusercontent.com/horizon-rust/horizon/$SIGN_REV"
+          curl -sSfL -o sign_native_build.sh "$raw/tools/ci/sign_native_build.sh"
+          curl -sSfL -o native-build-keys.txt "$raw/crates/horizon-release-sign/native-build-keys.txt"
+          printf '%s  %s\n' "$SIGN_SCRIPT_SHA256" sign_native_build.sh "$SIGN_KEYS_SHA256" native-build-keys.txt | sha256sum -c
+      - name: What to sign, recomputed from the plan job's outputs
+        run: |
+          set -euo pipefail
+          # Checks the mods are a prebuilt.toml set and every row's key is that set's for its target; prints
+          # "<key> <target>". Fails the job on any mismatch.
+          python3 -I registry/scripts/native_build.py signable > "$RUNNER_TEMP/rows"
+          cat "$RUNNER_TEMP/rows"
+      - name: Each target's build, by its exact artifact name
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          while read -r key target <&3; do
+            name="${key:0:16}-$target.tar.gz"
+            dir="$RUNNER_TEMP/builds/$target"
+            mkdir -p "$dir"
+            if ! gh run download "$GITHUB_RUN_ID" --name "build-$target" --dir "$dir"; then
+              echo "::warning::$target: no build"
+              continue
+            fi
+            # Exactly one regular file, named from the key and target; anything else in the artifact is refused.
+            listing=$(cd "$dir" && find . -mindepth 1 -printf '%y %P\n')
+            if [ "$listing" != "f $name" ]; then
+              echo "::error::$target: build-$target holds something other than $name alone:"; echo "$listing"; exit 1
+            fi
+            size=$(stat -c %s "$dir/$name")
+            [ "$size" -le "$MAX_ARCHIVE" ] || { echo "::error::$target: $name is $size bytes, over $MAX_ARCHIVE"; exit 1; }
+            echo "$target: $name, $size bytes, sha256 $(sha256sum < "$dir/$name" | cut -d' ' -f1)"
+          done 3< "$RUNNER_TEMP/rows"
+      - name: Sign, then publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NATIVE_BUILD_SIGNING_KEY: ${{ secrets.NATIVE_BUILD_SIGNING_KEY }}
+          NATIVE_BUILD_SIGNING_KEY_NEXT: ${{ secrets.NATIVE_BUILD_SIGNING_KEY_NEXT }}
+        run: |
+          set -euo pipefail
+          signer="$RUNNER_TEMP/signer"
+          # Checked again in the step that holds the key: nothing between the steps may have changed them.
+          (cd "$signer" && printf '%s  %s\n' "$SIGN_SCRIPT_SHA256" sign_native_build.sh "$SIGN_KEYS_SHA256" native-build-keys.txt \
+            | sha256sum -c --quiet)
+          release="native-builds-${BASE:0:12}"
+          if ! gh release view "$release" >/dev/null 2>&1; then
+            gh release create "$release" --prerelease --latest=false --title "Prebuilt native builds on $TAG" \
+              --notes "The game built with registry native mods on Horizon $BASE, signed by native-build.yml (horizon#11859). The Horizon launcher downloads and checks these; nothing here is for downloading by hand."
+          fi
+          missing=0
+          while read -r key target <&3; do
+            dir="$RUNNER_TEMP/builds/$target"
+            name="${key:0:16}-$target.tar.gz"
+            sig="${key:0:16}-$target.sig"
+            if [ ! -f "$dir/$name" ]; then missing=1; continue; fi
+            NATIVE_BUILD_KEYS="$signer/native-build-keys.txt" bash "$signer/sign_native_build.sh" "$key" "$target" "$dir/$name"
+            # The signature last: the launcher looks for it first, so a half-uploaded build is never offered.
+            gh release upload "$release" "$dir/$name"
+            gh release upload "$release" "$dir/$sig"
+          done 3< "$RUNNER_TEMP/rows"
+          exit $missing

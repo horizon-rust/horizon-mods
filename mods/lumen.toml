@@ -1,0 +1,34 @@
+id = "lumen"
+kind = "shader"
+name = "Lumen"
+summary = "Cozy Photon-style look: soft shadows, warm sunsets, volumetric clouds, light shafts, clear water, waving plants."
+description = """
+A cozy shader pack in Horizon's own format, inspired by the look of Photon. All code is original, no Minecraft assets.
+
+- Soft sun and moon shadows
+- Warm sky with a round sun and golden sunsets
+- Volumetric clouds with drifting cloud shadows
+- Light shafts through trees, sun rays, bloom and distance haze
+- Clear water with waves, refraction, reflections and the sun's glint
+- Clear turquoise water with caustics when you dive
+- Waving leaves, grass, flowers and seagrass
+- Coloured block light and glowing fireflies
+- Wet ground after rain
+
+Every effect can be changed in Options > Horizon Settings > Shader Packs > Shader Options."""
+authors = ["Lutziano888"]
+owners = ["Lutziano888"]
+owner_ids = [129792568]
+license = "MIT"
+source = "https://github.com/Lutziano888/horizon-lumen"
+icon = "icons/lumen.png"
+categories = ["semi-realistic", "atmosphere", "medium"]
+tags = ["shadows", "clouds", "water", "reflections", "waving-plants", "god-rays", "colored-light"]
+
+[[versions]]
+version = "2.1.0"
+published = "2026-11-06"
+game = "26.3"
+file = "lumen-2.1.0.hshader"
+sha256 = "3249a3d8706e11c2175a16dbf034b36e41ed47c76c9749e7087ea0aab89a2dce"
+changelog = "First release. Needs a Horizon build from 2026-11-03 or newer."

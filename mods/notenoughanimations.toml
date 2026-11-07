@@ -1,0 +1,44 @@
+id = "notenoughanimations"
+kind = "native-mod"
+name = "Not Enough Animations for Horizon"
+summary = "tr7zw's player animations for Horizon: eating, ladders, boats, item swaps, burning, freezing, crawling and sleeping."
+description = """
+Not Enough Animations brings tr7zw's third-person player animations to Horizon. It changes only how player models are posed; movement, combat, damage and game logic stay vanilla.
+
+Ported animations: Eat/Drink, Ladder, Boat Rowing, Item Swap, Burning, Freezing, Crawling and No Sleep Movement. Each has its own toggle in Options → Mods → Not Enough Animations, with the original mod's translations.
+
+Original mod by tr7zw. Horizon port by romaeboj."""
+authors = ["tr7zw (original mod)", "romaeboj (Horizon port)"]
+owners = ["Dbdbdndbbsbs"]
+owner_ids = [97656496]
+license = "LicenseRef-tr7zw-Protective"
+source = "https://github.com/Dbdbdndbbsbs/notenoughanimations-horizon"
+icon = "icons/notenoughanimations.png"
+categories = ["adventure", "decoration"]
+tags = ["animations", "player-model", "third-person", "immersion", "vanilla-plus"]
+
+[[versions]]
+version = "0.2.73"
+published = "2026-11-07"
+game = "26.3"
+file = "notenoughanimations-0.2.73.hnmod"
+sha256 = "21cc06e6be411513e81f6ad2cf44f99ec43b9496407bc0683d2bbe3562ace1a3"
+changelog = """
+0.2.73 fixes the native-compat build on stock Horizon 66f3981: boat rowing and item swap now read the game's live boat and hand state instead of fields that only existed in a local source tree. Boat rowing follows `AbstractBoat.getRowingTime`, and the animations apply in the original's priority order.
+
+Ported animations:
+
+- **Eat / Drink** — the hand rises to the mouth while eating or drinking, with a chewing motion.
+- **Ladder** — arms and legs alternate while climbing; the phase follows the player's height.
+- **Boat** — each arm rows with its own oar timing, and rests when the oars do.
+- **Item Swap** — the arms cross while the hands trade items, then unroll.
+- **Burning** — the head wobbles and the free arms flail while the player is on fire.
+- **Freezing** — the arms shake in powder snow, unless the player has Fire Resistance.
+- **Crawling** — the swimming pose on land becomes a crawl with alternating arms and legs.
+- **No Sleep Movement** — the arms lie still while sleeping in a bed.
+
+Every animation has its own on/off toggle in **Options → Mods → Not Enough Animations**, plus a master switch. Labels use the original mod's translations.
+
+Arms busy with a swing, held item use, item swap, climbing, rowing, aiming a two-handed item or holding a spear keep their pose, so the animations do not fight vanilla actions.
+
+Original mod by **tr7zw**. Horizon port by **romaeboj**."""

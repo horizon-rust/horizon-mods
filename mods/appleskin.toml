@@ -14,7 +14,7 @@ draws the hunger details AppleSkin shows over the food bar:
 Each part can be turned on or off, and the animation changed, in the mod's settings (Options > Mods > AppleSkin).
 
 Based on AppleSkin by squeek502. See the LICENSE in the source for the original copyright and licence notices."""
-authors = ["soufi"]
+authors = ["sillysoufi"]
 owners = ["soufied"]
 owner_ids = [47915535]
 license = "MIT"

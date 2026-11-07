@@ -1,0 +1,54 @@
+id = "ayynoxs_map_pack"
+kind = "native-mod"
+name = "ayynoxs map pack"
+summary = "Minimap and full-screen world map with waypoints, cave layers and opt-in map sharing between players."
+description = """
+A **minimap** and a **full-screen world map** for Horizon, written from scratch as a native mod. Inspired by the well-known Java map mods, but no code or graphics are taken from them.
+
+## ayynoxs minimap
+- Built on Horizon's own minimap renderer, with coordinates and facing direction below it
+- Square or round, north-up or rotating, 4 sizes, zoom with `I` / `O`
+- **Waypoints:** `B` opens a window for the name, `Backspace` removes the one you aim at. They show on the minimap, on the world map and in the world with their distance in metres.
+- Automatic death point
+- Chat commands: `/wp add|del|rename|share|sync|list|clear|help`
+
+## ayynoxs world map
+- Full-screen map on `M`: drag or WASD to pan, wheel to zoom
+- Drawn like a vanilla map item, one block per cell
+- Saves every chunk you explore, per world/server, dimension and layer
+- Same layers as the minimap: the surface outside, your head height in caves and in the Nether
+
+## Sharing (off by default)
+- `/wp share <nr> <player>` sends a waypoint as a private message, on any server. Only private messages to you can add waypoints.
+- Live map sharing is **off by default** and chosen per server with `/wp sync on|off`. When on, explored chunks and new waypoints go to the other players who turned it on, through a Horizon host (co-op/LAN, Horizon servers) or the AyynoxsMapSync plugin on Paper servers.
+- What arrives is limited: only your current level, within 2048 blocks of you, at most 1000 waypoints per world.
+
+Languages: English (default), Deutsch, Français, Italiano, Русский.
+
+## What it does and doesn't
+- **Hooks:** the native hook points (frame, tick, HUD, keys, commands, minimap, settings, mods list, screen keys and characters, mod messages, player join/leave), plus the Advancements screen's draw, mouse, scroll and close (the world map is drawn in its place), `extras_connecting` (the server address, for the map's folder) and the chat HUD's `add` / `add_signed` (to hide shared-waypoint private messages).
+- **Files:** writes only under `horizon-mods/.horizon-mod-data/ayynoxs_minimap/` (settings, waypoints) and `ayynoxs_worldmap/` (map tiles).
+- **Network:** no internet access. It only sends Horizon mod messages on `ayynoxs_map:sync` to the server you play on (shares only after `/wp sync on`), and `/msg` commands you start yourself with `/wp share <nr> <player>`.
+- Pinned to nightly `6475f62` (2026-11-04)."""
+authors = ["DenoxyYT (Ayynox)"]
+owners = ["DenoxyYT"]
+owner_ids = [94991632]
+license = "MIT"
+source = "https://github.com/DenoxyYT/ayynoxs-map-pack"
+icon = "icons/ayynoxs_map_pack.png"
+categories = ["utility", "adventure", "social"]
+tags = ["minimap", "world", "map", "waypoints", "multiplayer"]
+
+[[versions]]
+version = "0.4.2"
+published = "2026-11-05"
+game = "26.3"
+file = "ayynoxs_map_pack-0.4.2.hnmod"
+sha256 = "d5cef20531720a594969b7b7acfd20d2d32d644d7b0ae230dd68a46f98172371"
+changelog = """
+Changes from the review of 0.4.1:
+- Map sharing is off by default and chosen per server: /wp sync on (or the setting) turns it on. When a server can pass shares on, the pack says so once in chat.
+- Waypoints arrive only through private messages to the player (commands.message.display.incoming); the marker in public chat does nothing.
+- Shared chunks are taken only for the player's current level, a real layer and within 2048 blocks of the player; shared waypoints stop at 1000 per world.
+Also: the world map is drawn like a map item again (one block per cell), which is cheaper while dragging.
+Built for Horizon nightly 6475f62 (2026-11-04)."""

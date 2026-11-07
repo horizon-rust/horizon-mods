@@ -48,9 +48,21 @@ owner_ids = [339589475]
 license = "MIT"
 source = "https://github.com/Lauch2/horizon-waymap-mod"
 icon = "icons/waymap.png"
-categories = ["utility", "adventure"]
+categories = ["utility", "adventure", "management"]
 tags = ["waypoints", "minimap", "navigation", "death-points", "hud"]
 key = "RWS1B1QZPeYaSNKJr9rffnfHDSvB0AZj/Ul1B2pKrJ2XFBgKXL0FC96u"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-05"
+game = "26.3"
+file = "waymap-0.2.1.hnmod"
+sha256 = "702af5081ef69b97e4ab8c43eed98140243cc4dc9d0964df2ef2227f9bc76342"
+signature = """
+untrusted comment: signature from minisign secret key
+RUS1B1QZPeYaSHezDLD6R2pB3yPNb/cRiVDBUdyRz6wMEN89Wteo8J9Fnjf9Smoup4qVFZFd1a/L1YogmobVGGzk4OTrb4mVqAY=
+trusted comment: timestamp:1793896727\tfile:waymap-0.2.1.hnmod\thashed
+RvWULAMNk5gh3M7ewdU/sju6cpVHsOscwpw1pqEHb5xU7iqFAXRbcXMA5tTEmUvWjMtRgQZJ11m0Fn+Rjb3hDg=="""
 
 [[versions]]
 version = "0.2.0"

@@ -79,7 +79,27 @@ class Bundle:
         # As the launcher does for a mod built on another Horizon than it pins.
         toml = out / "horizon-mixin.toml"
         text = re.sub(r'horizon_revision\s*=\s*"[0-9a-f]{40}"', f'horizon_revision = "{revision}"', toml.read_text())
-        toml.write_text(text)
+        toml.write_text(strip_launcher_tables(text))
+
+
+# The tables only the launcher reads; it removes them before horizon-mixins sees the manifest (native_mods/api.rs).
+LAUNCHER_TABLES = ("api", "dependencies")
+
+
+def strip_launcher_tables(text):
+    """`text` without its [api] and [dependencies] tables (and their sub-tables), the rest unchanged."""
+    kept, skipping = [], False
+    for line in text.splitlines(keepends=True):
+        header = re.match(r'\s*\[\[?\s*([^\]]+?)\s*\]\]?\s*(#.*)?$', line)
+        if header:
+            skipping = header.group(1).split(".")[0].strip().strip('"\'') in LAUNCHER_TABLES
+        if not skipping:
+            kept.append(line)
+    stripped = "".join(kept)
+    want = {k: v for k, v in tomllib.loads(text).items() if k not in LAUNCHER_TABLES}
+    if tomllib.loads(stripped) != want:
+        sys.exit("horizon-mixin.toml: its [api] or [dependencies] table couldn't be removed line by line")
+    return stripped
 
 
 def download(url, sha256):
@@ -320,6 +340,10 @@ def check(args):
         if clashes:
             failed.append(mod.id)
         if args.no_compile:
+            continue
+        if mod.api:
+            # Its API package is staged by the launcher only (Bundle.api), as `health` leaves these out too.
+            print("- applies; it has a mod API package, which only the launcher builds, so it isn't compiled here.")
             continue
         if compiles(stage):
             print(f"- applies and compiles with {len(popular) - len(refused)} popular mods.")

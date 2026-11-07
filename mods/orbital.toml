@@ -1,0 +1,48 @@
+id = "orbital"
+kind = "native-mod"
+name = "Orbital Laser"
+summary = "Fifteen orbital strikes, from a laser to a Planet Killer: a designator, a wheel, and craters that stay."
+description = """
+By Stink-O. Orbital Laser adds an Orbital Laser Designator. Aim it and hold right-click to call down one of fifteen orbital strikes (hold it and press R for the laser wheel, or type `/orbital wheel`), each with its own sky, sound and scar: the Orbital Laser, the Godly Laser, a Black Hole, the Meteor Storm, the Mothership, the Downfall, the Planet Killer, the Crystal Bloom, the Sinkhole, the Payload, the Nuke, the Rod from God, the Supercell, the Hurricane and the Tsunami. The wheel also sets your creative flying speed and the strike's approach, arrival and colours.
+
+**Read before you fire**
+
+- **Terrain damage is permanent.** A strike flattens and digs out the land, up to hundreds of blocks across, and kills the mobs and dropped items nearby (not players). Use a throwaway world. `/orbital terrain off` (or the wheel's centre) makes strikes light and sound only.
+- **Photosensitivity.** The Rod from God has ~0.17 s of stark impact frames as it strikes, and several strikes (the Planet Killer, the Hurricane and the Supercell among them) have lightning and flashes, and the Tsunami's blow, as the water takes you, is one white flash over the whole picture. `/orbital impactframes off` (the wheel's IMPACT FX switch) turns the impact frames off. If flashing light affects you, skip those strikes.
+- **Big strikes are heavy.** QUALITY FAST (the default) draws the smoke at half size; `/orbital quality full` for the full look.
+
+**Native mod.** The mod's code is compiled into the game, runs with the access the game has to your computer, and is not sandboxed, so install it only if you trust it. The launcher shows its trust notice and waits for you to press Build; the first native build downloads the launcher's Rust and takes 20 to 30 minutes. Pick **Release build** on the Native build row first: it builds more slowly, but the game runs noticeably faster. It builds on the Horizon revision it was tested on, whatever Nightly you have.
+
+What each system needs first:
+
+- **Linux** (x86-64), tested: a C compiler, `pkg-config` and the ALSA and libudev development files (Debian/Ubuntu: `sudo apt install build-essential pkg-config libasound2-dev libudev-dev`); the launcher names what is missing.
+- **Windows** (x64), build-checked, not yet played: nothing; the launcher brings its own Rust and MinGW-w64.
+- **macOS** (Apple Silicon), build-checked, not yet played: Apple's Command Line Tools (`xcode-select --install`).
+- **macOS** (Intel): not available; the launcher can't build native mods there.
+
+**One file for code and content.** The game reads content mods only from `horizon-mods/`, so this mod carries a small mixin (`content_find`, on `horizon_mods::manifest::find`) that has the game read its content (`horizon-mod.toml`, `assets/`, `data/`) from its own `horizon-native-mods/orbital.hnmod` too. It writes and copies nothing, and steps aside when a content mod `orbital` is already in `horizon-mods/`. It goes away once the game reads content from native files (horizon-rust/horizon#5865).
+
+Known issues:
+
+- On Macs the Downfall's effects don't draw: Apple's Metal compiler fails on its pass, so you get its land and sound but not its visuals. Every other strike drew on the Macs it was tried on.
+- Multiplayer and LAN haven't been tested on the native build; it's made for single player. On a server or LAN host, only a level 4 operator can fire strikes that change the world.
+- Each new version rebuilds the game (the first build 20 to 30 minutes, later ones quicker), unlike a plain mod.
+
+Items, models, textures and sounds are the mod's own: nothing from Minecraft is in it. An independent fan project, not affiliated with Mojang, Microsoft or the Horizon project. Source, screenshots, how it works and the full command list: https://github.com/Stink-O/orbital-laser"""
+authors = ["Stink-O"]
+owners = ["Stink-O"]
+owner_ids = [180130752]
+license = "MIT"
+source = "https://github.com/Stink-O/orbital-laser"
+icon = "icons/orbital.png"
+categories = ["equipment", "game-mechanics"]
+tags = ["laser", "explosions", "destruction", "shaders"]
+screenshots = ["screenshots/orbital/1.jpg", "screenshots/orbital/2.jpg", "screenshots/orbital/3.jpg", "screenshots/orbital/4.jpg"]
+
+[[versions]]
+version = "0.5.10"
+published = "2026-11-06"
+game = "26.3"
+file = "orbital-0.5.10.hnmod"
+sha256 = "f860b61f2c54cc4efd6e6373054858768b0fd829afc0b59c60893a556ef4da63"
+changelog = "Adds the Tsunami, the fifteenth strike. Switching lasers no longer hitches the game, and a long stall no longer ends a strike. World changes from a client now need operator level 4, a guest's /orbital no longer changes the host's game, and it's built on Horizon e57b1d34b, so far terrain shows what strikes did and the hand draws during the Hurricane."

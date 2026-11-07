@@ -1,0 +1,44 @@
+id = "hud_plus"
+kind = "native-mod"
+name = "HUD+"
+summary = "One fully configurable HUD with a drag-and-drop editor and four views per module."
+description = """
+HUD+ is one configurable HUD for Horizon, with an in-game drag-and-drop layout editor.
+
+Every module has four views: **Minimal**, **Compact**, **Standard** and **Full**. `Standard` follows the module's own switches; the other three are presets. A profile picks a view for all modules: Minimal gives Minimal, PvP gives Compact, the rest give Standard.
+
+- **AppleSkin** — the original mod's look: golden saturation outlines over the hunger icons and the food/saturation a held item would restore flashing on the same bar. Minimal draws the outlines only, Compact adds food numbers, Full adds saturation, exhaustion, regeneration and the item preview.
+- **Effects** — names, amplifiers, remaining time, sorting, grouping, an expiring-only filter and warning colours; can hide vanilla's icons. Minimal shows three rows of icons only, Compact adds names and time up to six rows, Full shows everything without a limit.
+- **Inventory, armour and held items** — the whole inventory, hotbar, armour and offhand, stack counts, durability bars or percentages, the selected slot, arrows and totems. Minimal is the hotbar alone, Compact adds counts and a durability bar, Full adds the grid, armour, offhand and empty slots.
+- **Coordinates** — XYZ, facing and yaw, chunk, dimension, and the same place in the other dimension. Minimal is XYZ, Compact adds facing, Full adds chunk, dimension, the Nether equivalent and yaw.
+- **Keystrokes** — WASD, space, sneak, sprint, mouse buttons and CPS. Minimal is WASD, Compact adds the mouse, Full adds space, sneak, sprint and CPS.
+- **Performance and time** — FPS, frame time, 1% low, world clock and day, local time and date, speed. Minimal is FPS, Compact adds the clock, Full adds frame time, the 1% low, real time and speed.
+- **Player vitals, food tooltips, durability tooltips.** Minimal is health, Compact adds food and bars, Full adds absorption, armour, air and XP.
+- **The vanilla HUD** — every widget (crosshair, hotbar, health and hunger, XP, effect icons, boss bars, chat, scoreboard and the rest) can be moved and scaled on a `Vanilla` page in the editor.
+
+Settings open as one compact, scrollable panel on the right: General, every module, Vanilla HUD and tooltips are on a single screen, the world stays visible, and each module has its view, anchor, scale, background, border and module-specific options inline. Five profiles (Default, Minimal, PvP, Builder, Streamer) and six themes set everything at once. `H` opens the layout editor, `N` settings, `V` the vanilla layout page; `/hudplus on|off|layout|settings|reset|profile|theme` also work. Configuration lives in `config/hud_plus.json`.
+
+HUD+ only draws. It has no network code, no packets, no second process and no movement, attack or use calls; `check_client_only.py` scans every source for them and CI fails the build if one appears. A wire-level audit (`tools/packet_audit.py`) records a stock Horizon client and the HUD+ build on the same fresh server behind a decoding proxy, and the two captures match packet for packet. The mod is compiled into the client (not a file in `mods/`), and a client-only HUD is never named in `horizon:mod_list`. It is provided as is under the MIT licence, without warranty; players are responsible for checking that a server's rules allow the modules they turn on.
+
+Native mod: the launcher builds it into the game on the pinned Horizon Nightly. Uses the saturation art of [squeek502/AppleSkin](https://github.com/squeek502/AppleSkin) (Unlicense)."""
+authors = ["oxi-does-dev"]
+owners = ["oxi-does-dev"]
+owner_ids = [318972665]
+license = "MIT"
+source = "https://github.com/oxi-does-dev/hud-plus"
+icon = "icons/hud_plus.png"
+categories = ["utility"]
+tags = ["hud", "ui"]
+
+[[versions]]
+version = "4"
+published = "2026-11-06"
+game = "26.3"
+file = "hud_plus-4.hnmod"
+sha256 = "0f94e0502ccd6a2b4905d4f4e41073e06726cb7ce50cd0d9ec1035841d72a957"
+changelog = """
+Four views for every module — Minimal, Compact, Standard and Full. Standard keeps the module's individual switches; the other three are presets, so one row under N makes a module tiny, tidy or exhaustive. Profiles pick a view for all modules (Minimal gives Minimal, PvP gives Compact, the rest Standard).
+
+Also adds an Off setting for effect timers and a separate inventory-grid switch (Minimal keeps only the hotbar), tightens the held/armour rows for the compact views, drops the full-screen sleep overlay from the Vanilla page because there is nothing to move or scale in it, and makes snap-to-grid move modules around their own default offset so dragging one back restores its exact default position.
+
+Settings now open as one compact, scrollable panel on the right instead of a list of module pages: General, every module, Vanilla HUD and Tooltips are on a single screen, the world stays visible behind it, and each module keeps its own switches inline. Clicking a row on the Vanilla page now selects the widget actually under the pointer (the list treated its header as a row), Subtitles start where the captions are drawn and move and scale with the rest of the vanilla HUD, and a configuration change made from chat reaches the HUD immediately. AppleSkin keeps its icons on the vanilla hunger bar when the food numbers make the box wider, and centres those numbers over the icons."""

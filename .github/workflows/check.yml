@@ -29,6 +29,16 @@ jobs:
         with:
           path: head
           persist-credentials: false
+      # A fork's run gets no repository variables, so HORIZON_REV is a branch name: pin it to its commit, or the
+      # cache below keeps serving the tool built the first time (#136 failed on 2026-11-07 with an 11-03 tool).
+      - name: Pin the tool's revision
+        run: |
+          case "$HORIZON_REV" in
+            *[!0-9a-f]*|'')
+              sha=$(git ls-remote https://github.com/horizon-rust/horizon "refs/heads/$HORIZON_REV" | cut -f1)
+              test -n "$sha"
+              echo "HORIZON_REV=$sha" >> "$GITHUB_ENV" ;;
+          esac
       - uses: actions/cache@v4
         with:
           path: |

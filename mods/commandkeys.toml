@@ -1,0 +1,30 @@
+## Horizon registry entry for CommandKeys (port of TerminalMC/CommandKeys).
+id = "commandkeys"
+kind = "native-mod"
+name = "CommandKeys"
+summary = "Bind keys to macros: lists of chat messages and commands with per-message delays, sent in order."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- Bind any key to a macro: an ordered list of chat messages and commands.
+- Per-message delays, editable from the in-game controls screen.
+
+Port of [CommandKeys](https://github.com/TerminalMC/CommandKeys) by TerminalMC (Apache-2.0); credited upstream, original Apache-2.0 license preserved. Feature gaps vs upstream are documented in the port README and tracked on horizon-rust/horizon.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "Apache-2.0"
+source = "https://github.com/Sparticle62ops/horizon-commandkeys"
+categories = ["utility"]
+tags = ["commands", "macros", "keybinds", "qol"]
+
+icon = "icons/commandkeys.png"
+
+[[versions]]
+published = "2026-11-06"
+version = "1.0.0"
+game = "26.3"
+file = "commandkeys-1.0.0.hnmod"
+sha256 = "d1d31b2a156ecf9ac6a88372fbca3f3d9d17d5a9a9326400ea882308f483f07f"
+changelog = "First release: key-to-macro bindings with per-message delays, in-game editor hooked into the controls screen."

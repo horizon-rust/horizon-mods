@@ -1,0 +1,34 @@
+id = "one_shot_gun"
+kind = "mod"
+name = "One shot gun"
+summary = '"A gun that kills any mob in one hit."'
+description = """
+# One Shot Gun
+
+Adds a gun that kills any mob in a single hit.
+
+## Features
+- One-shot kills on every mob
+- Simple to use: equip it and fire
+- Lightweight, with no extra setup needed
+
+## How to use
+1. Install the mod in Horizon.
+2. Get the gun in-game.
+3. Hold it and use it to shoot.
+
+## Notes
+- Made for Minecraft 26.3
+- Report bugs in the comments"""
+authors = ["kun"]
+owners = ["cheakun90-lab"]
+owner_ids = [341364996]
+license = "MIT"
+source = "https://github.com/yourname/one_shot_gun"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-05"
+game = "26.3"
+file = "one_shot_gun-0.1.0.hmod"
+sha256 = "3c0e601ef7975e86c1cec817bee96b8a3b6053230faa18a236c7223cea01d6cb"

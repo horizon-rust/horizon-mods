@@ -1,0 +1,31 @@
+id = "rzero"
+kind = "native-mod"
+name = "RZero"
+summary = "Return by Death: rewinds world chunks, entities, containers, and player state to the last checkpoint upon death."
+description = """
+Rewinds the world and player state to the last checkpoint when the player dies. Blocks, containers, entities, weather, time, dimensions, and inventory are restored to their state at the checkpoint.
+
+### How it works
+- **Return by Death:** On fatal damage, the world rolls back to the last checkpoint instead of showing the death screen.
+- **Checkpoints:** An initial checkpoint is created when entering a world. New checkpoints are saved automatically during safe periods, after combat, and after defeating a boss, or on a fixed timer.
+- **Multiplayer modes:** Supports single key player, multiple key players, all players, or rotating key player, with an optional rollback cooldown.
+- **Manual control:** With cheats enabled, `F6` (`/rzero set`) creates a checkpoint, `F7` (`/rzero load`) rolls back, and `F8` switches the key player mode.
+
+Settings and keybinds are in **Options > Mods**.
+
+Licensed under `GPL-3.0-only`, with a review grant for Horizon's reviewers in [REVIEW-GRANT.md](https://github.com/Reset171/RZeroRust/blob/main/REVIEW-GRANT.md)."""
+authors = ["Reset171"]
+owners = ["Reset171"]
+owner_ids = [266536455]
+license = "GPL-3.0-only"
+source = "https://github.com/Reset171/RZeroRust"
+icon = "icons/rzero.png"
+categories = ["adventure", "utility", "game-mechanics"]
+tags = ["rewind", "checkpoint", "return-by-death", "timeline", "survival"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-07"
+game = "26.3"
+file = "rzero-0.1.0.hnmod"
+sha256 = "7c34c088a7d9225c1e6e3e1f2ece987cee629c61f21c2d9d1fca01736d4a87b1"

@@ -3,25 +3,40 @@ kind = "native-mod"
 name = "Create for Horizon"
 summary = "Build rotating machines and small factories in Horizon with gears, belts, presses and fans."
 description = """
-An unofficial, experimental Rust port of [Create](https://github.com/Creators-of-Create/Create), made by Delete228. It is not made or endorsed by the Create team; their original code is MIT and is credited in the mod's NOTICE.
+An unofficial, experimental Rust port of [Create](https://github.com/Creators-of-Create/Create), made by Delete228. The original Create code is MIT and credited in the mod's NOTICE.
 
-- Drive machines with water wheels, hand cranks or a Creative Motor.
-- Route power through shafts, gears, gearboxes, clutches and encased chain drives.
-- Move items on basic belts and depots. Press sheets, mill ingredients, mix in a Basin or process items with a fan.
+- Drive machines with water wheels, hand cranks or a Creative Motor. Route power through shafts, gears, gearboxes and clutches.
+- Move and process items with belts, depots, presses, mills, Basins and fans.
+- Build small moving farms with bearings, pistons, saws, harvesters and Deployers. Moving assemblies currently fit within one loaded chunk column.
 
-Install it as a native mod in Horizon Launcher and build the instance. It uses simple built-in models and standard Minecraft textures out of the box.
+Install it as a native mod in Horizon Launcher and build the instance. Built-in models use standard Minecraft textures.
 
-**The original models and textures require the original Create 6.0.10 JAR for Minecraft 1.21.1 (NeoForge).** Place one copy in the instance's `horizon-mods/create-resources/` folder and restart Horizon. The JAR is optional and resources are imported locally. [Supported JAR](https://modrinth.com/mod/create/version/UjX6dr61)
+**For the original models and textures, use the Create 6.0.10 JAR for Minecraft 1.21.1 (NeoForge).** Place it in the instance's `horizon-mods/create-resources/` folder and restart Horizon. The JAR is optional and the mod imports resources locally. [Supported JAR](https://modrinth.com/mod/create/version/UjX6dr61)
 
-Moving contraptions, trains and Ponder are planned. [Setup and compatibility](https://github.com/Delete228/create-horizon)"""
+[Setup and compatibility](https://github.com/Delete228/create-horizon)"""
 authors = ["Delete228"]
 owners = ["Delete228"]
 owner_ids = [31237303]
 license = "MIT"
-source = "https://github.com/Delete228/create-horizon/commit/236c87a889cd76f7e663d1d182c28dc1145f7b14"
+source = "https://github.com/Delete228/create-horizon/commit/c92212b043d542b3d35f25587000ab5af37e6a28"
 icon = "icons/create.png"
 categories = ["technology"]
 tags = ["machines", "automation", "rotation", "gears", "belts", "factory", "port"]
+
+[[versions]]
+version = "0.8.0-alpha.16"
+published = "2026-11-06"
+game = "26.3"
+file = "create-0.8.0-alpha.16.hnmod"
+sha256 = "754af00a2f5fa738e59cb1217fdc5b95ac45e2a0f140458312cbd190df08d588"
+changelog = """
+- Added moving contraptions with Mechanical, Windmill and Clockwork Bearings, Mechanical Pistons, Rope Pulleys and Gantries.
+- Moving saws, drills, harvesters, ploughs and Deployers can work on supported assemblies. Mounted chests retain their inventory across stops and restarts. Portable Storage Interfaces and Chutes can feed or unload supported farms.
+- Vertical Mechanical Bearings can land through dry vanilla leaves. Farm supply and shutdown matched 125 consecutive ticks in Java Create 6.0.10.
+
+This is an alpha. Contraptions must fit within one loaded chunk column, and collision and presentation coverage is partial. Built cleanly in Horizon Launcher 0.2.45 on macOS ARM64. The bundled models and the optional local Create 6.0.10 JAR were checked in game.
+
+[Supported behavior and tests](https://github.com/Delete228/create-horizon/blob/0cb39d4a965f5c229d38def8c62ea8462c0ac176/docs/contraptions.md)"""
 
 [[versions]]
 version = "0.7.0-alpha.2"

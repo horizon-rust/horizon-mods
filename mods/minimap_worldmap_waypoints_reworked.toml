@@ -15,7 +15,8 @@ An adaptive minimap and a full world map for Horizon, with a shared in-memory te
 - Portals (Nether, End and End gateways) are marked and show their destination; Nether destinations prefer the nearest known portal, otherwise coordinate conversion.
 - Overworld and Nether world borders are drawn on both maps (the Nether border is scaled to the same physical area).
 - Relief shading crosses chunk borders; unknown terrain is transparent; the minimap renders at high resolution for smooth movement.
-- Settings and named waypoints persist asynchronously in the mod data folder. No network requests are made by the mod.
+- Settings and named waypoints persist asynchronously in the mod data folder. Waypoints are isolated by save/server identity and dimension, with 64 points per world/server. Legacy unscoped points are deleted on upgrade; preferences are retained.
+- Large-map terrain is drawn as GPU tiles; distant smoothing is enabled by default and can be disabled. No network requests are made by the mod.
 
 The runtime uses only portable standard-library APIs and is intended for Linux, macOS and Windows. Live gameplay has been checked on Linux only.
 """
@@ -29,9 +30,9 @@ categories = ["utility", "adventure"]
 tags = ["minimap", "map", "world map", "waypoints", "navigation", "hud", "portals", "biome"]
 
 [[versions]]
-version = "0.3.1"
+version = "0.4.0"
 published = "2026-11-08"
 game = "26.3"
-file = "minimap_worldmap_waypoints_reworked-0.3.1.hnmod"
-sha256 = "94e1028027bc2eda334528dab6422ab67c9bcd9ebf43a6eae434c1b7e0724197"
-changelog = "Large-map texture now follows the physical GUI resolution (fixes GUI-scale pixelation). Named waypoints with a manager screen and HUD letters, portal markers with destinations, Overworld/Nether world borders, biome hover, real plant colours, depth-dependent water, clearer relief, and a 0.3.0 native rebuild."
+file = "minimap_worldmap_waypoints_reworked-0.4.0.hnmod"
+sha256 = "5d6423a3adfe6bb7b8634d922c5569202aeb1484fff4e9e155eedaf63d53bde6"
+changelog = "Fix waypoint isolation by save/server identity, including matching coordinates and reconnects. Delete legacy unscoped waypoints while preserving preferences. GPU tile rendering for the large map and optional distant smoothing enabled by default."

@@ -43,7 +43,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.34.0";
+pub const VERSION: &str = "0.35.1";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -151,6 +151,8 @@ static BUSY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(
 static PENDING_SLEEP: Mutex<Vec<smp_presence::Act>> = Mutex::new(Vec::new());
 /// Whether an `/rtp` waits for its land: the Overworld's tick reads it then.
 static RTP: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+/// The owner of the chunk tickets `/rtp` holds while it looks for land.
+const RTP_TICKET: &str = "smp:rtp";
 /// What each `/rtp`'s reads cost the Overworld's tick, by player: reads,
 /// total and longest (µs), for the line logged when they land.
 static RTP_COST: Mutex<Vec<(u128, u32, u64, u64)>> = Mutex::new(Vec::new());
@@ -290,8 +292,7 @@ fn state(dir: PathBuf) -> std::sync::MutexGuard<'static, Option<Smp>> {
     let mut state = STATE.lock().unwrap_or_else(|e| e.into_inner());
     if state.as_ref().is_none_or(|s| s.dir != dir) {
         if let Some(old) = state.as_mut() {
-            flush_book(old);
-            save(old);
+            save_now(old);
         }
         *state = Some(open(dir));
     }
@@ -302,41 +303,61 @@ fn state(dir: PathBuf) -> std::sync::MutexGuard<'static, Option<Smp>> {
 }
 
 fn save(smp: &mut Smp) {
+    use horizon_client::spans::guard;
+    let _span = guard("smp_save");
     // The report's state is written with the balances, in the same file.
-    if let (Some(r), Ok(e)) = (&mut smp.report, &mut smp.economy) {
-        r.store(e);
-    }
-    // So are the auction house's listings, bids and mail.
-    if let (Some(a), Ok(e)) = (&mut smp.auction, &mut smp.economy) {
-        a.store(e);
-        for p in a.problems.drain(..) {
-            log::error!("[smp] {p}");
+    {
+        let _s = guard("smp_save_report_store");
+        if let (Some(r), Ok(e)) = (&mut smp.report, &mut smp.economy) {
+            r.store(e);
         }
     }
-    if let Ok(e) = &mut smp.economy
-        && let Err(err) = e.save()
+    // So are the auction house's listings, bids and mail.
     {
-        log::error!("[smp] {err}");
+        let _s = guard("smp_save_auction_store");
+        if let (Some(a), Ok(e)) = (&mut smp.auction, &mut smp.economy) {
+            a.store(e);
+            for p in a.problems.drain(..) {
+                log::error!("[smp] {p}");
+            }
+        }
     }
-    if let Ok(p) = &mut smp.places
-        && let Err(err) = p.save(chrono::Utc::now().timestamp_millis())
     {
-        log::error!("[smp] {err}");
+        let _s = guard("smp_save_economy");
+        if let Ok(e) = &mut smp.economy
+            && let Err(err) = e.save()
+        {
+            log::error!("[smp] {err}");
+        }
     }
-    if let Ok(c) = &mut smp.claims
-        && let Err(err) = c.save()
     {
-        log::error!("[smp] {err}");
+        let _s = guard("smp_save_places");
+        if let Ok(p) = &mut smp.places
+            && let Err(err) = p.save(chrono::Utc::now().timestamp_millis())
+        {
+            log::error!("[smp] {err}");
+        }
+    }
+    {
+        let _s = guard("smp_save_claims");
+        if let Ok(c) = &mut smp.claims
+            && let Err(err) = c.save()
+        {
+            log::error!("[smp] {err}");
+        }
     }
     if let Ok(b) = &mut smp.board
         && let Err(err) = b.save()
     {
         log::error!("[smp] {err}");
     }
-    if let Ok(p) = &mut smp.presence
-        && let Err(err) = p.save()
     {
-        log::error!("[smp] {err}");
+        let _s = guard("smp_save_presence");
+        if let Ok(p) = &mut smp.presence
+            && let Err(err) = p.save()
+        {
+            log::error!("[smp] {err}");
+        }
     }
     if let Ok(n) = &mut smp.nicks
         && let Err(err) = n.save()
@@ -355,6 +376,19 @@ fn save(smp: &mut Smp) {
         log::error!("[smp] {err}");
     }
     smp.reports.save();
+    // The files above are written by the SMP's writer thread.
+    for err in smp_store::take_errors() {
+        log::error!("[smp] {err}");
+    }
+}
+
+/// Every file of `smp` on disk now (the world closes, another opens).
+fn save_now(smp: &mut Smp) {
+    flush_book(smp);
+    save(smp);
+    for err in smp_store::flush() {
+        log::error!("[smp] {err}");
+    }
 }
 
 /// The commands, for every player's command tree.
@@ -2363,6 +2397,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     if n % 20 == 0
         && let Ok(v) = &mut smp.vanish
     {
+        let _span = horizon_client::spans::guard("smp_vanish");
         for (uuid, hidden) in v.changes() {
             game.native_hide_player(uuid, hidden.then_some(smp_vanish::LEVEL));
         }
@@ -2384,6 +2419,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     if let Ok(p) = &mut smp.places
         && (n % 20 == 0 || warming)
     {
+        let _span = horizon_client::spans::guard("smp_places");
         if n % 20 == 0 {
             let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
             p.played(&on, now);
@@ -2420,13 +2456,20 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             }
             out.push(Out::Tell(t.uuid, t.done.clone()));
         }
-        // `/rtp`'s chunks: held loaded while it looks, let go after.
-        p.force(now, &mut |line| game.native_run_command(line));
+        // `/rtp`'s chunks: held loaded while it looks (a ticket, which never
+        // waits for the chunk), let go after.
+        let legacy = p.force(now, &mut |(x, z), hold| {
+            game.native_force_chunk_in(RTP_TICKET, smp_places::OVERWORLD, [x, z], hold)
+        });
+        for line in legacy {
+            game.native_run_command(&line);
+        }
         RTP.store(p.rtp_searching(), Relaxed);
     }
     if let Ok(e) = &mut smp.economy
         && n % 20 == 0
     {
+        let _span = horizon_client::spans::guard("smp_economy");
         for p in &players {
             e.seen(p.uuid, &p.name);
         }
@@ -2460,6 +2503,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         if let Some(r) = &mut smp.report
             && r.due(now)
         {
+            let _span = horizon_client::spans::guard("smp_report");
             let (o, web) = r.tick(e, now);
             out.extend(o);
             if web {
@@ -2477,11 +2521,13 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     // The market's minute: prices move, open menus and carried charts
     // follow, the files are written by threads; once a day, the movers.
     if n % 20 == 0 {
+        let _span = horizon_client::spans::guard("smp_market");
         for w in smp.market.warnings.drain(..) {
             log::warn!("[smp] market: {w}");
         }
         let moved = smp.market.tick(now);
         if moved || now - smp.market_web >= 5 * 60_000 {
+            let _span = horizon_client::spans::guard("smp_market_minute");
             smp.market_web = now;
             market_minute(game, smp, &players, now);
         }
@@ -2531,6 +2577,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         && smp.switches.on(Part::Presence)
         && let Ok(pr) = &mut smp.presence
     {
+        let _span = horizon_client::spans::guard("smp_presence");
         let seen: Vec<smp_presence::Seen> = players
             .iter()
             .map(|p| smp_presence::Seen {
@@ -2596,6 +2643,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         && smp.switches.on(Part::Board)
         && let Ok(b) = &mut smp.board
     {
+        let _span = horizon_client::spans::guard("smp_board");
         let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
         if let Ok(e) = &smp.economy
             && b.due(now, e.revision())
@@ -2629,6 +2677,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         && smp.switches.on(Part::Nicks)
         && let Ok(nicks) = &mut smp.nicks
     {
+        let _span = horizon_client::spans::guard("smp_nicks");
         let pending = std::mem::take(&mut nicks.pending);
         // The files behind the real names are read only when a change waits.
         let names = (!pending.is_empty()).then(|| ServerNames::read(&dir, smp.economy.as_ref().ok()));
@@ -2662,6 +2711,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     // The casino: its frames and rounds each tick while one moves (5
     // pictures a second at most), otherwise once a second for the sweep.
     let mut casino = Vec::new();
+    let casino_span = horizon_client::spans::guard("smp_casino");
     if let Ok(e) = &mut smp.economy
         && (n % 20 == 0 || smp.casino.animating())
     {
@@ -2670,6 +2720,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         let online = (n % 20 == 0).then_some(&on[..]);
         casino = smp_casino_glue::tick(game, &mut smp.casino, e, now, online);
     }
+    drop(casino_span);
     let title = smp.board.as_ref().map(|b| b.config.title.clone()).unwrap_or_default();
     let busy = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty())
         || !smp.trades.open.is_empty()
@@ -2682,22 +2733,18 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             game.native_sleep_ignored(uuid, ignored);
         }
     }
-    // A vanished player doesn't hold the night up; the subtitle lasts a
-    // little past the next second's (1.5 s), so it never blinks.
+    // A vanished player doesn't hold the night up. The reminder is on the
+    // action bar, above the hotbar, not in the middle of the screen: sent once
+    // a second, it stays up (an action bar line lasts about 3 s), so it never blinks.
     for (uuid, name) in subtitles {
         game.native_sleep_ignored(uuid, true);
-        let subtitle = serde_json::json!({"text": smp_vanish::SUBTITLE, "color": "aqua"});
-        for line in [
-            format!("title {name} times 0 30 5"),
-            format!("title {name} subtitle {subtitle}"),
-            format!("title {name} title \"\""),
-        ] {
-            game.native_run_command(&line);
-        }
+        let line = serde_json::json!({"text": smp_vanish::SUBTITLE, "color": "aqua"});
+        game.native_run_command(&format!("title {name} actionbar {line}"));
     }
     for (uuid, name) in unvanished {
         game.native_sleep_ignored(uuid, false);
-        game.native_run_command(&format!("title {name} clear"));
+        // An empty line takes the reminder down at once, and leaves any title alone.
+        game.native_run_command(&format!("title {name} actionbar \"\""));
     }
     for line in particles.into_iter().chain(casino) {
         game.native_run_command(&line);
@@ -2836,8 +2883,7 @@ fn flush_book(smp: &mut Smp) {
 pub fn closed() {
     let mut state = STATE.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(smp) = state.as_mut() {
-        flush_book(smp);
-        save(smp);
+        save_now(smp);
     }
     *state = None;
 }

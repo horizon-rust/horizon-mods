@@ -22,7 +22,7 @@
 // for its tests.
 
 use super::smp_economy::{Out, Player};
-use super::smp_store::{parse_uuid, read_json, uuid_string, write_json};
+use super::smp_store::{parse_uuid, read_json, save_json, uuid_string};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, path::PathBuf};
 
@@ -191,7 +191,7 @@ impl Nicks {
 
     pub fn save(&mut self) -> Result<(), String> {
         if self.dirty {
-            write_json(&self.path, &self.file)?;
+            save_json(&self.path, &self.file)?;
             self.dirty = false;
         }
         Ok(())

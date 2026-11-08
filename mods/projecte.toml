@@ -1,0 +1,26 @@
+id = "projecte"
+kind = "mod"
+name = "ProjectE for Horizon (assets)"
+summary = "The blocks, items, textures, text and recipes of ProjectE for Horizon. Needs the native mod."
+description = """
+**This is one of the two parts of [ProjectE for Horizon](https://playhorizon.dev/mods/projecte_core), and does little alone.** Install both: this one, the assets, and the native part.
+
+It holds the blocks, items, creative tab, textures, text and recipes. It has no code. The code, and the description of what the mod does, are in the native part.
+
+An unofficial port of [ProjectE](https://github.com/sinkillerj/ProjectE) (MIT, Copyright (c) 2020 Sin Tachikawa); its recipes and names are used under that licence. The textures are original work made for this port, inspired by ProjectE's look; ProjectE's and EE2's art isn't included. No Minecraft assets are included. MIT licensed."""
+authors = ["Arthur Black"]
+owners = ["d3xc0"]
+owner_ids = [136307382]
+license = "MIT"
+source = "https://github.com/d3xc0/projecte-horizon"
+icon = "icons/projecte.png"
+categories = ["technology", "library"]
+tags = ["emc", "transmutation", "assets"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-06"
+game = "26.3"
+file = "projecte-0.1.0.hmod"
+sha256 = "da08dffc1d021463e43576db233bc79e943aaf4e76a8a1ea37b66aa8ebab883f"
+changelog = "First release."

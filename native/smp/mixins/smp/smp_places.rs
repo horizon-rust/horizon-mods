@@ -101,8 +101,9 @@ struct Data {
     played: BTreeMap<String, i64>,
     /// The last `/rtp` (ms), by player UUID.
     rtp: BTreeMap<String, i64>,
-    /// The Overworld chunks `/rtp` holds loaded (`forceload add`): let go at
-    /// the next start if the server stopped first.
+    /// The Overworld chunks an older SMP's `/rtp` held with `forceload add`
+    /// and hadn't let go of when the server stopped: let go once at the next
+    /// start. `/rtp` holds its chunks with tickets now, never saved.
     forced: BTreeSet<(i32, i32)>,
 }
 
@@ -232,8 +233,8 @@ pub struct Places {
     /// Chunks an `/rtp` landed in, held loaded until then (ms): the
     /// player's own view takes over.
     release: Vec<((i32, i32), i64)>,
-    /// Chunks someone else forced already: wanted, never let go by `/rtp`.
-    others: HashSet<(i32, i32)>,
+    /// The chunks `/rtp` holds with its ticket (`smp:rtp`) now.
+    held: BTreeSet<(i32, i32)>,
     /// `/rtp`'s random (never the world's).
     pub rng: u64,
     /// The world border, as the game last told (None: the default one).
@@ -358,7 +359,7 @@ impl Places {
             back: HashMap::new(),
             dead: Default::default(),
             release: Vec::new(),
-            others: HashSet::new(),
+            held: BTreeSet::new(),
             rng: {
                 use std::hash::BuildHasher;
                 std::collections::hash_map::RandomState::new()
@@ -375,7 +376,7 @@ impl Places {
         if !self.changed && !played {
             return Ok(());
         }
-        smp_store::write_json(&self.path, &self.data)?;
+        smp_store::save_json(&self.path, &self.data)?;
         self.changed = false;
         self.played_at = None;
         Ok(())
@@ -616,36 +617,42 @@ impl Places {
         wanted
     }
 
-    /// Holds the chunks `/rtp` wants with vanilla's `forceload` (run by
-    /// `run`, true when the game did it) and lets go of the others it holds.
-    /// A chunk forced already by someone else is used, never let go.
-    pub fn force(&mut self, now: i64, run: &mut dyn FnMut(&str) -> bool) {
-        let wanted = self.rtp_wanted(now);
-        let line = |verb: &str, (x, z): (i32, i32)| {
-            format!(
-                "execute in {OVERWORLD} run forceload {verb} {} {}",
-                x * 16,
-                z * 16
-            )
-        };
-        for &c in &wanted {
-            if self.data.forced.contains(&c) || self.others.contains(&c) {
-                continue;
+    /// Holds the chunks `/rtp` wants with a chunk ticket (`hold(chunk,
+    /// true)`, true when the game took it) and lets go of the others it holds
+    /// (`hold(chunk, false)`). A ticket never waits for its chunk: the search
+    /// reads it once it is loaded (`rtp_look`). `/forceload add` did wait,
+    /// on the server thread, until the chunk was generated (vanilla's
+    /// `setChunkForced` loads it), and froze the server for every `/rtp`.
+    /// Returns the commands that let go, once, of the chunks an older SMP
+    /// forced and saved.
+    pub fn force(
+        &mut self,
+        now: i64,
+        hold: &mut dyn FnMut((i32, i32), bool) -> bool,
+    ) -> Vec<String> {
+        let mut run = Vec::new();
+        if !self.data.forced.is_empty() {
+            for (x, z) in std::mem::take(&mut self.data.forced) {
+                run.push(format!(
+                    "execute in {OVERWORLD} run forceload remove {} {}",
+                    x * 16,
+                    z * 16
+                ));
             }
-            if run(&line("add", c)) {
-                self.data.forced.insert(c);
-                self.changed = true;
-            } else {
-                self.others.insert(c);
-            }
-        }
-        let gone: Vec<(i32, i32)> = self.data.forced.difference(&wanted).copied().collect();
-        for c in gone {
-            run(&line("remove", c));
-            self.data.forced.remove(&c);
             self.changed = true;
         }
-        self.others.retain(|c| wanted.contains(c));
+        let wanted = self.rtp_wanted(now);
+        for &c in &wanted {
+            if !self.held.contains(&c) && hold(c, true) {
+                self.held.insert(c);
+            }
+        }
+        let gone: Vec<(i32, i32)> = self.held.difference(&wanted).copied().collect();
+        for c in gone {
+            hold(c, false);
+            self.held.remove(&c);
+        }
+        run
     }
 
     /// The places' commands; None for another command. `bodies` are the
@@ -1577,32 +1584,40 @@ mod tests {
         let _ = std::fs::remove_dir_all(d);
     }
 
+    /// `force` with a fake game: the tickets held, and the commands run.
+    fn force_into(
+        p: &mut Places,
+        now: i64,
+        held: &mut BTreeSet<(i32, i32)>,
+        ran: &mut Vec<String>,
+    ) {
+        ran.extend(p.force(now, &mut |c, hold| {
+            if hold {
+                held.insert(c)
+            } else {
+                held.remove(&c)
+            }
+        }));
+    }
+
     #[test]
-    fn rtp_holds_its_chunks_loaded_and_lets_them_go() {
+    fn rtp_holds_its_chunks_with_a_ticket_and_lets_them_go() {
         let d = dir();
         let mut p = Places::open(&d, Config::default()).unwrap();
         p.rng = 42;
         let here = [body(A, 0.0)];
         p.command(&player(A, 0), &here, 0, "rtp").unwrap();
-        let mut ran = Vec::new();
-        p.force(0, &mut |l| {
-            ran.push(l.to_owned());
-            true
-        });
-        assert_eq!(ran.len(), 1, "one chunk at a time: {ran:?}");
-        let first = ran[0].clone();
-        assert!(
-            first.starts_with("execute in minecraft:overworld run forceload add "),
-            "{first}"
-        );
-        // The chunk isn't loaded yet: nothing more.
+        let (mut held, mut ran) = (BTreeSet::new(), Vec::new());
+        force_into(&mut p, 0, &mut held, &mut ran);
+        // One chunk at a time, with a ticket: never `/forceload add`, which
+        // waits on the server thread until the chunk is generated.
+        assert_eq!(held.len(), 1, "{held:?}");
+        assert!(ran.is_empty(), "no command: {ran:?}");
+        let first = *held.first().unwrap();
+        // The chunk isn't loaded yet: the same one stays held.
         p.rtp_look(&mut |_, _| None);
-        ran.clear();
-        p.force(100, &mut |l| {
-            ran.push(l.to_owned());
-            true
-        });
-        assert!(ran.is_empty(), "{ran:?}");
+        force_into(&mut p, 100, &mut held, &mut ran);
+        assert_eq!(held, BTreeSet::from([first]));
         // Ocean: the next one is held, the first let go.
         p.rtp_look(&mut |_, c| {
             Some(chunk(
@@ -1612,55 +1627,47 @@ mod tests {
                 "minecraft:air",
             ))
         });
-        p.force(200, &mut |l| {
-            ran.push(l.to_owned());
-            true
-        });
-        assert_eq!(ran.len(), 2, "{ran:?}");
-        assert!(ran[0].contains(" add "), "{ran:?}");
-        assert_eq!(ran[1], first.replace(" add ", " remove "));
-        let second = ran[0].replace(" add ", " remove ");
-        // Held over a restart: let go at the next start.
+        force_into(&mut p, 200, &mut held, &mut ran);
+        assert_eq!(held.len(), 1, "{held:?}");
+        assert!(!held.contains(&first), "{held:?}");
+        // Tickets aren't saved: after a restart nothing is held or let go.
         p.save(0).unwrap();
         let mut again = Places::open(&d, Config::default()).unwrap();
-        again.rng = 43;
-        ran.clear();
-        again.force(0, &mut |l| {
-            ran.push(l.to_owned());
-            true
-        });
-        assert_eq!(ran, vec![second], "the one held when it stopped");
+        let (mut held_again, mut ran_again) = (BTreeSet::new(), Vec::new());
+        force_into(&mut again, 0, &mut held_again, &mut ran_again);
+        assert!(held_again.is_empty() && ran_again.is_empty());
         // Landed: held 10 s more, then let go.
         p.rtp_look(&mut |_, c| grass(c));
         let (_, go) = p.tick(&here, 3_000);
         assert_eq!(go.len(), 1);
-        ran.clear();
-        p.force(12_000, &mut |l| {
-            ran.push(l.to_owned());
-            true
-        });
+        force_into(&mut p, 12_000, &mut held, &mut ran);
+        assert_eq!(held.len(), 1, "{held:?}");
+        force_into(&mut p, 13_000, &mut held, &mut ran);
+        assert!(held.is_empty(), "{held:?}");
         assert!(ran.is_empty(), "{ran:?}");
-        p.force(13_000, &mut |l| {
-            ran.push(l.to_owned());
-            true
-        });
-        assert_eq!(ran.len(), 1);
-        assert!(ran[0].contains(" remove "), "{ran:?}");
-        // A chunk someone forced already: used, never let go.
-        p.command(&player(A, 0), &here, 4_000_000, "rtp").unwrap();
+        let _ = std::fs::remove_dir_all(d);
+    }
+
+    #[test]
+    fn chunks_an_older_smp_forced_are_let_go_once() {
+        let d = dir();
+        let mut p = Places::open(&d, Config::default()).unwrap();
+        p.data.forced.insert((5, -7));
+        p.changed = true;
+        p.save(0).unwrap();
+        let mut again = Places::open(&d, Config::default()).unwrap();
+        let (mut held, mut ran) = (BTreeSet::new(), Vec::new());
+        force_into(&mut again, 0, &mut held, &mut ran);
+        assert_eq!(
+            ran,
+            vec!["execute in minecraft:overworld run forceload remove 80 -112".to_owned()]
+        );
+        assert!(held.is_empty());
+        // Saved without them: the next start lets go of nothing.
+        again.save(0).unwrap();
+        let mut third = Places::open(&d, Config::default()).unwrap();
         ran.clear();
-        p.force(4_000_000, &mut |l| {
-            ran.push(l.to_owned());
-            false
-        });
-        assert_eq!(ran.len(), 1);
-        p.rtp_look(&mut |_, c| grass(c));
-        p.tick(&here, 4_003_000);
-        ran.clear();
-        p.force(5_000_000, &mut |l| {
-            ran.push(l.to_owned());
-            true
-        });
+        force_into(&mut third, 0, &mut held, &mut ran);
         assert!(ran.is_empty(), "{ran:?}");
         let _ = std::fs::remove_dir_all(d);
     }

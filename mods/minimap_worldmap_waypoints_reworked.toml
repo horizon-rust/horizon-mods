@@ -1,0 +1,37 @@
+id = "minimap_worldmap_waypoints_reworked"
+kind = "native-mod"
+name = "Minimap, Worldmap and waypoints reworked"
+summary = "An adaptive minimap and world map with named waypoints, portals, world borders and a biome readout."
+description = """
+An adaptive minimap and a full world map for Horizon, with a shared in-memory terrain cache.
+
+- Minimap in four corners, square or round, 64–256 GUI pixels, 0.1–4 blocks per pixel, and optional player rotation.
+- World map opened by a rebindable key (M by default); drag to pan and scroll to zoom under the cursor, with eased camera motion.
+- Independent dimension selection for the minimap and the world map (Player / Overworld / Nether / End), without teleporting the player.
+- Hover shows the pointed-at coordinates, the localised biome and waypoint names; the hovered block is outlined.
+- Right-click menu: copy coordinates, create a named waypoint, or teleport when the client knows the player has game-master permission.
+- Separate waypoint manager (N by default) for creating, renaming and deleting waypoints; waypoints are drawn as first-letter markers on the HUD through walls and on both maps.
+- Water and glass-family blocks are semi-transparent, water tint thickens with depth, grass-like ground cover is skipped, and flowers/crops use their real colours.
+- Portals (Nether, End and End gateways) are marked and show their destination; Nether destinations prefer the nearest known portal, otherwise coordinate conversion.
+- Overworld and Nether world borders are drawn on both maps (the Nether border is scaled to the same physical area).
+- Relief shading crosses chunk borders; unknown terrain is transparent; the minimap renders at high resolution for smooth movement.
+- Settings and named waypoints persist asynchronously in the mod data folder. No network requests are made by the mod.
+
+The runtime uses only portable standard-library APIs and is intended for Linux, macOS and Windows. Live gameplay has been checked on Linux only.
+"""
+authors = ["daniliammo"]
+owners = ["daniliammo"]
+owner_ids = [67186086]
+license = "GPL-3.0-only"
+source = "https://github.com/daniliammo/Minimap-Worldmap-and-waypoints-reworked"
+icon = "icons/minimap_worldmap_waypoints_reworked.png"
+categories = ["utility", "adventure"]
+tags = ["minimap", "map", "world map", "waypoints", "navigation", "hud", "portals", "biome"]
+
+[[versions]]
+version = "0.3.0"
+published = "2026-11-08"
+game = "26.3"
+file = "minimap_worldmap_waypoints_reworked-0.3.0.hnmod"
+sha256 = "589ab7d5465fbd3c5e689ec0217fa8a2b771a17e31a77a12224b1a44e6588297"
+changelog = "Named waypoints with a manager screen and HUD letters, portal markers with destinations, Overworld/Nether world borders, biome hover, real plant colours, depth-dependent water, clearer relief, and a 0.3.0 native rebuild."

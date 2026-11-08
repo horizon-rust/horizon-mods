@@ -1,0 +1,38 @@
+id = "minimap_worldmap_waypoints_reworked"
+kind = "native-mod"
+name = "Minimap, Worldmap and waypoints reworked"
+summary = "Configurable minimap with screen corners, size, shape, zoom and rotation. World map and waypoints are planned."
+description = """
+Version 0.1.0 provides a client-side minimap using Horizon's existing terrain renderer.
+
+- Four screen corners; square or round shape; fixed orientation or player rotation.
+- Sizes from 64 to 256 GUI pixels, with a 128-pixel default and viewport fitting.
+- Zoom choices of 0.1, 0.25, 0.5, 0.75, 1, 2 and 4 blocks per pixel.
+- Local settings saved asynchronously and flushed on normal exit.
+
+Install the native mod through the Horizon launcher and build the native game. In the game, enable it in Options > Mods and open its settings. The settings labels are currently in Russian. Another minimap provider that already occupies the map slot takes precedence.
+
+This first release shows ordinary loaded terrain. World map, waypoints, persistent terrain history, LOD coverage and manual height layers are planned, not implemented.
+
+Native code runs with the player's permissions. It reads and writes settings.ini under Horizon's mod data directory; the mod makes no network requests. The bundle contains source and license notices, without a game executable or Minecraft assets.
+
+Pinned to Horizon Nightly 2026-11-07 (2ebf00a0281c592f79191e76fce0e7d522c6f425) and Horizon Mixins d9c83d7096b7ea5b83678da2efdfd6161f74997e. Other revisions, Windows/macOS and interactive gameplay are not claimed verified. See the source repository's validation report and Actions checks.
+
+Based on the MIT-licensed Horizon native mod template and Veinminer-derived build tooling; upstream notices are preserved. Distribution is GPL-3.0-only. The author grants Horizon registry reviewers permission to read and inspect the submitted source in NOTICE-REVIEW-PERMISSION.md.
+"""
+authors = ["daniliammo"]
+owners = ["daniliammo"]
+owner_ids = [67186086]
+license = "GPL-3.0-only"
+source = "https://github.com/daniliammo/Minimap-Worldmap-and-waypoints-reworked"
+icon = "icons/minimap_worldmap_waypoints_reworked.png"
+categories = ["utility"]
+tags = ["minimap", "map", "hud", "navigation"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-08"
+game = "26.3"
+file = "minimap_worldmap_waypoints_reworked-0.1.0.hnmod"
+sha256 = "ce92608a045f2deb146282ddd429f38ad88578f2bf1402485bbcfe3722f5e334"
+changelog = "Initial minimap release: position, size, square/round shape, zoom, rotation, viewport fitting and local settings persistence. World map and waypoints are not included."

@@ -29,9 +29,9 @@ categories = ["utility", "adventure"]
 tags = ["minimap", "map", "world map", "waypoints", "navigation", "hud", "portals", "biome"]
 
 [[versions]]
-version = "0.3.0"
+version = "0.3.1"
 published = "2026-11-08"
 game = "26.3"
-file = "minimap_worldmap_waypoints_reworked-0.3.0.hnmod"
-sha256 = "573bc00c9a9396ca3cfbcde0d6624deee65a6e651c1ea79c61504d03144ab54d"
-changelog = "Named waypoints with a manager screen and HUD letters, portal markers with destinations, Overworld/Nether world borders, biome hover, real plant colours, depth-dependent water, clearer relief, and a 0.3.0 native rebuild."
+file = "minimap_worldmap_waypoints_reworked-0.3.1.hnmod"
+sha256 = "94e1028027bc2eda334528dab6422ab67c9bcd9ebf43a6eae434c1b7e0724197"
+changelog = "Large-map texture now follows the physical GUI resolution (fixes GUI-scale pixelation). Named waypoints with a manager screen and HUD letters, portal markers with destinations, Overworld/Nether world borders, biome hover, real plant colours, depth-dependent water, clearer relief, and a 0.3.0 native rebuild."

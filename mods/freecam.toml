@@ -36,3 +36,17 @@ RUR4cJC6Jj3EWN7yDLuEFss9Xir36oWeHI3yyIK+PlIffoXzHXcZ4eBAN/UcOwGpniH+lJl9uU1vzg8y
 trusted comment: freecam 0.1.0 for Horizon (Minecraft 26.3), built from github.com/hakergeniusz/freecam commit 78d8f05
 6sfFvM54vZFE+02rwu0EJVbCnv5dJAJ7PDEWp64QnyEjlWYEnzXDzDAyLzKdZAfXwtvX+igaCS2KJKCk5UY5CA=="""
 changelog = "Release."
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-08"
+game = "26.3"
+file = "freecam-0.1.1.hnmod"
+sha256 = "9a4caf01bf534631d6aea8a8b59936368b041922144083f95e2621fd1c4b2508"
+signature = """
+untrusted comment: signature from rsign secret key
+RUR4cJC6Jj3EWG4vmgQIcgVtdDmZjOkQvI99TqIDnpPQzgTI9WAp2gKMjBoayg+bnuryZllsu4gqyowUs5htbRd6Lm3oqnnYXwc=
+trusted comment: freecam 0.1.1 for Horizon (Minecraft 26.3), built from github.com/hakergeniusz/freecam
+pRaUDSAKA34mfdUwJZYaHstyIZkHcXRnfzK4WzuniSINhUGQIxxIwGChkT++JDXmpCZAmbqeziGkCfaSR3E+Bg==
+"""
+changelog = "Baritone compatibility: while Freeze player is on, a tick that drives the player still runs (a bot's held keys), and Camera interaction follows only your own clicks, so bots keep their targeting."

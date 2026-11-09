@@ -1,0 +1,31 @@
+id = "the_man_from_the_fog"
+kind = "native-mod"
+name = "The Man From The Fog"
+summary = "A tall figure that watches from the fog and hunts you if you look away."
+description = """
+A fan-made recreation of the horror mod **The Man From The Fog** by M_Productions (https://www.curseforge.com/minecraft/mc-mods/the-man-from-the-fog). By tariksabanuz.
+
+At night he appears far away in the fog and watches you. Keep looking at him and he stays where he is. Look away and he comes closer; leave him unwatched long enough and he hunts you: he runs (crawling on all fours), climbs and breaks soft blocks, and the screen goes dark for a moment. A chase ends when he catches you or loses you, and he leaves in a flash of lightning.
+
+Settings are on the mod's page in Options > Mods: spawn rate, jumpscare, chase length, climbing, vanish distance, day spawns, darkness effect, other dimensions, block breaking, fog thickness and lightning. "Summon him now" brings him to you for testing.
+
+Works in your own worlds. The source has no sound files or pictures of the original: the mod plays its own sound events (`the_man_from_the_fog:*`) and a jumpscare picture when a resource pack provides them.
+
+Source code: https://github.com/tariksabanuz/TheManFromTheFogHorizon"""
+authors = ["tariksabanuz"]
+owners = ["tariksabanuz"]
+owner_ids = [332662152]
+license = "MIT"
+source = "https://github.com/tariksabanuz/TheManFromTheFogHorizon"
+icon = "icons/the_man_from_the_fog.png"
+categories = ["game-mechanics", "adventure"]
+tags = ["horror", "mob", "jumpscare", "fog"]
+
+[[versions]]
+version = "0.1.12"
+published = "2026-11-09"
+game = "26.3"
+file = "the_man_from_the_fog-0.1.12.hnmod"
+sha256 = "bfd11e4becb04d37e54bf18b90f4f142d537cc92649fd53e31112a5ba56b09f5"
+changelog = """
+- First version."""

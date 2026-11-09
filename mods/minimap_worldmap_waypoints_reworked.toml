@@ -29,7 +29,7 @@ license = "GPL-3.0-only"
 source = "https://github.com/daniliammo/Minimap-Worldmap-and-waypoints-reworked"
 icon = "icons/minimap_worldmap_waypoints_reworked.png"
 categories = ["utility", "adventure"]
-tags = ["minimap", "map", "world map", "waypoints", "navigation", "hud", "portals", "biome"]
+tags = ["minimap", "map", "world-map", "waypoints", "navigation", "hud", "portals", "biome"]
 
 [[versions]]
 version = "0.4.1"

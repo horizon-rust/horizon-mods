@@ -18,6 +18,8 @@ Open it with **M**. Keys are in Options > Mods > World Map, all rebindable.
 
 **What it does and doesn't do:** it reads the chunks the game has loaded around you and the game's own state, draws on its own screen and in the game's HUD, and keeps files in `config/worldmap/` (the explored chunks and a waypoints file for each world). It makes no network connection of its own and needs no other mod. It sends `/tp` in chat when you choose Teleport, and a chat line or a private message (`/msg`) only when you choose to share a waypoint.
 
+**Support the author:** [donatello.to/luminaaa](https://donatello.to/luminaaa)
+
 **Native mod, pinned** to Horizon Nightly `fdc87ae` (Minecraft 26.3): it reuses the minimap's colour scan, so it builds on that revision."""
 authors = ["Px228-Da-Da"]
 owners = ["Px228-Da-Da"]

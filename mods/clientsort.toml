@@ -24,8 +24,16 @@ owner_ids = [344119465]
 license = "Apache-2.0"
 source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/clientsort"
 icon = "icons/clientsort.png"
-categories = ["storage", "utility"]
+categories = ["utility", "storage"]
 tags = ["inventory", "sorting", "buttons", "port"]
+
+[[versions]]
+version = "1.2.0"
+published = "2026-11-09"
+game = "26.3"
+file = "clientsort-1.2.0.hnmod"
+sha256 = "8aac1c3e1e2b77dd5e93b9944db0faf09cab44815548894005a41a36409eecfe"
+changelog = "ClientSort's own config screen (Cloth Config, as in Java), opened from Mod Menu or Options > Mods > ClientSort > Configure...; key binds editable there; more of ClientSort's options. Built for Horizon Nightly 2026-11-08 (fdc87ae)."
 
 [[versions]]
 version = "1.1.0"

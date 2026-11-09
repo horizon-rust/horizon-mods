@@ -1,0 +1,42 @@
+id = "spotify_hud"
+kind = "native-mod"
+name = "Spotify HUD"
+summary = "What Spotify is playing on your HUD, with play, pause, skip, shuffle, repeat and volume."
+description = """
+Shows the song Spotify is playing in a box on the HUD: cover, title, artists and progress. Open chat and point at the box for buttons: play/pause, next, previous, shuffle, repeat, volume, the song's link, settings and moving the box.
+
+## Connect Spotify (one time)
+
+1. Go to https://developer.spotify.com/dashboard and press **Create app**.
+2. Add the redirect URI `http://127.0.0.1:21851/spotify/callback`, tick **Web API**, save.
+3. In a world: `/music clientid <Client ID>`.
+4. Then `/music login` and allow it in the browser (within two minutes).
+
+The buttons need **Spotify Premium** (Spotify refuses them from free accounts) and a song playing on some device.
+
+## Using it
+
+- `/music` opens the settings: corner, which screens, colours, which buttons, chat line for each new song, and more.
+- `/music volume [0-100] | play | pause | next | previous | shuffle | repeat | hide | position | restart | logout`
+- Keys for next, previous, play/pause and hiding the box in Options → Mods → Spotify HUD (unbound by default).
+
+Settings, the login and `theme.json` (colours you can edit) are in `horizon-mods/.horizon-mod-data/spotify_hud/`.
+
+By tomasmendes01 (in-game: iLoong). Inspired by ThatGravyBoat's Craftify, written from scratch for Horizon. Not affiliated with Spotify."""
+authors = ["tomasmendes01"]
+owners = ["tomasmendes01"]
+owner_ids = [68385376]
+license = "MIT"
+source = "https://github.com/tomasmendes01/spotify-hud-horizon"
+icon = "icons/spotify_hud.png"
+categories = ["utility"]
+tags = ["spotify", "music", "hud", "media-controls"]
+screenshots = ["screenshots/spotify_hud/1.png", "screenshots/spotify_hud/2.png"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-05"
+game = "26.3"
+file = "spotify_hud-1.0.0.hnmod"
+sha256 = "db7e370554c60fb26fea5048d31bc4b633a1c37d70174789117aa3144e5a3cf3"
+changelog = "First release."

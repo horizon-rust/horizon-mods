@@ -1,0 +1,20 @@
+id = "netherstarrecipe"
+kind = "mod"
+name = "Nether Star Crafting"
+summary = "Adds a Netherstar Shard and a crafting recipe for the Nether Star."
+description = "Adds a Netherstar Shard and a crafting recipe for the Nether Star."
+authors = ["Mya"]
+owners = ["MyaJP"]
+owner_ids = [353801917]
+license = "MIT"
+source = "https://github.com/MyaJP/Nether-Star-Crafting-Horizon"
+icon = "icons/netherstarrecipe.png"
+categories = ["utility"]
+screenshots = ["screenshots/netherstarrecipe/1.png", "screenshots/netherstarrecipe/2.png"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-07"
+game = "26.3"
+file = "netherstarrecipe-1.0.0.hmod"
+sha256 = "8ce5770dc39156b64f872938e810e6cc037b8d711a82374eaf4e228adda9b266"

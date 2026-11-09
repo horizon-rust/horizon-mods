@@ -1,0 +1,45 @@
+id = "nimbe"
+kind = "shader"
+name = "Nimbe"
+summary = "A bright, enchanting world: painted sky, volumetric clouds, sunbeams, soft shadows, living water and colored lights."
+description = """
+An original shader pack written in Horizon's own WGSL shader format (shader API 0.1).
+
+- **Painted sky**: the gradient changes through the day, with a pink band at sunrise and sunset and a halo around the sun.
+- **Clouds**: sunlit cumulus with self-shadowing, glowing edges against the light and darker bases, high cirrus, and a full overcast during storms.
+- **Night**: twinkling stars that turn with the sky, a faint nebula, and auroras in cold biomes.
+- **Shadows**: crisp, stable shadows from the sun and moon, tinted by the water and stained glass they pass through; clouds cast shadows on the ground.
+- **Water**: turquoise (emerald in the shallows, deep teal further out) or biome colors, a living swell that never repeats, sun glitter, and reflections that ripple with the surface. Under it, light loses its red then its green with depth, and caustics dance on the bed.
+- **Lighting**: warm torches, colored soul fire, redstone, amethyst and sea lanterns, and fireflies that cast light.
+- **Materials**: relief derived from textures, LabPBR resource pack support, shiny metals and polished blocks, light through foliage, wet ground and puddles in the rain.
+- **Wind**: grass, flowers, leaves and vines sway; underwater, a current rocks the seagrass and kelp.
+- **Atmosphere and image**: light shafts, haze that matches the sky, ambient occlusion, bloom, adaptive exposure, color grading, vignette and anti-aliasing.
+
+Every effect can be tuned from the pack's menu.
+
+## Install
+
+Put `nimbe.hshader` in the game's `shaderpacks` folder (the **Open Pack Folder** button opens it), then pick **Nimbe** in Options > Video Settings > Shaders > Shader Packs.
+
+## Performance
+
+The most expensive settings, in order: shadows and their resolution, water reflections, light shafts, cloud quality. On a small GPU, start with a shadow resolution of 1024 and light shafts on Low.
+
+All the code is original and not taken from any other shader pack."""
+authors = ["Reminuscul"]
+owners = ["Reminuscul"]
+owner_ids = [268381945]
+license = "MIT"
+source = "https://github.com/Reminuscul/nimbe"
+icon = "icons/nimbe.png"
+categories = ["atmosphere", "realistic", "screenshot"]
+tags = ["shaders", "realistic", "clouds", "water", "shadows", "sky", "bloom", "pbr", "volumetric", "atmosphere"]
+screenshots = ["screenshots/nimbe/1.jpg", "screenshots/nimbe/2.jpg", "screenshots/nimbe/3.jpg", "screenshots/nimbe/4.jpg", "screenshots/nimbe/5.jpg", "screenshots/nimbe/6.jpg", "screenshots/nimbe/7.jpg"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-07"
+game = "26.3"
+file = "nimbe-1.0.0.hshader"
+sha256 = "89602f3cd963cc2833354ffb081361a8ad09b1143c70ad9cd7e0132b27897dba"
+changelog = "First release."

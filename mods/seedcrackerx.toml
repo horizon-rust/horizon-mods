@@ -1,0 +1,31 @@
+id = "seedcrackerx"
+kind = "native-mod"
+name = "SeedCrackerX"
+summary = "SeedCrackerX for Horizon: finds the world seed of a server from the structures you walk past, outlined through walls."
+description = """
+A port to Rust of [SeedCrackerX](https://github.com/19MisterX98/SeedcrackerX) 2.16.2 for Horizon, written from the Java source together with the parts of the SeedFinding libraries it calls. Walk near structures (igloos, temples, monuments, shipwrecks, end cities, buried treasure, outposts, trial chambers, desert wells, end gateways, emerald ore, dungeons) and they are outlined through walls; with enough of them the world seed is printed in chat. Commands are `/seedcracker ...` as in the Java (`render outlines`, `finder`, `data`, `cracker`, `version`, `database`, `gui`), and the settings are on the mod's page in Options > Mods. PARITY.md in the source lists every Java file and what became of it.
+
+What it does not do: the Dungeon and Warped Fungus cracking of Minecraft 1.17 and older (it needs a lattice solver) and the biome-based world seed search. A world seed is found from structures and the hashed seed the server sends. Like the Java mod it shows information the game does not draw by itself, so some servers do not allow it: that choice is the player's.
+
+For reviewers:
+- Network, in two places, both in `src/game/seedcracker.rs` and both the Java mod's own behaviour: (1) once when the mod starts, one HTTP GET of the public Google Sheet of known server seeds (`DATABASE_URL`, `src/config/database.rs`) on a background thread, always, with no switch; (2) only if the player switches `databaseSubmits` on (off by default), when a seed is cracked on a server with more than 10 players: the mod asks the game's own `horizon_client::auth::join_server` to prove the account to Mojang's session service under the id `seedcrackerx`, then posts the server address, dimension, seed, version and the player's name (or a hash of it) to the sheet's script (`DATABASE_POST_URL`). The mod never reads or stores the access token. Nothing else opens a socket.
+- It writes only under `horizon-mods/.horizon-mod-data/seedcrackerx/`: `seedcracker.json` (settings, the Java's layout), `known_seeds.txt` and a folder `SeedCracker saved structures`; it reads the same files back.
+- It starts an operating system program in one place, `open_uri` in `src/game/seedcracker.rs` (`rundll32` on Windows, `open` on macOS, `xdg-open` on Linux): `/seedcracker database` and the links on its settings page open the seed sheet in the browser.
+- The `.hnmod` is built from the source of the tagged release, `python tools/pack.py`, and is the same file every time (line endings are written as LF). It carries `LICENSE` and `NOTICE.md`.
+- MIT, like every original it is a port of; `NOTICE.md` lists SeedCrackerX and the SeedFinding libraries it calls with their copyright notices. Tests: `cargo test` (a diff against 7.3k lines produced by the real Java libraries, the cracker, the finders).
+- Pinned to Nightly 2026-11-04 (6475f62): the launcher builds the game on that commit, and so does not depend on the Nightly the player has."""
+authors = ["luhnox (this port); SeedCrackerX by 19MisterX98 and the SeedCrackerX contributors; the SeedFinding libraries by KaptainWutax and Neil and Matthew Bolan"]
+owners = ["luhnox"]
+owner_ids = [85970136]
+license = "MIT"
+source = "https://github.com/luhnox/horizon-seedcrackerx"
+icon = "icons/seedcrackerx.png"
+categories = ["utility"]
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-05"
+game = "26.3"
+file = "seedcrackerx-0.2.3.hnmod"
+sha256 = "6646fd05f28251ca6ccd935027376fbb27a79ff92ac9980f20b3689964a0be9a"
+changelog = "First listing. A Rust port of SeedCrackerX 2.16.2 for Horizon 26.3: structures are outlined through walls and the world seed is cracked from them and from the hashed seed the server sends; /seedcracker commands, a settings page in Options > Mods, saved structures, and the shared seed database (reading always, sending only if switched on). Pinned to the newest Nightly, 2026-11-04 (6475f62)."

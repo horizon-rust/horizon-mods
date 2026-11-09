@@ -1,0 +1,35 @@
+id = "schematics"
+kind = "native-mod"
+name = "Schematics"
+summary = "Load schematics in every common format, see them as ghost blocks in the world, check what is missing, paste them and save areas."
+description = """
+Schematics for Horizon.
+
+Reads `.litematic`, `.schem` (Sponge versions 1 to 3), `.schematic` (numeric ids of 1.12 and before), `.nbt`, `.mcstructure` (Bedrock, translated on a best-effort basis) and `.bp`. Put files in `schematics/` in the game folder.
+
+- **M**: the menu: load a file, then move, turn, mirror or paste the placement.
+- **In the world**: missing blocks show as see-through ghosts, wrong blocks red, wrong states orange, extra blocks magenta.
+- **Materials**: what it takes, what is missing and what you carry.
+- **Save area**: a stick's left and right clicks set two corners; save them as `.litematic`, `.schem` or `.nbt`.
+- **Page Up / Page Down**: one layer at a time.
+- **/schematics** (or **/sch**): the same from chat.
+
+**What it does and doesn't do:** it reads the game's world, block models and player, and draws over the world, the HUD and its own screen. It reads and writes schematic files in `schematics/` and its settings and placements in `horizon-mods/.horizon-mod-data/schematics/`. It opens no network connections. Pasting in single player runs on the world's own server; on a server it sends `/setblock` and `/summon` commands, which need permission there.
+
+Written from scratch for Horizon. Pinned to Horizon `c9d474d`, because it reads the game's block models, atlas and world, and the single player server's levels."""
+authors = ["Nirokx"]
+owners = ["Nirokx"]
+owner_ids = [95123456]
+license = "MIT"
+source = "https://github.com/Nirokx/horizon-schematics"
+icon = "icons/schematics.png"
+categories = ["utility", "management"]
+tags = ["schematics", "building", "litematic", "schem", "ghost-blocks", "material-list"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-05"
+game = "26.3"
+file = "schematics-1.0.0.hnmod"
+sha256 = "04c0cb5d1fbddf92327cf3456b33070a515af6b51b37109cd43f058ee1b78642"
+changelog = "First release for Horizon 26.3 (Nightly c9d474d)."

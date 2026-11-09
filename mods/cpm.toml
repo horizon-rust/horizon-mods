@@ -1,0 +1,33 @@
+id = "cpm"
+kind = "native-mod"
+name = "CustomPlayerModels-Horizon"
+summary = "Customize your Minecraft avatar with custom models and animations"
+description = """
+#For version "Nightly 2026-11-01 c9d474d"
+CustomPlayerModels-Horizon allows you to use custom player models and animations directly in Minecraft. Customize your avatar with unique shapes, extra parts, and glowing textures. 
+
+## How to use
+go to options > mods > CPM-settings and add some models, and load it onto your character. when in game you can also use gestures with G and in the same menu pick different models"""
+authors = ["Scrapper1824", "Claude"]
+owners = ["Scrapper1824"]
+owner_ids = [72410525]
+license = "MIT"
+source = "https://github.com/Scrapper1824/CustomPlayerModels-Horizon"
+icon = "icons/cpm.png"
+categories = ["utility", "decoration", "social"]
+tags = ["cpm", "player-models", "skin", "cosmetics", "animations", "avatar", "customization", "model", "gestures"]
+screenshots = ["screenshots/cpm/1.jpg", "screenshots/cpm/2.jpg", "screenshots/cpm/3.jpg", "screenshots/cpm/4.jpg", "screenshots/cpm/5.jpg", "screenshots/cpm/6.jpg", "screenshots/cpm/7.jpg", "screenshots/cpm/8.jpg"]
+key = "RWTyJv27brzr+KJFfhEDz5Xv/sZ5igWtmwk8cWeHQJXzh147Ptab6NcX"
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-06"
+game = "26.3"
+file = "cpm-0.1.2.hnmod"
+sha256 = "33725ad0ab212719107355223849b2c26a628551714d70fb44f10f55f79cdca3"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUTyJv27brzr+PDmXA1VqZ7YKJ5vOFO+0aAAx90yLDVaRfOaIKj0wy2WlrolYkrp/WuIeaM3/zvBune89B0JmibKuzI937MQow4=\r
+trusted comment: timestamp:1793941342\tfile:cpm.hnmod\r
+zdDAovasHJ8fJKFR8YlrwkgdlxrjaY0XTw/fULMyceAKY2LXiJbTTu3bqsGbaYe7Q8ZSqjVUs2OCihSNPsnhBg=="""
+changelog = "first release"

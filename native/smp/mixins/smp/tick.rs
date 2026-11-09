@@ -7,8 +7,17 @@ fn smp_server_tick(
         phase,
         crate::game::native_lifecycle::ServerTickPhase::ServerTickEnd { .. }
     ) {
-        crate::game::smp_glue::tick(game);
-        crate::game::smp_invsee_glue::tick(game);
-        crate::game::smp_ping_glue::tick(game);
+        {
+            let _span = horizon_client::spans::guard("smp_glue");
+            crate::game::smp_glue::tick(game);
+        }
+        {
+            let _span = horizon_client::spans::guard("smp_invsee");
+            crate::game::smp_invsee_glue::tick(game);
+        }
+        {
+            let _span = horizon_client::spans::guard("smp_ping");
+            crate::game::smp_ping_glue::tick(game);
+        }
     }
 }

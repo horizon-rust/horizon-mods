@@ -67,6 +67,7 @@ class Bundle:
         # api.rs), which this script doesn't: they are applied here, not compiled.
         self.api = "api" in manifest or any(isinstance(i, dict) and "trait_method" in i
                                             for i in manifest.get("injection", []))
+        self.mixins_content = has_mixins_content(manifest)
 
     def unpack(self, into, revision):
         out = into / self.id
@@ -79,7 +80,34 @@ class Bundle:
         # As the launcher does for a mod built on another Horizon than it pins.
         toml = out / "horizon-mixin.toml"
         text = re.sub(r'horizon_revision\s*=\s*"[0-9a-f]{40}"', f'horizon_revision = "{revision}"', toml.read_text())
-        toml.write_text(text)
+        toml.write_text(strip_launcher_tables(text))
+
+
+# The tables only the launcher reads; it removes them before horizon-mixins sees the manifest (native_mods/api.rs).
+LAUNCHER_TABLES = ("api", "dependencies")
+
+
+def has_mixins_content(manifest):
+    """Whether horizon-mixins has anything to apply in this manifest. The launcher leaves out a bundle with only
+    [mod], [compatibility] and its own tables, e.g. one that is only an [api] package (native_mods.rs,
+    `mixins_content`); horizon-mixins refuses such a manifest (E_MANIFEST)."""
+    return any(key not in ("mod", "compatibility", *LAUNCHER_TABLES) for key in manifest)
+
+
+def strip_launcher_tables(text):
+    """`text` without its [api] and [dependencies] tables (and their sub-tables), the rest unchanged."""
+    kept, skipping = [], False
+    for line in text.splitlines(keepends=True):
+        header = re.match(r'\s*\[\[?\s*([^\]]+?)\s*\]\]?\s*(#.*)?$', line)
+        if header:
+            skipping = header.group(1).split(".")[0].strip().strip('"\'') in LAUNCHER_TABLES
+        if not skipping:
+            kept.append(line)
+    stripped = "".join(kept)
+    want = {k: v for k, v in tomllib.loads(text).items() if k not in LAUNCHER_TABLES}
+    if tomllib.loads(stripped) != want:
+        sys.exit("horizon-mixin.toml: its [api] or [dependencies] table couldn't be removed line by line")
+    return stripped
 
 
 def download(url, sha256):
@@ -143,8 +171,9 @@ def culprit(diagnostic, bundles):
 
 def apply(tool, tree, bundles, revision, name):
     """horizon-mixins on `bundles` together, leaving out each one it refuses (and the ones needing it) until
-    the rest applies: (stage folder or None, {id: diagnostic})."""
-    left, refused = list(bundles), {}
+    the rest applies: (stage folder or None, {id: diagnostic}). Bundles with nothing for horizon-mixins are left
+    out, as the launcher leaves them out."""
+    left, refused = [b for b in bundles if b.mixins_content], {}
     while left:
         mods = WORK / "mods" / name
         shutil.rmtree(mods, ignore_errors=True)
@@ -320,6 +349,10 @@ def check(args):
         if clashes:
             failed.append(mod.id)
         if args.no_compile:
+            continue
+        if mod.api:
+            # Its API package is staged by the launcher only (Bundle.api), as `health` leaves these out too.
+            print("- applies; it has a mod API package, which only the launcher builds, so it isn't compiled here.")
             continue
         if compiles(stage):
             print(f"- applies and compiles with {len(popular) - len(refused)} popular mods.")

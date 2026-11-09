@@ -112,7 +112,7 @@ impl Presence {
         known: impl IntoIterator<Item = u128>,
     ) -> Result<Self, String> {
         let path = dir.join("presence.json");
-        let fresh = !path.exists();
+        let fresh = !smp_store::exists(&path);
         let mut data: Data = smp_store::read_json(&path)?;
         if fresh {
             data.known = known.into_iter().map(smp_store::uuid_string).collect();
@@ -132,7 +132,7 @@ impl Presence {
 
     pub fn save(&mut self) -> Result<(), String> {
         if self.dirty {
-            smp_store::write_json(&self.path, &self.data)?;
+            smp_store::save_json(&self.path, &self.data)?;
             self.dirty = false;
         }
         Ok(())

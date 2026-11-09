@@ -1,0 +1,24 @@
+id = "blood_particles"
+kind = "native-mod"
+name = "Blood Particles"
+summary = "Blood particles upon a mob hit"
+description = """
+Blood particles upon a mob hit 🩸
+
+The mod is customizable
+
+made by Bogdan_Tokarev"""
+authors = ["Bogdan_Tokarev"]
+owners = ["bogdan1tokarev1"]
+owner_ids = [350354354]
+license = "MIT"
+source = "https://github.com/bogdan1tokarev1/Blood-Particles-Rust"
+icon = "icons/blood_particles.png"
+categories = ["utility", "decoration"]
+
+[[versions]]
+version = "1.2.0"
+published = "2026-11-08"
+game = "26.3"
+file = "blood_particles-1.2.0.hnmod"
+sha256 = "8439959e089453a54c7fdcf996d1575e3ca7327a54de26c13975b66bad6e0d06"

@@ -36,6 +36,8 @@ Steve, `horizon-ctl --offscreen`) join it. Checked from the clients' own chat an
   it off;
 - /rtp: refused in the Nether; in the Overworld the player lands 500 to 10,000 blocks from the spawn on solid ground
   (and stays there), a second /rtp is refused with the time left (5 minutes), and the chunk it held loaded is let go;
+- /smpadmin: a player who leaves has where he stood kept in last_positions.json; an operator reads his homes and
+  where he left while he is off, and a claim with who is trusted; a player gets vanilla's unknown command;
 - /report: a reason is needed; the report reaches the operator on and reports.log, a second one within two minutes is
   refused; /reports and /ledger (one player's coin movements, the server's coins by hour) answer the operator only.
 
@@ -547,6 +549,46 @@ def claims(server, alex, steve):
     r["claims"] = alex.say("/claims")
     assert any("Your chunks (1 of 4)" in l for l in r["claims"]) and any("Trusted: Steve" in l for l in r["claims"]), r
     return r
+
+
+def smpadmin(alex, steve, data, port, ctl, resources, root):
+    """/smpadmin: Steve leaves and where he stood is kept in last_positions.json; Alex (an operator) reads Steve's
+    homes and where he left while he is off, and their own claim with Steve trusted; Steve, back on, gets vanilla's
+    unknown command."""
+    r = {}
+    dim, at, _ = where(steve)
+    steve.quit()
+    path, kept = data / "last_positions.json", {}
+    for _ in range(40):
+        time.sleep(0.5)
+        if path.is_file():
+            kept = {v["name"]: v for v in json.loads(path.read_text()).values()}
+            if "Steve" in kept:
+                break
+    r["kept"] = kept
+    steve_kept = kept.get("Steve")
+    assert steve_kept and steve_kept["dimension"] == dim, (r, dim)
+    assert near([steve_kept["x"], steve_kept["y"], steve_kept["z"]], at), (r, at)
+    r["homes"] = alex.say("/smpadmin homes Steve")
+    assert any("Steve's homes (1 of 1):" in l for l in r["homes"]), r
+    assert any(l.strip().startswith("base: overworld ") for l in r["homes"]), r
+    r["lastpos"] = alex.say("/smpadmin lastpos steve")
+    assert any("Steve last left " in l and " ago) at " in l for l in r["lastpos"]), r
+    assert not any("is on now" in l for l in r["lastpos"]), r
+    r["claims"] = alex.say("/smpadmin claims Alex")
+    assert any("Alex's claims: 1 chunk in 1 area" in l for l in r["claims"]), r
+    assert any("(1 chunk, 16x16 blocks)" in l for l in r["claims"]) and any("Trusted: Steve" in l for l in r["claims"]), r
+    r["unknown"] = alex.say("/smpadmin homes Herobrine")
+    assert any("No player named Herobrine has played here." in l for l in r["unknown"]), r
+    steve = Client(ctl, resources, "Steve3", root)
+    steve.name = "Steve"
+    steve.join(port)
+    r["on_now"] = alex.say("/smpadmin lastpos Steve")
+    assert any("Steve is on now: " in l for l in r["on_now"]), r
+    r["player"] = steve.say("/smpadmin lastpos Alex")
+    assert not any("last left" in l or "is on now" in l for l in r["player"]), r
+    assert any("Unknown or incomplete command" in l for l in r["player"]), r
+    return r, steve
 
 
 def world_guard(server, alex, steve):
@@ -1427,6 +1469,7 @@ def run(ctl, resources, out):
         results["places"] = places(server, alex, steve)
         results["rtp"] = rtp(server, steve, data)
         results["claims"] = claims(server, alex, steve)
+        results["smpadmin"], steve = smpadmin(alex, steve, data, port, ctl, resources, root)
         results["reports_and_ledger"] = reports_and_ledger(server, alex, steve, data)
         results["world_guard"] = world_guard(server, alex, steve)
         results["board"] = board(alex, steve, out)

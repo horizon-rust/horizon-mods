@@ -1,6 +1,6 @@
 [mod]
 id = "smp"
-version = "0.35.1"
+version = "0.36.0"
 priority = 100
 
 # The commit of horizon CI tests it on (the minimap's: mods on the newest hooks share one; the official server's
@@ -63,6 +63,12 @@ id = "report"
 file = "crates/horizon-client/src/game.rs"
 name = "smp_report"
 source = "smp_report.rs"
+
+[[module]]
+id = "admin"
+file = "crates/horizon-client/src/game.rs"
+name = "smp_admin"
+source = "smp_admin.rs"
 
 [[module]]
 id = "auction"
@@ -509,4 +515,15 @@ helper = "player_chat.rs"
 bindings = [
   { name = "player", ty = "u128", value = "player" },
   { name = "message", ty = "&str", value = "message" },
+]
+
+[[injection]]
+id = "player_logged_out"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_player_logged_out"
+helper = "player_logged_out.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "u128", value = "player" },
+  { name = "name", ty = "&str", value = "name" },
 ]

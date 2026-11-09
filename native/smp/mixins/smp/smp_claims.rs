@@ -407,6 +407,32 @@ impl Claims {
             .count()
     }
 
+    /// The chunks `owner` holds: (dimension, chunk x, chunk z), sorted.
+    pub fn chunks_of(&self, owner: u128) -> Vec<(String, i32, i32)> {
+        let mut chunks: Vec<(String, i32, i32)> = self
+            .owners
+            .iter()
+            .flat_map(|(d, c)| {
+                c.iter()
+                    .filter(|(_, u)| **u == owner)
+                    .map(|((x, z), _)| (d.clone(), *x, *z))
+            })
+            .collect();
+        chunks.sort();
+        chunks
+    }
+
+    /// The players `owner` trusts.
+    pub fn trusted_by(&self, owner: u128) -> Vec<u128> {
+        self.data
+            .trust
+            .get(&smp_store::uuid_string(owner))
+            .into_iter()
+            .flatten()
+            .filter_map(|u| smp_store::parse_uuid(u))
+            .collect()
+    }
+
     /// How many chunks a player may hold after `played` seconds here.
     pub fn limit(&self, played: i64) -> usize {
         self.config

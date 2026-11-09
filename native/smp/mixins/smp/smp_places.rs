@@ -405,6 +405,17 @@ impl Places {
             .unwrap_or(0)
     }
 
+    /// A player's homes, by name.
+    pub fn homes_of(&self, uuid: u128) -> Vec<(String, Place)> {
+        self.data
+            .homes
+            .get(&smp_store::uuid_string(uuid))
+            .into_iter()
+            .flatten()
+            .map(|(n, p)| (n.clone(), p.clone()))
+            .collect()
+    }
+
     /// How many homes a player may have now.
     pub fn home_limit(&self, uuid: u128) -> usize {
         let hours = self

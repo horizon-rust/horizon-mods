@@ -9,6 +9,7 @@
 
 use crate::game::{
     Game,
+    smp_admin::{self, LastPositions},
     smp_auction::{self, AuctionHouse},
     smp_report::{self, Report},
     smp_ledger,
@@ -43,7 +44,7 @@ use std::{path::PathBuf, sync::Mutex};
 /// The mod's id, name and version.
 pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
-pub const VERSION: &str = "0.35.1";
+pub const VERSION: &str = "0.36.0";
 
 /// `config.json` in `world/horizon-smp/`, written with its defaults the
 /// first time, and again with the keys a newer version adds (values kept).
@@ -139,6 +140,12 @@ pub struct Smp {
     switches: Switches,
     /// `/report` and `/reports`.
     reports: Reports,
+    /// Where each player last left (`/smpadmin lastpos`): an error when
+    /// `last_positions.json` can't be read (nothing is kept then).
+    last: Result<LastPositions, String>,
+    /// Where each player on stood at the last second's look: written to
+    /// `last` when they leave (they are off the player list by then).
+    standing: std::collections::HashMap<u128, Place>,
 }
 
 static STATE: Mutex<Option<Smp>> = Mutex::new(None);
@@ -153,6 +160,9 @@ static PENDING_SLEEP: Mutex<Vec<smp_presence::Act>> = Mutex::new(Vec::new());
 static RTP: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 /// The owner of the chunk tickets `/rtp` holds while it looks for land.
 const RTP_TICKET: &str = "smp:rtp";
+/// The players who left (`player_left`), with where they stood when the
+/// server still listed them, and when.
+static LEFT: Mutex<Vec<(u128, String, Option<Place>, i64)>> = Mutex::new(Vec::new());
 /// What each `/rtp`'s reads cost the Overworld's tick, by player: reads,
 /// total and longest (µs), for the line logged when they land.
 static RTP_COST: Mutex<Vec<(u128, u32, u64, u64)>> = Mutex::new(Vec::new());
@@ -253,6 +263,10 @@ fn open(dir: PathBuf) -> Smp {
     for p in Part::ALL.into_iter().filter(|&p| !switches.on(p)) {
         log::warn!("[smp] {} is turned off (/smp on {} turns it on)", p.name(), p.name());
     }
+    let last = LastPositions::open(&dir);
+    if let Err(e) = &last {
+        log::error!("[smp] last positions are off: {e}");
+    }
     let (casino, problem) = Casino::open(&dir, config.casino, config.gambling.enabled);
     if let Some(e) = problem {
         log::error!("[smp] casino.json can't be read, the day's ledger starts again (kept apart): {e}");
@@ -283,6 +297,8 @@ fn open(dir: PathBuf) -> Smp {
         vanish_titled: Default::default(),
         switches,
         reports,
+        last,
+        standing: Default::default(),
     }
 }
 
@@ -376,6 +392,11 @@ fn save(smp: &mut Smp) {
         log::error!("[smp] {err}");
     }
     smp.reports.save();
+    if let Ok(l) = &mut smp.last
+        && let Err(err) = l.save()
+    {
+        log::error!("[smp] {err}");
+    }
     // The files above are written by the SMP's writer thread.
     for err in smp_store::take_errors() {
         log::error!("[smp] {err}");
@@ -384,6 +405,7 @@ fn save(smp: &mut Smp) {
 
 /// Every file of `smp` on disk now (the world closes, another opens).
 fn save_now(smp: &mut Smp) {
+    note_leavers(smp);
     flush_book(smp);
     save(smp);
     for err in smp_store::flush() {
@@ -482,6 +504,9 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "ledger <player:word> [page:integer]",
     ] {
         commands.push(NativeCommand::op(usage, 3));
+    }
+    for usage in smp_admin::USAGES {
+        commands.push(NativeCommand::op(usage, smp_admin::LEVEL));
     }
     for usage in ["smp", "smp status", "smp on [part:word]", "smp off [part:word] [reason:text]"] {
         commands.push(NativeCommand::op(usage, smp_switch::LEVEL));
@@ -784,6 +809,7 @@ pub(in crate::game) fn perform(
         &smp_switch::COMMANDS,
         &smp_reports::COMMANDS,
         &smp_ledger::COMMANDS,
+        &smp_admin::COMMANDS,
     ];
     if !game.native_on(ID) || !ours.iter().any(|c| c.contains(&word)) {
         return;
@@ -859,7 +885,31 @@ pub(in crate::game) fn perform(
         n.resolve(line, &is_name, &name_of)
     });
     let line = resolved.as_deref().unwrap_or(line);
-    let out = if smp_reports::COMMANDS.contains(&word) {
+    let mut admin = Vec::new();
+    let out = if smp_admin::COMMANDS.contains(&word) {
+        let economy = smp.economy.as_ref().ok();
+        let names = ServerNames::read(&dir, economy);
+        let find = |n: &str| {
+            let on = players.iter().find(|p| p.name.eq_ignore_ascii_case(n));
+            on.map(|p| (p.uuid, p.name.clone())).or_else(|| names.find(n))
+        };
+        let name_of = |u: u128| {
+            let on = players.iter().find(|p| p.uuid == u).map(|p| p.name.clone());
+            on.or_else(|| names.name_of(u)).unwrap_or_else(|| smp_store::uuid_string(u))
+        };
+        let online = |u: u128| bodies(&players).into_iter().find(|b| b.uuid == u).map(|b| b.at);
+        let off = |what: &str| format!("{what} can't be read (see the server log)");
+        let look = smp_admin::Lookup {
+            claims: smp.claims.as_ref().map_err(|_| off("claims.json")),
+            places: smp.places.as_ref().map_err(|_| off("places.json")),
+            last: smp.last.as_ref().map_err(|_| off("last_positions.json")),
+            find: &find,
+            name_of: &name_of,
+            online: &online,
+        };
+        admin = smp_admin::command(&me, &look, now, line).unwrap_or_default();
+        Vec::new()
+    } else if smp_reports::COMMANDS.contains(&word) {
         let staff: Vec<u128> = players.iter().filter(|p| p.permission >= smp_reports::LEVEL).map(|p| p.uuid).collect();
         let economy = smp.economy.as_ref().ok();
         let find = |n: &str| {
@@ -1037,6 +1087,57 @@ pub(in crate::game) fn perform(
     }
     before.extend(out);
     show(game, before);
+    show_admin(game, admin);
+}
+
+/// `/smpadmin`'s lines, each place a link: a click teleports the operator
+/// there (or, for a claim, whose ground isn't known, puts the command in
+/// their chat box).
+fn show_admin(game: &mut Game<'_>, lines: Vec<smp_admin::Line>) {
+    use horizon_client::text::{ClickEvent, Style};
+    for l in lines {
+        let color = if l.error { text::RED } else if l.go.is_some() { text::GREEN } else { text::GRAY };
+        let mut t = Text::literal(l.text).with_color(color);
+        if let Some(go) = l.go {
+            let (click, hover) = match &go {
+                smp_admin::Go::Exact(_) => (ClickEvent::RunCommand(go.command()), "Click to teleport there"),
+                smp_admin::Go::Column { .. } => (ClickEvent::SuggestCommand(go.command()), "Click to put the teleport in your chat box"),
+            };
+            t = t.with_style(&Style {
+                click: Some(click),
+                hover: Some(Box::new(Text::literal(hover))),
+                ..Style::default()
+            });
+        }
+        game.native_feedback(t);
+    }
+}
+
+/// A player left the game (`native_player_logged_out`): where they stood is
+/// kept for `/smpadmin lastpos`. When the server stops they are still
+/// listed, so that place is exact; otherwise it is where the last second's
+/// look saw them. Queued for the next tick (or the save as the world
+/// closes): the hook may come while the SMP's state is held.
+pub(in crate::game) fn player_left(game: &mut Game<'_>, uuid: u128, name: &str) {
+    if !game.native_on(ID) {
+        return;
+    }
+    let listed = game.native_server_players().into_iter().find(|p| p.uuid == uuid);
+    let at = listed.map(|p| bodies(&[p]).remove(0).at);
+    let now = chrono::Utc::now().timestamp_millis();
+    LEFT.lock().unwrap_or_else(|e| e.into_inner()).push((uuid, name.to_owned(), at, now));
+    BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
+}
+
+/// The players who left since the last look, into `last_positions.json`.
+fn note_leavers(smp: &mut Smp) {
+    let left = std::mem::take(&mut *LEFT.lock().unwrap_or_else(|e| e.into_inner()));
+    for (uuid, name, at, when) in left {
+        let stood = smp.standing.remove(&uuid);
+        if let (Ok(l), Some(at)) = (&mut smp.last, at.or(stood)) {
+            l.left(uuid, &name, &at, when);
+        }
+    }
 }
 
 /// A player breaks or right clicks the block at `pos`: canceled in a chunk
@@ -2390,6 +2491,13 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     };
     let now = chrono::Utc::now().timestamp_millis();
     let mut out = Vec::new();
+    // Where each player stands, for where they leave from (once a second).
+    if n % 20 == 0 {
+        for b in bodies(&players) {
+            smp.standing.insert(b.uuid, b.at);
+        }
+    }
+    note_leavers(smp);
     // `/vanish`, once a second: the game told who is hidden (after a
     // restart), and the subtitle sent to each vanished player on.
     let vanished = smp.vanish.as_ref().map(|v| v.quiet()).unwrap_or_default();

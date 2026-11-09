@@ -1,0 +1,38 @@
+id = "rider_hud"
+kind = "native-mod"
+name = "Rider HUD"
+summary = "Improves the Minecraft HUD while riding mounts, keeping hunger, mount health, and experience visible."
+description = """
+Rider HUD improves the vanilla Minecraft interface while riding horses and other mounts.
+
+**Features:**
+- Displays player hunger and mount health at the same time.
+- Keeps the experience bar visible while riding.
+- Shows the jump bar when charging a jump.
+- Preserves the familiar vanilla Minecraft HUD style.
+- Includes in-game settings to toggle features.
+
+Lightweight, client-side native mod built in Rust for Horizon."""
+authors = ["Xariami"]
+owners = ["maliferen"]
+owner_ids = [234505373]
+license = "MIT"
+source = "https://github.com/maliferen/horizon-rider-hud"
+icon = "icons/rider_hud.png"
+categories = ["equipment", "utility", "game-mechanics"]
+tags = ["hud", "mounts", "horse", "riding", "utility", "client-side"]
+screenshots = ["screenshots/rider_hud/1.png", "screenshots/rider_hud/2.png"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-08"
+game = "26.3"
+file = "rider_hud-0.1.0.hnmod"
+sha256 = "2f8121390f87672ff023ad1933503248d19b3092b2f5a27debc8612a7f520b10"
+changelog = """
+Initial release of Rider HUD.
+
+- Improved mount HUD layout.
+- Simultaneous hunger and mount health display.
+- Dynamic experience and jump bar switching.
+- In-game configuration options."""

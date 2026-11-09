@@ -6,6 +6,8 @@ description = """
 An adaptive minimap and a full world map for Horizon, with a shared in-memory terrain cache.
 
 - Minimap in four corners, square or round, 64–256 GUI pixels, 0.1–4 blocks per pixel, and optional player rotation.
+- Player arrow on both maps shows the viewing direction and accounts for minimap rotation.
+- English, Russian, French and Spanish interfaces follow the game language, including regional variants.
 - World map opened by a rebindable key (M by default); drag to pan and scroll to zoom under the cursor, with eased camera motion.
 - Independent dimension selection for the minimap and the world map (Player / Overworld / Nether / End), without teleporting the player.
 - Hover shows the pointed-at coordinates, the localised biome and waypoint names; the hovered block is outlined.
@@ -18,7 +20,7 @@ An adaptive minimap and a full world map for Horizon, with a shared in-memory te
 - Settings and named waypoints persist asynchronously in the mod data folder. Waypoints are isolated by save/server identity and dimension, with 64 points per world/server. Legacy unscoped points are deleted on upgrade; preferences are retained.
 - Large-map terrain is drawn as GPU tiles; distant smoothing is enabled by default and can be disabled. No network requests are made by the mod.
 
-The runtime uses only portable standard-library APIs and is intended for Linux, macOS and Windows. Live gameplay has been checked on Linux only.
+The runtime uses only portable standard-library APIs and is intended for Linux, macOS and Windows. This release has not been reviewed in live gameplay; macOS and Windows runs remain unverified.
 """
 authors = ["daniliammo"]
 owners = ["daniliammo"]
@@ -30,9 +32,9 @@ categories = ["utility", "adventure"]
 tags = ["minimap", "map", "world map", "waypoints", "navigation", "hud", "portals", "biome"]
 
 [[versions]]
-version = "0.4.0"
-published = "2026-11-08"
+version = "0.4.1"
+published = "2026-11-09"
 game = "26.3"
-file = "minimap_worldmap_waypoints_reworked-0.4.0.hnmod"
-sha256 = "5d6423a3adfe6bb7b8634d922c5569202aeb1484fff4e9e155eedaf63d53bde6"
-changelog = "Fix waypoint isolation by save/server identity, including matching coordinates and reconnects. Delete legacy unscoped waypoints while preserving preferences. GPU tile rendering for the large map and optional distant smoothing enabled by default."
+file = "minimap_worldmap_waypoints_reworked-0.4.1.hnmod"
+sha256 = "93b92a321377227840d5adbb21a21b968b0d4d124e8f64de3bffeccf9eada6f8"
+changelog = "English, Russian, French and Spanish interfaces with regional language support; directional player arrows on both maps. Includes world-scoped waypoints, GPU world-map tiles and optional distant smoothing from 0.4.0."

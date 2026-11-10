@@ -1,0 +1,32 @@
+id = "kotost_body"
+kind = "native-mod"
+name = "Kotost Body"
+summary = "A bust drawn from your own skin (yours only by default) that bounces only when you move, plus your own body in first person."
+description = """
+- **A bust for your own player**, drawn by the mod and textured from your own skin: no cosmetics item, no resource pack, nothing on the server. Shirts and necklines carry on over it, and the skin's jacket layer goes on top.
+- **It moves only when you move**: a small spring bounce on each step (more when running) and on jumps and landings. Standing still, it stays still. Left and right have springs of their own.
+- **Your own body in first person**: look down and see your body, legs and both arms in 3D, holding your items.
+- **Other players are left as they look**: the bust goes on someone else only if you name them in `bust_names`, or choose slim skins or everyone yourself in `config/kotost-body.txt`. The same file tunes the bounce; the game re-reads it while you play.
+
+Client side only: it changes only what you see on your own screen. A chestplate hides it.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. Pinned to Nightly 2026-11-08 (fdc87ae) and Horizon Mixins 5a64af9.
+
+No Minecraft code or assets are included. MIT licensed."""
+authors = ["Kotost Games"]
+owners = ["Leks2000"]
+owner_ids = [107043945]
+license = "MIT"
+source = "https://github.com/Leks2000/kotost-body"
+icon = "icons/kotost_body.png"
+categories = ["decoration", "game-mechanics"]
+tags = ["cosmetic", "skin", "player-model", "first-person", "physics"]
+screenshots = ["screenshots/kotost_body/1.png", "screenshots/kotost_body/2.png", "screenshots/kotost_body/3.png"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-10"
+game = "26.3"
+file = "kotost_body-0.2.1.hnmod"
+sha256 = "35d6e4872bcf315cf1d11e086f1b1a36b540217bbb167b4090ebc28e03564029"
+changelog = "The bust is yours only by default: `skin_bust = me` draws it on your own player (plus anyone in `bust_names`) and leaves other players as they look. Slim skins or everyone only when you choose them in `config/kotost-body.txt`; an existing settings file keeps what it says. Pinned to Nightly 2026-11-08 (fdc87ae) and Horizon Mixins 5a64af9."

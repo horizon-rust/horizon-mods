@@ -26,6 +26,14 @@ categories = ["management", "utility"]
 tags = ["modmenu", "mods-list", "ui", "settings", "port"]
 
 [[versions]]
+version = "1.1.1"
+published = "2026-11-09"
+game = "26.3"
+file = "modmenu-1.1.1.hnmod"
+sha256 = "ce24930852cecca8de367f7684adecbf0c79e5f8c8481dc6ba7d809c2b5df774"
+changelog = "Built for Horizon Nightly 2026-11-08 (fdc87ae)."
+
+[[versions]]
 version = "1.1.0"
 published = "2026-11-08"
 game = "26.3"

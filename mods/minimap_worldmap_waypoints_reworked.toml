@@ -3,24 +3,22 @@ kind = "native-mod"
 name = "Minimap, Worldmap and waypoints reworked"
 summary = "An adaptive minimap and world map with named waypoints, portals, world borders and a biome readout."
 description = """
-An adaptive minimap and a full world map for Horizon, with a shared in-memory terrain cache.
+An adaptive minimap and full-screen world map for Horizon, with shared terrain and biome history in memory for the current connection.
 
-- Minimap in four corners, square or round, 64–256 GUI pixels, 0.1–4 blocks per pixel, and optional player rotation.
-- Player arrow on both maps shows the viewing direction and accounts for minimap rotation.
-- English, Russian, French and Spanish interfaces follow the game language, including regional variants.
-- World map opened by a rebindable key (M by default); drag to pan and scroll to zoom under the cursor, with eased camera motion.
-- Independent dimension selection for the minimap and the world map (Player / Overworld / Nether / End), without teleporting the player.
-- Hover shows the pointed-at coordinates, the localised biome and waypoint names; the hovered block is outlined.
-- Right-click menu: copy coordinates, create a named waypoint, or teleport when the client knows the player has game-master permission.
-- Separate waypoint manager (N by default) for creating, renaming and deleting waypoints; waypoints are drawn as first-letter markers on the HUD through walls and on both maps.
-- Water and glass-family blocks are semi-transparent, water tint thickens with depth, grass-like ground cover is skipped, and flowers/crops use their real colours.
-- Portals (Nether, End and End gateways) are marked and show their destination; Nether destinations prefer the nearest known portal, otherwise coordinate conversion.
-- Overworld and Nether world borders are drawn on both maps (the Nether border is scaled to the same physical area).
-- Relief shading crosses chunk borders; unknown terrain is transparent; the minimap renders at high resolution for smooth movement.
-- Settings and named waypoints persist asynchronously in the mod data folder. Waypoints are isolated by save/server identity and dimension, with 64 points per world/server. Legacy unscoped points are deleted on upgrade; preferences are retained.
-- Large-map terrain is drawn as GPU tiles; distant smoothing is enabled by default and can be disabled. No network requests are made by the mod.
+- Minimap in four corners, square or round, 64–256 GUI pixels, 0.1–4 blocks per pixel, optional player rotation and a directional player arrow on both maps.
+- English, Russian, French, Spanish and German interfaces follow the game language, including regional variants.
+- Rebindable map (M by default) and waypoint manager (N by default); drag to pan, scroll to zoom under the cursor, and select dimensions independently without teleporting.
+- Original 16×16 icons for all 67 vanilla biomes and for each dimension. Detailed terrain keeps known biome names and icons after the game unloads a chunk, separately for each dimension and height layer.
+- Existing Horizon CPU LOD fills distant map coverage; detailed chunks take precedence. Approximate LOD heights and biome names remain available in the map's cache. No extra terrain is requested from the server.
+- The full-screen map shows cursor coordinates, the converted Nether coordinates, the localised biome and fluid surface/bottom heights. Right-click for coordinate copying, waypoints and chunk/region information; teleport appears only with known game-master permission.
+- Create, edit, colour and delete named waypoints, or choose Show on map. Coloured first-letter markers appear through walls on the HUD and on both maps. Points are isolated by save/server identity and dimension, with 64 per world/server.
+- Biome grass, foliage and water tints blend across borders; leaves use their actual texture colours. Water and glass-family blocks are translucent, water tint thickens with depth, ground cover is skipped, and flowers/crops use curated colours.
+- Portals and world borders appear on both maps; portal markers show destinations. Independent coordinate toggles below the minimap convert Overworld/Nether X/Z correctly, including negative positions.
+- Fixed terrain texels at every zoom and matching texture/geometry publication prevent stale chunk stripes. The distant-smoothing option is removed. The map skips rendering the 3D world behind it.
 
-The runtime uses only portable standard-library APIs and is intended for Linux, macOS and Windows. This release has not been reviewed in live gameplay; macOS and Windows runs remain unverified.
+Settings and waypoints persist asynchronously in the mod data folder. Terrain and biome history stays in RAM until disconnect; RAM retention is temporarily uncapped, and very wide views use a raster fallback. Legacy unscoped waypoints are deleted on upgrade; preferences and scoped points remain. The mod makes no network requests.
+
+The runtime uses portable standard-library APIs and is intended for Linux, macOS and Windows. Validated on pinned Horizon Nightly 2026-11-07 and Mixins revisions; other revisions are not claimed supported. Live gameplay, macOS and Windows runs remain unverified for this release.
 """
 authors = ["daniliammo"]
 owners = ["daniliammo"]
@@ -28,8 +26,24 @@ owner_ids = [67186086]
 license = "GPL-3.0-only"
 source = "https://github.com/daniliammo/Minimap-Worldmap-and-waypoints-reworked"
 icon = "icons/minimap_worldmap_waypoints_reworked.png"
+screenshots = [
+  "screenshots/minimap_worldmap_waypoints_reworked/world-map.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/world-map-overview.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/nether-portal.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/end.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/create-waypoint.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/waypoint-on-map.png",
+]
 categories = ["utility", "adventure"]
 tags = ["minimap", "map", "world-map", "waypoints", "navigation", "hud", "portals", "biome"]
+
+[[versions]]
+version = "0.5.0"
+published = "2026-11-10"
+game = "26.3"
+file = "minimap_worldmap_waypoints_reworked-0.5.0.hnmod"
+sha256 = "41969c9bdfc128b6e995784060d68c01ceda2987e9476f08f7a52dc36e6cfce0"
+changelog = "Preserve detailed biome names/icons after chunk unload; individual 16x16 icons for all 67 biomes and redrawn dimension icons. Retained LOD terrain, fixed zoom stripes and source detail, biome/leaf/water colours, coloured waypoints and Show on map, German localization and full-screen map improvements. Terrain/biome history remains in RAM until disconnect."
 
 [[versions]]
 version = "0.4.1"

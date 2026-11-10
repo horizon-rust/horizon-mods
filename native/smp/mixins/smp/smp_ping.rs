@@ -165,7 +165,7 @@ impl Pings {
     }
 
     fn write(&self) -> Result<(), String> {
-        smp_store::write_json(&self.path, &self.data)
+        smp_store::save_json(&self.path, &self.data)
     }
 }
 

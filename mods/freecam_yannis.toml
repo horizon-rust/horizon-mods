@@ -1,0 +1,51 @@
+id = "freecam_yannis"
+kind = "native-mod"
+name = "FreeCam"
+summary = "Free camera, F6 follow view and nine tripod positions for Horizon."
+description = """
+## FreeCam by Yannis_
+
+Free flight, a high and wide follow view, and nine tripod positions — now native to Horizon.
+
+### Controls
+
+- **F4:** toggle free camera. Move with your movement keys, Jump/Sneak and Sprint. Mouse look is independent of the player.
+- **F6:** follow your player while continuing to play normally. The crosshair is hidden while following. Toggle again to restore your previous camera.
+- **Hold F4 + 1–9:** save or return to a tripod for the current world.
+- **Options → Mods → FreeCam:** rebind keys and adjust camera speed, follow distance and height. Default follow distance: 28 blocks; height: 18 blocks.
+
+### Original Modrinth project
+
+This is the native Rust edition of [FreeCam by Yannis_ on Modrinth](https://modrinth.com/mod/freecam_yannis_) (project ID: `zHbMgWKx`). Use the Modrinth edition with Java/Fabric and this native edition with Horizon. Both use the same existing FreeCam artwork.
+
+The Java edition originated from [MinecraftFreecam/Freecam](https://github.com/MinecraftFreecam/Freecam) and its contributors. Original MIT notices are retained in the repository and bundle. This is an independently maintained port, not an official release of MinecraftFreecam or Horizon.
+
+### Compatibility and scope
+
+For Minecraft 26.3 and Horizon commit `2ebf00a0281c592f79191e76fce0e7d522c6f425`. Two internal hooks provide independent mouse look and player-body visibility, so this release requires that pinned Horizon revision.
+
+The camera only shows chunks already loaded around the player. Free flight passes through blocks and suppresses player movement input and block interactions; follow mode leaves player controls active. World unload and disconnect clear camera state.
+
+No networking, telemetry, background threads, obstruction hiding, block scanning or chunk rebuilding. Settings use Horizon’s local storage. Optional Java collision, fullbright, fog and hand-display settings are not included in this first port.
+
+### Validation
+
+13 distinct core/adapter tests, the full Horizon native build check, and official package validation pass. GitHub CI also passes. Interactive Horizon-world testing and performance measurements remain pending; this is a preview release. [Validation details](https://github.com/yan6678yan-design/freecam-horizon/blob/main/VALIDATION.md).
+
+Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft."""
+authors = ["Yannis_"]
+owners = ["yan6678yan-design"]
+owner_ids = [341719861]
+license = "MIT"
+source = "https://github.com/yan6678yan-design/freecam-horizon"
+icon = "icons/freecam_yannis.png"
+categories = ["utility"]
+tags = ["camera", "freecam", "follow-camera", "screenshots", "client"]
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-08"
+game = "26.3"
+file = "freecam_yannis-1.0.1.hnmod"
+sha256 = "97b727405c8aeef6d7865701fc7fda4f52fe61549a47125e6b6244c7872e161c"
+changelog = "Initial native Horizon release: F4 free flight, F6 follow camera, nine tripod slots and persistent speed/distance/height settings. Version 1.0.1 hides the crosshair in F6 follow view and restores normal crosshair rendering on exit. No obstruction hiding."

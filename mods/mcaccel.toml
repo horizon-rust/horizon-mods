@@ -1,0 +1,30 @@
+id = "mcaccel"
+kind = "mod"
+name = "Minecraft Accelerated (assets)"
+summary = "Pumpkins Accelerated: carved pumpkin faces and more."
+description = """
+**This mod has two parts, and you need both.** This is the content part (items, blocks, textures, models, data; no code); install [the other one](https://playhorizon.dev/mods/mcaccel_native) too.
+
+Pumpkins Accelerated: carved pumpkin faces and more.
+
+**Differences from the original:** A snow golem built with one of the mod's heads still looks like a plain carved pumpkin and drops one when sheared. Pistons push the pumpkins instead of breaking them. Only shears in the main hand change the face, and the blocks have their own creative tab instead of sitting in Building Blocks. Players joining over LAN may not hear the carving sound.
+
+A port of [Minecraft Accelerated](https://github.com/Cookieglue/PumpkinsAccelerated) 1.0.0 by Mari, published under its licence, CC0-1.0. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Mari"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "CC0-1.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/mcaccel"
+icon = "icons/mcaccel.png"
+categories = ["decoration"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "1.0.0-horizon.1"
+published = "2026-11-11"
+game = "26.3"
+file = "mcaccel-1.0.0-horizon.1.hmod"
+sha256 = "3d12ab1ee24199adf43fae6536afd6e3d6071b161cbd28e68cc1c428f557822e"
+changelog = "First release."

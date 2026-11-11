@@ -1,0 +1,32 @@
+id = "emojiful_twemoji"
+kind = "resourcepack"
+name = "Emojiful (Twemoji pack)"
+summary = ":short_name: in chat shows the emoji (Twemoji), with completions as you type."
+description = """
+**This mod has two parts, and you need both.** This is the resource pack (the emoji images); install [the other one](https://playhorizon.dev/mods/emojiful) too.
+
+:short_name: in chat shows the emoji (Twemoji), with completions as you type.
+
+**Differences from the original:** Emoji codes become images only in chat messages, not on signs, books, names or in the chat box while typing. The images come in a separate resource pack that has to be enabled. There is no emoji picker button, no Emojiful custom or GIF emoji, no datapack emoji and no profanity filter. A code split across text colours stays as text.
+
+A port of [Emojiful](https://github.com/InnovativeOnlineIndustries/Emojiful) 4.2.0 by HorizonStudio, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Emoji graphics: Twemoji, Copyright 2020 Twitter, Inc and other contributors, and jdecked/twemoji contributors, licensed under CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/), taken from iamcal/emoji-data's sheet_twitter_32_clean.png (https://github.com/iamcal/emoji-data, MIT). The images are cut into font sheets by tools/emojiful_port.py; they are otherwise unchanged.
+
+No Minecraft code is included."""
+authors = ["lavoide", "HorizonStudio"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "CC-BY-4.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/emojiful"
+icon = "icons/emojiful_twemoji.png"
+categories = ["fonts", "gui"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "emojiful_twemoji-0.1.1.zip"
+sha256 = "3352ee13d1f07122bca40252c62cf52de04d4c30c74b13518c32321c90dd5faf"
+changelog = "First release."

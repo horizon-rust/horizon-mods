@@ -1,0 +1,35 @@
+id = "apotheosis_native"
+kind = "native-mod"
+name = "Apotheosis"
+summary = "A port of Apotheosis' adventure module: affix loot with rarities, gems and sockets, bosses, elites, rogue spawners and boss dungeons. Needs its content mod."
+description = """
+A native mod that ports the adventure module of [Apotheosis](https://github.com/Shadows-of-Fire/Apotheosis) (by Shadows_of_Fire, MIT) to Horizon, from Apotheosis' own data. **Install the content mod `apotheosis` too**: it holds the gems, materials, sigils, names and world generation.
+
+- **Affix loot**: chests, mob drops and fishing give weapons, tools and armour with a rarity (Common to Mythic) and affixes: attribute bonuses, status effects on hit or when hurt, damage reduction, enchantment bonuses, executing, thunderstruck, cleaving, radial mining, telepathic and festive drops, and Apothic attributes (crit chance and damage, life steal, fire and cold damage, armour pierce and shred, dodge, healing received, experience gained, draw speed...). The tooltip shows them.
+- **Gems and sockets**: 21 gems at six purities, socketed at the anvil.
+- **Salvaging, reforging and gem cutting** at the grindstone and anvil, and the Sigils of Socketing, Withdrawal and Unnaming.
+- **Bosses and elites**: now and then a monster is a boss with better stats, gear and a gem, or an elite; some bosses only in their biomes. `/apotheosis boss` summons one.
+- **World tier** (`/apotheosis tier`): one per world; higher tiers roll rarer loot and give luck.
+- **Rogue spawners and boss dungeons** in new chunks (from the content mod); a boss dungeon's spawner becomes a boss when a player comes near.
+
+**What it changes in the game**: loot tables (adds affix loot and gems), the player's attributes from their gear, melee and projectile damage, healing and block experience for the player, natural monster spawns (bosses and elites), the anvil and grindstone results, and block drops for radial and telepathic tools. It adds the `/apotheosis` command. It reads and writes only the world's `data/apotheosis/world_tier.dat`; no network, no other files.
+
+It carries an empty trait mod (`api/`): the game asks some hook points, the player's melee hit among them, only while one is loaded.
+
+Pinned to Horizon fdc87ae (Nightly 2026-11-08). Not yet: the augmenting and reforging tables, the tier screen, Apotheosis' towers, and the Apothic attributes and effects Horizon has no equivalent for (listed in the README). Not affiliated with or endorsed by Apotheosis' authors; its assets and lang are not used, the names and art are this port's own."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/horizon-apotheosis"
+icon = "icons/apotheosis_native.png"
+categories = ["adventure", "equipment", "mobs"]
+tags = ["loot", "affixes", "gems", "bosses", "rpg", "dungeons"]
+
+[[versions]]
+version = "0.8.0"
+published = "2026-11-11"
+game = "26.3"
+file = "apotheosis_native-0.8.0.hnmod"
+sha256 = "695b5d165a3f17717cb484a6c675c4fbe45071d381ad9a4cfefd4554d1f0f7c0"
+changelog = "First registry release (0.8.0): affix loot with rarities, gems and sockets, salvaging, reforging, gem cutting and sigils, bosses and elites, effect affixes and Apothic attributes, rogue spawners and boss dungeons (with the content mod)."

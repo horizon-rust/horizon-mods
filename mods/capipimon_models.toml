@@ -1,0 +1,50 @@
+id = "capipimon_models"
+kind = "native-mod"
+name = "Capipimon"
+summary = "Become a Pokémon and fight other players on a Capipimon server. Fan-made PvP. Needs Capipimon Content too."
+description = """
+**Install both listings in the same instance:** Capipimon (this one, the game code) and Capipimon Content (textures and creature data). Neither works alone.
+
+Capipimon is a free, fan-made PvP mod. You play as a Capipimon and fight other players with move kits, guarding and dodging. It draws its creatures from community Cobblemon-format models.
+
+### Before you install
+- This is a native mod, so it compiles on your PC. The first build usually takes 10 to 30 minutes.
+- Native mods run with the same access to your computer as the game.
+- It needs Minecraft 26.3.
+- This is the client: it only does something on a Capipimon server. Single player and LAN worlds stay vanilla, and the server itself isn't public. Get the address from whoever runs a Capipimon server.
+- Keep both listings on the same version and up to date. A server refuses players whose content doesn't match its own, and tells players with an old Capipimon to update.
+
+### Credits and licences
+Capipimon's client code is GPL-3.0-only. The models, animations and textures come from Cobblemon and many community add-on packs, and each keeps its own licence. See CREDITS.md in the source for every author, licence and link. The icon shows Cobblemon's Buneary model and shiny texture (CC BY-NC 3.0) wearing Capipimon's original Bow hat.
+
+Talent NPCs on Capipimon servers wear skins of Minecraft accounts chosen by the server, loaded from Mojang's skin servers.
+
+### Disclaimer
+Unofficial fan project, not affiliated with or endorsed by Nintendo, The Pokémon Company, Game Freak or Phase Connect. Pokémon and all related names are trademarks of their respective owners."""
+authors = ["Capippalist Trade Guild"]
+owners = ["Onii133"]
+owner_ids = [257615238]
+license = "GPL-3.0-only AND MIT AND MPL-2.0 AND CC-BY-NC-3.0 AND CC-BY-NC-4.0 AND CC-BY-NC-SA-4.0 AND CC-BY-SA-4.0"
+source = "https://github.com/Onii133/Capipimon"
+icon = "icons/capipimon_models.png"
+categories = ["game-mechanics", "adventure"]
+tags = ["pvp", "pokemon", "cobblemon-models", "multiplayer", "fan-made"]
+key = "RWQNf4ubpT1GUJAmgEeuroSrBMAT99qadRw95nD6pDbiONLOvoEqiIcz"
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "capipimon_models-0.1.1.hnmod"
+sha256 = "a7f64905404ee2941580b2ca21999f0c5d2773ad8edaab15977ea3a5f7784202"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUQNf4ubpT1GUIQp8zs7VlwcXFrdtDiutsvWnXX61esJ+td1hOvYXLEUUhvKDSB1EI82FLSl5lEOlF+ImtMPwu+0T9irwURh4wA=\r
+trusted comment: timestamp:1794421811\tfile:capipimon_models-0.1.1.hnmod\thashed\r
+A/okDCo2trmRtIKDjI5pWTgkPlXlkN5MBFrSr+KWXvAksZVoI/ksLgS3OrBC7QfpmrJPY/j5HDNjT+a9/zsWDw=="""
+changelog = """
+Fixes from the registry review of 0.1.0:
+- Server-sent timers (charge, storm, status) ignore NaN/inf and are clamped, so they can't panic the client.
+- The map title can't call f32::clamp with min > max on narrow maps, and non-finite map bounds are dropped.
+- The Q-drop and F-swap hooks are plain helper injections now, with no trait_method.
+- CREDITS.md names the 36 _p3/_p4/_p5 recolours of Cobblemon textures (CC BY-NC 3.0)."""

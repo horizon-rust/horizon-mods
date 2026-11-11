@@ -1,0 +1,30 @@
+id = "universalgraves"
+kind = "native-mod"
+name = "Universal Graves"
+summary = "Your items wait in a grave where you died."
+description = """
+Your items wait in a grave where you died.
+
+**Differences from the original:** The grave is a skeleton skull, not a gravestone with the player's name and timer. Right-clicking it gives everything back at once, and there is no grave screen. There is no death compass and no /graves command. The grave keeps vanilla's death experience instead of all of the player's experience.
+
+A port of [Universal Graves](https://github.com/Patbox/UniversalGraves) 3.0.3+1.20.1 by Patbox, published under its licence, LGPL-3.0-only. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Patbox"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-only"
+source = "https://github.com/lavoide/horizon-ports/tree/main/universalgraves"
+icon = "icons/universalgraves.png"
+categories = ["utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "universalgraves-0.1.1.hnmod"
+sha256 = "ba9e07f7d6675761b7e4bc2e279a743adf349991d580bada291e3979fafa35cd"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

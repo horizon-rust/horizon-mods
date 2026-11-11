@@ -1,0 +1,30 @@
+id = "mousewheelie"
+kind = "native-mod"
+name = "Mouse Wheelie"
+summary = "Scroll items between inventories, sort with the middle button, pick the right tool."
+description = """
+Scroll items between inventories, sort with the middle button, pick the right tool.
+
+**Differences from the original:** Wheel scrolling and modifier clicks only work with an empty cursor. Hotbar refill (covered by the separate Stack Refill port), bundle dragging, recipe book quick craft, creative tab scrolling and the config screen are left out. Sorting only touches the inventory and chest-like containers. Moves happen at once, without the Java mod's click rate limit.
+
+A port of [Mouse Wheelie](https://github.com/Siphalor/mouse-wheelie) 1.16.3+mc1.20.1 by Siphalor, published under its licence, Apache-2.0. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Siphalor"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "Apache-2.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/mousewheelie"
+icon = "icons/mousewheelie.png"
+categories = ["management", "utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "mousewheelie-0.1.1.hnmod"
+sha256 = "1b17f238f277e1f559521590e8728fa973bfd5ffb8e5a654f99c8a81fc7d44e9"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

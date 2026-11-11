@@ -1,0 +1,58 @@
+id = "viahorizonplus"
+kind = "native-mod"
+name = "ViaHorizonPlus"
+summary = "Multi-version client protocol selector & legacy 1.8 combat emulation for Horizon"
+description = """
+### 🌐 About ViaHorizonPlus
+
+**ViaHorizonPlus** brings multi-version protocol compatibility and legacy gameplay mechanics to **Horizon 26.3** (the 100% Rust Minecraft rewrite).
+
+It allows Horizon players to seamlessly connect to legacy and modern Minecraft servers (from 1.8.x up to 26.3) while preserving the authentic feel and mechanics of older versions.
+
+---
+
+### ⚔️ Key Features
+
+- **In-Game Version Selector**: Accessible directly from the Multiplayer menu with one click.
+- **Auto-Detect (Ping)**: Automatically detects the server's protocol or lets you force a specific version (from 1.8.9 to modern releases).
+- **1.8 Combat Emulation**:
+  - Right-click sword blocking
+  - Removal of 1.9+ attack delay / cooldown
+  - Classic 1.7/1.8 block-hitting visual animation
+  - 1.8 eye height when sneaking (1.54m instead of modern 1.27m)
+- **100% Native Rust**: Zero JVM or Fabric bytecode dependency; compiles directly into the Horizon engine.
+
+---
+
+### 📜 Upstream Attribution & License
+
+ViaHorizonPlus is an independent native Rust port inspired by the concepts of **[ViaFabricPlus](https://github.com/ViaVersion/ViaFabricPlus)** by **FlorianMichael** and the **ViaVersion** team.
+
+Distributed under the terms of the **MIT License**."""
+authors = ["rraattrruuee"]
+owners = ["rraattrruuee"]
+owner_ids = [161857106]
+license = "MIT"
+source = "https://github.com/rraattrruuee/ViaHorizonPlus"
+icon = "icons/viahorizonplus.png"
+categories = ["utility", "game-mechanics"]
+tags = ["protocol", "viaversion", "viafabricplus", "legacy", "multiplayer", "combat-1-8", "versions", "pvp", "emulation"]
+key = "RWQXL3IVjSFUsQPkKalaqeMgn56rPxNDBnh2uBS4H+Tl3Bh8t8tDUz2f"
+
+[[versions]]
+version = "0.1.5"
+published = "2026-11-11"
+game = "26.3"
+file = "viahorizonplus-0.1.5.hnmod"
+sha256 = "703c87cef4cd2578ad61280150f27d0a05868149aa6f3e1ff4171bebb57c8916"
+signature = """
+untrusted comment: signature from rsign secret key
+RUQXL3IVjSFUsfrxlnSZij0EVPqobG3iYAyPpg5LiQPqlivUm/1fMAC1m5xsYck+e81ypZqqEwTnX7MiYNgw9U6pEU/JgPJuwA4=
+trusted comment: timestamp:1794431955\tfile:viahorizonplus-0.1.5.hnmod\tprehashed
+9k9K9aC1IYVaSMVweVh2P2mX6i0IF9dmzvGVEfbAyaTMrLgxhY3HGQ/Z2XTe6Q9lLzipN2es7Mitgv++fRWGCw=="""
+changelog = """
+- Initial release of ViaHorizonPlus for Horizon 26.3
+- Multi-version protocol selector GUI directly on Multiplayer screen
+- Support for Minecraft protocols from 1.8.x to 26.3
+- Legacy 1.8 gameplay emulation: sword blocking, attack cooldown removal, block-hit animations, classic sneak eye height
+- Clean-room Rust adaptation based on ViaFabricPlus under GNU GPLv3"""

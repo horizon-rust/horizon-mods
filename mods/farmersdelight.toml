@@ -1,0 +1,28 @@
+id = "farmersdelight"
+kind = "mod"
+name = "Farmer's Delight (assets)"
+summary = "Farmer's Delight: stove, cooking pot, skillet, cutting board, crops, rich soil and 170 foods."
+description = """
+**This mod has two parts, and you need both.** This is the content part (items, blocks, textures, models, data; no code); install [the other one](https://playhorizon.dev/mods/farmersdelight_native) too.
+
+Farmer's Delight: stove, cooking pot, skillet, cutting board, crops, rich soil and 170 foods.
+
+A port of [Farmer's Delight](https://github.com/MehVahdJukaar/FarmersDelight) 1.20.1-2.4.1+refabricated by MehVahdJukaar, MerchantPug, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "MehVahdJukaar, MerchantPug"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/homestead-horizon-ports/tree/main/farmersdelight"
+icon = "icons/farmersdelight.png"
+categories = ["food"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "2.4.1+horizon.3"
+published = "2026-11-11"
+game = "26.3"
+file = "farmersdelight-2.4.1+horizon.3.hmod"
+sha256 = "768f8c8ff36373f8985e084575225d52393de7486706a873955c6c67c860e708"
+changelog = "First release."

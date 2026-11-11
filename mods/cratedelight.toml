@@ -1,0 +1,28 @@
+id = "cratedelight"
+kind = "mod"
+name = "Crate Delight"
+summary = "Storage crates and bags for crops, fish and other foods."
+description = """
+Storage crates and bags for crops, fish and other foods.
+
+**Needs** [farmersdelight](https://playhorizon.dev/mods/farmersdelight) and [farmersdelight_native](https://playhorizon.dev/mods/farmersdelight_native) installed too.
+
+A port of [Crate Delight](https://github.com/axperty/cratedelight) 26.07.01-1.20-fabric by Axperty, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Axperty"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/homestead-horizon-ports/tree/main/cratedelight"
+icon = "icons/cratedelight.png"
+categories = ["food", "storage"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "26.07.01+horizon.2"
+published = "2026-11-11"
+game = "26.3"
+file = "cratedelight-26.07.01+horizon.2.hmod"
+sha256 = "1a6f5a1cc19aa1a95deaef178163200f9a85b53a712c08d0f4f5448ef4ea0a9d"
+changelog = "First release."

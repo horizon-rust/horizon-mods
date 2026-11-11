@@ -1,0 +1,28 @@
+id = "ends_delight"
+kind = "mod"
+name = "End's Delight"
+summary = "End foods for Farmer's Delight: shulker, dragon and chorus dishes, End Stove, knives (needs the Farmer's Delight port)."
+description = """
+End foods for Farmer's Delight: shulker, dragon and chorus dishes, End Stove, knives (needs the Farmer's Delight port).
+
+**Needs** [farmersdelight](https://playhorizon.dev/mods/farmersdelight) and [farmersdelight_native](https://playhorizon.dev/mods/farmersdelight_native) installed too.
+
+A port of [End's Delight]() refabricated-1.20.1-2.5 by FoggyHillside, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "FoggyHillside"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/homestead-horizon-ports/tree/main/ends_delight"
+icon = "icons/ends_delight.png"
+categories = ["food"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "2.5+horizon.3"
+published = "2026-11-11"
+game = "26.3"
+file = "ends_delight-2.5+horizon.3.hmod"
+sha256 = "7a09b144a21712b8f5f4bf527026c3f1618f1c1f241664b0b83080e8b11935d0"
+changelog = "First release."

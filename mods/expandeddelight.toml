@@ -1,0 +1,28 @@
+id = "expandeddelight"
+kind = "mod"
+name = "Expanded Delight"
+summary = "Asparagus, sweet potatoes, chili peppers, peanuts, cinnamon, salt, juices, the juicer and the mortar (needs the Farmer's Delight port)."
+description = """
+Asparagus, sweet potatoes, chili peppers, peanuts, cinnamon, salt, juices, the juicer and the mortar (needs the Farmer's Delight port).
+
+**Needs** [farmersdelight](https://playhorizon.dev/mods/farmersdelight) and [farmersdelight_native](https://playhorizon.dev/mods/farmersdelight_native) installed too.
+
+A port of [Expanded Delight](https://github.com/ianm1647/expandeddelight) 0.3.2 by ianm1647, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "ianm1647"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/homestead-horizon-ports/tree/main/expandeddelight"
+icon = "icons/expandeddelight.png"
+categories = ["food", "worldgen"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.3.2+horizon.2"
+published = "2026-11-11"
+game = "26.3"
+file = "expandeddelight-0.3.2+horizon.2.hmod"
+sha256 = "34390663146e06c7be9e11011c554f351b01fd3542a40668b1622f4c0d2a81c4"
+changelog = "First release."

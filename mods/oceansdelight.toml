@@ -1,0 +1,28 @@
+id = "oceansdelight"
+kind = "mod"
+name = "Ocean's Delight"
+summary = "Squid, guardian and pufferfish dishes for Farmer's Delight (needs the Farmer's Delight port)."
+description = """
+Squid, guardian and pufferfish dishes for Farmer's Delight (needs the Farmer's Delight port).
+
+**Needs** [farmersdelight](https://playhorizon.dev/mods/farmersdelight) and [farmersdelight_native](https://playhorizon.dev/mods/farmersdelight_native) installed too.
+
+A port of [Ocean's Delight](https://github.com/Scouter456/Oceans_Delight) fdrf-fabric-1.0.2-1.20 by Scouter, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Scouter"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/homestead-horizon-ports/tree/main/oceansdelight"
+icon = "icons/oceansdelight.png"
+categories = ["food"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "1.0.2+horizon.2"
+published = "2026-11-11"
+game = "26.3"
+file = "oceansdelight-1.0.2+horizon.2.hmod"
+sha256 = "2febdb60be02f860ccf0e90c1c56843c220e984e43b2966f3fae58b16c146af1"
+changelog = "First release."

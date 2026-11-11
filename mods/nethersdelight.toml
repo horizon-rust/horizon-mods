@@ -1,0 +1,28 @@
+id = "nethersdelight"
+kind = "mod"
+name = "Nether's Delight Refabricated"
+summary = "Nether foods for Farmer's Delight: stuffed hoglin, Blackstone Stove and furnaces, propelplants, machetes (needs the Farmer's Delight port)."
+description = """
+Nether foods for Farmer's Delight: stuffed hoglin, Blackstone Stove and furnaces, propelplants, machetes (needs the Farmer's Delight port).
+
+**Needs** [farmersdelight](https://playhorizon.dev/mods/farmersdelight) and [farmersdelight_native](https://playhorizon.dev/mods/farmersdelight_native) installed too.
+
+A port of [Nether's Delight Refabricated](https://github.com/DragonsPlusMinecraft/NethersDelightRefabricated) 1.20.1-4.1.1 by RaymondBlaze, published under its licence, LGPL-2.1-only. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "RaymondBlaze"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-2.1-only"
+source = "https://github.com/lavoide/homestead-horizon-ports/tree/main/nethersdelight"
+icon = "icons/nethersdelight.png"
+categories = ["food"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "4.1.1+horizon.2"
+published = "2026-11-11"
+game = "26.3"
+file = "nethersdelight-4.1.1+horizon.2.hmod"
+sha256 = "0e4fe9fddab530a6d32489ee1f8cb32c146bdaa27f11bfb23bd4c7977f6ee1b5"
+changelog = "First release."

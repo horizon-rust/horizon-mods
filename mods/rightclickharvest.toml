@@ -1,0 +1,28 @@
+id = "rightclickharvest"
+kind = "native-mod"
+name = "Right Click Harvest"
+summary = "Right-click a grown crop to harvest and replant it."
+description = """
+Right-click a grown crop to harvest and replant it.
+
+A port of [Right Click Harvest](https://github.com/JamCoreModding/right-click-harvest) 4.6.1+1.20.1 by Jamalam, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Jamalam"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/homestead-horizon-ports/tree/main/rightclickharvest"
+icon = "icons/rightclickharvest.png"
+categories = ["utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "rightclickharvest-0.1.1.hnmod"
+sha256 = "916d9a7a0440913d8e4f57ce65e8b2d3444ab64f3296ba20c55f8951474ca86a"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

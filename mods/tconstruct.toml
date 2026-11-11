@@ -1,0 +1,47 @@
+id = "tconstruct"
+kind = "native-mod"
+name = "Tinkers' Construct"
+summary = "Smelt ores in a smeltery, cast tool parts, and build and modify tools of any material."
+description = """
+An unofficial port of Tinkers' Construct 1.20.1-3.12.1.231 (by SlimeKnights) to Horizon and Minecraft 26.x, as one native mod. Rewritten in Rust for Horizon's hooks, so no original code runs; the textures, models, recipes, books and language files are the original mod's. Not made or endorsed by SlimeKnights: please report problems to this project, not to them.
+
+### What's there
+
+- **Smelting:** the smeltery and foundry as formed multiblocks (controller, drains, ducts, chutes, tanks, glass), the melter and heater, the alloyer, faucets, channels, casting tables and basins, casts and sand casts, with the Java screens.
+- **Tools:** the part builder, tinker station, tinker's anvil and modifier worktable; every tool and part drawn by material; modifiers and traits; armour and ranged tools (longbow, crossbow, fishing rod, staffs).
+- **Fluids:** 72 fluids to the mB; the buckets and the copper can draw their fluid.
+- **World:** slime islands and geodes, with slime foliage tinted from the mod's colour maps by position; mob heads, gadgets and foods.
+- **The W guide:** the five books, translated, every item opening its page, 149 pages with 3D scenes you can turn.
+- **JEI and Jade:** melting, casting, alloying, fuel and entity melting cards (fluids drawn as textures), and Jade lines for the smeltery's parts.
+
+### Missing or not the same
+
+- **Experienced and Ricochet** effects don't act yet, and the cheese block behaves like honey (slides and sticks); both need engine mixins that aren't finished.
+- **Fancy item frames and armour stands** aren't there yet.
+
+### Tested
+
+On Horizon commit fdc87ae, on Windows, in single player, with the nine other ports: the guide's pages and scenes, the buckets and copper cans, the casting and melting cards, slime foliage, the fishing rod, the longbow and ballista, foods, mob heads, and the geodes, cobalt and trees in the world. LAN and a dedicated server were not tested.
+
+### Licence
+
+MIT, as the original.
+"""
+authors = ["SlimeKnights", "Joeypc6"]
+owners = ["Joeypc6"]
+owner_ids = [35495484]
+license = "MIT"
+source = "https://github.com/Joeypc6/TinkersConstruct-Horizon"
+icon = "icons/tconstruct.png"
+categories = ["technology", "equipment"]
+tags = ["tinkers", "smeltery", "tools", "casting", "port"]
+
+[[versions]]
+version = "3.12.1"
+published = "2026-11-11"
+game = "26.3"
+file = "tconstruct-3.12.1.hnmod"
+sha256 = "e4ef92da73410e8f22d866cefb91b38a57f551fc17f1822b7331505e163a9d3f"
+changelog = """
+First Horizon release, a port of Tinkers' Construct 1.20.1-3.12.1.231 by SlimeKnights. 3.12.1 matches the ported version. Built and tested on Horizon commit fdc87ae (Nightly 2026-11-08).
+"""

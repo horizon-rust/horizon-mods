@@ -1,0 +1,59 @@
+id = "hostilenetworks"
+kind = "native-mod"
+name = "Hostile Neural Networks"
+summary = "Train data models on mobs, then simulate them in machines to make their drops without fighting."
+description = """
+An unofficial port of Hostile Neural Networks 7.0.0 (NeoForge, by Shadows_of_Fire) to Horizon, as one native mod. Rewritten in Rust for Horizon's hooks, so no original code runs; the textures, models, recipes and data models are the original mod's. Not made or endorsed by its author: please report problems to this project, not to them.
+
+### What's there
+
+- **Data models:** one for every vanilla mob and block the mod lists, attuned with a Model Framework on a mob or block. Each icon shows its mob.
+- **Deep Learner:** its screen holds four models, which gather data from your kills and mined blocks while you carry it, and its HUD shows them while in hand.
+- **Simulation Chamber:** inference and training, redstone modes and the failure messages.
+- **Loot Fabricator:** fixed and queued outputs, and the Fabrication Directive.
+- **Data Center:** the 7 by 7 by 7 shell check, 25 models, shared inputs and outputs, and IO ports by mode.
+- **Config:** `hostilenetworks.toml` in the config folder holds the Java mod's power and model options.
+
+### With other mods
+
+- **JEI:** W opens a guide written for this port, with 3D scenes.
+- **Jade:** shows the IO port's mode, and the machines' contents and energy.
+- **AE2:** a pattern provider fills the machines and an import bus brings the results back. The crafting status knows the chamber's and the fabricator's times.
+
+### Missing or not the same
+
+- **The Deep Learner's screen** has the Java layout, but a click moves a model in or out (no carried stack), and a model's variants aren't cycled.
+- **The Data Center's screen is simpler.**
+- **Kills count only from a player's own blows.**
+- **Left out:** the `/hostilenetworks` commands and JEI's own pages.
+
+### Tested
+
+On Horizon commit 6560641, on Windows, in single player and on LAN with one guest. Also built on Horizon commit fdc87ae with the nine other ports, and the guide checked there. A dedicated server was not tested.
+
+### Licence
+
+MIT, as the original.
+"""
+authors = ["Shadows_of_Fire", "Joeypc6"]
+owners = ["Joeypc6"]
+owner_ids = [35495484]
+license = "MIT"
+source = "https://github.com/Joeypc6/HostileNeuralNetworks-Horizon"
+icon = "icons/hostilenetworks.png"
+categories = ["technology", "mobs"]
+tags = ["mob-farm", "simulation", "data-model", "automation", "port"]
+
+[[versions]]
+version = "7.0.3"
+published = "2026-11-11"
+game = "26.3"
+file = "hostilenetworks-7.0.3.hnmod"
+sha256 = "bf4ee4eb5eb73d1a69cbf27f6537e61cdb399c6c6e2cdad24e0860347c3f293a"
+changelog = """
+First Horizon release, a port of Hostile Neural Networks 7.0.0 (NeoForge) by Shadows_of_Fire. 7.0.3 is this port's own version number. Built on Horizon commit fdc87ae (Nightly 2026-11-08).
+
+Since the 7.0.2 submission: builds with the new Horizon ports of Tinkers' Construct, Ender IO, Powah and Apothic Spawners (all ten together); with JEI, recipe cards draw fluids as their textures (mod kit 14); the W guide's 3D scenes find their structures from any page and its buttons are translated. The block and item models were compared with the 7.0.0 jar's: all 23 the same, none missing.
+
+From the 7.0.1 review: Data Center outputs respect each item's stack limit in the IO port, and an empty slot takes no more than the limit either; the Deep Learner has its screen; Data Model icons show their mob.
+"""

@@ -1,0 +1,30 @@
+id = "securecrops"
+kind = "native-mod"
+name = "Secure Crops"
+summary = "Farmland isn't trampled by players who land softly."
+description = """
+Farmland isn't trampled by players who land softly.
+
+**Differences from the original:** The Java mod has three gamerules that control trampling. This port has none and always behaves as Homestead sets them: nothing tramples farmland, with or without a crop on it.
+
+A port of [Secure Crops](https://github.com/zekk051/secure-crops) 2.0.0 by zekk051, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "zekk051"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/securecrops"
+icon = "icons/securecrops.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "securecrops-0.1.1.hnmod"
+sha256 = "cede289a7928cfaa3b554008494ac301d903624a3153a51f6faf1ea52093f4cf"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

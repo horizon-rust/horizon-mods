@@ -1,0 +1,49 @@
+id = "elevatorid"
+kind = "native-mod"
+name = "Elevator"
+summary = "Sixteen coloured elevator blocks: jump to go up to the next one, sneak to go down."
+description = """
+An unofficial port of Elevator 1.16.6 (Fabric, by VsnGamer) to Horizon, as one native mod. Rewritten in Rust for Horizon's hooks, so no original code runs. Not made or endorsed by VsnGamer: please report problems to this project, not to them.
+
+### What it does
+
+Sixteen coloured elevator blocks. Stand on one and jump to go to the next one above; sneak to go to the next one below.
+
+- **Camouflage:** an elevator can look like another block, with its light, tint, shape and collision.
+- **Directional:** an elevator can turn you to face a set way when you arrive.
+- **Dyeing:** an elevator can be dyed another colour.
+- **Multiplayer:** the server picks the destination itself, so a modified client can't ride further than `range` or skip an elevator.
+- **Options:** `elevatorid-common.toml` in the config folder holds the Java mod's options: `sameColor`, `range`, `activationRange`, `precisionTarget`, `mobSpawn`, `resetPitchNormal`, `resetPitchDirectional`, `useXP` and `XPPointsAmount`.
+
+With JEI for Horizon in the build, its recipes show in JEI. W opens a guide (new pages; the Java mod has none), with a 3D scene of elevators you can turn.
+
+### Tested
+
+On Horizon commit 6560641, on Windows: single player, LAN with one guest and a dedicated server. This covered rides, directional blocks, camouflage, mobs landing on a slab camouflage, every option, JEI and the guide. Also built on Horizon commit fdc87ae with the nine other ports, and the guide checked there. The sound was not checked by ear.
+
+### Licence
+
+MIT, as the original.
+"""
+authors = ["VsnGamer", "Joeypc6"]
+owners = ["Joeypc6"]
+owner_ids = [35495484]
+license = "MIT"
+source = "https://github.com/Joeypc6/Elevator-Horizon"
+icon = "icons/elevatorid.png"
+categories = ["transportation", "utility"]
+tags = ["elevator", "teleport", "camouflage", "building", "port"]
+
+[[versions]]
+version = "1.16.9"
+published = "2026-11-11"
+game = "26.3"
+file = "elevatorid-1.16.9.hnmod"
+sha256 = "44e5f67c80742e8c7f46b6f7588898ab2e2e749325eb22ce0f37b1a7dff72058"
+changelog = """
+First Horizon release, a port of Elevator 1.16.6 (Fabric) by VsnGamer. 1.16.9 is this port's own version number. Built on Horizon commit fdc87ae (Nightly 2026-11-08).
+
+Since the 1.16.8 submission: builds with the new Horizon ports of Tinkers' Construct, Ender IO, Powah and Apothic Spawners (all ten together); with JEI, recipe cards draw fluids as their textures (mod kit 14); the W guide's 3D scene finds its structure from any page and its buttons are translated.
+
+From the 1.16.7 review: the server finds a ride's destination itself, from the direction the client asks for (the next elevator within `range`, never a further one), with widened arithmetic for the client's numbers, and tests for out-of-range and skipped destinations.
+"""

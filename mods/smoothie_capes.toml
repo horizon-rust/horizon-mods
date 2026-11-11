@@ -21,6 +21,19 @@ tags = ["capes", "cloth", "physics", "animation", "cosmetic"]
 key = "RWRJPBl24rTE23dFezewHWl465FAcgTsmeJnDkANtUPT19YfVmQ1gYCu"
 
 [[versions]]
+version = "0.5.2"
+published = "2026-11-11"
+game = "26.3"
+file = "smoothie_capes-0.5.2.hnmod"
+sha256 = "cf3ddb97ef6ec94be08cf31bd1290655ffcbb21a549a4fc2aae24605c30a22d4"
+signature = """
+untrusted comment: signature from minisign secret key
+RURJPBl24rTE24BXCr3SfuKZzbv0iPg2d3HTakUmMnvfk3NoYEhz9gHeTQ928EqVJ88y7xno0jewu++6LYxjFO53pj7Sq4o+1QY=
+trusted comment: timestamp:1794422131\tfile:Smoothie-Capes-0.5.2.hnmod\thashed
+pcU80a+yZ8GmuFKm6Djo2l4naCmb6qIsy+cbsQMaPhkwm48bSWFtGBvgE165fPDT16bxlq1sTBQ8FrwS0fb9Bg=="""
+changelog = "dnsawndjajwdkakjwda"
+
+[[versions]]
 version = "0.5.1"
 published = "2026-11-08"
 game = "26.3"

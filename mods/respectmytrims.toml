@@ -1,0 +1,30 @@
+id = "respectmytrims"
+kind = "native-mod"
+name = "Respect My Trims"
+summary = "Piglins respect gold armour trims."
+description = """
+Piglins respect gold armour trims.
+
+**Differences from the original:** On LAN, the game doesn't check a guest's armour for gold at all, so a gold trim only keeps piglins calm for the host.
+
+A port of [Respect My Trims](https://github.com/tnoctua/respectmytrims) 1.0.0+mc1.20 by N (tnoctua), published under its licence, LGPL-2.1-only. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "N (tnoctua)"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-2.1-only"
+source = "https://github.com/lavoide/horizon-ports/tree/main/respectmytrims"
+icon = "icons/respectmytrims.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "respectmytrims-0.1.1.hnmod"
+sha256 = "1410fa1c49e2d00c8e8597386301eab45be802a5e09b301111800bd57844de6b"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

@@ -1,0 +1,30 @@
+id = "easymagic"
+kind = "native-mod"
+name = "Easy Magic"
+summary = "Enchanting tables keep their items and can re-roll."
+description = """
+Enchanting tables keep their items and can re-roll.
+
+**Differences from the original:** The item left in an enchanting table isn't drawn above it, and hoppers and comparators don't work with the table. The dedicated re-roll slot and the full enchantment hint list are not available.
+
+A port of [Easy Magic](https://github.com/Fuzss/easymagic) 8.0.1 by Fuzs, published under its licence, MPL-2.0. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Fuzs"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MPL-2.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/easymagic"
+icon = "icons/easymagic.png"
+categories = ["magic"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "easymagic-0.1.1.hnmod"
+sha256 = "373f5975b3e2392b4e117ecfa51aab1b079276a219e5dff568b9cbe9a15855e1"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

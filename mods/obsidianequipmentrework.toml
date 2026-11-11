@@ -1,0 +1,30 @@
+id = "obsidianequipmentrework"
+kind = "mod"
+name = "Obsidian Equipment Reworked (assets)"
+summary = "Obsidian tools and armour."
+description = """
+**This mod has two parts, and you need both.** This is the content part (items, blocks, textures, models, data; no code); install [the other one](https://playhorizon.dev/mods/obsidianequipmentrework_native) too.
+
+Obsidian tools and armour.
+
+**Differences from the original:** Obsidian horse armour isn't drawn on the horse.
+
+A port of [Obsidian Equipment Reworked](https://github.com/CozyCord/Obsidian-Equipment-Reworked) 1.0 by Tokimi, CozyStudios, published under its licence, CC0-1.0. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Tokimi", "CozyStudios"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "CC0-1.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/obsidianequipmentrework"
+icon = "icons/obsidianequipmentrework.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "1.0-horizon.1"
+published = "2026-11-11"
+game = "26.3"
+file = "obsidianequipmentrework-1.0-horizon.1.hmod"
+sha256 = "de2b6fbc9f13a5c64badf07a064051e0fda2602e55155b8984db6b57a06affa4"
+changelog = "First release."

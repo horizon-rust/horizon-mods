@@ -1,0 +1,32 @@
+id = "comforts_native"
+kind = "native-mod"
+name = "Comforts"
+summary = "Sleeping bags and hammocks."
+description = """
+**This mod has two parts, and you need both.** This is the native part (the rules, as Rust code); install [the other one](https://playhorizon.dev/mods/comforts) too.
+
+Sleeping bags and hammocks.
+
+**Differences from the original:** Sleeping bags and hammocks can't be waterlogged. A rope and nail that pops off its wall, or is destroyed by an explosion, leaves the hammock it held in place. Only a player breaking the rope drops the hammock. The item tooltips are not shown.
+
+A port of [Comforts](https://github.com/illusivesoulworks/comforts) 6.4.0+1.20.1 by Illusive Soulworks, published under its licence, LGPL-3.0-or-later. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Illusive Soulworks"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/lavoide/horizon-ports/tree/main/comforts"
+icon = "icons/comforts_native.png"
+categories = ["utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "comforts_native-0.1.1.hnmod"
+sha256 = "5e5252af3ec58d852640102b2dddf5161542ee27cae0da32fccec0103ab57781"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

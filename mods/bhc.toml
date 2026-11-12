@@ -1,0 +1,35 @@
+id = "bhc"
+kind = "native-mod"
+name = "bhc"
+summary = "A Horizon port of bhc."
+description = """
+A port of [Baubley Heart Canisters](https://github.com/Traverse-Joe/Baubley-Heart-Canisters) for Horizon.
+
+**Implemented so far**
+
+- The four miniature hearts are **consumable heals, not permanent hearts**: `HeartType` gives each tier a `healAmount` (red 20, yellow 40, green 60, blue 80; soul 0) and `ItemHeart` uses the eat animation over 30 ticks.
+- Finishing the use heals that amount, shrinks the stack by one (not in creative) and forces the health sync; it never touches `MAX_HEALTH` — the mod's only permanent-heart behaviour is the **canister** bonus, which the port applies from the inventory.
+- The heart canisters and the soul canister items, with the mod's models, textures, recipes, language and creative tab.
+
+**Not yet ported**
+
+- **Inventory scan instead of Curios.** Upstream grants the bonus only while a Heart Amulet is equipped; with Curios and the amulet deferred, the port's main-inventory/off-hand scan stands in for the amulet's colour slots. A player can therefore carry all five colours at once.
+- **Soul canisters count.** `getHeartCount` sums every stored canister, including the soul slot, so soul contributes 2 health each.
+- The amulet, the belt and the soul-heart variants beyond the canister are later slices.
+
+MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Traverse-Joe", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/bhc"
+icon = "icons/bhc.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "bhc-0.1.0.hnmod"
+sha256 = "41fa01693959956ef2e165415f9708e131660ccf60a91f7ec0a96d410a0bdf30"

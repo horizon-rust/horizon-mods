@@ -1,0 +1,36 @@
+id = "wstweaks"
+kind = "native-mod"
+name = "wstweaks"
+summary = "A Horizon port of wstweaks."
+description = """
+A port of [Wither Skeleton Tweaks](https://github.com/Shadows-of-Fire/Wither-Skeleton-Tweaks) for Horizon.
+
+**Implemented so far**
+
+- **Wither Skull Fragments** — a wither skeleton that does not drop a Wither Skeleton Skull drops a `wstweaks:fragment`. Upstream gates the drop on `Shard Drop Chance` (default 1.0, i.e. always) with a `nextFloat() <=` roll; the port reads the same key from `config/wstweaks.toml`.
+- **Skeleton Conversion** — any skeleton **or stray** that spawns in the Nether becomes a wither skeleton, and (with `Give Bows`, default true) the converted mob is given a fresh undamaged bow, as upstream's `WSTEvents` does.
+- **The Immolation Blade** — burns its target for 150 seconds and kills skeleton-family mobs with one hit; a blade kill drops the skull.
+- The fragment item, both blades and their content (models, textures, recipes, tag, creative tab, language) from the jar.
+
+**Not yet ported**
+
+- **Blade damage source.** Upstream's beheading deals a 150-damage fake-player blow so the loot table sees a player kill; the pin cannot label the hit `minecraft:fireworks`, so the guaranteed skull is granted by the port's own drop path instead of through the blade's damage type.
+- **Blade held by a player.** The pin's loot context carries a different uuid for the same player than the acting-player helper, so a loot condition that tests the blade in hand can never be true; the port therefore grants the skull directly rather than through a loot modifier.
+- Only `Shard Drop Chance` is configurable; the blade's stats are fixed in content, and modded skeleton subclasses match by id.
+
+MIT: the original copyright (`Copyright (c) 2019 Brennan Ward`) and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Shadows-of-Fire", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/wstweaks"
+icon = "icons/wstweaks.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "wstweaks-0.1.0.hnmod"
+sha256 = "05b93ffbfc169c7e2007cfa8b9f478194e74c5efd0dba82d5bc16560cab89b7b"

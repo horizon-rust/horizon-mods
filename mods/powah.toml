@@ -1,0 +1,40 @@
+id = "powah"
+kind = "native-mod"
+name = "Powah"
+summary = "The starter Furnator, Energy Cell and Energy Cable: generation, storage and FE transfer, ported."
+description = """
+A port of [Powah](https://github.com/Technici4n/Powah) by owmii, Technici4n and shartte for Horizon. This is the first slice, not a full replacement.
+
+Implemented so far
+
+- `powah:furnator_starter` — burns furnace fuel into a carbon buffer and makes 20 FE/t into a 20,000 FE buffer (48,000 FE per coal), at the mod's 80 FE/t output per side.
+- `powah:energy_cell_starter` — a 1,000,000 FE capacitor that accepts and gives 1,000 FE/t on every side, backed by the engine's energy capability.
+- `powah:energy_cable_starter` — moves up to 500 FE/t between the block entities beside it, storing nothing, with the round-robin start rotating each tick.
+- The blocks' carried blockstates, models, textures, loot tables, recipes, advancements and creative tab; the furnator accepts any `minecraft:cooking_fuel` fuel through its container.
+- `/powah info <x> <y> <z>` and `/powah set <amount> <x> <y> <z>` (harness controls, not upstream gameplay).
+
+Not yet ported
+
+- the other six machine tiers, the creative energy cell, and the ~15 remaining machines (Magmator, Thermo Generator, Solar Panel, reactors, Energizing Orb/Rods, Discharger, Hopper, Player Transmitter);
+- the GUIs, side configuration and redstone modes (the port ships upstream's `ALL`/`IGNORE` defaults);
+- item charging, comparator output, `keepEnergy()` on break, and particle/sound feedback;
+- multi-cable networks — this slice moves FE one cable hop per tick, so a run of two or more cables does not relay;
+- crafting: the carried recipes need later-slice items (`powah:capacitor_basic_tiny`, `powah:dielectric_*`);
+- the Ender Cells/Gates, upgrades, worldgen and the guide book.
+
+Licensed **LGPL-3.0-only**, the original's licence, with the complete corresponding source in this repository: the original copyright and licence notices travel inside the distributed archive (`mixins/powah/LICENSE` and `NOTICE.md`) and are also here. Help with the gaps above is welcome."""
+authors = ["owmii", "Technici4n", "shartte", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/powah"
+icon = "icons/powah.png"
+categories = ["utility", "technology", "game-mechanics"]
+tags = ["port", "machines", "energy", "power"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "powah-0.1.0.hnmod"
+sha256 = "2dabb27b01f31e201903fd5f55d42d86d92aed816d3967701d23e06f134d2b42"

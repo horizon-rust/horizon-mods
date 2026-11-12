@@ -1,0 +1,35 @@
+id = "techreborn"
+kind = "native-mod"
+name = "Tech Reborn"
+summary = "Solid Fuel Generator, Copper Cable and Electric Furnace, with the jar's own energy numbers."
+description = """
+A port of [Tech Reborn](https://github.com/TechReborn/TechReborn) by modmuss50 and the Tech Reborn contributors for Horizon. This first slice is the mod's own energy loop, built from its 26.3 build.
+
+**Implemented so far**
+
+- **Solid Fuel Generator** — `cooking_fuel / 4` steps of **10 E/t** into a 10,000 E buffer, so one coal is **4,000 E**; output capped at 32 E/t.
+- **Copper Cable** — **128 E/t** a side with a 512 E buffer, a six-way pipe that connects to `#techreborn:cables`.
+- **Electric Furnace** — the vanilla smelting recipe at **1 E/t** (raw iron: 200 ticks, **200 E**), a 1,000 E buffer, 32 E/t input, three slots and the furnace menu.
+
+**Not yet ported**
+
+- The rest of the machines and multiblocks (grinder, compressor, industrial electrolyzer, blast furnace, vacuum freezer), the storage units and tanks.
+- The cable tiers above copper, and the mod's own ore/metal chain beyond the items this slice consumes.
+- Redstone control, upgrades and the mod's GUIs (the furnace uses the vanilla menu).
+
+Original copyright and licence notices are kept in this repository (MIT, modmuss50 and contributors). Pinned to Horizon `1d63e0a` and horizon-mixins `5a64af93` for game 26.3."""
+authors = ["Team Reborn", "modmuss50", "drcrazy", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/techreborn"
+icon = "icons/techreborn.png"
+categories = ["technology"]
+tags = ["port", "energy", "machines"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "techreborn-0.1.0.hnmod"
+sha256 = "6cc0e065180fe4fa6568646a62475bdf764dc1e85d05c4c3c32e7f1bfc52d946"

@@ -1,0 +1,35 @@
+id = "mekmm"
+kind = "native-mod"
+name = "mekmm"
+summary = "A Horizon port of mekmm."
+description = """
+A port of [Mekanism: MoreMachine](https://github.com/lostmyself8/Mekanism-MoreMachine) by Lost Myself for Horizon — slice 1, the **Basic Recycling Factory**.
+
+**Implemented so far**
+
+- `mekmm:basic_recycling_factory` with Mekanism's own numbers: 3 parallel processes (`FactoryTier.BASIC.processes`), 200 ticks per operation (`BASE_TICKS_REQUIRED = 10 * 20`), 50 FE/t per process (`UsageConfig.recycler`), one 20,000 FE buffer shared by the three processes (`StorageConfig.recycler`), and 10,000 FE per operation.
+- The factory's block entity, energy capability, input/output slots, menu and persistence, with progress surviving a reload.
+- `mekmm:scrap` from the jar's 17 % chance roll, and the carried blockstate, block/item models, the five `recycling_factory_*` textures, the loot table, the tag entry and the English names.
+
+**Needs Mekanism for crafting.** This factory's recipe uses Mekanism's own ingredients and tags, and Mekanism is not in the registry yet (horizon-mods#568). Without it the block is creative-only; the machine itself runs and conserves FE without Mekanism installed.
+
+**Not yet ported**
+
+- **The rest of the mod:** the other 15 factory families (144 blockstates), the eight higher tiers of this one, the chemical tanks, every single machine (recycler, planting station, presser, CNC lathe/rolling mill/stamper, replicator, fluid and chemical replicators), the `large_*` multiblocks, the silver set, `scrap_box`/`uu_matter`/the crystals and the compat recipes.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/mekmm/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Lost Myself", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/mekmm"
+icon = "icons/mekmm.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "mekmm-0.1.0.hnmod"
+sha256 = "3e0c8a824a2be46e460acce6168b3b65b0b7ce227bea6e22a7852a0b2f3d9545"

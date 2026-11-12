@@ -1,0 +1,46 @@
+id = "mcwdoors"
+kind = "mod"
+name = "Macaw's Doors"
+summary = "239 Macaw's doors on vanilla templates, with the 12 door-print items."
+description = """
+A port of [Macaw's Doors](https://github.com/sketchmacaw/MacawsDoors) by Sketch Macaw and Peachy Macaw
+for Horizon: 239 door blocks with the 12 door prints.
+
+Implemented so far:
+- 239 door blocks with all 64 vanilla door states (facing, half, hinge, open, powered)
+  and their own models: 231 on the wooden-door template and 8 on the iron-door template.
+- The 8 iron-set doors (metal, jail, store and sliding-glass) behave like vanilla iron
+  doors: they ignore a right-click and open on redstone.
+- The 12 door-print items and their recipes, 251 recipes, 239 loot tables, 12
+  advancements, block/item tags and 17 language files.
+- A creative tab (`itemGroup.mcwdoors`) listing the 239 doors and the 12 prints.
+
+Not yet ported:
+- The 6 garage doors and portcullises (a `part` column with a roll-up animation) and
+  `cherry_waffle_door` (its block models are missing upstream) are not carried; their
+  recipes are left out with them.
+- The shoji/stable doors' per-half opening, the stable door's independent halves and the
+  door-print tooltips are code, not carried.
+- Fuel burn time is the vanilla door's 200 ticks; upstream's `FuelItemBlock` uses 300.
+- Custom shoji/garage click sounds are not played (a content block uses its template's
+  sounds).
+- Hardness/blast resistance/sounds are the template's, not upstream's per-block values.
+
+A data-tier carry: no native code and no hooks. MIT — the original copyright and licence notices are kept in
+the port repository (see LICENSE and LICENSE-NOTICE.md there). Pinned to
+Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Sketch Macaw", "Peachy Macaw", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/mcwdoors"
+icon = "icons/mcwdoors.png"
+categories = ["decoration"]
+tags = ["port", "doors", "building", "blocks"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "mcwdoors-0.1.0.hmod"
+sha256 = "c700189996a89e80e350c0c143fa808e8b63fc6f4fa6da5828c7e493e3222142"

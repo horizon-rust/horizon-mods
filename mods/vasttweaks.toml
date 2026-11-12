@@ -1,0 +1,48 @@
+id = "vasttweaks"
+kind = "native-mod"
+name = "Vast Tweaks"
+summary = "KubeJS-style scripts for your recipes: remove, replace, unify, add and override recipes and tags from config/vasttweaks/*.vt, with /reload."
+description = """
+Change any mod's recipes with a small script, the way KubeJS does on Java, for modpack makers and players.
+
+1. Install it and build natives. Open a world once: you get **`config/vasttweaks/`** with a README and an example.
+2. Write **`<anything>.vt`** files there and run **`/reload`**. The recipe book and JEI show the changes.
+3. **`last-load.txt`** in that folder says what loaded and points at any mistake by file and line.
+
+```
+remove output minecraft:iron_pickaxe
+replace input stick with vastores:steel_rod where id minecraft:*_pickaxe
+unify othermod:tin_ingot -> vastores:tin_ingot as #c:ingots/tin
+shaped minecraft:saddle
+  "LLL"
+  "S S"
+  L = leather
+  S = string
+end
+shapeless minecraft:string x4 = #minecraft:wool
+smelting minecraft:rotten_flesh -> minecraft:leather xp 0.1
+override minecraft:furnace shapeless minecraft:furnace = #minecraft:stone_crafting_materials x8
+tag item c:ingots/tin add othermod:tin_ingot
+```
+
+It also works on a server: the server's scripts apply, and Horizon players get its recipes in their book and JEI.
+
+**What it changes in the game:** on each data load (a world opening, `/reload`) it reads `config/vasttweaks/*.vt` and adds the recipe filters, recipes and tags they say to that load (`native_data_pack_files`); when there are scripts, it asks the server to send its clients the recipes of the game's own crafting, cooking, stonecutting and smithing types (`native_datapack_sync`), so their viewers match. It writes only in `config/vasttweaks/` (the first README and example, and `last-load.txt`). No network of its own.
+
+A Python tool in the repository compiles the same scripts into a content mod to share (with item renames)."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-tweaks"
+icon = "icons/vasttweaks.png"
+categories = ["utility", "library"]
+tags = ["recipes", "scripting", "modpack", "tweaks", "unification"]
+
+[[versions]]
+version = "1.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "vasttweaks-1.1.0.hnmod"
+sha256 = "da694727e20a2bbcaf15813c4f967639a21acaac9a743980909dd49dd5966717"
+changelog = "First release on the registry (1.1.0): scripts in config/vasttweaks/*.vt change recipes and tags on every world open and /reload; the recipe book and JEI follow; last-load.txt reports mistakes by file and line."

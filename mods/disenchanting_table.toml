@@ -1,0 +1,30 @@
+id = "disenchanting_table"
+kind = "native-mod"
+name = "Dis-Enchanting Table"
+summary = "Move an item's enchantments onto a book for 25 experience points at a Dis-Enchanting Table."
+description = """
+A port of [Dis-Enchanting Table](https://github.com/Mods-For-Lupin/Dis-Enchanting-Redux) by Lupin and Jason13 for Horizon. The table strips enchantments off an item and writes them onto a book.
+
+- Place the table and right-click it: put an enchanted item in the input slot, a `minecraft:book` in the book slot, and an empty slot for the result.
+- A right click moves the enchantments onto a new enchanted book and costs 25 experience points; an enchanted book needs at least two enchantments to be worth dis-enchanting. A missing book, missing experience or an occupied output leaves everything as it was.
+- The cost is paid **before** the result is granted: a level cost comes off immediately, a points cost is charged at the tick's end and the book is written only once the charge succeeded (a failed write refunds it), and a second take in the same tick cannot spend the same points twice.
+- The book slot is validated as an actual `minecraft:book`, including the hopper path and a save reload, so no other item is consumed for an enchanted book.
+- The table keeps the jar's light 7, its 12-pixel shape, its stone-pickaxe harvest level, and hoppers may fill the input and book slots.
+- `/disenchanting_table info <x> <y> <z>` prints the three slots for testing.
+
+Unlicense — the original copyright and licence notices travel inside the distributed archive (`mixins/disenchanting_table/LICENSE` and `NOTICE.md`) and are also in this repository."""
+authors = ["Lupin", "Jason13", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "Unlicense"
+source = "https://github.com/AdLf0208/disenchanting_table"
+icon = "icons/disenchanting_table.png"
+categories = ["utility", "game-mechanics"]
+tags = ["port", "enchanting", "machines", "utility"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "disenchanting_table-0.1.0.hnmod"
+sha256 = "21b934ba239396177a7c296480a635addb740e00c67c55db3af85730db3ea01a"

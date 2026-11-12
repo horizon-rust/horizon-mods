@@ -1,0 +1,36 @@
+id = "silentgear"
+kind = "native-mod"
+name = "Silent Gear"
+summary = "Assemble a pickaxe from a blueprint, head and rod; its stats fold the material properties."
+description = """
+A port of [Silent Gear](https://github.com/SilentChaos512/Silent-Gear) (MIT, by SilentChaos512) for Horizon. This first slice is gear assembly and the tool stat block, for **one tool**: the pickaxe.
+
+**Implemented so far**
+
+- `/silentgear assemble pickaxe <head> <rod>` assembles a pickaxe from a carried blueprint, head and rod; the three are taken from the inventory (then the off hand) and consumed.
+- The pickaxe's stats are folded from each material's properties with Silent Gear's own maths — weighted average, max, multiply-base, multiply-total and add, clamped — and the result is written into the item's `silentgear:gear` component.
+- The material table is the jar's own data for iron, wood, stone, diamond, gold, flint and the empty netherite entry.
+- The two-part recipe chain is craftable: `silentgear:blueprint_paper` (4 paper + a blue dye, from the jar), the pickaxe blueprint from it, the heads and the rods.
+- `/silentgear stats` prints the held gear's folded stats, tier and durability.
+
+**Not yet ported, and one hard limitation**
+
+- **The assembled pickaxe always behaves as a vanilla iron pickaxe.** The pin has no per-stack tool stats — a tool's speed, harvest tier and durability are read from the item, not from the stack's components (`ARCHITECTURE.md` §3) — so the folded numbers are a readout, not the mining behaviour. Assembly refuses a head/rod combination whose folded stats differ from the vanilla iron pickaxe rather than silently producing an item that would not honour them. This is the slice's biggest gap.
+- The other tools and armour, traits, grading, salvage, compound parts and the custom recipe types, the blueprint book and the gear-slot system are later slices.
+
+MIT; the original copyright and permission notices travel inside the archive at `mixins/silentgear/LICENSE`."""
+authors = ["SilentChaos512", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/silentgear"
+icon = "icons/silentgear.png"
+categories = ["utility", "equipment", "game-mechanics"]
+tags = ["port", "tools", "gear", "crafting"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "silentgear-0.1.0.hnmod"
+sha256 = "474a5fd4a686c5b7111317c59109b465fbf98c215bb423fee70622e927cc0516"

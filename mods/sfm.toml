@@ -1,0 +1,35 @@
+id = "sfm"
+kind = "native-mod"
+name = "sfm"
+summary = "A Horizon port of sfm."
+description = """
+A port of [Super Factory Manager](https://github.com/TeamDman/SuperFactoryManager) (MPL-2.0, by TeamDman and the SFM contributors) for Horizon. This first slice is the **Factory Manager** and the plain inventory cable: the program text, the label table the upstream disk holds, a compiled subset of SFML, and the item movement one program tick makes over the cable network.
+
+**Implemented so far**
+
+- The Factory Manager and the plain inventory cable, with the carried models, textures and language entries, shipped inside the one `.hnmod`.
+- A compiled SFML subset: `NAME "…"`, `EVERY <n> TICKS|SECONDS DO … END` (`SECONDS` is 20 ticks, offset 0, `LOCAL` alignment), `INPUT`/`OUTPUT` with an optional quantity, `EACH`, `RETAIN n [EACH]`, a resource list (`stone`, `minecraft:redstone`, `*ingot*`), `EXCEPT …`, a label list (bare or quoted), a `SIDE` list, and `FORGET`.
+- Upstream's defaults: `INPUT` takes all and leaves none, `OUTPUT` accepts all it is offered.
+- Item movement between the labelled inventories of one cable network, one program tick at a time, through the pin's hopper-rule helpers.
+
+**Not yet ported**
+
+- The rest of the language: `IF`/`THEN`/`ELSE`, `REDSTONE TRIGGER`, `EMPTY SLOTS IN`, slot ranges, `ROUND ROBIN`, per-block `EACH`, quoted regex patterns, `MAX`/`EACH` on retention per id combination, `WITH` clauses, fluid/energy/chemical/redstone resources, and the `SIDE` forms `LEFT`/`RIGHT`/`FRONT`/`BACK` (they parse and name no face here).
+- The rest of the content: the disk, label gun, network tool, form and form base, printing press, buffers, water tank, XP goop and shard, the fancy/tough/tunnelled cables, every facade, their recipes, loot and advancements, `c:` tag compatibility, and the Manager's and printing press's GUIs and data recipes.
+
+MPL-2.0, like the original; the full licence and the original copyright notice travel inside the archive, and the complete corresponding source is in the port repository. Later slices cover the language and the remaining content."""
+authors = ["TeamDman", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MPL-2.0"
+source = "https://github.com/AdLf0208/sfm"
+icon = "icons/sfm.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "sfm-0.1.0.hnmod"
+sha256 = "e57f9ccd77498c88276f10f1010b2c708ff6b15f7b74d79e5551035fad80b7d8"

@@ -1,0 +1,36 @@
+id = "ironfurnaces"
+kind = "native-mod"
+name = "ironfurnaces"
+summary = "A Horizon port of ironfurnaces."
+description = """
+A port of [Iron Furnaces](https://github.com/Qelifern/IronFurnaces) for Horizon.
+
+**Implemented so far**
+
+- The eight furnace tiers with vanilla-only recipes in the jar: **copper, iron, gold, diamond, emerald, obsidian, crystal and netherite**.
+- Smelting with fuel, the tier speed, the coal-scaled burn time, the vanilla furnace menu (input, fuel, output, plus the flame and arrow data slots), the `lit` state and the tier-upgrade items.
+- Vanilla-furnace → copper/iron upgrades work (read through the vanilla furnace block entity, its three slots restored).
+
+**Not yet ported**
+
+- **Eight tiers only.** Silver, allthemodium, vibranium, unobtainium and the rainbow furnace need other mods' materials; their assets are carried but inert.
+- **Augments, the factory, the generator, the wireless heater, the settings GUI, auto IO, redstone modes and XP** are deferred; the furnace branch only.
+- Lit light is 13 (the `minecraft:furnace` template) where upstream is 14.
+- The e2e exercises only the copper → iron upgrade.
+
+**Licence: Apache-2.0**, from the exact jar this port was written against (`ironfurnaces-neoforge-1.21.1-4.3.2.jar` declares `license="Apache License Version 2.0"`); upstream's GitHub default branch is the 1.20.1 tree, whose `LICENSE` says GPL-3.0, so the provenance follows the jar. The original copyright (Qelifern (pizzaatime), XenoMustache) and the licence travel inside the bundle (`mixins/ironfurnaces/LICENSE` and `data/ironfurnaces/license/`). Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Qelifern", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "Apache-2.0"
+source = "https://github.com/AdLf0208/ironfurnaces"
+icon = "icons/ironfurnaces.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "ironfurnaces-0.1.0.hnmod"
+sha256 = "c05d50dca85bf47524e3bd7deb061cebd6732a02333dcca3d45fba6488e6b6df"

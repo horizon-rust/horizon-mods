@@ -1,0 +1,46 @@
+id = "botanypots"
+kind = "native-mod"
+name = "Botany Pots"
+summary = "The botany pot block: soil and seed slots, growth, bone meal and harvest-by-click, ported."
+description = """
+A port of [Botany Pots](https://github.com/Darkhax-Minecraft/BotanyPots) by Darkhax for
+Horizon. This is the first slice, not a full replacement.
+
+Implemented so far
+
+- `botanypots:terracotta_botany_pot` with a soil slot and a seed slot, its carried blockstate, block/item models, textures and loot table, and the jar's crop/soil/interaction/fertilizer data (160 content files).
+- Growth on the block entity's own server tick: 1,200 ticks for plain dirt, 1,090 for farmland (+0.10); readiness is shown by the menu and `/botanypots info`.
+- Harvest by right-click when ready, rolling the mature crop block's real loot table once per yield roll and resetting growth; the seed stays in the pot.
+- Bone meal adds 400–600 growth (capped at required − 20) with the upstream 20-tick cooldown; creative does not consume it.
+- A two-slot content menu with a progress readout, and `/botanypots info <x> <y> <z>`.
+- Four supported crops from the jar's own files: wheat, carrots, potatoes and beetroots.
+
+Not yet ported
+
+- the other 183 pot variants (coloured, hopper and waxed pots), and their automation;
+- the tool slot and harvest-tool damage/enchantment behaviour, and the comparator output;
+- waterlogging, the `LEVEL` light and the crop display renderer;
+- the modded and remaining vanilla crops, and the soil registry beyond the dirt tag (sand, water, lava, snow, end, nether, soul sand…);
+- fertilizer recipes other than bone meal, and the hoe/shovel/bucket interaction recipes;
+- JEI integration, Patchouli/docs, the config file, sounds and particles.
+
+Licensed **LGPL-2.1-only**, the original's licence, with the complete corresponding source
+in the port repository, so the licence obligations are met: original copyright
+and licence notices travel with it, inside the bundle (`mixins/botanypots/LICENSE`
+and `data/botanypots/license/`) as well as in its LICENSE and LICENSE-NOTICE.md. Help with
+the gaps above is welcome."""
+authors = ["Darkhax", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-2.1-only"
+source = "https://github.com/AdLf0208/botanypots"
+icon = "icons/botanypots.png"
+categories = ["utility", "game-mechanics", "food"]
+tags = ["port", "farming", "crops", "machines"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "botanypots-0.1.0.hnmod"
+sha256 = "16b59030fb89255012dd9f7ecb8026b9d5337ec2325d1b9e5bab20ded34c6f06"

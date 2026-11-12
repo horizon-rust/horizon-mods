@@ -1,0 +1,36 @@
+id = "tiab"
+kind = "native-mod"
+name = "Time in a Bottle"
+summary = "A bottle that stores time and spends it to accelerate a furnace at up to 128x, with the jar's own caps."
+description = """
+A port of [Time in a Bottle](https://github.com/RealMangorage/time-in-a-bottle) by RealMangoRage for Horizon. A bottle that stores time and spends it to accelerate a block.
+
+**Implemented so far**
+
+- **`tiab:time_in_a_bottle`** — a clock-template item carrying its own `tiab:stored_time` component, with the jar's cap of **622,080,000 ticks** and **20 ticks stored per second** while it sits in the inventory.
+- **Spending it** — one use costs **exactly 600** stored ticks and runs the target **600 game ticks** at rate 1; clicking again doubles the rate (and the cost), up to the jar's 128x; creative mode pays nothing.
+- **Acceleration** — the furnace's own tick routine is run `rate` times per game tick, following the block's `lit` state and dropping fuel remainders; `#tiab:un_acceleratable` (chest, grass block) is refused.
+- **Commands** — `/tiab time add|remove <player> <seconds>` (level 2) and `/tiab info <x> <y> <z> <n>` for a one-line clock/account/furnace readout.
+
+**Not yet ported**
+
+- There is no mod entity at this pin, so the accelerator is per-block state on `level_tick_post`: it is not saved with the world and shows no floating text or sound.
+- Only furnace-class targets (furnace, smoker, blast furnace) — hoppers, campfires and other random-ticking blocks are not accelerated.
+- No config file (the upstream defaults are constants here), no JEI/EMI integration, and the command reaches only the acting player.
+
+Original copyright and licence notices are kept in this repository (MIT, RealMangoRage). Pinned to Horizon `1d63e0a` and horizon-mixins `5a64af93` for game 26.3."""
+authors = ["RealMangoRage", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/tiab"
+icon = "icons/tiab.png"
+categories = ["game-mechanics", "utility"]
+tags = ["port", "time", "acceleration"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "tiab-0.1.0.hnmod"
+sha256 = "d6c974f348a339cdf8976f31835d24f39071845f62cfa3b244f3bb58e89257ec"

@@ -1,0 +1,85 @@
+id = "chunky"
+kind = "native-mod"
+name = "Chunky For Horizon"
+summary = "Pre-generates chunks quickly, efficiently, and safely in Horizon."
+description = """
+# Chunky for Horizon
+
+**Chunky for Horizon** is a native port of [Chunky](https://github.com/pop4959/Chunky), the popular chunk pre-generation tool, rebuilt for Horizon (Minecraft 26.3 in Rust). It generates your world's chunks ahead of time, so exploring doesn't cause terrain generation lag or stutter.
+
+## Features
+
+- **Full command parity:** The complete `/chunky` command tree, with tab completion for players and the dedicated server console.
+- **9 shapes:** `square`, `circle`, `rectangle`, `ellipse`, `diamond`, `pentagon`, `hexagon`, `triangle`, and `star`.
+- **7 traversal patterns:** `concentric`, `loop`, `spiral`, `strip`, `csv`, `ring`, and `world` (existing chunks).
+- **Region trimming:** `/chunky trim` removes unused or unmodified chunks to save disk space.
+- **Persistent tasks:** Tasks are saved to `<world>/tasks/<world>.properties`, so you can pause, continue, or resume them even after reloading the world.
+- **Adjustable pacing:** Control the generation speed with `/chunky limit <rate>` and how often you receive updates with `/chunky quiet <seconds>`.
+
+## Quick Start
+
+1. **Set the center:**
+   - At your position or spawn: `/chunky spawn`
+   - At specific coordinates: `/chunky center 0 0`
+   - To match the world border: `/chunky worldborder`
+
+2. **Set the radius** (in blocks):
+
+   ```text
+   /chunky radius 1000
+   ```
+
+3. **Pick a shape** (optional; the default is `square`):
+
+   ```text
+   /chunky shape circle
+   ```
+
+4. **Start pre-generating:**
+
+   ```text
+   /chunky start
+   ```
+
+5. **Manage the task while it runs:**
+   - Check status: `/chunky progress`
+   - Pause: `/chunky pause`
+   - Continue: `/chunky continue`
+   - Cancel: `/chunky cancel`
+
+## Requirements
+
+- Horizon 26.3
+- Works in single-player, LAN worlds, and dedicated headless servers.
+- No external libraries or dependencies required."""
+authors = ["enderliker"]
+owners = ["enderliker"]
+owner_ids = [166346005]
+license = "GPL-3.0"
+source = "https://github.com/enderliker/chunky-horizon"
+icon = "icons/chunky.png"
+categories = ["worldgen", "optimization", "utility"]
+tags = ["chunky", "pregeneration", "chunk-pregeneration", "world-generation", "performance", "optimization", "utility", "server", "native"]
+key = "RWRqzx718YYz/OHRM+pAnFWlDv8Rrgar5C4NszQg3EKJWQZWNel5Sslf"
+
+[[versions]]
+version = "1.0.3"
+published = "2026-11-12"
+game = "26.3"
+file = "chunky-1.0.3.hnmod"
+sha256 = "b112e7015f7f6ccc7fc81a25a8185967f9ea4ae5e6e8654644cbc264d5dc011b"
+signature = """
+untrusted comment: signature from minisign secret key
+RURqzx718YYz/Eo6P7vWQZ2kA/IJg0AplhSC1Ka259PAYbm4UGbUV2H/0nQJkPMEgXRmmfYqfEsaR/9adLaDxjpy7CDFhFeQzQQ=
+trusted comment: chunky 1.0.3 for Horizon 26.3
+asTdB8VjZfGma29VF5m3u5yybFCzmhRwuqY7Mo42F374SZbg6Zl4cwGVfyuIPZe7PRDTpcr1CKcyhIGxavyNBg=="""
+changelog = """
+Fixed chunk selection, world shutdown ticket cleanup, and licensing parity from PR #557 review:
+
+- **Strip Traversal Fix**: Corrected the strip X-offset calculation in `pattern.rs` (`strip_x = current / (WIDTH * size_z) * WIDTH`). Resolves overlapping 64-chunk bands and ensures complete, 100% unique chunk coverage without gaps or duplicates on selections wider than 64 chunks, including 141×141 selections, non-square rectangles, and ellipses.
+
+- **World Shutdown Force-Load Cleanup**: Fixed ticket release in `glue.rs` by capturing held chunks before calling `task.stop(false)`, ensuring all in-flight force-load tickets are cleanly released to the game engine when a world closes.
+
+- **Licensing & Attribution**: Reconciled `core/Cargo.toml` and `NOTICE` to GPL-3.0-or-later, attributing original Chunky by pop4959 and contributors (commit `c4274bd539d1d79a15fe1e73afb2eface64d625f`). Packaged `NOTICE` into the `.hnmod` bundle (`mixins/chunky/data/NOTICE`) and added an Attribution & License section to `README.md`.
+
+- **Test Coverage**: Added regression tests in `pattern.rs` verifying exact, unique coverage for 141×141 selections, rectangle and ellipse auto-selection, and strip resumption parity across bands. Also added `daily_use.rs` integration tests verifying in-flight ticket release during world shutdown."""

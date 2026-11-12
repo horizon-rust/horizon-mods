@@ -1,0 +1,29 @@
+id = "vaststar"
+kind = "mod"
+name = "Vast Star"
+summary = "The last craft of the Vast family: five cores, a Star Seed and the Vast Star. Needs Vast Depths, Vast Ores, Vast Compressed and Vast Adventures."
+description = """
+A content mod: data only, nothing to build. The goal at the end of a long game.
+
+- **Core of the Deep** (Vast Depths' Stellarite, Infernium and Voidium blocks), **Core of Alloys** (a block of each of Vast Ores' nine alloys), **Core of Pressure** (Vast Compressed's VI and V tiers), **Core of Valor** (Vast Adventures' gems, seals and a Titan Pearl) and **Core of the Wild** (a totem, a dragon head, a sniffer egg, a heart of the sea, a trident, an enchanted golden apple and more).
+- **Star Seed:** four nether stars, four echo shards and a heavy core.
+- **Vast Star:** the five cores, the Star Seed and four end crystals. Nine make a **Block of Vast Star**, which shines and serves a beacon.
+- English and Brazilian Portuguese; every sprite drawn for this mod, the star shimmering.
+
+**Install Vast Depths, Vast Ores, Vast Compressed and Vast Adventures too.** Inspired by the All The Mods packs' ATM Star; nothing of it is used, not affiliated with or endorsed by All The Mods."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-star"
+icon = "icons/vaststar.png"
+categories = ["adventure", "utility"]
+tags = ["endgame", "crafting", "star", "progression"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "vaststar-0.1.0.hmod"
+sha256 = "44f33e627369478a5601043f9c46c7dc828ddaf828294b8094b61589bb8b88a9"
+changelog = "First release (0.1.0): five cores, the Star Seed, the Vast Star and its block, with hand-drawn sprites, English and Brazilian Portuguese."

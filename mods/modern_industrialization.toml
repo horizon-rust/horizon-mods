@@ -1,0 +1,39 @@
+id = "modern_industrialization"
+kind = "native-mod"
+name = "modern_industrialization"
+summary = "A Horizon port of modern_industrialization."
+description = """
+A port of [Modern Industrialization](https://github.com/AztechMC/Modern-Industrialization) for Horizon.
+
+**Implemented so far**
+
+- `modern_industrialization:electric_macerator`, one block: a **32,000 FE buffer** that any face may fill and nothing may drain (upstream's `EnergyComponent.buildInsertable` is insert-only). The mod's own default is 1 EU = 10 FE, so 3,200 EU = 32,000 FE.
+- One item input slot and four item output slots: hoppers insert into slot 0 and pull from slots 1..=4.
+- `CrafterComponent`'s tick in the pure runtime: a run starts when the buffer covers the recipe, is consumed at the machine's EU rate, and overclocks by the mod's own divisor.
+- The jar's macerator recipes that only need vanilla materials, with tag inputs resolved to the vanilla items the tags hold.
+- `/modern_industrialization info|energy|efficiency` (upstream has no commands).
+
+**Not yet ported**
+
+- **No crafting recipe** for the machine or the dusts: the creative tab is the entry point, and the four block recipes are the port's own, using vanilla stand-ins (iron, redstone, glass) until the steel chain, the basic alloy and the circuits this slice does not carry arrive.
+- **34 of the jar's 324 macerator recipes** are carried. The other 290-odd need MI's own ingots, plates, gears, rods and wires, which this slice does not register.
+- **No data-driven recipe type**: the pin offers no machine-recipe registry for a native mod, so the table is a `const` in `runtime.rs`; adding a recipe is a code change.
+- No menu: `ModContainer` has no per-slot rule for a player's menu at this pin, so the machine is driven by hoppers.
+- The energy and efficiency commands refuse any block entity that is not this macerator, and the energy hook leaves another mod's declaration for the same block alone.
+
+MIT: the original copyright (`Copyright (c) 2020 Azercoco & Technici4n`) and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Azerococo", "Technici4n", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/modern_industrialization"
+icon = "icons/modern_industrialization.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "modern_industrialization-0.1.0.hnmod"
+sha256 = "ee08b1ee51fcffdeef540f6185d06ab2cc0b25601ec6564f8ebbe6b6f0cdbc42"

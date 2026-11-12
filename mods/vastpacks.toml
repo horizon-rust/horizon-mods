@@ -1,0 +1,21 @@
+id = "vastpacks"
+kind = "mod"
+name = "Vast Packs (content)"
+summary = "The backpacks of Vast Packs: their items, art, recipes and names. Needs the native mod."
+description = "The content half of Vast Packs: the backpacks (Leather, Iron, Gold, Diamond, Netherite, and Stellarite, Infernium and Voidium whose recipes need Vast Depths) as items, their sprites drawn for this mod, the recipes (and the upgrades, which keep what a backpack holds) and the names in English and Brazilian Portuguese. **The native mod `vastpacks_native` opens them and keeps what they hold**; install both."
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-packs"
+icon = "icons/vastpacks.png"
+categories = ["storage", "equipment"]
+tags = ["backpacks", "storage"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "vastpacks-0.1.0.hmod"
+sha256 = "13e5a6fe5eaf6ed9c1f971b8f4665bdbf561fe257c59149ea9fd818b6a9dd595"
+changelog = "First release (0.1.0)."

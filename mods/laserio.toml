@@ -1,0 +1,37 @@
+id = "laserio"
+kind = "native-mod"
+name = "laserio"
+summary = "A Horizon port of laserio."
+description = """
+A port of [LaserIO](https://github.com/Direwolf20-MC/LaserIO) by Direwolf20-MC for Horizon — the nodes, the connectors and the item cards.
+
+**Implemented so far**
+
+- `laserio:laser_node` and `laserio:laser_connector`, the network they form through their faces, and one card per side saved in the node's block entity.
+- The item card: `insert` (upstream's default) or `extract`, with its channel and amount, placed by right-clicking the node (consumed outside creative).
+- After the level tick, each extract card whose 20-tick operation falls on this tick takes the first item type the source side offers — skipping empty earlier slots, so they cannot stall a network — and moves up to its amount into the network's inventories. No destination means no extraction, and a refused item stays in the target's remainder.
+- `/laserio info` readout, and the carried blockstates, models, textures, recipes, loot, tags, langs and creative tab.
+- The mutation commands (`card`, `remove`, `mode`, `rate`, `face`) are **operator-only** (level 2): the node screen is a gap, so they are an administrative surface rather than something every player may use on any node.
+
+**Not yet ported**
+
+- The node screen (card settings UI), so players cannot yet configure cards by hand.
+- Fluid, energy and gas cards, the advanced/wireless connectors, the lasers' rendering, filters and the round-robin/channel modes beyond a single channel.
+- The full recipe chain and the guide book.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/laserio/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Direwolf20", "ErrorMikey", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/laserio"
+icon = "icons/laserio.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "laserio-0.1.0.hnmod"
+sha256 = "347d66e5c45b2c320d149ff92fb138427336f49950d9752570cadbbff2967fa9"

@@ -1,0 +1,37 @@
+id = "transfer_labels"
+kind = "native-mod"
+name = "transfer_labels"
+summary = "A Horizon port of transfer_labels."
+description = """
+A port of [Transfer Labels](https://github.com/Buuz135/Transfer-Labels) (MIT, by Buuz135) for Horizon. This first slice is the **item-stack extract label**.
+
+**Implemented so far**
+
+- `transfer_labels:itemstack_extract_transfer_label`, attached by right-clicking a block face with the label in hand (one item is used up) and removed by left-clicking the labelled face with the label in hand, which returns the item and the copies its upgrades stand for. Cancelling the click is what keeps a chest from opening and the block from breaking.
+- One label moves items out of the block it is attached to, on `level_tick_pre`, once per label when `gameTime % (20 - min(speed, 38) / 2) == 0`: one item every 20 ticks with no upgrades, one a tick at 38 speed upgrades. Each operation moves `1 + amount` items (1 to 64) through the pin's hopper-rule helpers, so an item the destination refuses stays in its slot and nothing is lost.
+- Filters: whitelist or blacklist (blacklist is the default, as upstream), with the `normal` (same item id), `mod` (same namespace) and `regulating` (keep N at the destination, at most 4 per operation) kinds, 20 slots and one count per slot.
+- Labels are level state, saved with the dimension's attachments, so a label survives a save and a reload.
+- `/transfer_labels list|info|filter|type|entry|clear|amount|speed|remove` configures a label by position and face (upstream configures it in a GUI this slice does not carry).
+
+**Not yet ported**
+
+- The `tag` and `exact_count` filter kinds: `runtime.rs` names and refuses them instead of silently moving nothing. There is no item-tag lookup helper at this pin, and `exact_count` gathers one item from several source slots, which the hopper helper cannot do.
+- The label's menu and screen. The command path sets the amount and speed upgrade counts without consuming label items, where upstream puts the upgrade items in slots; the economy contract of that path is not exposed as a player feature.
+- The insert label, the four fluid labels and the label-to-label conversions; the client billboard and its own click shape; removing a label when its block is broken; and comparing item components in the filter (the filter matches the item id, plus the namespace for `mod`).
+
+MIT; the original copyright and permission notices travel inside the archive at `mixins/transfer_labels/LICENSE`."""
+authors = ["Buuz135", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/transfer_labels"
+icon = "icons/transfer_labels.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "transfer_labels-0.1.0.hnmod"
+sha256 = "27ed6ef419663f51bb860bd2f8e74269833533e74c459f0ea3db268d6c896b00"

@@ -1,0 +1,36 @@
+id = "restrictions"
+kind = "native-mod"
+name = "restrictions"
+summary = "A Horizon port of restrictions."
+description = """
+A port of [Restrictions](https://github.com/McJtyMods/Restrictions) (MIT, by McJty) for Horizon. This first slice is the **Attractor** and the **Pusher**: blocks that pull or push the mobs in front of them.
+
+**Implemented so far**
+
+- Attractor and Pusher: the cells in front of the block, `pos + facing*1 … pos + facing*signal` (the block's own cell excluded), where `signal` is the strongest neighbouring redstone signal (0 means off). Each server tick, every mob whose **bounding box intersects** one of those cells gets a velocity impulse along the facing: **−0.1** blocks/tick for the attractor (toward the block) and **+0.1** for the pusher (away). A cell is tested by intersection when the entity has a bounding box, with the feet-cell test as the fallback for entity kinds that have none — so a tall mob is drawn in even when its feet are a cell lower. No line-of-sight test (upstream has none).
+- The block entity is created by the `block_entity` hook and ticks through `block_entity_ticks`; the facing is read from the block's `facing` property, and the redstone signal from the neighbouring cells each tick.
+- The carried models, textures, language, recipes and loot, shipped inside the one `.hnmod`.
+- `/restrictions` readout commands for the harness.
+
+**Not yet ported**
+
+- One Way and One Way Wall: upstream's One Way is `noCollission()` and applies its push on `entityInside`. Horizon's content format couples outline and collision and has no per-entity collision shape, and there is no neutral no-collision template with a block entity — deferred to an engine API.
+- Players and item entities cannot be moved at this pin (there is no player velocity or position write, and item entities have no position setter), so the blocks move **mobs only**.
+- Arrows, boats and orbs are out of scope, as is McJtyLib's two-block placement of the taller variants.
+
+MIT; the original copyright and permission notices travel inside the archive at `mixins/restrictions/LICENSE`."""
+authors = ["McJty", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/restrictions"
+icon = "icons/restrictions.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "restrictions-0.1.0.hnmod"
+sha256 = "890a3e1af52e813c8e3da0de34252266b1f9d901a96c8e07b783d034c651ed04"

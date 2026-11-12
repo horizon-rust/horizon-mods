@@ -1,0 +1,25 @@
+id = "kotost_mage_items"
+kind = "mod"
+name = "Kotost Mage Items"
+summary = "The Mage's Hat, Dress and Staff with recipes, and the spells' sound events, for Kotost Mage."
+description = """
+The items of Kotost Mage: the **Mage's Hat**, the **Mage's Dress** and the **Mage's Staff**, their crafting recipes, a creative tab, English and Russian names, and the sound events of the six spells (they point at the game's own sounds, no audio files are shipped).
+
+Install it together with the native mod **Kotost Mage** (kotost_mage), which draws them on your model and adds the spells. Content only: no code."""
+authors = ["Kotost Games"]
+owners = ["Leks2000"]
+owner_ids = [107043945]
+license = "MIT"
+source = "https://github.com/Leks2000/kotost-mage"
+icon = "icons/kotost_mage_items.png"
+categories = ["magic", "equipment"]
+tags = ["magic", "mage", "staff", "hat", "dress"]
+screenshots = ["screenshots/kotost_mage_items/1.png", "screenshots/kotost_mage_items/2.png"]
+
+[[versions]]
+version = "0.6.2"
+published = "2026-11-12"
+game = "26.3"
+file = "kotost_mage_items-0.6.2.hmod"
+sha256 = "30ac207a97283ec84af6cc49dc4e5494c183aad2e568e1568560a535e8f121ce"
+changelog = "The .hmod now ships its MIT LICENSE. Content unchanged."

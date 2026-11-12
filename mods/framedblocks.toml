@@ -1,0 +1,36 @@
+id = "framedblocks"
+kind = "native-mod"
+name = "framedblocks"
+summary = "A Horizon port of framedblocks."
+description = """
+A port of [Framed Blocks](https://github.com/XFactHD/FramedBlocks) (LGPL-3.0-only, by XFactHD) for Horizon. This first slice is the **full-cube frame** and its camouflage.
+
+**Implemented so far**
+
+- `framedblocks:framed_cube`, the full-cube frame, with upstream's frame properties: wood map colour, `strength(2F)`, wooden sounds, ignitable by lava, and occlusion once a solid camo is set. Its default state is `alt=false`, `reinforced=false`, `solid_bg=false`, and those three flags are outside this slice.
+- Camouflage from `handleInteraction`: right-clicking an empty frame with a block item applies that block as the camo (consuming the item unless creative), and an empty-hand click on a framed block removes the camo and returns the block item.
+- The camo is stored as a block id on the frame's block entity and drawn as that block's default state, with the carried frame block, model, texture, language, recipe and loot inside the one `.hnmod`.
+- `/framedblocks` readout commands for the harness.
+
+**Not yet ported**
+
+- One frame shape only (the full cube). Slopes, panels, pillars, doors, the double blocks, waterlogging, `alt`/`reinforced`/`solid_bg`, glowstone frames, intangibility, overlays, the camo applicator, wrench rotation, camo rotation, state cycling and the item's camo preview are not ported.
+- **Default-state block camos only.** Upstream stores the placed `BlockState`; a block item gives its block's default state, and this port stores the block id and draws that default state. A state-specific camo (a stair's facing, a log's axis) is not expressible from an item at this pin.
+- The frame's own renderer layer and the camo's tint/overlay passes.
+
+LGPL-3.0-only, like the original; the full licence and the original copyright notice travel inside the archive, and the complete corresponding source is in the port repository."""
+authors = ["XFactHD", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/framedblocks"
+icon = "icons/framedblocks.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "framedblocks-0.1.0.hnmod"
+sha256 = "2c0f21fd059b75b866831cb6acf679fa13b298e149b5a547ba8c5e27f87a7451"

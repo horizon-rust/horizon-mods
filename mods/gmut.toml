@@ -1,0 +1,36 @@
+id = "gmut"
+kind = "native-mod"
+name = "gmut"
+summary = "A Horizon port of gmut."
+description = """
+A port of [Gravitational Modulating Additional Unit](https://github.com/gisellevonbingen-Minecraft/GravitationalModulatingAdditionalUnit) by gisellevonbingen for Horizon — slice 1, the item and its stored modes.
+
+**Implemented so far**
+
+- `gmut:module_gravitational_modulating_additional_unit` on the paper template (stack size 1, rarity rare), with its vertical-speed step kept **per stack** in the item's own `gmut:vertical_speed` component.
+- The five steps (`off` 1.0, `low` 1.5, `medium` 2.0, `high` 2.5, `ultra` 3.0), cycled by right-click (back while sneaking) or by `/gmut mode|next|prev`, each change printing upstream's mode line.
+- The placement readout (`held` / `off_hand` / `carried` / `absent`), the tooltip and the jar's own "Requires a Gravitational Modulating Unit" line while the gate is closed.
+- The carried model, texture, recipe, advancement, creative tab and English names.
+
+**Not yet ported / deviations**
+
+- **Flight is not implemented:** the pin has no attribute API for gravity or flight, so the modulation gate stays closed and the item stores and cycles modes without granting the Mekanism-assisted flight upstream grants. The step changes vertical velocity; it is not a hover.
+- The recipe needs Mekanism items and tags, so it is creative-only until Mekanism is in the registry.
+- The HUD indicator and the remaining config options.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/gmut/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["gisellevonbingen", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/gmut"
+icon = "icons/gmut.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "gmut-0.1.0.hnmod"
+sha256 = "d506ff131a85169c5ad6c1accfedc6edef3f1b6aafcc01c9eb5daaaa87f81306"

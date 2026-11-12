@@ -1,0 +1,28 @@
+id = "universalbonemeal"
+kind = "native-mod"
+name = "Universal Bone Meal"
+summary = "Bone meal grows cactus, sugar cane, vines, flowers, coral, chorus and more."
+description = """
+Bone meal grows cactus, sugar cane, vines, flowers, coral, chorus and more.
+
+A port of [Universal Bone Meal](https://github.com/Fuzss/universalbonemeal-forge) 8.0.1 by Fuzs, published under its licence, MPL-2.0. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Fuzs"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MPL-2.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/universalbonemeal"
+icon = "icons/universalbonemeal.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-12"
+game = "26.3"
+file = "universalbonemeal-0.1.1.hnmod"
+sha256 = "2d29c7398efe6e496e00492a215bed206747d77a85b5a2e798d59304e3bd1a75"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

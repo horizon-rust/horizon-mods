@@ -1,0 +1,36 @@
+id = "functionalstorage"
+kind = "native-mod"
+name = "functionalstorage"
+summary = "A Horizon port of functionalstorage."
+description = """
+A port of [Functional Storage](https://github.com/Buuz135/FunctionalStorage) for Horizon.
+
+**Implemented so far**
+
+- Ten wood-coloured 1×1 drawers (`functionalstorage:<wood>_1`), one big slot each, one item kind per drawer, capacity 2048 for a 64-stack item.
+- The carried content is the upstream models and textures (MIT), the recipes, loot tables, language, one creative tab and the drawer menu type.
+- Capacity follows `BigInventoryHandler`: `64 * base` with `X_1` base 32, scaled by the item's stack size — 2048 for a 64-stack, 512 for a 16-stack, 32 for a 1-stack (the `runtime::capacity` table).
+- Withdrawal is the one-slot menu's result-slot take (verified: 64 → 63).
+
+**Not yet ported**
+
+- The left-click **take** stays removed: a left click on the front only shows the action-bar hint "Open the drawer to withdraw" and takes nothing (the pin still reverts a block-entity write from `left_click_block`).
+- No front count text, no upgrades, no 1×2/2×2 or other drawer families, no locked-drawer hopper quirk; wall-clock cooldowns are not carried.
+- The arm and drawer status renderers are not carried.
+
+MIT: the original copyright (`Copyright (c) 2021 Buuz135, Rid`) and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Buuz135", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/functionalstorage"
+icon = "icons/functionalstorage.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "functionalstorage-0.1.0.hnmod"
+sha256 = "8a435230106722b6b524a6139f36a555e4ae5077e539c6df39e7f74d7af72417"

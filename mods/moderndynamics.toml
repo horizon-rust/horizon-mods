@@ -1,0 +1,43 @@
+id = "moderndynamics"
+kind = "native-mod"
+name = "Modern Dynamics"
+summary = "The item pipe and extractor attachment: 4 items every 40 ticks between inventories, ported."
+description = """
+A port of [Modern Dynamics](https://github.com/Technici4n/Modern-Dynamics) by Technici4n for
+Horizon. This is the first slice, not a full replacement.
+
+Implemented so far
+
+- `moderndynamics:item_pipe` with six boolean connection states and the carried multipart core/arm models and textures; it connects to another pipe or to an inventory reachable from the touching side.
+- `moderndynamics:extractor`, placed on a pipe side by right-clicking with the item (consumed outside creative) or by `/moderndynamics attach`; the side is saved with the block entity.
+- Upstream's default transfer: every 40 ticks each extractor moves up to 4 items from the inventory on its side into the network's other inventories, nearest first; a refused item stays in its slot.
+- The jar's recipes and carried content, the `/moderndynamics info` readout, and persistence across a relaunch.
+
+Not yet ported
+
+- the fluid pipe, the five energy cables (LV/MV/HV/EV/superconductor) and the machine extender;
+- the attractor, filter and inhibitor attachments, the wrench, the attachment screen and the upgrade data;
+- routing modes other than CLOSEST, priorities, and the stuffed-item retry path;
+- item-travel rendering, waterlogging and the per-type arm textures;
+- the JEI/EMI/REI/Jade plugins, the debug tool and the config file.
+
+Licensed **LGPL-3.0-only**, the original's licence, with the complete corresponding source
+in the port repository, so the licence obligations are met: original copyright
+and licence notices travel with it, inside the bundle (`mixins/moderndynamics/LICENSE`
+and `data/moderndynamics/license/`) as well as in its LICENSE and LICENSE-NOTICE.md. Help with
+the gaps above is welcome."""
+authors = ["Technici4n", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/moderndynamics"
+icon = "icons/moderndynamics.png"
+categories = ["utility", "technology", "storage"]
+tags = ["port", "pipes", "item-transport", "automation"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "moderndynamics-0.1.0.hnmod"
+sha256 = "5e8aafa2a10e92b67929228ace58fa93b6a6b2e3f1dc69b3a4f50688139ddcc7"

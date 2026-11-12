@@ -1,0 +1,37 @@
+id = "rangedpumps"
+kind = "native-mod"
+name = "rangedpumps"
+summary = "A Horizon port of rangedpumps."
+description = """
+A port of [Ranged Pumps](https://github.com/refinedmods/rangedpumps) (MIT, by Refined Mods) for Horizon. The pump drains still fluid sources in an expanding square scan and collects them in its own tank.
+
+**Implemented so far**
+
+- `rangedpumps:pump` with per-block range setting, the carried model, texture, language, recipe and loot, declared as one content pack inside the `.hnmod`.
+- The scan: `range` starts at -1 (the single column directly **below** the pump); each later range is the **perimeter** of a `(2r+3)²` square — the 8, 16, 24… block ring at horizontal distance `r+1`. Inside a column the pump goes down one block per 8 ticks (upstream's `speed`) to the dimension's minimum Y, then starts the next column. The interior of a ring is not scanned, as upstream.
+- Draining: only `minecraft:water` and `minecraft:lava` at `level=0` (a still source) are taken, one bucket at a time, into a 32-bucket internal tank; each drained source is replaced with air and then with the configured block (stone by default), so neighbouring fluid updates see the removal.
+- The tank is declared as the block's fluid capability and pushed into neighbouring fluid handlers once per block tick, an equal share to each (upstream's `fillNeighbors`).
+- `/rangedpumps` readout and configuration commands.
+
+**Not yet ported**
+
+- No energy (FE) gating: the pin has the energy API, but this slice has no FE source, so the pump runs as if `useEnergy = false`.
+- No redstone pause: reading a neighbour's signal needs `LevelAccess`/`Ticks` at this pin.
+- The pump's screen and its upgrade items; only the command path sets the range.
+
+The scan no longer consumes a position it could not drain: a source the tank cannot take stays in the world and is retried on the next tick, and a column that starts below the dimension's floor (a pump on the bottom block) is skipped instead of descending forever. MIT; the original copyright and permission notices (Refined Mods) travel inside the archive at `mixins/rangedpumps/LICENSE`."""
+authors = ["Refined Mods", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/rangedpumps"
+icon = "icons/rangedpumps.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "rangedpumps-0.1.0.hnmod"
+sha256 = "0c622b403b4d9d77bafddc0be30485c6cc9b7f2bb833d7922bb3a3fb23e035a3"

@@ -1,0 +1,35 @@
+id = "oritech"
+kind = "native-mod"
+name = "oritech"
+summary = "A Horizon port of oritech."
+description = """
+A port of [Oritech](https://github.com/Rearth/Oritech) by Rearth for Horizon — slice 1, the **Basic Generator and the Pulverizer**.
+
+**Implemented so far**
+
+- The Basic Generator: a 50,000 FE buffer (insert 0, extract 256 FE/call through the block energy capability), 32 FE per burning tick, fuel from the engine's `minecraft:cooking_fuel` so modded fuels work, the jar's buffer-full rule (at 49,984 FE the burn pauses and keeps its progress) and output to the six neighbours at `level_tick_post`.
+- The Pulverizer: a 25,000 FE buffer, 32 FE/t while working, the jar's custom recipe type read from the pin's recipe table, progress saved with the recipe id (upstream resets after a reload; this port continues) and the jar's output-room rule.
+- An operation whose result does not fit its output slot (empty or partial) **waits** instead of clamping the result, so no recipe consumes its input for a partial output.
+- The seven carried pulverizer recipes, the two machine textures, the loot entries, the block entities and the English names.
+
+**Not yet ported / deviations**
+
+- The buffer's key is the API's int `energy` rather than upstream's long `oritech.machine_energy`; every value here fits and the buffer is a real block energy capability other mods can use.
+- **The rest of Oritech:** the other generators, the accelerator ring, the reactor, the GeckoLib deep-tier models, the machines beyond these two, the ore/ingot sets and the rest of the crafting chain.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/oritech/LICENSE` and `NOTICE.md`) and are also in this repository. CC0-1.0. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Me! - Rearth", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "CC0-1.0"
+source = "https://github.com/AdLf0208/oritech"
+icon = "icons/oritech.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "oritech-0.1.0.hnmod"
+sha256 = "1b21ad66b549cb217ec654b47edf4faaa90380b521aeab26ede30f768f3ae614"

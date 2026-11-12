@@ -1,0 +1,25 @@
+id = "kotost_skins"
+kind = "resourcepack"
+name = "Kotost Skins"
+summary = "Replaces two of the game's default skins with Kotost Games' own."
+description = """
+A resource pack that swaps two of the game's **default skins** (the ones players get when they have no skin of their own): the slim *Makena* becomes the ginger **Bolvanchik**, the slim *Noor* becomes **KotostGames**.
+
+**Heads up: this pack changes the game's standard skins**, so anyone who is shown a default Makena or Noor skin sees these instead. It does not touch skins people have chosen themselves. The source skins are in the repository."""
+authors = ["Kotost Games"]
+owners = ["Leks2000"]
+owner_ids = [107043945]
+license = "MIT"
+source = "https://github.com/Leks2000/kotost-skins"
+icon = "icons/kotost_skins.png"
+categories = ["decoration"]
+tags = ["skin", "default-skin", "resource-pack"]
+screenshots = ["screenshots/kotost_skins/1.png"]
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-12"
+game = "26.3"
+file = "kotost_skins-1.0.1.zip"
+sha256 = "d9bcd1492086775ead572d171958339c944a8021a42882fc2ad7a212d8559e85"
+changelog = "The pack now ships its MIT LICENSE."

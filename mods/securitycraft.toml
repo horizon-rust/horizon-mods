@@ -1,0 +1,37 @@
+id = "securitycraft"
+kind = "native-mod"
+name = "SecurityCraft"
+summary = "Keypads, reinforced doors and the rest of SecurityCraft's block protection, ported to Horizon."
+description = """
+A port of [SecurityCraft](https://github.com/Geforce132/SecurityCraft) (MIT, by Geforce132) for Horizon. This first slice brings the **keypad** and the **reinforced iron door**.
+
+**Implemented so far**
+
+- Place a keypad, open it and type a code on its on-screen keypad. The code is stored **salted and hashed**, never in plain text: the typed digits live in memory only while the screen is open, and the block entity's saved compound holds just the salt and the digest — closing the screen, submitting, or saving the world cannot write a passcode to disk.
+- The keypad powers a redstone signal for 60 ticks when the right code is entered, which opens a reinforced iron door placed beside it.
+- A wrong code leaves the door closed; a keypad with no door powers but opens nothing; an empty code stores nothing; a bare hand cannot open the reinforced door.
+- `/securitycraft info|code` for testing and for setting a code without the screen, with the carried keypad and door blocks, models, textures, language and recipe inside the one `.hnmod`.
+
+**Not yet ported**
+
+- The owner and allowlist system (owner-only editing, allowlist modules, the `SECURITYCRAFT_OWNER` checks), and every other module.
+- The reinforced block family beyond the iron door: reinforced stone, glass, stairs, slabs and the rest.
+- The remaining machines (keycard reader, retina scanner, camera, alarm, laser block, inventory scanner, …) and their screens.
+- The keypad's screen is drawn from shape primitives (panel, key grid, digits) rather than the jar's GUI atlas.
+
+MIT; the original copyright and permission notices travel inside the archive at `mixins/securitycraft/LICENSE`."""
+authors = ["Geforce132", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/securitycraft"
+icon = "icons/securitycraft.png"
+categories = ["game-mechanics", "utility"]
+tags = ["port", "security", "keypad", "door", "redstone"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "securitycraft-0.1.0.hnmod"
+sha256 = "2fe90376c455bb5e9715c89900740da43f41d19659040749d81f27f12ddc9d39"

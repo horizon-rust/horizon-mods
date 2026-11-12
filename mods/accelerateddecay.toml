@@ -1,0 +1,35 @@
+id = "accelerateddecay"
+kind = "native-mod"
+name = "accelerateddecay"
+summary = "A Horizon port of accelerateddecay."
+description = """
+A port of [Accelerated Decay](https://github.com/nanite/AcceleratedDecay) by ErrorMikey (nanite) for Horizon — leaves fall when their log is cut.
+
+**Implemented so far**
+
+- Ready leaves (`distance == 7` and not `persistent`) are removed **one real second** (20 ticks) after a `#minecraft:logs` block is broken, over the mod's 26-neighbour flood fill, which expands only through already-ready leaves.
+- The flood keeps per-tick read and removal budgets, retries, a search radius, a merge cap and an age limit: safety valves the port added for pathological modded trees, which the upstream scan does not have.
+- A removed leaf's water goes with it (water for a waterlogged leaf, air for a dry one), the same legacy-block rule upstream applies.
+
+**Deviations and gaps**
+
+- **Removal is a plain block set, not a player break.** The pin has no drop-loot, item-entity or cancelable-break API, so a removed leaf drops nothing, no block-break level event fires and no `BLOCK_DESTROY` fires. Recorded as an API gap (a `machine_destroy_block`-style helper).
+- The mod ships no blocks, items or data of its own, so this is a code-only mod with no content archive; it also has no config file upstream, so none is written.
+- The flood runs on the server tick with the port's budgets, so a very large tree decays over several ticks rather than in one.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/accelerateddecay/LICENSE` and `NOTICE.md`, the full GNU GPL v3 with ErrorMikey's notice) and are also in this repository. GPL-3.0-only; the complete corresponding source is this repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["ErrorMikey", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "GPL-3.0-only"
+source = "https://github.com/AdLf0208/accelerateddecay"
+icon = "icons/accelerateddecay.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "accelerateddecay-0.1.0.hnmod"
+sha256 = "8737b84d17c566440568c73eb42177036d8c57b391f8c4119f37063ac121c588"

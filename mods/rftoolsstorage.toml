@@ -1,0 +1,37 @@
+id = "rftoolsstorage"
+kind = "native-mod"
+name = "rftoolsstorage"
+summary = "Modular storage: a module block holding 6,400 items, sealed until locked."
+description = """
+A Horizon port of [RFTools Storage](https://github.com/McJtyMods/RFToolsStorage) (MIT, by **McJty**) for Horizon. This first slice is **modular storage**.
+
+**Implemented so far**
+
+- **`rftoolsstorage:modular_storage`** holds a storage module and stores items in it: tier 1 is the jar's own **100 slots × 64 = 6,400 items**, with `StorageModuleItem.MAXSIZE = {100,200,300,500,…}` driving the tiers.
+- **The block is inert until a module is installed and the storage is locked**, exactly as the jar's `insertItem`/`extractItem` both begin with `if (!isLocked())`.
+- **The player surface:** a module held in hand installs into the block, a held stack inserts on right-click, an empty hand seals or withdraws, and the action bar reports `stored/capacity`; `/rftoolsstorage info|lock <x> <y> <z>` reads and seals it.
+- **Contents survive a save, quit and relaunch**, one item kind per slot with the stack limit respected.
+
+**Not yet ported**
+
+- the storage scanner, the crafting manager, tiers 2–4, the remote module and remote block;
+- the type, filter, dump and control modules and the storage tablet;
+- the GUI (search, sort, compact, cycle, padlock) — this slice uses right-clicks and commands;
+- the fill overlay: the jar declares its `amount`/`type` states but never writes them (upstream's `getRenderLevel()` is a commented `// @todo 1.14` stub), so the port does not invent one either.
+
+Original copyright and licence notices are kept in this repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is welcome."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/rftoolsstorage"
+icon = "icons/rftoolsstorage.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "rftoolsstorage-0.1.0.hnmod"
+sha256 = "8c43840a410d5f2d0f75f734ccd7ddbc0826f7082f53f1e1b435301a411e8d82"

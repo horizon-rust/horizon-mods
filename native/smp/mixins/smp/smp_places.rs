@@ -44,7 +44,9 @@ pub struct Config {
     pub rtp_cooldown_seconds: i64,
     /// Chunks tried, one after another, before `/rtp` gives up.
     pub rtp_attempts: i64,
-    /// How long `/rtp` waits, after the warmup, for the land to load.
+    /// How long `/rtp` waits, after the warmup, for the land of one chunk to
+    /// load; a chunk read and turned down (ocean) starts it again for the
+    /// next.
     pub rtp_search_seconds: i64,
 }
 
@@ -65,7 +67,7 @@ impl Default for Config {
             rtp_max_distance: 10_000,
             rtp_cooldown_seconds: 300,
             rtp_attempts: 6,
-            rtp_search_seconds: 30,
+            rtp_search_seconds: 60,
         }
     }
 }
@@ -125,6 +127,14 @@ pub struct Rtp {
     spot: Option<Place>,
     /// "Looking for a safe spot" was said.
     told: bool,
+    /// When the player was last told it still looks (ms).
+    noted: i64,
+    /// When the chunk now waited for was first waited for (ms): 0 for the
+    /// first, which counts from the warmup's end, then the moment the one
+    /// before was read and turned down.
+    since: i64,
+    /// `chunks.len()` when `since` was set.
+    left: usize,
 }
 
 /// A loaded chunk's columns, as the game read them: each column's `x`,
@@ -517,9 +527,12 @@ impl Places {
             To::Random(Rtp {
                 centre,
                 border,
+                left: chunks.len(),
                 chunks,
                 spot: None,
                 told: false,
+                noted: 0,
+                since: 0,
             }),
             now,
         )
@@ -951,23 +964,47 @@ impl Places {
                         p.uuid,
                         "No safe spot found for /rtp: try again.".into(),
                     ));
-                } else if now - p.due > search {
-                    out.push(Out::Tell(
-                        p.uuid,
-                        "/rtp couldn't load the land in time: try again.".into(),
-                    ));
                 } else {
                     let mut p = p;
-                    if let To::Random(r) = &mut p.to
-                        && !r.told
-                    {
-                        r.told = true;
+                    let due = p.due;
+                    let To::Random(r) = &mut p.to else {
+                        continue;
+                    };
+                    // A chunk read and turned down (ocean) was progress: the
+                    // next one gets the whole wait, as the game generates
+                    // the land around each from nothing.
+                    if r.left != r.chunks.len() {
+                        r.left = r.chunks.len();
+                        r.since = now;
+                    }
+                    let waited = now - r.since.max(due);
+                    if waited > search {
                         out.push(Out::Tell(
                             p.uuid,
-                            "Looking for a safe spot: don't move.".into(),
+                            "/rtp couldn't load the land in time: try again.".into(),
                         ));
+                    } else {
+                        if !r.told {
+                            r.told = true;
+                            r.noted = now;
+                            out.push(Out::Tell(
+                                p.uuid,
+                                "Looking for a safe spot: don't move.".into(),
+                            ));
+                        } else if now - r.noted >= 10_000 {
+                            // The game generates a whole ring of chunks round
+                            // the one wanted: on a busy server that takes a while.
+                            r.noted = now;
+                            out.push(Out::Tell(
+                                p.uuid,
+                                format!(
+                                    "Still looking for a safe spot: don't move ({} s).",
+                                    (now - due) / 1000
+                                ),
+                            ));
+                        }
+                        self.pending.push(p);
                     }
-                    self.pending.push(p);
                 }
             } else {
                 let mut spread = 0;
@@ -1518,9 +1555,30 @@ mod tests {
             out,
             vec![Out::Tell(A, "Looking for a safe spot: don't move.".into())]
         );
-        let (out, _) = p.tick(&here, 10_000 + 3_000 + 30_000);
-        assert!(out.is_empty(), "{out:?}");
-        let (out, _) = p.tick(&here, 10_000 + 3_000 + 30_001);
+        // It says every 10 s that it still looks, until rtp_search_seconds
+        // (60) after the warmup.
+        let due = 10_000 + 3_000;
+        for s in [10, 20, 30, 40, 50] {
+            let (out, _) = p.tick(&here, due + s * 1_000);
+            assert_eq!(
+                out,
+                vec![Out::Tell(
+                    A,
+                    format!("Still looking for a safe spot: don't move ({s} s).")
+                )]
+            );
+            let (out, _) = p.tick(&here, due + s * 1_000 + 5_000);
+            assert!(out.is_empty(), "{out:?}");
+        }
+        let (out, _) = p.tick(&here, due + 60_000);
+        assert_eq!(
+            out,
+            vec![Out::Tell(
+                A,
+                "Still looking for a safe spot: don't move (60 s).".into()
+            )]
+        );
+        let (out, _) = p.tick(&here, due + 60_001);
         assert_eq!(
             out,
             vec![Out::Tell(
@@ -1533,6 +1591,48 @@ mod tests {
         p.call_off(&go[0]);
         let (_, go) = rtp_to(&mut p, &here, 60_000, &mut |_, c| grass(c));
         assert_eq!(go.len(), 1, "allowed at once");
+        let _ = std::fs::remove_dir_all(d);
+    }
+
+    #[test]
+    fn each_chunk_gets_the_whole_wait_once_the_one_before_is_turned_down() {
+        let d = dir();
+        let mut p = Places::open(&d, Config::default()).unwrap();
+        p.rng = 42;
+        let here = [body(A, 0.0)];
+        p.command(&player(A, 0), &here, 0, "rtp").unwrap();
+        // The first chunk loads 50 s after the warmup, and it is ocean.
+        let (out, _) = p.tick(&here, 3_000);
+        assert_eq!(
+            out,
+            vec![Out::Tell(A, "Looking for a safe spot: don't move.".into())]
+        );
+        p.rtp_look(&mut |_, c| {
+            Some(chunk(
+                c,
+                "minecraft:water",
+                "minecraft:air",
+                "minecraft:air",
+            ))
+        });
+        let (out, go) = p.tick(&here, 53_000);
+        assert!(go.is_empty());
+        assert!(
+            !out.iter()
+                .any(|o| matches!(o, Out::Tell(_, t) if t.contains("in time"))),
+            "{out:?}"
+        );
+        // The second takes 55 s more: 105 s after the warmup, past the 60 s
+        // a total wait would allow, but within its own.
+        let (out, _) = p.tick(&here, 53_000 + 55_000);
+        assert!(
+            !out.iter()
+                .any(|o| matches!(o, Out::Tell(_, t) if t.contains("in time"))),
+            "{out:?}"
+        );
+        p.rtp_look(&mut |_, c| grass(c));
+        let (_, go) = p.tick(&here, 53_000 + 56_000);
+        assert_eq!(go.len(), 1, "landed");
         let _ = std::fs::remove_dir_all(d);
     }
 

@@ -243,7 +243,10 @@ chunk is loaded, the Overworld's tick reads its 256 columns (`native_read_column
 `MOTION_BLOCKING_NO_LEAVES` height and the two above it) and the player lands, still standing still, on a random one
 whose top block is solid ground (no fluid, fire, cactus, magma, powder snow, berry bush or dripstone) with air or grass
 above it, outside another player's claim and still in the ring and the border; with none the next chunk is tried. With
-no spot after the six, or no land loaded `rtp_search_seconds` (30) after the warmup, it says so and nothing is spent.
+no spot after the six, or a chunk's land not loaded `rtp_search_seconds` (60) after the warmup (a chunk read and turned
+down, as an ocean, starts the wait again for the next), it says so and nothing is spent. While it looks it says so every 10 s:
+the game generates a ring of chunks round the one wanted, which takes a while on a busy server. A `config.json` written
+before keeps the `rtp_search_seconds` it holds.
 A teleport made starts `rtp_cooldown_seconds` (300) for that player, kept in `places.json` over restarts ("Wait 2 min
 before your next /rtp."); a teleport called off (a move, a hit, the game failing it) doesn't. Elsewhere than the
 Overworld it refuses. The chunks it forced are let go 10 s after the landing, or at the next start if the server

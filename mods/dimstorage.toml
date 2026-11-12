@@ -1,0 +1,43 @@
+id = "dimstorage"
+kind = "native-mod"
+name = "DimStorage"
+summary = "Frequency-linked dimensional chests: a 54-slot inventory shared across dimensions, ported."
+description = """
+A port of [DimStorage](https://github.com/Edivad99/DimStorage) by Edivad99 for
+Horizon. This is the first slice, not a full replacement.
+
+Implemented so far
+
+- `dimstorage:dimensional_chest` with the jar's metal block properties, carried blockstate/model/textures and loot table, plus the three component items and four recipes.
+- A world-global 54-slot store keyed by frequency (public channel 1 by default); every chest on a frequency shares the same items, with a three-way slot merge once per block-entity tick.
+- A vanilla 9 × 6 menu reachable from every side, so hoppers, comparators and normal click/shift-click use the vanilla menu engine.
+- Persistence of all frequencies in `<world>/dimstorage/inventories.dat` (atomic write, at most once a second and on close/stop), surviving a relaunch.
+- Break and explosion accounting that commits and empties a chest without spilling the shared store, and `/dimstorage channel|info|put|take` as the current fallback for the deferred frequency screen.
+
+Not yet ported
+
+- the dimensional tank (fluid store and capability) and the dimensional tablet (remote access, autocollect);
+- the owner/lock/frequency GUI and the item `dimstorage:frequency` component, so a broken chest re-places on the default channel;
+- the custom chest renderer, lid animation and rotation display;
+- auto-eject, upgrades and size tiers, and the config file;
+- owner/private frequencies in normal play — this slice is public-channel only, changed with `/dimstorage channel`.
+
+Licensed **AGPL-3.0-only**, the original's licence, with the complete corresponding source
+in the port repository, so the licence obligations are met: original copyright
+and licence notices are kept in its LICENSE and LICENSE-NOTICE.md. Help with
+the gaps above is welcome."""
+authors = ["Edivad99", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "AGPL-3.0-only"
+source = "https://github.com/AdLf0208/dimstorage"
+icon = "icons/dimstorage.png"
+categories = ["storage", "technology"]
+tags = ["port", "storage", "ender-chest", "dimensional"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "dimstorage-0.1.0.hnmod"
+sha256 = "84ec05de3be5c9f787531cfe1253967d77639dad9c84a14d3814ef1754cc185f"

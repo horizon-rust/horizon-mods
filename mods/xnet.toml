@@ -1,0 +1,37 @@
+id = "xnet"
+kind = "native-mod"
+name = "xnet"
+summary = "A controller, its cable network and an item channel that moves one item per ten ticks."
+description = """
+A Horizon port of [XNet](https://github.com/McJtyMods/XNet) (MIT, by **McJty**) for Horizon. This first slice is the **controller**, its **cable/connector network** and the **item channel**.
+
+**Implemented so far**
+
+- **The controller** (`xnet:controller`) saves **eight channels** in its block entity, and the network is walked with upstream's own rule: the controller owns the network of the connector it touches.
+- **The network blocks:** `xnet:netcable` and `xnet:connector`, plus their blue variants.
+- **The item channel** moves one item per operation, at the jar's default **one item per 10 ticks**, with inserters ordered by priority and whitelist/blacklist filters.
+- **Inspection and configuration:** `/xnet info` reports the network, and eight operator settings commands change the channel.
+
+**Not yet ported**
+
+- the energy, fluid, gas and other channels;
+- the controller's RF cost: upstream burns 1 RF/t per channel plus 2 RF/operation from a 100,000 FE buffer, and this slice runs the item channel unpowered while the energy slice adds the buffer, the capability and the cost;
+- the controller's GUI (this slice configures with commands);
+- the other XNet blocks (advanced connectors, the router, the antenna and the wireless router).
+
+Original copyright and licence notices are kept in this repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is welcome."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/xnet"
+icon = "icons/xnet.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "xnet-0.1.0.hnmod"
+sha256 = "f7fd98c935b2d743e6aa6936ba294ae04da54afc4683d8dafbf56829579ea13c"

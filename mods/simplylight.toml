@@ -1,0 +1,33 @@
+id = "simplylight"
+kind = "mod"
+name = "Simply Light"
+summary = "160 decorative light-emitting blocks and panels in every colour."
+description = """
+A port of [Simply Light](https://github.com/Flanks255/simplylight) by Flanks255 for Horizon: ten families of decorative light blocks — lamps, slabs, panels, wall lamps, bulbs, rods, posts and edge lights — in all sixteen colours, 160 blocks and 2048 block states.
+
+**Implemented so far**
+
+- Lamps emit light 15; bulbs and edge lights emit 14; an unlit lamp emits none.
+- Every block drops itself and is craftable from its family's recipe.
+- Builders get the same shapes as upstream: panels and slabs that sit flush, wall-mounted lamps, and edge lights for ceilings and floors.
+
+**Not yet ported**
+
+- Redstone toggling, the lamp-post column and the edge-light editor are later slices.
+
+A content-only carry: no native code and no hooks. MIT: the original copyright and licence travel inside the archive (`data/simplylight/license/`), not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. The artifact the entry pins is `content/simplylight.hmod` in the source repository; the release asset must be re-uploaded from that file so the two hashes agree."""
+authors = ["Flanks255", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/simplylight"
+icon = "icons/simplylight.png"
+categories = ["decoration"]
+tags = ["port", "decoration", "lighting", "blocks"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "simplylight-0.1.0.hmod"
+sha256 = "179023199bb17d8079010d3c6617bd83e8a08f13d4630b39e39f541028058b7a"

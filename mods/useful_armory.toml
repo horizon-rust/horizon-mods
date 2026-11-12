@@ -1,0 +1,25 @@
+id = "useful_armory"
+kind = "mod"
+name = "useful armory"
+summary = "remake of my old mod i made for mc 1.12.2. all rebuild with claude."
+description = """
+adding a lot more basic content here soon cus i noticed theres no content mods for rust yet!
+
+
+
+"""
+authors = ["snipeparpar"]
+owners = ["snipeparparalt2"]
+owner_ids = [343273148]
+license = "MIT"
+source = "https://github.com/snipeparparalt2/useful-armory-horizon"
+icon = "icons/useful_armory.png"
+categories = ["adventure", "mobs", "equipment"]
+tags = ["tools", "ores", "content", "mobs"]
+
+[[versions]]
+version = "0.1.6"
+published = "2026-11-12"
+game = "26.3"
+file = "useful_armory-0.1.6.hmod"
+sha256 = "5013bd4fd853d30506a39686c51d163f32e047eca375079e177ac2a988b50218"

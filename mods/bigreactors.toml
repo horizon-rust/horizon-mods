@@ -1,0 +1,39 @@
+id = "bigreactors"
+kind = "native-mod"
+name = "bigreactors"
+summary = "A Horizon port of bigreactors."
+description = """
+A port of [Extreme Reactors](https://github.com/ZeroNoRyouki/ExtremeReactors2) for Horizon.
+
+**Implemented so far**
+
+- The smallest reactor the mod expresses end to end, with the jar's own numbers: a 3×3×3 basic reactor runs the upstream simulation, reaching ≈126.8 FE/t at steady state and burning ≈0.028 mB of fuel per tick (one ingot ≈ 35,700 ticks).
+- The six blocks the reactor is built from, carried from the jar: `basic_reactorcasing` (the shell), `basic_reactorcontroller` (the machine: fuel, waste, heat, energy, on/off), `basic_reactorfuelrod` (the fuel column), `basic_reactorcontrolrod` (the assembly cap) and `basic_reactorsolidaccessport` (where fuel goes in), plus the two items.
+- A declared FE buffer (API 142), a container, the formation check, and the controller's tick.
+- The e2e holds 100 ticks at 8,026 FE ± 60, turns 2 mB of fuel into 2 mB of waste, and reads a housing at ~410 °C.
+
+**Not yet ported**
+
+- **Turbine, reprocessor, energizer and fluidizer** — four more multiblocks, each its own machines slice; the reactor's active (steam) mode goes with the turbine.
+- **Fluids** — the 10 fluid blocks, coolants, steam, the fluid ports and the reactor's active cooling mode.
+- **Ores and the metal chain** — yellorite ore (worldgen), the ore blocks, raw yellorium and the reprocessor's cyanite → yellorium loop. The ingots are obtainable by `give` only until then.
+- **The reinforced variant** (1.0 efficiency, 1,000-block maximum, 30,000 FE part capacity), **control-rod insertion**, **solid moderators** and **waste ejection**.
+- **GUIs** — the controller's screen, the port's in/out mode, the redstone port and the computer ports; and the Patchouli guide book.
+- Only `bigreactors:yellorium_ingot` is accepted as fuel; the `c:ingots/yellorium` and `c:ingots/uranium` tag route upstream uses is not read.
+
+MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["ZeroNoRyouki", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/bigreactors"
+icon = "icons/bigreactors.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "bigreactors-0.1.0.hnmod"
+sha256 = "f6fcdf1e1b8ed962b05428d5bc95c2a33decb4dc8bb36d174add1114a1cbea18"

@@ -1,0 +1,38 @@
+id = "extradisks"
+kind = "native-mod"
+name = "extradisks"
+summary = "A Horizon port of extradisks."
+description = """
+A port of [Extra Disks](https://github.com/ChaoticTrials/ExtraDisks) by MelanX for Horizon — slice 1, the **1024k item storage**.
+
+**Implemented so far**
+
+- `extradisks:1024k_item_storage_block`, a block entity holding 1,048,576 items in up to 256 resources, and `extradisks:1024k_item_storage_disk`, the same storage in the `extradisks:storage` item component, so a disk carries its contents when moved.
+- One engine for both: capacity 1024 × 1024 = 1,048,576, an insert of `min(amount, free)`, an extract of `min(available, amount)`, a resource being the item **plus its components** (two named diamonds are two resources), and the saved `"<amount>|<id>|<component key>"` form trimmed to capacity when loaded.
+- The block's interface: right-click with a stack to insert, empty-handed to take one stack out; `/extradisks info|insert|extract` and `/extradisks disk …` (the commands move items without an inventory, which is how the exact capacity is checked).
+- Breaking the block returns its contents to the breaker. When the inventory cannot hold them all the break is refused and the block keeps the remainder, so a filled block is never lost to a plain block item.
+
+**Not yet ported**
+
+- **No network.** The block is standalone storage, not a Refined Storage network node, so the parent's Grid cannot browse it (each port is its own crate and there is no cross-mod API).
+- **No energy.** Upstream the 1024k block draws 14 FE/t; nothing is modelled here.
+- **No GUI.** Upstream's storage menu (insert slots, a search box, a sorting/priority panel) is not built; the right-click and the commands are the interface.
+- **No recipes.** Every recipe in the jar needs `refinedstorage:` ingredients and tags that only the parent mod can declare, so the block and the disk come from the creative tab.
+- **The rest of the mod:** the other seven item rungs, 17 disks, 23 parts, the fluid and chemical families, the casings and housings, the withering processors and the storage-upgrade recipes.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/extradisks/LICENSE` and `NOTICE.md`) and are also in this repository. Apache-2.0. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["MelanX", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "Apache-2.0"
+source = "https://github.com/AdLf0208/extradisks"
+icon = "icons/extradisks.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "extradisks-0.1.0.hnmod"
+sha256 = "062f877f72eab0d813bee2875f8187b8fe9401b7ab4b6c6f678c01e6a32b57be"

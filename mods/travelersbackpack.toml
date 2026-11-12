@@ -1,0 +1,44 @@
+id = "travelersbackpack"
+kind = "mod"
+name = "Traveler’s Backpack - Content"
+summary = "Dependency for Traveler's Backpack"
+description = """
+Originally created by Tiviacz1337.
+This is an independent port to Horizon. Special thanks to the original author.
+
+Backpacks. All 44 original designs and five tiers, from leather to netherite. Backpacks can be opened, placed as blocks or worn on the player's back. Other players can see them, and dying while wearing one places it as a block.
+
+Inventory and upgrades. The original backpack menu, sorting, quick stacking, tool slots and settings. Upgrades include crafting, furnaces, pickup, magnet, void, feeding, refill, tanks, jukebox and lantern, with configurable filters and toggles.
+
+Fluids and abilities. Tanks support water, lava, milk and potions. The hose can suck, spill and drink fluids. Original design-specific abilities are implemented, alongside the sleeping bag, dyeing, cauldron washing and backpack restoration.
+
+Other features. Dynamic lighting, tool radial menu, advancements, wandering trader trade, creative tab and keybinds. English and Russian translations."""
+authors = ["DispatchedToHeaven"]
+owners = ["DispatchedToHeaven"]
+owner_ids = [211231405]
+license = "LGPL-3.0"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/travelersbackpack"
+icon = "icons/travelersbackpack.png"
+categories = ["equipment", "game-mechanics", "adventure"]
+tags = ["storage", "inventory", "equipment", "utility", "exploration", "customization", "crafting", "survival", "transportation", "progression"]
+key = "RWRKE9PraqtKIBNLiCXXKIdqfZ6tUGUVxdzMWkSmPfMz3PcTDxnyAEbv"
+
+[[versions]]
+version = "0.9.5"
+published = "2026-11-12"
+game = "26.3"
+file = "travelersbackpack-0.9.5.hmod"
+sha256 = "fb0aca36c6c5b010798357f43fbddecd2a50b901fd97989260177afa52b78d69"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURKE9PraqtKIAPr7IasQSWgJt1eZ6o/UtLFItZXZbA2V/cw7cIwA/QvbpqLkx4enGPP5sUcjoPD1SxWfMc8r+4dhdHEAWYGpAk=\r
+trusted comment: timestamp:1794507359\tfile:travelersbackpack-0.9.5.hmod\thashed\r
+jfLBIeEaV2C7IuWssv/rehI28vBrONFDdb+QNaptgZBitQCXQvJtx3r08kImWAG2wL7oF5QIlYNMba6ZTqe/Dg=="""
+changelog = """
+Remaining work:
+
+Original config settings and Mod Menu metadata are not yet implemented. Compatibility with other Java mods supported by the original, including Accessories / Trinkets, JEI / EMI / REI, Comforts and grave mods, is also missing.
+
+Minor differences include 16-step fluid levels in item tanks, no icon growth animation in the tool radial menu, and tool swap sounds audible only to the player.
+
+Some abilities and interactions still need in-game verification, including several design-specific abilities, upgrade keybinds, the hose radial menu, jukebox audio and sleeping or dying while wearing a backpack."""

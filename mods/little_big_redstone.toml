@@ -1,0 +1,37 @@
+id = "little_big_redstone"
+kind = "native-mod"
+name = "little_big_redstone"
+summary = "A microchip block that runs redstone logic on its circuit board."
+description = """
+A Horizon port of [Little Big Redstone](https://github.com/Swedz/Little-Big-Redstone) (MIT, by **Swedz**) for Horizon. This first slice is **one microchip** with the mod's own AND scene — two input ports, a 2-input AND gate, one output port and three wires.
+
+**Implemented so far**
+
+- **The microchip block.** The jar makes the microchip the *block* and the logic components *items on its circuit board*, so the slice is a placed microchip that holds a circuit: two input ports, a 2-input AND gate, one output port and three wires, saved in the block entity.
+- **The guide's own scene runs in game:** inputs `0,0`, `0,1` and `1,0` leave the lamp dark and `1,1` lights it, with the per-face redstone properties tracking the ports.
+- **Analog input:** A=15 with B=5 (a wire line decaying to `power=5`) still lights it, and the saved `microchip.power` reads 15.
+- **State survives a quit and relaunch**, the circuit is inspectable and resettable with `/lbr circuit <x> <y> <z> status|clear|and`, and a signal arriving on a wire strongly powers what sits beside it.
+- **Crafting** follows the jar's shaped recipes (circuit board plus the mod's tags), and the block drops itself to a pickaxe.
+
+**Not yet ported**
+
+- the other 15 microchip components and the guide's remaining scenes;
+- the in-game guide book and the microchip's GUI (this slice configures with a command instead);
+- the mod's own wire-rendering template (the slice uses a vanilla wire model).
+
+Original copyright and licence notices are kept in this repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is welcome."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/little_big_redstone"
+icon = "icons/little_big_redstone.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "little_big_redstone-0.1.0.hnmod"
+sha256 = "2a396c11dcef5681f018e9dd3aa86044c1af37fd6d909d3b66b88988d0fd841d"

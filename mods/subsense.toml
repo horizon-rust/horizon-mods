@@ -1,0 +1,34 @@
+id = "subsense"
+kind = "native-mod"
+name = "SubSens"
+summary = "Allows even lower mouse sensitivity than vanilla, down to true zero."
+description = """
+A port of [SubSens](https://github.com/chikaradude/SubSens) by Maciej "ChikaraDude" Panocha to Horizon.
+
+- Extends the sensitivity slider from 0..1 to -1/3..1 (roughly -67%).
+- Stores precise negative values in options.txt.
+- Keeps an untouched exact value, so DPI conversions survive.
+- No separate menus or config files.
+"""
+authors = ["cakePhone", "ChikaraDude"]
+owners = ["cakePhone"]
+owner_ids = [82392894]
+license = "MIT"
+source = "https://github.com/cakePhone/SubSensHorizon"
+icon = "icons/subsense.png"
+categories = ["game-mechanics", "utility"]
+tags = ["sensitivity", "mouse", "dpi", "accessibility", "port"]
+key = "RWT0MtEkvup51zcIJyiEsI7EOBwbDXt3zeboV10TRGsX3Nz+kdhcusdk"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-12"
+game = "26.3"
+file = "subsense-1.0.0.hnmod"
+sha256 = "9f593f6fac713dfe9dcc7f4f5243c9ac76601f18a72972ff5dba29b338f6cea1"
+signature = """
+untrusted comment: signature from minisign secret key
+RUT0MtEkvup51xaTb1t8HTc4n1fT42VRgAWEU5MsEh6hMwXiXroITL3AVnXeqwEq7tvPw6ow5YsZUdbzkabDH4LZ3xZnOntxzg0=
+trusted comment: timestamp:1794497654\tfile:subsense-1.0.0.hnmod\thashed
+SBysgdMqe0imjbFF4OMsJpqnuayJ7wcD4PTVAlgbc/HuYyOB9EwoUXfVbI5Mzz3ci6ZJNBuHCFPkWsCHKWq1Bg=="""
+changelog = "First Horizon port: sensitivity down to -1/3 (true zero), negative options.txt values, and the extended slider."

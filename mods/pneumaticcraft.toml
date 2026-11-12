@@ -1,0 +1,37 @@
+id = "pneumaticcraft"
+kind = "native-mod"
+name = "pneumaticcraft"
+summary = "A Horizon port of pneumaticcraft."
+description = """
+A port of [PneumaticCraft: Repressurized](https://github.com/TeamPneumatic/pnc-repressurized) (GPL-3.0-only, by desht, MineMaarten and the PNC:R contributors) for Horizon. This first slice is the **Flux Compressor**, the machine that turns FE into compressed air.
+
+**Implemented so far**
+
+- `pneumaticcraft:flux_compressor` with a **100,000 FE buffer**. It spends FE a tick to make **16 mL of air a tick** at 100 % heat efficiency (`40 × eff/100 × fluxCompressorEfficiency/100`, the config default 40 air per 100 FE).
+- A 10,000 mL air handler with `PressureTier.TIER_TWO` (danger 20 bar, critical 25 bar), and the heat exchanger: capacity 100, `addHeat(air/20)` a tick, ambient 300 K and `(T − 300)/101` lost a tick — so it settles at about 300.8 K and stays at 100 % efficiency.
+- With nothing connected the compressor **leaks** `(int)(pressure × 40) + 20` mL a tick, as upstream does, so a lone compressor never accumulates air (measured: 16 mL after 118 ticks).
+- Every 5 ticks the compressor refreshes its rates; `/pneumaticcraft` readout commands expose the buffer, the air and the temperature for the harness, and the carried model, texture, language and recipe ride inside the one `.hnmod`.
+
+**Not yet ported**
+
+- The **pressure tubes** (`pressure_tube`, `advanced_pressure_tube`, `reinforced_pressure_tube`, `tube_junction`) and tube modules — the network proper: the six-sided connection state, tube volume aggregation, network leaks, modules and camouflage. This is the next slice and the block most of the mod stands on.
+- The upgrades (speed, volume, security, dispenser) and their items.
+- The menus and screens, the pressure gauge and manometer items, and the GUI redstone modes.
+- The overpressure explosion (`doOverpressureChecks`): nothing in this slice reaches the critical pressure without the harness, and the harness clamps at 25 bar.
+
+GPL-3.0-only, like the original; the full licence and the original copyright notices travel inside the archive, and the complete corresponding source is in the port repository."""
+authors = ["desht", "MineMaarten", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "GPL-3.0-only"
+source = "https://github.com/AdLf0208/pneumaticcraft"
+icon = "icons/pneumaticcraft.png"
+categories = ["decoration", "utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "pneumaticcraft-0.1.0.hnmod"
+sha256 = "543b9a8e4ea48858b2d5e21790a216d0fd7abd2012692e731d17c5eca779d1a4"

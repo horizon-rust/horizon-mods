@@ -1,0 +1,40 @@
+id = "sushigocrafting"
+kind = "native-mod"
+name = "sushigocrafting"
+summary = "A Horizon port of sushigocrafting."
+description = """
+A port of [Sushi Go Crafting](https://github.com/Buuz135/SushiGoCrafting) (MIT, by Buuz135 and the Sushi Go Crafting contributors) for Horizon. This first slice is the **cutting board**, the mod's smallest machine loop: an ingredient in, six knife strokes, the prepared item out.
+
+**Implemented so far**
+
+- `sushigocrafting:cutting_board` on the `minecraft:oak_planks` template with upstream's own numbers (hardness 3.0, blast resistance 3.0, wooden sounds, no occlusion), the four-way `subfacing` state the jar's blockstate selects on unchanged, and upstream's two outline/collision shapes (north/south and east/west).
+- Placement rotation: `subfacing` follows the placer's yaw, as upstream's placement code does.
+- The board's block entity (one item slot plus the saved knife-stroke count) and its one-slot container, reachable from every face, with no menu — upstream's shape exactly.
+- The interaction, in upstream's order: a knife on a loaded board adds a stroke; an ingredient on an empty board fills the slot; sneak with an empty hand takes the stack back. The sixth stroke cuts: the recipe's amount item, with `sushigocrafting:amount` rolled between the recipe's minimum and maximum, goes to the player and one ingredient leaves the slot.
+- The jar's six cutting-board recipes, the block and the eleven item models/textures, the lang strings, the tags and the loot table, all carried and shipped inside the one `.hnmod`.
+- `/sushigocrafting board|clicks` readout and stroke setter for testing (upstream has no commands).
+
+**Not yet ported**
+
+- The other four machines: `rice_cooker`, `fermentation_barrel`, `roller` and `cooler_box`.
+- Every crop (rice, cucumber, soy, sesame, wasabi) and the avocado tree. A content crop does not random-tick at this pin, so growth and drops are not ported and the crop blocks were not carried; the board's ingredients therefore come from creative or from another mod.
+- The fish and their drops (`ShrimpEntity`, `TunaEntity`, the sushi food items), the Patchouli guide book, and the knife tiers beyond the tag.
+- The board's client renderer (the item on the board and the knife animation) and the per-`subfacing` model orientation; there is no screen upstream.
+- `container_accepts` is still pending at this pin, so a hopper can insert an item the board would refuse by hand.
+
+Knives are accepted under both `c:tools/knife` (upstream's spelling) and `c:tools/knives` (what the mod's own data declares), so the mod's own cleaver cuts on its own board without Farmer's Delight. MIT; the original copyright and permission notices travel inside the archive at `mixins/sushigocrafting/LICENSE`."""
+authors = ["Buuz135", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/sushigocrafting"
+icon = "icons/sushigocrafting.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "sushigocrafting-0.1.0.hnmod"
+sha256 = "71de4a4201c06976ce6bd51718991191051d0d7ab2c256205bfedc9e3e592b88"

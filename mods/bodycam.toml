@@ -1,0 +1,31 @@
+id = "bodycam"
+kind = "shader"
+name = "Bodycam"
+summary = "LoLip_p's Body Camera Shader ported to Horizon: a realistic body cam look with fisheye, 4:3 frame, lens flare and grain."
+description = """
+An unofficial port of [Body Camera Shader](https://modrinth.com/shader/body-camera-shader) v1.6.2 by **LoLip_p** to Horizon's own shader format. All credit for the look goes to LoLip_p; this port is not affiliated with or endorsed by them. Licensed CC BY 4.0, like the original.
+
+**The lens:** 4:3 frame, zoom, fisheye, camera shake, chromatic aberration, sharpening, lens flare, grain, scanlines, colour distortion, night vision, vignette and black stripes.
+
+**The world:** the original's lighting with soft tinted shadows, day/night transitions, fog, water lighting, swaying leaves and waves, plus ambient occlusion, depth of field, auto exposure, bloom, motion blur and FXAA. 63 settings under Shader Options.
+
+**Not possible in Horizon yet:** entities, the hand and particles keep vanilla lighting (so the thermal imager can't make mobs glow); the flashlight and night vision can't react to sneaking; no profiles or sun path rotation.
+
+Source: https://github.com/fbikat/bodycam-horizon"""
+authors = ["LoLip_p", "fbikat"]
+owners = ["fbikat"]
+owner_ids = [253167313]
+license = "CC-BY-4.0"
+source = "https://github.com/fbikat/bodycam-horizon"
+icon = "icons/bodycam.png"
+categories = ["realistic", "atmosphere", "shadows"]
+tags = ["bodycam", "camera", "fisheye", "vhs", "night-vision", "lens-flare", "realistic", "port"]
+screenshots = ["screenshots/bodycam/1.jpg", "screenshots/bodycam/2.jpg", "screenshots/bodycam/3.jpg", "screenshots/bodycam/4.jpg", "screenshots/bodycam/5.png", "screenshots/bodycam/6.png", "screenshots/bodycam/7.png"]
+
+[[versions]]
+version = "1.6.2"
+published = "2026-11-12"
+game = "26.3"
+file = "bodycam-1.6.2.hshader"
+sha256 = "a5877525ed872da6d4e617b88fe02b6d65891d23a9d4bb5ccffc7cd9c8f419b3"
+changelog = "First release."

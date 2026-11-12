@@ -1,0 +1,35 @@
+id = "charginggadgets"
+kind = "native-mod"
+name = "Charging Gadgets"
+summary = "A charging station that burns fuel into a 1,000,000 FE buffer and charges the gadget in its slot."
+description = """
+A port of [Charging Gadgets](https://github.com/Direwolf20-MC/ChargingGadgets)
+by Direwolf20 and ErrorMikey for Horizon. This slice is the charging station: a
+machine that burns fuel into a 1,000,000 FE buffer and charges the gadget in its
+slot.
+
+- Right-click the station to open its two-slot menu; fuel goes in one slot and
+  the gadget to charge in the other. The station's block item keeps its charge.
+- One coal burns for 32 steps of 625 FE (20,000 FE); modded fuels use their own
+  burn time, and the crafting remainder is honoured.
+- The station accepts FE from cables into the same buffer and never lets it be
+  drained; 2,500 FE a tick goes into the item.
+
+The rest of the mod is a planned gap list. MIT — original copyright and licence
+notices are kept in the port repository; see LICENSE and LICENSE-NOTICE.md
+there."""
+authors = ["Direwolf20", "ErrorMikey", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/charginggadgets"
+icon = "icons/charginggadgets.png"
+categories = ["game-mechanics", "utility", "technology"]
+tags = ["port", "energy", "charging", "machines"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "charginggadgets-0.1.0.hnmod"
+sha256 = "fff31eadce875532710fd803233289b908b7626f13462898e39950e24d79c545"

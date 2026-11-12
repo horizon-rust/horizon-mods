@@ -1,0 +1,38 @@
+id = "rftoolsbase"
+kind = "native-mod"
+name = "rftoolsbase"
+summary = "A Horizon port of rftoolsbase."
+description = """
+A port of [RFTools Base](https://github.com/McJtyMods/RFToolsBase) by McJty for Horizon — slice 1, the Machine Infuser.
+
+**Implemented so far**
+
+- `rftoolsbase:machine_infuser` on the stonecutter template with a horizontal `facing`, standard-iron properties and the jar's own model and front texture, placed facing the player.
+- A 60,000 FE buffer through the block energy capability: any side may fill it 600 FE a call, nothing may drain it (upstream's `GenericEnergyStorage(…, canExtract = false)`).
+- Two slots: slot 0 takes `rftoolsbase:shards`, slot 1 takes one infusable machine and is also the output; every face reaches both and automation may take from slot 1.
+- The infusion rule from the jar: with a shard and an infusable machine below 256 it spends `(int)(600 × (2 − level/256) / 2)` FE plus one shard and infuses for 5 ticks, raising the machine one level. The cost comes from the block's own level, not the item's.
+- The `rftoolsbase:infused` item component (0..=256), seeded from the placed item, with the `Infused: N%` tooltip, and a two-slot menu with four data slots (energy, capacity, `infusing`, block level).
+- The carried blockstate, models, texture, recipes, loot, tags, creative tab and English names.
+
+**Not yet ported**
+
+- The tablet, the crafter, the storage scanner and the other RFTools machines (those live in RFTools Storage/Utility/Control, separate mods).
+- The block-protector/security chain, the config file and the in-game documentation items.
+- Recipes that need items from the unported RFTools mods.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/rftoolsbase/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["McJty", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/rftoolsbase"
+icon = "icons/rftoolsbase.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "rftoolsbase-0.1.0.hnmod"
+sha256 = "fdc79718d95218ad35e54d7da2af178354e52d3cbc499cb31fc6b9c83cfb1bcc"

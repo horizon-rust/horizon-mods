@@ -1,0 +1,36 @@
+id = "modularrouters"
+kind = "native-mod"
+name = "modularrouters"
+summary = "A Horizon port of modularrouters."
+description = """
+A port of [Modular Routers](https://github.com/desht/ModularRouters) by Des Herriott (desht) for Horizon — the Router, the Puller Mk1 and the Sender Mk1.
+
+**Implemented so far**
+
+- `modularrouters:modular_router`: nine module slots and five upgrade slots saved in the block entity, its facing, the `active` block state while a module works, and its one-slot buffer exposed as the block's item container on all six faces.
+- Two modules: the **Puller Mk1** takes from the container beside the router into the buffer, topping up a buffer stack of the same resource first and never more than the Stack Upgrade count or the room left; the **Sender Mk1** pushes from the buffer into the first container in range and leaves a refused remainder in the buffer.
+- A resource is the item **plus its components**: a named or enchanted stack never merges with a plain one, and a pull never replaces the buffer's components with a namesake's.
+- The tick rate (`max(2, 20 − 2 × speed)`), items per operation (`1 << min(6, stacks)`), phase-spread across routers by position, and the module/filter settings in the block entity.
+
+**Not yet ported**
+
+- **The other modules:** Puller Mk2, Sender Mk2/3, vacuum, dropper, flinger, placer, breaker, extruder 1/2, detector, distributor, energy distributor/output, fluid 1/2, player, activator, void and creative, with their settings screens.
+- **Upgrades and augments:** the 10 upgrade items and their insert rules, the 11 augments and the 5 smart filters (this slice's filter is a whitelist/blacklist over item ids).
+- **The GUI** (module/upgrade/buffer slots, redstone and eco modes) and the recipe/advancement chain for the carried items.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/modularrouters/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Des Herriott", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/modularrouters"
+icon = "icons/modularrouters.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "modularrouters-0.1.0.hnmod"
+sha256 = "79d2f34b9853b5148566deb15af576aa84ca6d591e5f04677979c64159daaa38"

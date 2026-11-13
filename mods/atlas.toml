@@ -35,6 +35,30 @@ screenshots = ["screenshots/atlas/1.jpg", "screenshots/atlas/2.jpg", "screenshot
 key = "RWQTrUWZqmONrce5kqT1AQVVgH1uvw+OS9esuwQdp05OTlV/VWkKxGUL"
 
 [[versions]]
+version = "0.3.0"
+published = "2026-11-13"
+game = "26.3"
+file = "atlas-0.3.0.hnmod"
+sha256 = "52b6fb721103f568b3ff82f5775bc2e7c40d64330f4313c5a3fe53e69c6db9ab"
+signature = """
+untrusted comment: signature from minisign secret key
+RUQTrUWZqmONrZ4EI7RzOQcg7HgEJY9QgkMfMIjgziStDxrwGSdi9L4NEQ5m07AWISrL1E5ji7xOVKjIdxfw28owGThb+ofsrwQ=
+trusted comment: atlas 0.3.0
+kkc800KqAemGlTzvAMhxV4fCYK3cpksgsE9JingLH6+MyBwom6m9aS33v9SumVvYAqV3u4rfLbLWsIgdKOGoAQ=="""
+changelog = """
+For Horizon Nightly 2026-11-13 (`9f42064`).
+
+- **Map sharing**: a Horizon server running Atlas shares every chunk its players have loaded. When you join one, your world map asks first: Download, Not now or Never (`/atlas download` changes it later). Only what changed since your last visit is sent, nearest first, capped per player.
+- **Draw on the world map** (D): lines in eight colours, right-drag to erase, Z to undo. Kept per world and dimension.
+- **Zoom**: the world map zooms out to 1/64x, and stays sharp at every zoom, big screens included.
+- **Mob faces** (Tab) for 64 kinds, cats and fish included, a little smaller.
+- **`/atlas`**: Tab completes every setting and value; `/atlas help` explains the commands and `/atlas help <page>` lists a page's settings.
+- **From XaeroPlus**: waypoint beacons, a minimap FPS limiter, the minimap following the world map's dimension, a see-through obsidian roof, and server map folders by address, server list name or base domain.
+- **Report an Issue** in Options > Mods > Atlas.
+
+Fixed: single player worlds with the same name (New World) no longer share maps and waypoints; waypoint and seed files are written whole."""
+
+[[versions]]
 version = "0.2.0"
 published = "2026-11-08"
 game = "26.3"

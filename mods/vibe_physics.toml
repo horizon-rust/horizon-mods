@@ -1,0 +1,71 @@
+id = "vibe_physics"
+kind = "native-mod"
+name = "Vibe Physics"
+summary = "Realistic 3D physics: building and structure collapse, tree felling, active mob ragdolls, blast ballistics, 3D items, and an in-game settings menu on Right Shif"
+description = """
+A realistic 3D physics engine that transforms static voxel worlds into a dynamic, reactive sandbox.
+
+---
+
+### 🌟 Core Features
+
+- **🏢 Building & Structural Collapse**:
+  - Realistic load-bearing simulation: breaking foundation pillars, support columns, or load-bearing beams causes unsupported roofs, balconies, and upper floors to fracture and collapse in real time.
+  - Blast-severed structure collapse: high-altitude or suspended structures (construction cranes, towers, overhanging roofs, bridges) severed at their base will dynamically topple and crash into the ground.
+  - Non-destructive protection for decor: breaking signs, lanterns, torches, carpets, doors, flower pots, or fence gates will never trigger accidental house collapses.
+
+- **🌲 Rigid-Body Tree Felling**:
+  - Chopping the base log of a tree causes the entire trunk and canopy to tip and fall away from the player based on the canopy's natural center of mass, accompanied by wood-splintering audio and breaking into logs on ground impact.
+
+- **💨 Volumetric Dust & Smoke Effects**:
+  - Atmospheric 3D dust clouds and billowing smoke puffs generated during structural collapses, heavy tree falls, and explosive detonations.
+
+- **💥 Explosive Shockwaves & Ballistics**:
+  - Directional blast wave uproots nearby trees, shatters glass panes within the blast radius, launches crater blocks into spinning ballistic trajectories, and transmits procedural trauma shake to the player's camera.
+
+- **🧟 Active Mob Ragdolls & Dismemberment**:
+  - Skeletal physics for mobs: upon defeat or heavy impacts, mob bodies stumble, react to directional knockback momentum, and tumble down slopes. Severe explosions can trigger dynamic limb dismemberment.
+
+- **🧱 Block Crumble & Interactive Sand**:
+  - Breaking solid blocks scatters 3D subvoxel fragments. Sand, red sand, gravel, and concrete powder burst into fine, interactive falling grains.
+
+- **📦 3D Item Physics**:
+  - Dropped items no longer float in mid-air: they roll, settle flat along the surface normals of the terrain, slide across ice, and float with buoyant water dynamics.
+
+---
+
+### ⚙ In-Game Settings Menu (Right Shift)
+
+Press **Right Shift** (`RShift`) at any time during gameplay to bring up the on-screen settings overlay. Each subsystem can be toggled independently — for example, you can disable building collapse while keeping tree felling active, or turn off smoke and dust clouds.
+
+- **`[1]` – `[8]`** — Instantly toggle any module using the number keys without needing mouse interaction.
+- **`↑` / `↓`** — Navigate through the menu items.
+- **`Enter` / `Space`** — Toggle the currently selected item.
+- **`Right Shift` / `Escape`** — Close the settings menu.
+
+### Chat Commands:
+- `/vp` or `/vp menu` — Open / close the settings menu
+- `/vp collapse` — Toggle building and structural collapse
+- `/vp trees` — Toggle tree felling
+- `/vp dust` — Toggle dust and smoke clouds
+- `/vp blast` — Toggle explosive shockwaves and ballistics
+- `/vp debris` — Toggle block shards and sand grains
+- `/vp ragdoll` — Toggle mob ragdolls and stumbling
+- `/vp items` — Toggle 3D item physics
+- `/vp clear` — Instantly clear all active falling assemblies, debris, and ragdolls"""
+authors = ["cosmo-jar"]
+owners = ["cosmo-jar"]
+owner_ids = [246506206]
+license = "MIT"
+source = "https://github.com/cosmo-jar/Vibe-Physics-Mod-for-Minecraft-on-Rust"
+icon = "icons/vibe_physics.png"
+categories = ["library", "game-mechanics", "mobs"]
+tags = ["physics", "ragdoll", "destruction", "tree-felling", "explosions", "item-physics", "realism", "debris", "mechanics", "immersion"]
+screenshots = ["screenshots/vibe_physics/1.jpg", "screenshots/vibe_physics/2.jpg", "screenshots/vibe_physics/3.jpg", "screenshots/vibe_physics/4.jpg", "screenshots/vibe_physics/5.jpg"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-09"
+game = "26.3"
+file = "vibe_physics-1.0.0.hnmod"
+sha256 = "bb277597d076811b0b9e63bcb17b2bcc58f075acdd8db936e5e1939ff2812cc4"

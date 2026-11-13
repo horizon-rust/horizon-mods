@@ -1,0 +1,39 @@
+id = "botania"
+kind = "native-mod"
+name = "botania"
+summary = "The mana loop: an endoflame, a mana spreader and a mana pool at the mod's own rates."
+description = """
+A Horizon port of [Botania](https://github.com/VazkiiMods/Botania) for Horizon. This first slice is **the mana loop**: a generating flower, a mana spreader and a mana pool.
+
+**Implemented so far**
+
+- **The endoflame** burns fuel for the jar's **800 ticks** (1600 burn time / 2) and produces **3 mana every 2 ticks** into a 300-mana buffer, from an item thrown inside its 7×7×7 box; crafting remainders and the spreader item are refused, as upstream does.
+- **The mana spreader** within 6 blocks takes the flower's mana into a **160-mana burst**, which travels at **0.2 blocks/tick** and starts giving **4 mana/t** to the pool from flight tick 60.
+- **The mana pool** stores **1,000,000** mana, and `/botania info` reads the flower, spreader and pool state; the readout shows `N/1000000`.
+- **Measured in game:** no fuel produces 0, dirt is not consumed, coal burns for at most 800 ticks, the first burst is exactly 160, a pool with **no spreader stays at 0**, and a 13-block burst arrives as 136.
+
+**Not yet ported**
+
+- the apothecary, runes, the lexicon and the rest of the flower/functional-flower catalogue;
+- the other spreader and pool variants, and all of the mod's recipes (a carried recipe for livingrock or petals would reference ingredients the port does not ship);
+- the mana burst entity (this slice simulates the burst's travel), particle and sound effects, and the GUI;
+- the comparator output and the multi-player readout: a server-thread hook can only send to a LAN guest at this pin, so `/botania info` answers the local player.
+
+**Licence.** Botania is licensed under the [Botania License](https://botaniamod.net/license.html), which permits use, sharing and adaptation with attribution and a copyleft clause. This port credits **Vazkii** as the creator and the jar's authors (Vazkii, wiiv, williewillus, dylan4ever, Hubry, Alwinfy, artemisSystem, Falkory220, Wormbo), states that it is an alteration, keeps the complete source available, and is non-monetary. It contains no Botania API code.
+
+Original copyright and licence notices are kept in this repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is welcome."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "Botania License"
+source = "https://github.com/AdLf0208/botania"
+icon = "icons/botania.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "botania-0.1.0.hnmod"
+sha256 = "3533c6163857fffb0266566ed5b0db4d699a6131f72edcd5beadcfc4a0babd95"

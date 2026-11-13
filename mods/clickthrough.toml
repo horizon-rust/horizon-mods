@@ -1,0 +1,25 @@
+id = "clickthrough"
+kind = "native-mod"
+name = "ClickThrough"
+summary = "Open containers through attached item frames, wall signs, and banners."
+description = """
+I made this Horizon port with Codex. The [original ClickThrough](https://github.com/gbl/ClickThrough) is by Giselbaer and is MIT-licensed.
+
+Right-click an item frame, glow item frame, wall sign, wall hanging sign, or wall banner attached to a supported container to use that container. Hold Sneak to use the marker itself.
+
+This native mod targets Horizon 26.3 Nightly 2026-11-13 (`9f42064`). Build the instance’s native mods after installing it. The patched client passed `cargo check`. Gameplay testing is pending."""
+authors = ["RaggedyBlueBox"]
+owners = ["RaggedyBlueBox"]
+owner_ids = [341280578]
+license = "MIT"
+source = "https://github.com/RaggedyBlueBox/horizon-clickthrough"
+icon = "icons/clickthrough.png"
+categories = ["storage", "utility"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "clickthrough-0.1.0.hnmod"
+sha256 = "2b4edac2e9bd4ca86042d76901dc788e70787227c618db65c7b55eb05e554fa5"
+changelog = "Initial Horizon port of ClickThrough, made with Codex."

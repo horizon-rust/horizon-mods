@@ -1,0 +1,31 @@
+## Horizon registry entry for Essential (behavioral clean-room port of the source-available mod).
+id = "essential"
+kind = "native-mod"
+name = "Essential"
+summary = "Session invite codes, an in-game skin manager and a screenshot gallery: the local half of Essential's feature set, ported clean-room."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- **Session invite codes**: the host issues short alphanumeric invite codes (open-ended or expiring), lists the still-live ones and revokes them; revoked, expired and unknown codes all reject at join time.
+- **In-game skin manager**: save skins with their slim/wide model flag, wear one by name, undress by removing the worn skin; unknown skins are rejected and leave the current one on.
+- **Screenshot gallery**: captures list newest-first, can be favorited, deleted, and flagged into a share outbox.
+
+Behavioral clean-room port of [Essential](https://modrinth.com/mod/essential) by EssentialGG (source-available, view-only license): no upstream code or assets are included, ported under CC0-1.0. The backend-dependent parts (upstream's relay for world hosting, their social service for chat and cosmetics delivery) are not shippable from a clean-room port; the degradations and host seams are documented in the repo README. Ported to Rust by sparticle.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-essential"
+categories = ["utility", "social"]
+tags = ["session", "invite", "skin", "screenshots"]
+
+icon = "icons/essential.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "essential-1.0.0.hnmod"
+sha256 = "4f05f07d6e6d83d108a1b7849b3580058ea447437b75067df5a442462f57cd4c"
+changelog = "Initial behavioral clean-room port of Essential (source-available): session invite codes, the local skin manager and the screenshot gallery; backend-dependent parts documented as degradations."

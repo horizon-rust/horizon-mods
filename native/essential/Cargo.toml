@@ -1,0 +1,12 @@
+[package]
+name = "horizon-mod-essential"
+version = "1.0.0"
+edition = "2024"
+license = "CC0-1.0"
+publish = false
+description = "Session invite codes, a local skin manager, and a screenshot gallery: a Horizon behavioral port of Essential (source-available, no upstream code)."
+
+[lib]
+path = "src/lib.rs"
+
+[workspace]

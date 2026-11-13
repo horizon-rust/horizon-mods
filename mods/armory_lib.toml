@@ -1,0 +1,20 @@
+id = "armory_lib"
+kind = "native-mod"
+name = "armory LIB"
+summary = "library for my mod useful armory"
+description = "library for my minecraft mod. IS REQUIRED FOR MOD TO WORK PROPERLY"
+authors = ["snipeparpar"]
+owners = ["snipeparparalt2"]
+owner_ids = [343273148]
+license = "MPL2"
+source = "https://github.com/snipeparparalt2/armory_lib"
+icon = "icons/armory_lib.png"
+categories = ["utility", "library"]
+tags = ["lib", "library"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "armory_lib-0.1.0.hnmod"
+sha256 = "917e7b5b72e6f0afe924bf107d249dc199ae8aa5f78d5d4607e2570c42a12ce5"

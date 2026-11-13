@@ -1,0 +1,39 @@
+id = "gtceu"
+kind = "native-mod"
+name = "gtceu"
+summary = "The steam chain: a solid boiler, a steam turbine and an electric macerator."
+description = """
+A Horizon port of [GregTech CEu Modern](https://github.com/GregTechCEu/GregTech-Modern) (LGPL-3.0, by **KilaBash**, **screret**, **Mikerooni**, **serenibyss**, **Tech22**, **YoungOnion** and **Ghostipedia**) for Horizon. This first slice is **the steam chain**: a boiler, a steam turbine and an electric macerator.
+
+**Implemented so far**
+
+- **The solid boiler** burns a fuel for the mod's `burnTime × 12` ticks (coal: 19,200), heats at +1 °C per 24 ticks up to 500, and from 100 °C makes `120 × temp / 500 / 2` mB of steam per 10 ticks while draining 1 mB of water. It cools at −1 per 45 ticks, vents 4 buckets when full, and **explodes if water returns after a dry spell**, exactly as upstream does.
+- **The steam turbine** takes 640 mB of steam and returns 4 mB of distilled water, generating 32 EU/t for 10 ticks.
+- **The LV macerator** spends 2 EU/t for 400 ticks (800 EU) to turn one ore into **two crushed ore**, on the mod's own recipe logic.
+- **Measured in game:** a watered boiler reaches 428 °C with 211 mB water and 280 mB steam; the turbine banks 2048 EU from 16,000 mB; the macerator sits at progress 290/400 with `recipe_logic_status=working` and holds `gtceu:crushed_iron_ore:2`; an unpowered macerator keeps its ore; `minecraft:gold_ore` is refused; a dry boiler is gone once the water returns.
+- **The blocks connect by adjacency** (this jar carries no cable blocks), and `/gtceu status|take|fill` inspects and feeds the machines, with `fill` standing in for pipes because the solid boiler accepts no bucket.
+
+**Not yet ported**
+
+- GUIs and screens (the commands above are the surface for now), ash output and the weather-explosion behaviour;
+- pipes, cables, covers and the multiblock machines;
+- the material system and everything it generates — the mod's other ~1,555 blockstates and ~2,700 items.
+
+**Licence.** LGPL-3.0: the port ships the LGPL-3.0 and GPL-3.0 texts and a notice naming the authors, the upstream URL and the exact jar with its sha256; it is a derivative under the same licence and its complete source is published, with no further restriction added.
+
+Original copyright and licence notices are kept in this repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is welcome."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0"
+source = "https://github.com/AdLf0208/gtceu"
+icon = "icons/gtceu.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "gtceu-0.1.0.hnmod"
+sha256 = "397f5b1cf8b0342ff1b1b08ed61aa95f5a02c47c1e64a071244505d6bbf86b9b"

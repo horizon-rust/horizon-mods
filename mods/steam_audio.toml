@@ -1,0 +1,21 @@
+id = "steam_audio"
+kind = "native-mod"
+name = "Steam Audio in Horizon"
+summary = "Spatial & physically accurate HRTF audio!"
+description = "The mod introduces native integration of Valve’s Steam Audio, which I have reimplemented in the Rust language."
+authors = ["razed."]
+owners = ["razedproduction"]
+owner_ids = [270789220]
+license = "Apache-2.0"
+source = "https://github.com/razedproduction/steam-audio-rust-hmod"
+icon = "icons/steam_audio.png"
+categories = ["technology", "library"]
+tags = ["hrtf", "spatial-audio", "native"]
+
+[[versions]]
+version = "0.9.0"
+published = "2026-11-13"
+game = "26.3"
+file = "steam_audio-0.9.0.hnmod"
+sha256 = "91186ac05d6dc62a1193d5e97c26a76c3db26836cb462f17e9e8487bcdcadf91"
+changelog = "release"

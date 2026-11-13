@@ -1,0 +1,32 @@
+## Horizon registry entry for Remove Reloading Screen (exact 1:1 Rust translation of the OSL-3.0 mod).
+id = "rrls"
+kind = "native-mod"
+name = "Remove Reloading Screen"
+summary = "Background resource reloads: reload lifecycle tracking, overlay visibility policy, RGB text tint, force-close."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+An exact 1:1 Rust translation of [Remove Reloading Screen](https://modrinth.com/mod/rrls): the upstream Java by dima_dencep translated code-for-code, carrying the upstream license and credit in full.
+
+- **Background reload lifecycle**: a cycle tracks the expected resource reloads, finishes when all land, a newer cycle supersedes a live one, and failed reloads queue through the createReload retry pass.
+- **Overlay policy**: vanilla mode keeps the overlay only while a reload is live; `rgb` adds a text tint cycling by finished count; `hidden` suppresses it after the first (startup) load.
+- **Config**: `enable`, `hide_type`, `force_close`, `skip_vanilla_overlay`, plus the upstream extras (AprilFool calendar math, DoubleLoad, easing).
+- **Workaround mixins**: all nine upstream workaround mixins (CommandEncoder, CompilationCache, TextureManager, EntityRenderDispatcher, GuiGraphicsExtractor, ReloadableResourceManager, AbstractTexture; GlCommandEncoder and VulkanRenderPass kept as upstream's stubs).
+
+Port of [dima-dencep/rrls](https://github.com/dima-dencep/rrls), copyright 2023 - 2026 dima_dencep, OSL-3.0: the OSL-3.0 text ships with the source and every file keeps the upstream header. Degradation: Horizon loads resource packs synchronously and owns its loading overlay, so the actual background load is a host seam, tracked under horizon-rust/horizon #15868. 98 unit tests on the translated logic. Rust port by sparticle, upstream by dima_dencep."""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "OSL-3.0"
+source = "https://github.com/Sparticle62ops/horizon-rrls"
+categories = ["utility"]
+tags = ["resource pack", "loading", "ui"]
+
+icon = "icons/rrls.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "rrls-1.0.0.hnmod"
+sha256 = "51335783e497d8faff16496078e18fdee0b7a53648c3ccb68118bd6eaaf33720"
+changelog = "Exact 1:1 Rust translation of Remove Reloading Screen (OSL-3.0) by dima_dencep, license and upstream credit carried: full reload lifecycle, overlay policy, RGB tint, force-close, and all nine upstream workaround mixins; background-load seam tracked under horizon #15868."

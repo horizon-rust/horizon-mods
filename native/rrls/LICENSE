@@ -1,0 +1,9 @@
+This port of Remove Reloading Screen (rrls) to Rust for Horizon is an exact
+1:1 translation of the upstream Java by dima_dencep.
+
+Upstream copyright 2023 - 2026 dima_dencep, licensed under the Open Software
+License, Version 3.0: https://spdx.org/licenses/OSL-3.0.txt
+Upstream: https://github.com/dima-dencep/rrls
+
+The Rust translation carries the same OSL-3.0 license and credits the
+upstream author in every translated file header.

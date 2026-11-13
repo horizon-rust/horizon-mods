@@ -1,0 +1,30 @@
+id = "advancedbackups"
+kind = "native-mod"
+name = "Advanced Backups"
+summary = "Scheduled world backups, retention and a restore tool for Horizon."
+description = """
+Creates scheduled world backups with retention and a native restore tool. It reads the original server/common and client properties while retaining existing configuration files and comments. Restore to a new folder using the helper installed by the launcher; keep partial backup chains together.
+
+Uses the documented native archive/state formats. Java archive import and in-place restore are outside this version's scope.
+
+Port of [AdvancedBackups by Heather White](https://github.com/HeatherComputer/AdvancedBackups). Original BSD-3-Clause notices and the MIT host-adapter license are retained.
+
+Native source mod for Horizon 26.3. The launcher compiles it into the game, with the game's account permissions. The published build targets Horizon `1453e0e614af4b2d04dd0d228a94162b5d459910` (API 415) and horizon-mixins `5a64af938ec86b00d53d16a408aabc0038fb3e57`; latest Nightly compatibility is pending registry CI.
+"""
+authors = ["Vex193"]
+owners = ["Vex193"]
+owner_ids = [260219205]
+license = "MIT AND BSD-3-Clause"
+source = "https://github.com/Vex193/horizon-ports/tree/e4d9d4f00b4d1a705a59b83a4b32ad048a1c3e80/mods/advancedbackups/source"
+icon = "icons/advancedbackups.png"
+categories = ["utility"]
+tags = ["port","backups"]
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-13"
+game = "26.3"
+file = "advancedbackups-0.1.2.hnmod"
+sha256 = "9494d841621ca43209cd587701d7d2824f7ee2887c4ef60a067ebca610ed0f2c"
+changelog = "Initial native registry submission. Pinned Horizon API 415 validation and archive checks are recorded in the source repository; latest Nightly CI is pending."
+

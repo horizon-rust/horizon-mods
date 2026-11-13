@@ -1,0 +1,30 @@
+id = "cryonicconfig"
+kind = "native-mod"
+name = "Cryonic Config"
+summary = "Typed JSON configuration, defaults, explicit saves and server overrides for native mods."
+description = """
+A configuration library for native Rust consumers, with four scalar getter/setter families, JSON defaults, explicit saves, per-key server overrides and disconnect reset. Consumers use the documented Horizon facade and depend on `cryonicconfig ^1.0.0`. Configuration filenames follow the original mappings.
+
+The library has no settings GUI. Java reflection and bytecode ABI compatibility are outside its native Rust contract.
+
+Port of [Cryonic Config by Matthew Periut (Slainlight)](https://github.com/matthewperiut/cryonicconfig), under MIT. Original copyright and license notices are retained.
+
+Native source mod for Horizon 26.3. The launcher compiles it into the game, with the game's account permissions. The published build targets Horizon `1453e0e614af4b2d04dd0d228a94162b5d459910` (API 415) and horizon-mixins `5a64af938ec86b00d53d16a408aabc0038fb3e57`; latest Nightly compatibility is pending registry CI.
+"""
+authors = ["Vex193"]
+owners = ["Vex193"]
+owner_ids = [260219205]
+license = "MIT"
+source = "https://github.com/Vex193/horizon-ports/tree/e4d9d4f00b4d1a705a59b83a4b32ad048a1c3e80/mods/cryonicconfig/source"
+icon = "icons/cryonicconfig.png"
+categories = ["utility"]
+tags = ["port","library","configuration"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-13"
+game = "26.3"
+file = "cryonicconfig-1.0.0.hnmod"
+sha256 = "44f9957e288fbb37a220a2c843a413a8fe8f279bb437e4e7c007d5c986c77f77"
+changelog = "Initial native registry submission. Pinned Horizon API 415 validation and archive checks are recorded in the source repository; latest Nightly CI is pending."
+

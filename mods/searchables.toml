@@ -1,0 +1,30 @@
+id = "searchables"
+kind = "native-mod"
+name = "Searchables"
+summary = "Query parsing, matching, suggestions and a shared matcher registry for native consumers."
+description = """
+A native Rust search library with query parsing, typed matching, quoting, suggestions, completion ranges and a shared matcher registry. Native consumers register and use its public facade; the library has no standalone search screen or configuration file.
+
+Install the single combined `searchables-1.0.3.hmod`, which contains its native code and language resources under one mod ID. Ordinary launcher 0.2.59 supports this installation flow. Include Searchables when using Just Enough Characters.
+
+Port of [Searchables by Jaredlll08](https://github.com/jaredlll08/Searchables), under MIT. Original copyright and license notices are retained.
+
+Native source mod for Horizon 26.3. The launcher compiles it into the game, with the game's account permissions. The published build targets Horizon `1453e0e614af4b2d04dd0d228a94162b5d459910` (API 415) and horizon-mixins `5a64af938ec86b00d53d16a408aabc0038fb3e57`; latest Nightly compatibility is pending registry CI.
+"""
+authors = ["Vex193"]
+owners = ["Vex193"]
+owner_ids = [260219205]
+license = "MIT"
+source = "https://github.com/Vex193/horizon-ports/tree/e4d9d4f00b4d1a705a59b83a4b32ad048a1c3e80/mods/searchables/source"
+icon = "icons/searchables.png"
+categories = ["utility"]
+tags = ["port","search","library"]
+
+[[versions]]
+version = "1.0.3"
+published = "2026-11-13"
+game = "26.3"
+file = "searchables-1.0.3.hmod"
+sha256 = "d0a8499484089094c427498d5e6dad36e337be6777a1507489036bf13e22098d"
+changelog = "Initial native registry submission. Pinned Horizon API 415 validation and archive checks are recorded in the source repository; latest Nightly CI is pending."
+

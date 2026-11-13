@@ -1,0 +1,45 @@
+id = "mcwfences"
+kind = "mod"
+name = "Macaw's Fences and Walls"
+summary = "All 150 of Macaw's Fences and Walls — hedges, fences, gates and walls in eleven woods and a range of stone finishes."
+description = """
+A port of [Macaw's Fences and Walls](https://github.com/sketchmacaw/Fences) 1.1.2 by
+Sketch Macaw and Peachy Macaw for Horizon: 150 blocks — 10 leaf hedges, 47 fences (picket,
+stockade, horse and wired), 37 gates (highley, pyramid and railing) and 56 walls (modern,
+railing, pillared and grass-topped) — in eleven woods and a range of stone finishes.
+
+- Every block keeps the original mod's blockstate, model, texture, item model, name, loot
+  table and tags, with hardness, blast resistance, sounds, map colour and the pickaxe
+  requirement read from the original's own source.
+- The 192 recipes (150 crafting, 42 stonecutting) and five language files are the mod's own.
+
+Not carried, as it needs native code: the 11 wired fences deal no damage (the original hurts
+for 2.0). Everything else is here: the hedges and grass-topped walls keep their own outline
+shape, the wooden fences burn in a furnace, and crafting and drops work. Nothing else is known
+to differ.
+
+The full MIT licence and copyright notice are inside the .hmod too
+(assets/mcwfences/license.txt and notice.txt), so every downloaded copy carries them.
+
+This is a content-only port: no native code and no hooks. MIT — the original copyright and
+licence notices are also kept in the port repository; see LICENSE and LICENSE-NOTICE.md."""
+authors = ["Sketch Macaw", "Peachy Macaw", "unnamed0631"]
+owners = ["unnamed0631"]
+owner_ids = [69778704]
+license = "MIT"
+source = "https://github.com/unnamed0631/mcwfences"
+icon = "icons/mcwfences.png"
+categories = ["decoration"]
+tags = ["port", "fences", "walls", "gates", "hedges", "building", "blocks"]
+screenshots = ["screenshots/mcwfences/1.jpg"]
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-13"
+game = "26.3"
+file = "mcwfences-1.0.1.hmod"
+sha256 = "2613024a492f3a566eedd94c5218876271ded4506871e97a5f4474cf7932ee4b"
+changelog = """
+Include the full MIT licence and copyright notice inside the .hmod
+(assets/mcwfences/license.txt and notice.txt), so the licence travels with every
+distributed copy."""

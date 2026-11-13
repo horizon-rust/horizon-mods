@@ -1,0 +1,29 @@
+id = "kotost_skilltree"
+kind = "native-mod"
+name = "Kotost Skill Tree"
+summary = "A big passive skill tree: buy points with experience and learn 588 skills on a starry map. A port of Passive Skill Tree by Daripher."
+description = """
+Press **O** (or `/skilltree`) to open the tree: 588 skills on one starry map, linked into branches for warriors, archers, miners, cooks, mages and travellers, with big keystones. The button at the bottom buys a skill point for experience (every next point costs more); take up to three of the six starting skills, then click a skill that touches one you already have to learn it. Mouse wheel zooms, drag moves, hover a skill to read its bonuses.
+
+Working bonuses in 0.1.0: attributes (armor, health, attack speed, damage, speed, luck, toughness), melee, projectile and magic damage, critical chance and damage, evasion, shield blocking, mining speed, jump height, experience per minute, and the "holding / wearing" and "health percent" conditions (238 of the tree's 649 bonuses). The others are shown grey in the tooltips and do nothing yet.
+
+The server keeps the points and learned skills per player (`config/kotost_skilltree_players.txt`); points and costs are set in `config/kotost_skilltree.txt`. Operators: `/skilltree points <n>`, `/skilltree reset`. Needed on the server and the client. Russian and English, by the game's language.
+
+A port of Passive Skill Tree 0.6.14a by Daripher (GPL-3.0): the tree, its texts and pictures are the original's data files, baked by `tools/bake.py` in the source repository; the code is written anew for Horizon. No Minecraft code or assets are included. Native source mod: the launcher compiles it after a warning; it runs with your account's permissions."""
+authors = ["Kotost Games"]
+owners = ["Leks2000"]
+owner_ids = [107043945]
+license = "GPL-3.0-or-later"
+source = "https://github.com/Leks2000/kotost-skilltree"
+icon = "icons/kotost_skilltree.png"
+categories = ["game-mechanics"]
+tags = ["skills", "skill-tree", "rpg", "progression", "experience"]
+screenshots = ["screenshots/kotost_skilltree/1.png", "screenshots/kotost_skilltree/2.png", "screenshots/kotost_skilltree/3.png"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "kotost_skilltree-0.1.0.hnmod"
+sha256 = "84a657c276511dd581b8438e8123768c4b0e80a51e29d65e67d8b7e03a9f166b"
+changelog = "First release."

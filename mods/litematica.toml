@@ -1,0 +1,36 @@
+## Horizon registry entry for Litematica (exact 1:1 Rust rewrite of the LGPL-3.0 mod).
+id = "litematica"
+kind = "native-mod"
+name = "Litematica"
+summary = "Modern schematic mod for Horizon Minecraft featuring .litematic format support, ghost overlays, verifier, material lists, and area selections."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it.
+
+An exact 1:1 Rust rewrite of [Litematica](https://github.com/sakura-ryoko/litematica): the upstream Java by masa and sakura-ryoko rewritten code-for-code into native Rust targeting Horizon.
+
+- **Schematic Format & I/O**: Full support for `.litematic` (v6) files, metadata, sub-regions, continuous 64-bit packed bit-arrays, paletted block states, tile entities, entities, and pending ticks. Also includes compatibility converter for vanilla structure block `.nbt` files.
+- **Schematic Placements**: Placement manager supporting multiple concurrent placements, coordinate transforms, 90/180/270 degree rotation, and axis mirroring with blockstate property updates (facings, axes, shapes).
+- **Schematic Verifier**: Comprehensive world vs schematic comparison flagging missing blocks, extra blocks, wrong blocks, and wrong block states with coordinates.
+- **Material List (BOM)**: Calculates required items, checks against player inventory, and computes missing totals.
+- **Area Selection**: Two-corner 3D selections with direct volume capture to `.litematic` files.
+- **Tool Modes & Easy Place**: Mode switcher (Area Selection, Placement, Edit, Paste, Fill, Delete) and Easy Place validation ensuring proper block placement.
+- **Render Overlays**: Ghost block meshes and wireframe bounding boxes designed for Horizon's `WorldDrawn` wgpu render pass.
+- **GUI Screens**: Tabbed main menu (`M` key) for managing placements, loading schematics, verifier reports, and material lists.
+
+Depends on `malilib` (^0.30). Upstream project by masa and sakura-ryoko. LGPL-3.0 license text and upstream credit carried in full."""
+authors = ["masa", "sakura-ryoko", "AzambekDev"]
+owners = ["AzambekDev"]
+owner_ids = [122017984]
+license = "LGPL-3.0"
+source = "https://github.com/AzambekDev/horizon-mods"
+categories = ["utility", "building"]
+tags = ["schematic", "building", "litematica", "ghost-blocks", "verifier"]
+
+icon = "icons/litematica.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "0.29.1"
+game = "26.3"
+file = "litematica-0.29.1.hnmod"
+sha256 = "47073ced23b50422ed112bb4563dd72a685d7bbde8fdbd915673ef66d927b24e"
+changelog = "Initial 1:1 Rust rewrite of Litematica for Horizon 26.3, featuring full schematic parsing/saving, placement transforms, verifier, material lists, and overlay rendering."

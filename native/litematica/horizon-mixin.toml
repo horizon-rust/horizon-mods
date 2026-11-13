@@ -1,0 +1,13 @@
+[mod]
+id = "litematica"
+version = "0.29.1"
+priority = 20
+
+[compatibility]
+horizon_revision = "main"
+
+[dependencies]
+malilib = "^0.30"
+
+[api]
+path = "."

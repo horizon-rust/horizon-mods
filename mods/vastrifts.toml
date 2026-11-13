@@ -1,0 +1,24 @@
+id = "vastrifts"
+kind = "mod"
+name = "Vast Rifts (content)"
+summary = "The sigils of Vast Rifts: their art, recipes and words. Needs the native mod."
+description = """
+The content half of Vast Rifts: seven rift sigils (Ember, Warp, Mire, Pasture, Night, Inferno and Golem), each a block that opens its rift when placed, with art drawn by the mod's own code, their recipes and the names of the rifts and their named mobs in English and Brazilian Portuguese. **The native mod `vastrifts_native` does the work**, and both are needed.
+
+The art and words are this mod's own; none of Gateways to Eternity's are used."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-rifts"
+icon = "icons/vastrifts.png"
+categories = ["adventure", "mobs"]
+tags = ["waves", "translation"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "vastrifts-0.1.0.hmod"
+sha256 = "842f1c473071bd5612d159a440b02e11d94179add97a2a3e060e34c85e35b4bd"
+changelog = "First release: the seven rift sigils (Ember, Warp, Mire, Pasture, Night, Inferno, Golem), their art, recipes and words."

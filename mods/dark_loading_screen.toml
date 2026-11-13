@@ -1,0 +1,31 @@
+# Horizon registry entry for Dark Loading Screen (exact 1:1 Rust port of A5b84/dark-loading-screen, LGPL-3.0-only).
+id = "dark_loading_screen"
+kind = "native-mod"
+name = "Dark Loading Screen"
+summary = "Dark, fully color-customizable loading screen: background/bar/border/logo colors, fade durations, and a live preview, full 1:1 port."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- **Loading screen 1:1**: the LoadingOverlayMixin hook set ported as exact code translation: the BRAND_BACKGROUND clinit swap, the bar color + bar background fill, the bar border color, the fade-in/fade-out duration rescale (vanilla passthrough for negative values kept), and the overlay-removal hook.
+- **Mojang logo shadows 1:1**: the double-draw logo blit with per-channel deltas and the custom MOJANG_LOGO_SHADOWS pipeline (SRC_ALPHA, ONE, REVERSE_SUBTRACT) registered 1:1.
+- **Config 1:1**: Config/ConfigSerialization with the Gson DTO (nullable color strings, fadeIn/fadeOut floats), padStart hex stringify and warn-and-fallback parsing, plus the Cloth config screen with all five color fields, both fade fields and the centered 500 ms Preview button.
+
+Exact 1:1 Rust translation of [Dark Loading Screen](https://modrinth.com/mod/dark-loading-screen) (upstream A5b84/dark-loading-screen, LGPL-3.0-only, v1.6.20). The upstream LGPL-3.0-only license and credit are carried; ported to Rust by sparticle. Known engine-stage seams (tracked in the repo README): the mixin carrier splice for the LoadingOverlay extractRenderState hooks and the overlay/ModMenu wiring wire in at engine stage; no Horizon API gaps.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-only"
+source = "https://github.com/Sparticle62ops/horizon-dark-loading-screen"
+categories = ["utility"]
+tags = ["loading-screen", "ui", "colors"]
+
+icon = "icons/dark_loading_screen.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.6.20"
+game = "26.3"
+file = "dark_loading_screen-1.6.20.hnmod"
+sha256 = "56b91a32f354d8cbe7736c884de43027424b04b56a1c725d9e97dd57b06a64bc"
+changelog = "Initial exact 1:1 Rust port of Dark Loading Screen (A5b84/dark-loading-screen, LGPL-3.0-only, v1.6.20): custom background/bar/border/logo colors, fade durations, Mojang logo shadows pipeline, config file + Cloth config screen with live preview."

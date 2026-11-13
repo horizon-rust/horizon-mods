@@ -18,10 +18,18 @@ authors = ["DeportedToHell"]
 owners = ["DeportedToHell"]
 owner_ids = [344119465]
 license = "MIT"
-source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/firstpersonmodel"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/2719576ca54922e2b5e42043a97fb44a99b17eb7/firstpersonmodel"
 icon = "icons/firstpersonmodel.png"
 categories = ["decoration", "utility"]
 tags = ["first-person", "player-model", "camera", "immersion", "port"]
+
+[[versions]]
+version = "1.0.2"
+published = "2026-11-13"
+game = "26.3"
+file = "firstpersonmodel-1.0.2.hnmod"
+sha256 = "b698de261acdb058df7ffa61d6761cfaec447be6a6d0287a690ecae1a9b039fa"
+changelog = "New icon of this port's own, so it is not mistaken for tr7zw's FirstPerson. No code changes. Replaces 1.0.1 (#520). Built for Horizon Nightly 2026-11-08 (fdc87ae)."
 
 [[versions]]
 version = "1.0.0"

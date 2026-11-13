@@ -1,0 +1,20 @@
+id = "appleskin_port"
+kind = "native-mod"
+name = "Appleskin Complete"
+summary = 'Port of the java mod "Appleskin" to rust.'
+description = 'Complete 1:1 port of the java mod "Appleskin" to rust for Horizon compatibility.'
+authors = ["Selenium0", "squeek502"]
+owners = ["sirgreen1125-spec"]
+owner_ids = [227669517]
+license = "ARR"
+source = "https://github.com/Selenium1125/appleskin-port"
+icon = "icons/appleskin_port.png"
+categories = ["adventure", "game-mechanics", "food"]
+tags = ["apple", "appleskin", "food", "hunger", "saturation", "heal", "regeneration"]
+
+[[versions]]
+version = "3.0.10"
+published = "2026-11-13"
+game = "26.3"
+file = "appleskin_port-3.0.10.hnmod"
+sha256 = "3f273a39a9daa93e1c1fb12664c9466e8ab2d3cbc0bd9a8a1b2aa9e88309262d"

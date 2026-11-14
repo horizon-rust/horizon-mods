@@ -1,0 +1,38 @@
+id = "skin_layers_3d"
+kind = "native-mod"
+name = "3D Skin Layers"
+summary = "Renders the outer layer of player skins and player heads in 3D."
+description = """
+Turns the second layer of player skins (hat, jacket, sleeves and pants) into real 3D voxels
+instead of flat textures, just like the Java mod.
+
+**Features**
+- 3D hat, jacket, sleeves and pants, each switchable on its own
+- 3D sleeves on your first-person arms
+- 3D player heads, placed and as items (worn on heads too)
+- The hat stays flat under mob heads (zombie, creeper, skeleton, wither skeleton, dragon)
+- Falls back to the flat layer beyond a set distance, for performance
+- Adjustable voxel sizes and a Fast Render option in Options > Mods
+
+**Credits**
+This is a port of [3D Skin Layers](https://modrinth.com/mod/3dskinlayers) by **tr7zw**, published under the tr7zw Protective License. It is free and non-commercial. Please report bugs in this port here, not to tr7zw.
+
+**Known limitations**
+- Default skins (Steve/Alex) and player heads without a profile stay flat
+- A newly seen player head can take about half a second to turn 3D"""
+authors = ["JustColourMePink", "tr7zw (Original Mod Author)"]
+owners = ["JustColourMePink"]
+owner_ids = [40871957]
+license = "tr7zw Protective License"
+source = "https://github.com/JustColourMePink/3D-Skin-Layers-Rust"
+icon = "icons/skin_layers_3d.png"
+categories = ["decoration"]
+tags = ["skins", "3d", "player-heads", "cosmetic", "client-side"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-09"
+game = "26.3"
+file = "skin_layers_3d-0.2.1.hnmod"
+sha256 = "2a992d1c5e7a2a2c7b418f45c47ba17e4c50bedf065d872c08f4dbeabb9dd176"
+changelog = "Initial Release"

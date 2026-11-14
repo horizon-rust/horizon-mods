@@ -1,0 +1,32 @@
+id = "optizoom"
+kind = "native-mod"
+name = "OptiZoom"
+summary = "OptiFine-style zoom: hold C for a quarter FOV with the cinematic camera, mouse wheel to zoom 1x-10x, hand hidden while zoomed."
+description = """
+OptiFine-style zoom for Horizon.
+
+- **Hold C** (rebind in Options > Mods > OptiZoom): the field of view drops to a quarter at once, no easing.
+- The **cinematic camera** is on while the zoom lasts, then back to what it was. Mouse sensitivity is unchanged at 4x.
+- No zoom while a screen is open; closing it with the key still down zooms again.
+- The **hand is hidden** while zoomed.
+- **Mouse wheel** while holding: zoom further in or out (x1.25 a notch, 1x to 10x). Beyond 4x turning slows in step. Each new press starts at 4x.
+
+Pinned to Horizon `9f42064` (Nightly 2026-11-13): the cinematic camera is Game's private `smooth_camera` field, which no hook point offers. Everything else uses hook points (`key`, `input_key`, `frame`, `wheel`, `zoom`, `render_hand`, `mods`).
+
+Written from scratch in Rust; not affiliated with OptiFine, no code or assets from it."""
+authors = ["BnCatt"]
+owners = ["BnCatt"]
+owner_ids = [262346062]
+license = "MIT"
+source = "https://github.com/BnCatt/horizon-optizoom"
+icon = "icons/optizoom.png"
+categories = ["utility"]
+tags = ["zoom", "camera", "optifine-style"]
+
+[[versions]]
+version = "1.0.2"
+published = "2026-11-14"
+game = "26.3"
+file = "optizoom-1.0.2.hnmod"
+sha256 = "91d9c6db9eb69bf36837c15ca4d3621e76247843f9c37514910ffa01741c645b"
+changelog = "First listing. Pinned to Horizon 9f42064 (Nightly 2026-11-13)."

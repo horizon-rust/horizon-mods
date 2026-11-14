@@ -255,7 +255,7 @@ before your next /rtp."); a teleport called off (a move, a hit, the game failing
 Overworld it refuses. The chunks it forced are let go 10 s after the landing, or at the next start if the server
 stopped first; a chunk an operator forced already is used and left forced. `/back` returns from it as from any teleport.
 
-**Random start.** A player who joins for the first time, with no spawn point (bed, respawn anchor or command), is sent to a random spot as `/rtp` finds one, at once: no warmup, no cooldown, and moving doesn't call it off. They are placed at the world spawn first and move when the land has loaded. Such a player gets a random spot again after each death until they set a spawn point; players who have played here before, or set one, are left where vanilla puts them.
+**Random start.** A player who joins for the first time, with no spawn point (bed, respawn anchor or command), is sent to a random spot as `/rtp` finds one, at once: no warmup, no cooldown, and moving doesn't call it off. They are placed at the world spawn first and move when the land has loaded. Every death after that sends a player without a spawn point the SMP has seen set to a random spot, including veterans: a bed set before this feature isn't known to it, so it is overridden until the player sleeps in a bed again (or sets an anchor). Players with one it has seen are left where vanilla puts them.
 
 **Claims.** In a claimed chunk, only its owner, the players they trust and operators of level 3 break blocks or right
 click blocks: doors, chests, levers, buttons, placing a block, a bucket or flint on a block. Anyone else's click does

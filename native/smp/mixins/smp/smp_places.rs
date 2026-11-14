@@ -105,8 +105,7 @@ struct Data {
     /// Players with a spawn point of their own (a bed, a respawn anchor or a
     /// command set it): they never start at a random spot.
     spawn_set: BTreeSet<String>,
-    /// Players the SMP gave a random start (a first join), who get one again
-    /// at each respawn without a spawn point.
+    /// Players the SMP gave a random start at their first join (never started there twice).
     wild_start: BTreeSet<String>,
     /// The Overworld chunks an older SMP's `/rtp` held with `forceload add`
     /// and hadn't let go of when the server stopped: let go once at the next
@@ -590,10 +589,11 @@ impl Places {
         }
     }
 
-    /// A player respawned: at a random spot again if the SMP started them there and they have set no spawn point.
+    /// A player respawned: at a random spot unless they set a spawn point since the SMP began to watch for them (a
+    /// bed set before that is not known, so it is overridden).
     pub fn respawned(&mut self, uuid: u128) {
         let key = smp_store::uuid_string(uuid);
-        if self.data.wild_start.contains(&key) && !self.data.spawn_set.contains(&key) {
+        if !self.data.spawn_set.contains(&key) {
             self.welcome_queue.push(uuid);
         }
     }
@@ -1681,11 +1681,12 @@ mod tests {
         p.respawned(A);
         p.tick(&here, 6_000);
         assert!(p.pending.iter().any(|x| x.uuid == A));
-        // B was never started at random, so a lost bed does not start them there.
+        // A bed set before the mod watched is not known: B (a veteran without a recorded one) is sent too,
+        // and one whose bed was lost to a death as well.
         p.spawn_point(B, "death_reset");
         p.respawned(B);
         p.tick(&here, 7_000);
-        assert!(!p.pending.iter().any(|x| x.uuid == B));
+        assert!(p.pending.iter().any(|x| x.uuid == B));
         let _ = std::fs::remove_dir_all(d);
     }
 

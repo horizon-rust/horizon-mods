@@ -1,0 +1,38 @@
+id = "mininggadgets"
+kind = "native-mod"
+name = "Mining Gadgets"
+summary = "A laser mining gadget that clears a plane of blocks for FE, with its upgrade data model."
+description = """
+A port of [Mining Gadgets](https://github.com/Direwolf20-MC/MiningGadgets) by
+Direwolf20 and ErrorMikey for Horizon. This slice is the gadget itself: the
+right-click laser and the plane of blocks it clears.
+
+- Right-click a block, or the air in front of you, with a gadget: it mines the
+  aimed face's plane (wider ranges are the square on that plane, oriented by the
+  face) and nothing it is not allowed to break — no block entities, doors or
+  fluids other than waterlogged blocks.
+- Each broken block costs FE: 200 base plus the active upgrades' cost per block.
+  A shot needs `cost × range × range` in the buffer before it starts. The gadget
+  holds 1,000,000 FE and its damage bar is the charge.
+- The three tiers (MK1–MK3) are carried as items, and the upgrade list
+  (`{name, active}`) is read and written as data.
+
+The held-use trigger, the ghost preview, the client beam, particles and sounds,
+the settings and filter screens, the Modification Table and the remaining
+upgrade effects are later slices. MIT — original copyright and licence notices
+are kept in the port repository; see LICENSE and LICENSE-NOTICE.md there."""
+authors = ["Direwolf20", "ErrorMikey", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/mininggadgets"
+icon = "icons/mininggadgets.png"
+categories = ["utility", "equipment", "technology"]
+tags = ["port", "mining", "laser", "energy"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "mininggadgets-0.1.0.hnmod"
+sha256 = "a68c96252a0bf9cf7b81af633652141fed97faea158d5f5a8956ed484cd53d43"

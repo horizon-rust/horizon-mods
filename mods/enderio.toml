@@ -1,0 +1,47 @@
+id = "enderio"
+kind = "native-mod"
+name = "Ender IO"
+summary = "Machines, conduits, filters and facades: Ender IO from 1.12.2, brought to 26.x."
+description = """
+An unofficial port of Ender IO 5.3.72 (Minecraft 1.12.2, by CrazyPants, HenryLoenwind, tterrag and contributors) to Horizon and Minecraft 26.x, as one native mod. Rewritten in Rust for Horizon's hooks, and its 1.12 ids flattened to 26.x ones; the textures, models, language files and sounds are Ender IO's. Not made or endorsed by the Ender IO team: please report problems to this project, not to them.
+
+### What's there
+
+- **Machines** with their Java screens and slot layouts: alloy smelter, SAG mill, slice'n'splice, soul binder, vat, enchanter, painter, generators, capacitor banks, tanks and the rest.
+- **Conduits:** item, fluid (normal and pressurized), energy and redstone, each face's settings screen, the probe's copy and paste, and the Yeta wrench's modes.
+- **Facades:** painted, transparent and hardened (10 times the blast resistance).
+- **Filters:** basic, advanced, limited, big, mod, power, existing, fluid, enchantment and soul, with ghost slots (tooltips and the mouse wheel), and the redstone signal filters. The server checks every edit.
+- **The W guide** from Ender IO's book with 3D scenes, JEI categories and Jade.
+
+### Missing or not the same
+
+- **Ore dictionary matching** uses the common `c:` item tags, since 26.x has no ore dictionary.
+- **Left out:** 1.12-only items, and other mods' upgrades (Forestry, Thaumcraft, The One Probe).
+- **The mod filter's mouse wheel** (clearing a slot set within 2.5 seconds) isn't there.
+
+### Tested
+
+On Horizon commit fdc87ae, on Windows, in single player, with the nine other ports: the machines' screens, all four conduit types, every filter's screen and matching, the probe, the wrench, facades (a hardened one survives TNT), and every model against the 1.12 jar. LAN and a dedicated server were not tested.
+
+### Licence
+
+Ender IO's code is in the public domain (Unlicense; CC0 for EnderCore). Some of its sounds are from freesound.org under CC BY 3.0 or CC BY-NC 3.0, credited in NOTICE; those under CC BY-NC may not be used commercially.
+"""
+authors = ["CrazyPants", "HenryLoenwind", "tterrag", "Joeypc6"]
+owners = ["Joeypc6"]
+owner_ids = [35495484]
+license = "Unlicense AND CC-BY-3.0 AND CC-BY-NC-3.0"
+source = "https://github.com/Joeypc6/EnderIO-Horizon"
+icon = "icons/enderio.png"
+categories = ["technology", "storage"]
+tags = ["enderio", "machines", "conduits", "filters", "port"]
+
+[[versions]]
+version = "5.3.72"
+published = "2026-11-11"
+game = "26.3"
+file = "enderio-5.3.72.hnmod"
+sha256 = "a4638660dc901452d5fb3f87a1d4b380556299e509fe97bf0eb17132990810d8"
+changelog = """
+First Horizon release, a port of Ender IO 5.3.72 for Minecraft 1.12.2 by the Ender IO team, brought to Minecraft 26.x. 5.3.72 matches the ported version. Built and tested on Horizon commit fdc87ae (Nightly 2026-11-08).
+"""

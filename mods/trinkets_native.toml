@@ -1,0 +1,32 @@
+id = "trinkets_native"
+kind = "native-mod"
+name = "Trinkets"
+summary = "Extra equipment slots for trinkets, in a menu on G."
+description = """
+**This mod has two parts, and you need both.** This is the native part (the rules, as Rust code); install [the other one](https://playhorizon.dev/mods/trinkets) too.
+
+Extra equipment slots for trinkets, in a menu on G.
+
+**Differences from the original:** The trinket slots are in a separate menu opened with the G key, not beside the inventory. Worn trinkets aren't drawn on the player's body. Attribute bonuses stored on trinket items aren't applied, so a trinket only does what its own mod's port provides.
+
+A port of [Trinkets](https://github.com/emilyploszaj/trinkets) 3.7.2 by Emi, C4, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Emi", "C4"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/trinkets"
+icon = "icons/trinkets_native.png"
+categories = ["library"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "trinkets_native-0.1.1.hnmod"
+sha256 = "357c05cd9a032552a13455f4b3ce32bd8f4290c7643fd6576f7594f82cd8655d"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

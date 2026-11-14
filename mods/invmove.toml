@@ -1,0 +1,39 @@
+id = "invmove"
+kind = "native-mod"
+name = "InvMove"
+summary = "A port of InvMove: walk, jump, sprint and sneak with your inventory, a chest or another screen open, with rules per screen."
+description = """
+A port of [InvMove](https://github.com/PieKing1215/InvMove) by PieKing1215 to Horizon, as a native mod. Keep walking, jumping, sprinting and sneaking while your inventory, a chest, a furnace, the creative inventory or another screen is open, and see the world behind it without the dark tint.
+
+- **Move in inventories**: the movement keys keep working in the inventory, containers, stations, villager trades, the creative inventory and horse inventories (the horse moves too).
+- **Per-screen rules**, as InvMove's vanilla module has them: every container and station can be switched on or off; never in the chat, sign and book editors, command and structure block editors, the death screen or the credits; always in the F3+F4 game mode switcher; never while the game is paused.
+- **Text fields stop movement**: typing in the chat, a sign, an anvil's name, the creative search, the recipe book's search, another mod's search box (JEI, REI) or a key being bound never moves you.
+- **Sneak modes** (Off, Maintain, Pressed, MaintainWhilePressed) for screens that allow movement, screens that don't and creative flight; **Allow Dismounting**; a **Recipe Book** option.
+- **Unrecognized screens** (the pause menu on a server or LAN, the options, a mod's own screen) are listed by mod the first time you meet them, with their own switch.
+- **Hide Inventory Backgrounds** per screen, and a **Pause Screens Background** mode (Show, ShowSP, AllowHide).
+- A **Toggle UI Movement** key (unbound at first, Options > Mods > InvMove); the jump key no longer presses a screen's focused button where you can move.
+- **InvMove's own config screen** (Cloth Config, as in Java): Configure in Mod Menu or Options > Mods > InvMove; General, UI Movement (Allowed Keys, Modules > Vanilla, Unrecognized UI Types) and UI Background. Kept in `config/invmove.json`, `config/invmove/vanilla.json` and `config/invmove/unrecognized.json`, as in Java. English and Russian.
+
+Where it differs from the original (a text field always stops movement, other mods' search boxes are recognised without InvMoveCompats, and so on), the README says how.
+
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust. Like the original, it only changes your own client; servers with an anticheat may not like moving while a screen is open.
+
+**Credits.** InvMove is by PieKing1215, GNU LGPL-3.0-only; the icon and the English texts are its own, and this port keeps the licence. The config screen follows Cloth Config by shedaniel (LGPL-3.0). Not affiliated with PieKing1215, Mojang or Microsoft.
+
+Found a bug? Report it: https://github.com/DeportedToHell/MCRE-Mods/issues"""
+authors = ["DeportedToHell"]
+owners = ["DeportedToHell"]
+owner_ids = [344119465]
+license = "LGPL-3.0-only"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/invmove"
+icon = "icons/invmove.png"
+categories = ["utility"]
+tags = ["inventory", "movement", "walk", "sneak", "gui", "quality-of-life", "port"]
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-14"
+game = "26.3"
+file = "invmove-1.0.1.hnmod"
+sha256 = "58534b6baf4a54a241e3a81262d6fb3be872848c18b2ac3da8c647509dc2ddc0"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064); Horizon's new Studio screen stops movement like the chat. Replaces 1.0.0 (#901)."

@@ -1,0 +1,32 @@
+id = "things_native"
+kind = "native-mod"
+name = "Things"
+summary = "Trinkets and gadgets from Things (subset)."
+description = """
+**This mod has two parts, and you need both.** This is the native part (the rules, as Rust code); install [the other one](https://playhorizon.dev/mods/things) too.
+
+Trinkets and gadgets from Things (subset).
+
+**Differences from the original:** The Agglomeration, Displacement Tome, Broken Watch, Ender Pouch, Radiant Gem and the Things almanac are left out. Mining Gloves give Haste II instead of the Momentum effect, and the Infernal Scepter fires on use with a cooldown instead of charging. The Enchanted Wax Gland doesn't help with floating or lava, the Hades Crystal doesn't put out fire, and mobs can trigger the diamond pressure plate. Players joining over LAN can open a locked container with any Container Key.
+
+A port of [Things](https://github.com/glisco03/things) 0.3.3+1.20 by glisco, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "glisco"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/things"
+icon = "icons/things_native.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "things_native-0.1.1.hnmod"
+sha256 = "1e287d0b77b6313e368b0bff9c06b4d38a95e5272b15f4b248995e30690e7f23"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

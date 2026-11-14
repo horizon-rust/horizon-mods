@@ -1,0 +1,37 @@
+id = "justdirethings"
+kind = "native-mod"
+name = "justdirethings"
+summary = "A Horizon port of justdirethings."
+description = """
+A port of [Just Dire Things](https://github.com/Direwolf20-MC/JustDireThings) by Direwolf20 for Horizon — slice 1, the Simple Coal Generator.
+
+**Implemented so far**
+
+- `justdirethings:generatort1` and the four coals it burns (`coal_t1`..`coal_t4`): one block, an insert-only FE buffer, one fuel slot, one tick, no neighbour reads, no GUI needed to prove it, no fluid and no entity.
+- The jar's buffer size, FE per tick and per-coal output, read from the generator's own class rather than a config default.
+- The generator's block entity, energy capability and container, with its carried blockstate, model, texture, loot, recipe and English names.
+- `/justdirethings info` readout for the headless harness.
+
+**Not yet ported**
+
+- **Push-out to neighbours** (`providePowerAdjacent`, `fePerTick × 10` per side): API 142 offers `native_move_energy`, but the sink upstream expects is the Energy Transmitter, which is not ported.
+- **No GUI/menu:** upstream opens `GeneratorT1Screen`; this slice has no menu type, so right-click does nothing and the fields are read by command.
+- **The Fuel Generator** (`generatorfluidt1`): 5,000,000 FE buffer, 5,000 FE/t and the tiered fuel fluids; it needs fluid tanks and a fluid capability.
+- **The Energy Transmitter** (the network, per-side throughput) and the rest of the mod: the pocket generator, item/block automation, the tools, the armour and the paradox items.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/justdirethings/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Direwolf20", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/justdirethings"
+icon = "icons/justdirethings.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "justdirethings-0.1.0.hnmod"
+sha256 = "a6034d0a1a6c50d9b27973b77968eeb91c0a24c4798d2cfa21c76d01d55fd368"

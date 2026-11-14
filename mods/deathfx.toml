@@ -1,0 +1,33 @@
+id = "deathfx"
+kind = "native-mod"
+name = "DeathFX"
+summary = "Choose new player death animations: disintegration, butterflies, supernova or a UFO abduction, and other effects."
+description = """
+Choose new player death animations.
+
+- Disintegration
+- Butterflies
+- Supernova
+- UFO abduction
+Add optional lightning, and adjust colours, timing and sounds.
+
+Press U to turn on and off, change features in mod settings.
+
+Some servers with custom death systems, including Hypixel minigames (duels, etc), may not trigger the effects however it should work on majority of normal gamemodes and servers, SMPs, etc."""
+authors = ["fbi"]
+owners = ["fbikat"]
+owner_ids = [253167313]
+license = "MIT"
+source = "https://github.com/fbikat/deathfx-horizon"
+icon = "icons/deathfx.png"
+categories = ["decoration", "social", "utility"]
+tags = ["pvp", "death", "animation", "effects", "client-side", "cosmetic", "lightning", "ufo", "butterflies", "supernova"]
+screenshots = ["screenshots/deathfx/1.png", "screenshots/deathfx/2.png", "screenshots/deathfx/3.png", "screenshots/deathfx/4.png"]
+
+[[versions]]
+version = "1.2.0"
+published = "2026-11-09"
+game = "26.3"
+file = "deathfx-1.2.0.hnmod"
+sha256 = "3a782f50af4063109e5cbba247f1a166eddf0f13fcfb8eaf32b005a0ef89e5d3"
+changelog = "First publish."

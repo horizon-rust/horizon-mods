@@ -1,0 +1,36 @@
+id = "redstonepen"
+kind = "native-mod"
+name = "redstonepen"
+summary = "A Horizon port of redstonepen."
+description = """
+A port of [Redstone Pen](https://github.com/stfwi/redstonepen) by Stefan Wilhelm (wile) for Horizon — the bins, the relays and one track per block.
+
+**Implemented so far**
+
+- The **redstone bin** and the **relay** family: plain, inverted, pulse and bistable, with the jar's two-tick turn-off delay and its `POWERED`/`STATE` bracket.
+- A delayed relay tick **rechecks the input it finds when it fires**, as upstream's scheduled `tick()` does: a plain relay whose input falls and returns before the deadline stays on instead of being turned off by the stale edge that armed it.
+- **One track per block** with one to three arms, its connections, the pen's gestures (extend an arm, bend, widen) and the `power` state; the carried blockstates, models, textures, recipes, langs and creative tab.
+
+**Not yet ported / deviations**
+
+- **One track per block, two or three arms:** no several tracks or connectors in one cell, no per-face attachment and no fourth arm (a cross is refused); upstream's 24-segment block entity is not expressible in block states.
+- **Corner/T collision box:** the shape follows the first arm while the model shows all arms (content shapes can only key on a template property).
+- **Pen gestures** are the subset above: no junction crossing, no per-arm re-bending, no undo.
+- **Not carried:** the probe, the circuit components beyond the relay family, the bundled examples and the config file.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/redstonepen/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["stfwi", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/redstonepen"
+icon = "icons/redstonepen.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "redstonepen-0.1.0.hnmod"
+sha256 = "9052a2e52d1a9ec48ffbcb7f639422a99403529029164e697ed9b896f0694e6a"

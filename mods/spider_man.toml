@@ -33,6 +33,21 @@ categories = ["adventure", "transportation"]
 tags = ["spider-man", "web-swinging", "parkour", "wall-running", "movement"]
 
 [[versions]]
+version = "0.2.3"
+published = "2026-11-11"
+game = "26.3"
+file = "spider_man-0.2.3.hnmod"
+sha256 = "c50d58ab4dc8c7a4afd9a4965cea07d08f94a274a874bd656b39529e09922181"
+changelog = """
+**Supersedes the pending 0.2.1 (#543): please review this one first.** 0.2.1 is pinned to Nightly `2944480` and its `after-send-state` hook does not apply on `fdc87ae`; 0.2.3 builds there.
+
+- Builds on Horizon Nightly 2026-11-08 (`fdc87ae`) and Horizon Mixins `5a64af9`: the `after-send-state` hook moved to the head of `tick_own_rockets` (thanks to marshaaaal).
+- A web or a zip shot while falling no longer hurts: in your own world the server forgets the fall from the moment the web or zip bites, as Slow Falling does. A web still flying when you hit the ground does not save you; a plain fall hurts as before.
+- Includes 0.2.1's first-web hint and web-shot sound.
+
+**Pinned build:** Horizon `fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca`, Horizon Mixins `5a64af938ec86b00d53d16a408aabc0038fb3e57`. Built by Horizon launcher 0.2.58 (`native-build`, performance profile) on macOS arm64, no errors or warnings from the mod; `cargo horizon-mod check` (built from the pinned Horizon) passes. Played on that build in survival: web and zip after 5 to 20 block drops (no damage), a plain 10-block fall (7 damage), a web pressed just above the ground after a 55-block drop (the fall lands), wall run, vault, swing. Release notes: https://github.com/wyddy7/minecraft-spider-man-rust/releases/tag/v0.2.3"""
+
+[[versions]]
 version = "0.2.0"
 published = "2026-11-03"
 game = "26.3"

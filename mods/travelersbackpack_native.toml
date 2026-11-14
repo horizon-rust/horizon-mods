@@ -1,0 +1,41 @@
+id = "travelersbackpack_native"
+kind = "native-mod"
+name = "Traveler's Backpack (native)"
+summary = "The native code of Traveler's Backpack. Requires the mod Traveler's Backpack."
+description = """
+The native code of an independent port of [Traveler's Backpack](https://github.com/Tiviacz1337/Travelers-Backpack) by Tiviacz1337.
+
+**Both projects are required:** install this one (`travelersbackpack_native`) and **Traveler's Backpack** (`travelersbackpack`)
+
+Native source mod: the launcher builds it into a separate game with Horizon Mixins. It is not sandboxed and runs with your account's permissions.
+
+Built for Horizon Nightly `9f42064` and Horizon Mixins `5a64af9`; other revisions are not tested.
+
+Keybinds: **B** opens the worn backpack. Commands: `/tb`. Config files are the original's, in `config/`.
+
+Source, changelog and details: https://github.com/DeportedToHell/MCRE-Mods/tree/main/travelersbackpack
+
+LGPL-3.0, same as the original. Not affiliated with or endorsed by Tiviacz1337."""
+authors = ["DispatchedToHeaven"]
+owners = ["DispatchedToHeaven"]
+owner_ids = [211231405]
+license = "LGPL-3.0"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/travelersbackpack-1.0.1/travelersbackpack"
+icon = "icons/travelersbackpack_native.png"
+categories = ["storage", "equipment", "utility"]
+tags = ["backpack", "storage", "tanks", "upgrades", "port"]
+screenshots = ["screenshots/travelersbackpack_native/1.jpg"]
+key = "RWRKE9PraqtKIBNLiCXXKIdqfZ6tUGUVxdzMWkSmPfMz3PcTDxnyAEbv"
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-14"
+game = "26.3"
+file = "travelersbackpack_native-1.0.1.hnmod"
+sha256 = "de267ba70e6a51102f0390a16d74fead11323ef4812c91f97eec85aec0cf1caa"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURKE9PraqtKIHYOAxGu7XqqUUlzl3Eo3pWJALFydihI3YluQ7xPRR6etMwBI+8XDaryIx05d5y05CLbkYduHirume1RY3w0Rg8=\r
+trusted comment: timestamp:1794626309\tfile:travelersbackpack_native-1.0.1.hnmod\thashed\r
+PmlymXw3RhO/YaUWc+RSWZh6yE3J0SmmuQNu9zvNl7CRdNk7V3+8KOnw+WaHNPI4uPA50kHsGG5Lg0QwRg15Bg=="""
+changelog = "Works on Horizon Nightly 2026-11-13: pinned to Horizon Nightly 9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0 and Horizon Mixins 5a64af938ec86b00d53d16a408aabc0038fb3e57."

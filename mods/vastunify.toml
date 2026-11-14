@@ -1,0 +1,28 @@
+id = "vastunify"
+kind = "mod"
+name = "Vast Unify"
+summary = "Other mods' metals, dusts, plates and gems made and taken as Vast Ores' own, so a pack has one tin, not five. Needs Vast Ores."
+description = """
+A content mod: data only, nothing to build. **Install Vast Ores too.**
+
+- Every recipe that made another mod's tin dust, steel ingot or ruby now makes Vast Ores' one, and every recipe that asked for theirs takes the `c:` tag, so ours and theirs both fit.
+- 130 items: what the Horizon ports of Ender IO, Mekanism, Modern Industrialization, Voltz, Big Nukes and Silent's Gems have now, and the ids Create, Mekanism and Tech Reborn use in Java for what their ports will add. A line for a mod that isn't installed does nothing.
+- The game's own iron, gold and copper ingots, nuggets and blocks stay; only their dusts, plates, gears and rods are unified.
+
+Uses Horizon's recipe filters, so it reaches every recipe written as data; ore drops and machines that compute their results in code are out of its reach. Made with [Vast Tweaks](https://github.com/voltzz900/vast-tweaks)."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-unify"
+icon = "icons/vastunify.png"
+categories = ["utility", "technology"]
+tags = ["unification", "metals", "recipes", "tech"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "vastunify-0.1.0.hmod"
+sha256 = "ddd150ec10aacc2b07fc2230056f187999cccf30dcdd746accaf018afce6c411"
+changelog = "First release (0.1.0): 130 items of other mods made and taken as Vast Ores' own."

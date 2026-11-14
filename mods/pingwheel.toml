@@ -1,0 +1,38 @@
+id = "pingwheel"
+kind = "native-mod"
+name = "Ping Wheel"
+summary = "Ping locations for your friends, like modern co-op games: markers with distance, edge arrows, a ping sound, channels. Works with the Java Ping Wheel."
+description = """
+A port of [Ping Wheel](https://github.com/LukenSkyne/Minecraft-Ping-Wheel) by Luken to Horizon, as a native mod. Ported by DeportedToHell.
+
+- **Ping Location** key (Mouse 5 "Forward" by default): marks the block or entity under the crosshair, up to 1024 blocks away. Crouch to ping water or a block's outline; pings on mobs and items follow them, and a pinged item shows its icon.
+- **Markers** with the distance, bigger when close; off screen or behind you they sit at the screen's edge with an arrow. Hold Tab to see who pinged (name and head), or show it Always or Compact, in their team's colour.
+- **The ping sound** from the ping's direction, with its subtitle.
+- Ping again within the Correction Period to move your ping; ping next to a ping to remove it.
+- **Channels**: `/pingwheel channel <name>` or the settings' Ping Channel field; kept per server.
+- **Settings screen** as in Java: Open Settings key, `/pingwheel config`, Options > Mods > Ping Wheel, or Mod Menu.
+- **Server side included**: single player, LAN and dedicated Horizon servers relay pings with Ping Wheel's rules (channels, default channel mode, team-only, rate limit, player tracking); `/pingwheel:server` for operators and the console; `config/pingwheel.server.json`.
+- **Works with the Java mod**: the same plugin channels and bytes. Tested on a Fabric 26.3 server with Ping Wheel 1.12.2: pings both ways, channels, team-only, rate limit, `/pingwheel:server`.
+- English and Russian.
+
+Differences from Java: teams are vanilla scoreboard teams (no voice-chat groups or FTB Teams in Horizon), no Distant Horizons ping, the sound doesn't move with you after it starts, the distance format follows the game's language.
+
+Built for Horizon Nightly 2026-11-08 (`fdc87ae`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+
+**Credits.** Ping Wheel is by Luken (LukenSkyne), with RXJpaw, MIT License; the sound, arrow texture, icon and English texts are the mod's own. This port rewrites the mod in Rust under the MIT licence and is not affiliated with Luken, Mojang or Microsoft."""
+authors = ["DeportedToHell"]
+owners = ["DeportedToHell"]
+owner_ids = [344119465]
+license = "MIT"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/ef44e8d287b151d7be6d6ddf6fef05e2f370a4e3/pingwheel"
+icon = "icons/pingwheel.png"
+categories = ["utility", "social"]
+tags = ["ping", "marker", "waypoint", "multiplayer", "co-op", "communication", "hud", "port"]
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-11"
+game = "26.3"
+file = "pingwheel-1.0.1.hnmod"
+sha256 = "bed3486e750662c22b9084cdd8afa30c16cf39d911035a0d0fca426cd4b1670f"
+changelog = "First release (replaces 1.0.0, #623), with the fix from its review: channel names are limited to 128 UTF-16 units as in Java, in the command, the settings field and the loaded config, so a long emoji channel no longer breaks pings silently. Built for Horizon Nightly 2026-11-08 (fdc87ae)."

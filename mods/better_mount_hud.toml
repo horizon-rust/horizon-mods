@@ -1,0 +1,29 @@
+## Horizon registry entry for Better Mount HUD (exact 1:1 Rust translation of the GPL-3.0-or-later mod).
+id = "better_mount_hud"
+kind = "native-mod"
+name = "Better Mount HUD"
+summary = "The mount HUD kept in one place: vehicle health, player health, the air bubble line and contextual info from the upstream mixin logic, 1:1."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+An exact 1:1 Rust translation of [Better Mount HUD](https://modrinth.com/mod/better-mount-hud): the upstream Java by Lortseam ([Lortseam/better-mount-hud](https://github.com/Lortseam/better-mount-hud)) translated code-for-code, carrying the upstream license and credit in full.
+
+Upstream's HudMixin (62 lines) is carried 1:1 as a Horizon client runtime splice: its injections into Hud (extractVehicleHealth, extractPlayerHealth, getAirBubbleYLine, nextContextualInfoState, extractHotbarAndDecorations) run their exact handler bodies against a HudMixinEnv seam that supplies the shadowed Hud state (minecraft, getPlayerVehicleWithHealth, getVehicleMaxHearts) and the player and game-mode surface the handlers read.
+
+Port of [Lortseam/better-mount-hud](https://github.com/Lortseam/better-mount-hud), copyright (C) Lortseam and contributors, GPL-3.0-or-later: the license text ships with the source. 5 unit tests on the translated logic. Rust port by sparticle, upstream by Lortseam."""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "GPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-better-mount-hud"
+categories = ["utility"]
+tags = ["hud", "mounts"]
+
+icon = "icons/better_mount_hud.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.0.0"
+game = "26.3"
+file = "better_mount_hud-1.0.0.hnmod"
+sha256 = "9f120d2788598690526255c2fa24edd78aa0b45dfcb2ab05ee904ab60f973f35"
+changelog = "Exact 1:1 Rust translation of Better Mount HUD (GPL-3.0-or-later) by Lortseam, license and upstream credit carried: the full HudMixin handler set, 1:1, as a Horizon client runtime splice."

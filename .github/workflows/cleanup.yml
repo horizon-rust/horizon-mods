@@ -24,7 +24,8 @@ jobs:
           # Hashes main lists (published), and those open pull requests add.
           grep -ho 'sha256 = "[0-9a-f]\{64\}"' mods/*.toml | cut -d'"' -f2 | sort -u > published.txt || true
           : > pending.txt
-          for pr in $(gh pr list --state open --json number --jq '.[].number'); do
+          # --limit: gh lists 30 by default, and a file only an older open pull request lists would be deleted.
+          for pr in $(gh pr list --state open --limit 1000 --json number --jq '.[].number'); do
             gh pr diff "$pr" | grep -o '^+sha256 = "[0-9a-f]\{64\}"' | cut -d'"' -f2 >> pending.txt || true
           done
           now=$(date +%s)

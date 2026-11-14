@@ -1,0 +1,28 @@
+id = "accelerateddecay"
+kind = "native-mod"
+name = "Accelerated Decay"
+summary = "Leaves decay quickly after a tree is cut."
+description = """
+Leaves decay quickly after a tree is cut.
+
+A port of [Accelerated Decay](https://github.com/errormikey/accelerated-decay) 3.0.1+mc1.20.1 by ErrorMikey, published under its licence, GPL-3.0-only. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "ErrorMikey"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "GPL-3.0-only"
+source = "https://github.com/lavoide/horizon-ports/tree/main/accelerateddecay"
+icon = "icons/accelerateddecay.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-12"
+game = "26.3"
+file = "accelerateddecay-0.1.1.hnmod"
+sha256 = "a3f8f6be70b570f46562092bf311486c7fe78159acfa496019b3e203eea4d384"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

@@ -1,0 +1,30 @@
+id = "craftingpad_native"
+kind = "native-mod"
+name = "Crafting Pad"
+summary = "A portable crafting table."
+description = """
+**This mod has two parts, and you need both.** This is the native part (the rules, as Rust code); install [the other one](https://playhorizon.dev/mods/craftingpad) too.
+
+A portable crafting table.
+
+A port of [Crafting Pad](https://github.com/StrikerRockers-Mods/CraftingPad) 1.0.12 by StrikerRocker, Giselbaer, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "StrikerRocker", "Giselbaer"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/craftingpad"
+icon = "icons/craftingpad_native.png"
+categories = ["utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "craftingpad_native-0.1.1.hnmod"
+sha256 = "542602cfb2848cf227a6e98632a651cd2d5a0c651c8d5047f2f65834a2583b88"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

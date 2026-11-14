@@ -1,0 +1,30 @@
+id = "farmersdelight"
+kind = "mod"
+name = "Farmer's Delight (assets)"
+summary = "Farmer's Delight: stove, cooking pot, skillet, cutting board, crops, rich soil and 170 foods."
+description = """
+**This mod has two parts, and you need both.** This is the content part (items, blocks, textures, models, data; no code); install [the other one](https://playhorizon.dev/mods/farmersdelight_native) too.
+
+Farmer's Delight: stove, cooking pot, skillet, cutting board, crops, rich soil and 170 foods.
+
+**Differences from the original:** Cooking pot meals give no experience, and the cutting board ignores Fortune. Eating a pie slice straight from the placed pie gives its food but not the slice's effects. There are no steam, bubble or smoke particles and no boiling or crackling sounds. Without Nether's Delight installed, hoglins drop nothing, because this port always uses Nether's Delight's hoglin loot.
+
+A port of [Farmer's Delight](https://github.com/MehVahdJukaar/FarmersDelight) 1.20.1-2.4.1+refabricated by MehVahdJukaar, MerchantPug, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "MehVahdJukaar", "MerchantPug"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/farmersdelight"
+icon = "icons/farmersdelight.png"
+categories = ["food"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "2.4.1-horizon.3"
+published = "2026-11-11"
+game = "26.3"
+file = "farmersdelight-2.4.1-horizon.3.hmod"
+sha256 = "894f80d0451f8ac61171f6fc6c51633a71f895388fd67aedf52dd01a272475db"
+changelog = "First release."

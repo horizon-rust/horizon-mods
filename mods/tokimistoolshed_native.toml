@@ -1,0 +1,32 @@
+id = "tokimistoolshed_native"
+kind = "native-mod"
+name = "Tokimi's Toolshed"
+summary = "Hammers, excavators, scythes, copper buckets and other tools."
+description = """
+**This mod has two parts, and you need both.** This is the native part (the rules, as Rust code); install [the other one](https://playhorizon.dev/mods/tokimistoolshed) too.
+
+Hammers, excavators, scythes, copper buckets and other tools.
+
+**Differences from the original:** The manual has no book screen, and the items show no tooltip lines. Chisels switch between Copy and Shuffle when used in the air instead of with Left Alt and the mouse wheel, and the abacus shows its counts on the action bar with no outline. Dispensers don't use copper buckets, and wooden tools don't work as furnace fuel. In creative mode, filling a copper bucket gives a vanilla bucket.
+
+A port of [Tokimi's Toolshed](https://github.com/CozyCord/TokimisToolshed) 1.8 by Tokimi, CozyStudios, published under its licence, CC0-1.0. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Tokimi", "CozyStudios"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "CC0-1.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/tokimistoolshed"
+icon = "icons/tokimistoolshed_native.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "tokimistoolshed_native-0.1.1.hnmod"
+sha256 = "9a845b5b973573c49da96961174b490bf55d8c97801455ac47c30c4fb0e79ff9"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

@@ -1,0 +1,46 @@
+id = "actuallyadditions"
+kind = "native-mod"
+name = "Actually Additions"
+summary = "The Coal Generator and Crusher of Actually Additions, with working recipes, real FE and persistence."
+description = """
+A port of [Actually Additions](https://github.com/Ellpeck/ActuallyAdditions) by
+Ellpeck for Horizon. This first slice is two machines, carried from the mod's own
+jar together with their blocks, items, models, textures, loot tables, recipes and
+advancements:
+
+- **Coal Generator** — burns any furnace fuel (modded fuel included) into a
+  60,000 FE buffer at 20 FE/t, returning the crafting remainder.
+- **Crusher** — a 60,000 FE buffer, 40 FE/t and 100 ticks per operation, reading
+  the mod's own `actuallyadditions:crushing` recipes (47 of the jar's 49; two
+  name items from later slices) and rolling the second output at its chance.
+- A generator pushes FE into an adjacent crusher; there is no Energy Laser Relay
+  in this slice, so adjacency is the stand-in.
+- Right-click with fuel or an input to insert it; a wrong item is refused. There
+  is no screen yet, so `/actuallyadditions info <x> <y> <z>` prints stored FE,
+  burn and crusher progress. That command is a port addition, not upstream.
+
+Both machines keep their FE, burn state and crusher output across save and
+relaunch. Not yet ported: the GUI/menus, `lit` state and particles, a comparator
+output for FE, FE kept in the item when a machine is broken, the machine
+crafting recipes' ingredients, the Double Crusher and the other ~45 machines,
+relays/cables, redstone control and the booklet. The one `.hnmod` embeds its
+content package, so it installs the blocks and the behaviour together.
+
+MIT — the original copyright and licence notices travel inside the bundle
+(`mixins/actuallyadditions/LICENSE` and `data/actuallyadditions/license/`), with the
+asset provenance in LICENSE-NOTICE.md."""
+authors = ["Ellpeck", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/actuallyadditions"
+icon = "icons/actuallyadditions.png"
+categories = ["technology", "game-mechanics"]
+tags = ["port", "machines", "energy", "ore-processing"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "actuallyadditions-0.1.0.hnmod"
+sha256 = "115d35b1ae35ef3ac86fe6e4d0a84cd36de3c55e8db2f8dc26f854dd15239f68"

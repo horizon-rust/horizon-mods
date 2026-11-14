@@ -1,0 +1,36 @@
+id = "horizon_via"
+kind = "native-mod"
+name = "ViaHorizon"
+summary = "Natively join older versions with Horizon"
+description = """
+ViaHorizon aims to let you connect to servers running older Minecraft versions directly from Horizon. It handles protocol translation natively in Rust, independently of ViaFabricPlus’s Java implementation.
+
+The focus is on expanding version support while keeping Horizon fast and responsive, with minimal added overhead when playing on older servers.
+
+Support is experimental. Compatibility and gameplay behavior vary by version; see the release notes for supported versions and known limitations."""
+authors = ["TheApple05"]
+owners = ["TheApple05"]
+owner_ids = [75060304]
+license = "MIT"
+source = "https://github.com/TheApple05/horizon-via/tree/v0.5.0"
+icon = "icons/horizon_via.png"
+categories = ["game-mechanics", "utility"]
+tags = ["backwardscompatible"]
+
+[[versions]]
+version = "0.5.0"
+published = "2026-11-09"
+game = "26.3"
+file = "horizon_via-0.5.0.hnmod"
+sha256 = "01ffa774a6e11ebb21e866e189cc02475fbf2e72d5f3c56b6c542a663a0047b6"
+changelog = """
+Initial registry release of ViaHorizon 0.5.0 (experimental).
+
+- Update official Horizon and horizon-mixins source pins.
+- Integrate upstream protocol adapters while retaining experimental Java 1.8.9, 1.12.2, 1.16.5 and 1.20–1.20.1 support, automatic server detection and the version picker.
+- Support two-input Java 1.16.5 smithing.
+- Fix legacy resource-pack replacement, relative motion correction and translation failure handling.
+
+Uses a guarded source overlay in the launcher’s staged build workspace, pinned to Horizon 802a858cc1ff8a26a5d17424c51ad0f478c79099. This mechanism requires maintainer review.
+
+See https://github.com/TheApple05/horizon-via/blob/v0.5.0/CHANGELOG.md for Windows validation and known limitations. Online authentication across all targets, full launcher installation and other platforms remain unverified."""

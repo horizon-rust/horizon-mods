@@ -1,0 +1,48 @@
+id = "megamap"
+kind = "native-mod"
+name = "Teiwazik's All in One Map"
+summary = "Minimap and fullscreen world map with waypoints, fog of exploration, far terrain from LOD data and a cave layer."
+description = """
+A client-side minimap and fullscreen world map for Horizon.
+
+**Features**
+
+- Waypoints: death points, sharing over chat, in-world beams with distance labels
+- Breadcrumb trail, exploration fog with explored %, threat radar and a cave layer
+- Far terrain drawn from Horizon LOD data, volumetric cloud fog
+- Map detail: hillshade, shadows, contours, grid; UI themes; automatic surface/cave layers
+- Block colours taken from resource packs, entity faces and 3D previews
+- English and Russian names
+
+**Default keys** (rebindable under Options > Mods > megamap)
+
+- M: world map
+- B: waypoint here
+- U: waypoint list
+- Z: minimap zoom
+- J: minimap size
+- K: minimap mode (surface, cave, hidden)
+- N: rotate with player or lock north
+
+Chat commands: `/megamap wp add|del|share|list|import` and `/megamap trail clear`.
+
+**Needs**
+
+Horizon with Minecraft 26.3. It is a native mod, so the launcher builds it from source; native code is not sandboxed and needs `--trust-native-code`. The first build takes a while."""
+authors = ["Teiwazik"]
+owners = ["Teiwazik"]
+owner_ids = [67657185]
+license = "MIT"
+source = "https://github.com/Teiwazik/teiwaziks-all-in-one-map"
+icon = "icons/megamap.png"
+categories = ["utility"]
+tags = ["map", "minimap", "waypoints", "lod"]
+screenshots = ["screenshots/megamap/1.png", "screenshots/megamap/2.png", "screenshots/megamap/3.png", "screenshots/megamap/4.png", "screenshots/megamap/5.png", "screenshots/megamap/6.png"]
+
+[[versions]]
+version = "0.3.11"
+published = "2026-11-14"
+game = "26.3"
+file = "megamap-0.3.11.hnmod"
+sha256 = "df31ac113688571fed7f3c8dfbc1236b49fafad513df4ae103595efa083c2abb"
+changelog = """Rebased onto Horizon main (revision 06ac31ccde, mixins 5a64af9, hooks API 455). Added a LICENSE and an icon, and renamed the mod page to "Teiwazik's All in One Map". The internal id stays megamap, so saved settings and maps carry over."""

@@ -7,12 +7,16 @@ An item and recipe viewer for [Horizon](https://playhorizon.dev), the Rust reimp
 
 Horizon JEI is inspired by [JustEnoughItems (JEI)](https://github.com/mezz/JustEnoughItems). JEI serves as the reference specification, while this project is a completely new Rust implementation built around Horizon's native hook points.
 
-**Version 0.2.1 — Overlay and bookmarks**
+**Version 0.3.0 — Mod API, Kit & Recipe Window**
 
 ### Features
 
+- **Mod API & JEI Kit Support:** Public integration API (`hz_jeikit_v15_jei`, `hz_kit_layer_jei::register`, `hz_kit_window_jei`, `hz_kit_math_jei`, `hz_kit_loot_jei`, `hz_kit_keys_jei`, `hz_kit_panel_jei`) and the optional proc-macro crate (`mixins/jei/optional/`), allowing third-party mods (AE2, Elevator, Iron Furnaces, etc.) to register custom tabs, cards, and recipes seamlessly.
 - **Recipe Navigation:** Browse recipe history with **Back** and click recipe slots to open the corresponding item.
-- **Recipe Placement:** Use the **+** button to place a recipe into the open crafting grid, provided it is available in the recipe book.
+- **Dedicated Recipe Window GUI:** Pressing R, U, or clicking items opens a centered `RecipesGui` window: tabs above, catalysts on the left, tab pagination, multiple recipes per page, "+" transfer buttons, and tooltips with R/U recipe counts.
+- **Recipe Placement:** Use the **+** button to place a recipe into the open crafting grid without needing it unlocked in the recipe book.
+- **Data Pack Recipe Sync:** Automatically queries the server for recipe types (`datapack_sync`) and rebuilds (`recipes_received`), supporting custom data pack recipes.
+- **Categories of Chances:** Probabilistic recipe categories (fishing loot tables, sieves), displaying output chances, count ranges, and notes.
 - **Item Giving:** Give items through Options → Mods → JEI or `/jei give`. In creative mode, left-click gives one item and right-click gives a full stack. In survival mode, clicking opens the recipe viewer instead.
 - **Item Tooltips:** Every tooltip the game shows, the panel's included, names the keys and counts exactly: `R: Recipes (12)`, `U: Uses (3)`, and a star on the stacks in your bar.
 - **Subtypes:** Every `(item, components)` pair the recipe tables name is an item of its own in the list, so the potions and the tipped arrows are there like JEI's subtypes.
@@ -30,7 +34,7 @@ Some of these features require native hook points that Horizon does not currentl
 
 ### Requirements & Security
 
-Requires Horizon **26.3** and hook points version **313** or later: tested and verified on Horizon Nightly (`6560641` and latest `fdc87ae`).
+Requires Horizon **26.3** and hook points version **411** or later: tested and verified on Horizon Nightly `9f42064`.
 
 Horizon native mods are compiled directly into the game and are **not sandboxed**. Only build source code you trust.
 
@@ -46,6 +50,28 @@ icon = "icons/jei.png"
 categories = ["utility"]
 tags = ["recipes", "item-browser", "recipe-viewer", "search", "port"]
 key = "RWRqzx718YYz/OHRM+pAnFWlDv8Rrgar5C4NszQg3EKJWQZWNel5Sslf"
+
+[[versions]]
+version = "0.3.0"
+published = "2026-11-14"
+game = "26.3"
+file = "jei-0.3.0.hnmod"
+sha256 = "2fe152d8cfab82a2aa460b58c712d9ed09de6cb18242fde843e37979968bda25"
+signature = """
+untrusted comment: signature from minisign secret key
+RURqzx718YYz/BnV/P1MjxmplleQ6IYg5C+ACESG3/FXB1HyID2IPpYtmHBb2+iJKX2fRLkXe8lrI5WHwsFiuOqamvbFt85Xkg4=
+trusted comment: jei 0.3.0 for Horizon 26.3
+p4x4Za4dTGJp+rSqG3kHJ4lv9uyefSCFxILNijERuhbGjI+dZFq+B3lF3x+aunZhsP2EQlNRnD6YkpjQ4sGxAQ=="""
+changelog = """
+Major feature release introducing the Mod Integration API / JEI Kit, dedicated recipe window GUI, data pack recipe sync, transfer recipes, chance-based recipe categories, and port compatibility helpers.
+
+- Mod API & JEI Kit support: Added public integration API (hz_jeikit_v15_jei, hz_kit_layer_jei::register, hz_kit_window_jei, hz_kit_math_jei, hz_kit_loot_jei, hz_kit_keys_jei, hz_kit_panel_jei) and the optional proc-macro crate (mixins/jei/optional/), allowing third-party mods (AE2, Elevator, Iron Furnaces, etc.) to register custom tabs, cards, and recipes seamlessly.
+- Port compatibility: Derived Default on View, Layout, and Chance, and added builder/constructor helpers so third-party ports can construct views using struct update syntax (..Default::default()) across versions.
+- "+" works with no recipe-book unlock: Moves recipes in via native_transfer_recipe, Horizon's viewer transfer, whenever a matching grid is open.
+- Data pack recipes: The viewer queries the server for recipe types (datapack_sync) and rebuilds when received (recipes_received).
+- JEI's own recipe screen: R, U, clicking items in the list, or bookmarks now open a centered RecipesGui window: tabs above, catalysts on the left, tab pagination, multiple recipes per page, "+" transfer buttons, and tooltips with R/U recipe counts.
+- Categories of chances: Support for recipe categories whose outputs drop probabilistically.
+- Requires hook points version 411 (native_gui_draw_item_with, native_gui_tooltip), tested against Horizon Nightly 9f42064."""
 
 [[versions]]
 version = "0.2.1"

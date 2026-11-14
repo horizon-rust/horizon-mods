@@ -1,0 +1,31 @@
+id = "vastspawners_native"
+kind = "native-mod"
+name = "Vast Spawners"
+summary = "Change spawners with items, mine them with Silk Touch, and shape the mobs they make. Needs its content mod."
+description = """
+A native mod for spawners, built from the MIT code and data of [Apothic Spawners](https://github.com/Shadows-of-Fire/Apothic-Spawners) (by Shadows_of_Fire), with names and words of its own. **Install the content mod `vastspawners` too** (its words in English and Brazilian Portuguese).
+
+- **Change a spawner** by right clicking it with an item, used up: sugar and a clock shorten its waits, a fermented spider eye, a ghast tear, prismarine crystals and a piston raise its batch size, crowd limit, player reach and spread. With quartz in the other hand the change goes back.
+- **Switches**: a nether star makes it work with no player near, a conduit or a soul lantern lets it spawn anywhere or in any light, a comparator makes it work only with a redstone signal, and chorus fruit, wool, a golden dandelion and a campfire make its mobs dazed (no AI), hushed, young or burning.
+- **Echoes** (echo shards, up to 3): its mobs' loot drops once more per echo. **Vigour** (pointed dripstone): its mobs spawn with less health.
+- **Silk Touch** mines a spawner with all of that and its mob; placed again, it is the same spawner. Its tooltip lists them.
+
+**What it changes in the game**: a right click on a spawner with those items (the item is spent, the spawner's data changes), a spawner's drop when mined with Silk Touch and its data when placed, the range a wired spawner looks for a player in, the health of a weakened spawner's mobs, and the loot of an echoing spawner's mobs. Everything it keeps lives in the spawner's and the mob's own data; no files, no network.
+
+Pinned to Horizon fdc87ae (Nightly 2026-11-08). Not yet: the egg-catching enchantment, unstable spawners and advancements. Not affiliated with or endorsed by Apothic Spawners' authors; none of its assets or lang are used."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-spawners"
+icon = "icons/vastspawners_native.png"
+categories = ["game-mechanics", "mobs", "utility"]
+tags = ["spawners", "mob-farms", "silk-touch", "redstone"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-11"
+game = "26.3"
+file = "vastspawners_native-0.1.0.hnmod"
+sha256 = "ad48f6d0498d421586493a82bd35e91d7f7e2a083ecdc0cb94f5f4808864e749"
+changelog = "First release (0.1.0): change spawners with items (with quartz in the other hand, back), mine them with Silk Touch keeping their data, and shape their mobs (unwatched, any ground, lightproof, wired, dazed, hushed, young, kindled, echoes, vigour). Built from the MIT code and data of Apothic Spawners, with words of its own."

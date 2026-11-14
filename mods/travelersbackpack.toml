@@ -1,0 +1,40 @@
+id = "travelersbackpack"
+kind = "mod"
+name = "Traveler's Backpack"
+summary = "Backpacks with tanks, upgrades and abilities. Needs Traveler's Backpack (native) too."
+description = """
+An independent port of [Traveler's Backpack](https://github.com/Tiviacz1337/Travelers-Backpack) by Tiviacz1337.
+
+**Both projects are required:** install this one (`travelersbackpack`) and **Traveler's Backpack (native)** (`travelersbackpack_native`)
+
+- 44 backpack designs and five tiers, from leather to netherite. Open one from your hand, place it as a block or wear it on your back.
+- Upgrades: crafting, furnaces, pickup, magnet, void, feeding, refill, tanks, jukebox and lantern, with filters.
+- Tanks for water, lava, milk and potions, a hose, and an ability for each design.
+- Sleeping bags, dyeing, chest loot and mobs wearing backpacks.
+- With Accessories installed, the backpack goes in its Back slot.
+
+Source, changelog and details: https://github.com/DeportedToHell/MCRE-Mods/tree/main/travelersbackpack
+
+LGPL-3.0, same as the original. Not affiliated with or endorsed by Tiviacz1337."""
+authors = ["DispatchedToHeaven"]
+owners = ["DispatchedToHeaven"]
+owner_ids = [211231405]
+license = "LGPL-3.0"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/travelersbackpack-1.0.0/travelersbackpack"
+icon = "icons/travelersbackpack.png"
+categories = ["utility", "storage", "equipment"]
+tags = ["backpack", "storage", "tanks", "upgrades", "port"]
+key = "RWRKE9PraqtKIBNLiCXXKIdqfZ6tUGUVxdzMWkSmPfMz3PcTDxnyAEbv"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-14"
+game = "26.3"
+file = "travelersbackpack-1.0.0.hmod"
+sha256 = "3db674dd4fcc2362dc231f090d6df6fd00cf22bc7a6b44fc7a393328a593c730"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURKE9PraqtKIAYKwwxuwonlE7/kw2iOQL/UohHHq4DZMZglaId56F51UKdJ/aUoPSVbpNJ1YWI10EAIMSgg177rvr+yH3W/Cgg=\r
+trusted comment: timestamp:1794623838\tfile:travelersbackpack-1.0.0.hmod\thashed\r
+8yXe1O3CiA5qSvQh9AP0QFvriZMnDVWfKo/GbwDXzcU5H4Rcai7NWawR9sn2vTkVSw9P6M7krUKNguzYHWB/Bg=="""
+changelog = "First registry release. All features of the original are in, including the back slot with Accessories."

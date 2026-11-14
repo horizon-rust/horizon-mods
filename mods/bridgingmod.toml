@@ -1,0 +1,30 @@
+id = "bridgingmod"
+kind = "native-mod"
+name = "Bridging Mod"
+summary = "Right-click past an edge to bridge blocks out, Bedrock style."
+description = """
+Right-click past an edge to bridge blocks out, Bedrock style.
+
+**Differences from the original:** There is no bridging crosshair, toggle key or config screen. Building up or down off the top or bottom of a slab uses vanilla slab placement instead of the mod's assist.
+
+A port of [Bridging Mod](https://github.com/CloudG360/BridgingMod) 2.5.1+1.20.1 by CG360, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "CG360"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/bridgingmod"
+icon = "icons/bridgingmod.png"
+categories = ["utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "bridgingmod-0.1.1.hnmod"
+sha256 = "567bf993b402071bd7d2bb81f84a6f7da56e10e6cec9d870dd604430596e78db"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

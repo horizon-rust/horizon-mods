@@ -1,0 +1,47 @@
+id = "meridian"
+kind = "native-mod"
+name = "Meridian"
+summary = "> Minimap, world map and waypoints for Horizon, with Seed Atlas built in: see biomes, terrain and structures of your world from its seed."
+description = """
+**Meridian** is a minimap, world map and waypoint mod for Horizon, with the Seed Atlas engine built right in.
+
+**Map**
+
+- Minimap and full-screen world map (M) with slope shading, water depth, day and night lighting, and a proper look for the Nether and the End
+- Cave mode, chunk grid and overlays, PNG export
+- Entity radar for players, hostile and friendly mobs and items, with a colour you choose for each kind
+- A trail of footsteps behind you that fades after a while
+- Separate maps for each world on multi-world servers
+
+**Waypoints**
+
+- Create them on the spot (B) or anywhere on the world map, sort them into sets and teleport to them
+- Share waypoints in chat and add shared ones with one click
+- Import the waypoint files other map mods keep, or export everything to JSON
+
+**Seed Atlas**
+
+- Fills unexplored areas with the biomes and terrain of the world's seed
+- Structure markers with "completed" tracking and waypoints
+- Find the nearest biome or structure, and highlight biomes
+- Every world generation version from 1.1 to 26.3, computed exactly like the Seed Atlas app and the Fabric version
+- In singleplayer the seed is read from the world. On servers you set it with `/seedatlas seed`. The seed never leaves your computer.
+
+**Familiar controls:** The default keys and options follow the conventions of popular map mods. Settings profiles, a movable minimap and a Fair Play switch for servers are included."""
+authors = ["DUzzL"]
+owners = ["DUzzL"]
+owner_ids = [98381970]
+license = "GPL-3.0"
+source = "https://github.com/DUzzL/meridian"
+icon = "icons/meridian.png"
+categories = ["utility"]
+tags = ["map", "minimap", "world-map"]
+screenshots = ["screenshots/meridian/1.jpg", "screenshots/meridian/2.png", "screenshots/meridian/3.jpg"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-08"
+game = "26.3"
+file = "meridian-0.1.0.hnmod"
+sha256 = "ffc85b77d4d259d0193d5eb74c60b15bb0c3b5207ffca8513074b75fbd3b364e"
+changelog = "Release version"

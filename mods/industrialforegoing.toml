@@ -1,0 +1,36 @@
+id = "industrialforegoing"
+kind = "native-mod"
+name = "industrialforegoing"
+summary = "A Horizon port of industrialforegoing."
+description = """
+A port of [Industrial Foregoing](https://github.com/Buuz135/Industrial-Foregoing) by Buuz135 for Horizon — slice 1, the Water Condensator.
+
+**Implemented so far**
+
+- `industrialforegoing:water_condensator` on the iron-block template (hardness 5.0, blast 6.0, iron sounds) with Titanium's four-way `subfacing` state and the jar's own four-variant blockstate; placement turns it toward the placer.
+- A 10,000 FE buffer through the block energy capability (any side may fill or drain it) and a 16,000 mB **drain-only** water tank through the fluid capability, both saved in the block entity.
+- The condensation rule from the jar: with fewer than 2 water sources on the six sides nothing happens; with 2 or more and at least 1,000 FE it makes `sources × 100` mB for 1,000 FE on a 10-tick cooldown; with 2 or more and under 1,000 FE it makes `sources × 50` mB for free on a 50-tick cooldown. A full tank clamps the water and the operation still spends its FE, as upstream's `fillForced` does.
+- The carried blockstate, both block models, the item model, five textures, the lang strings, the loot table, the advancement and its recipe. The recipe accepts the jar's ingredient **tags** alongside vanilla fallbacks (`#c:gears/iron` or an iron block, `#c:plastics` or a slime ball, `#industrialforegoing:machine_frame/pity` or an iron block), so the machine is craftable standalone while other mods' gears and plastics still count.
+
+**Not yet ported**
+
+- **No GUI:** the jar's Titanium bars are not carried; the buffer, tank and rule are read through commands.
+- **The rest of the mod:** the other generators and processors, the laser drill and lenses, the mob duplicator/slaughterhouse, plant and interaction machines, conveyors, the ore-washer/fermentation chain, the infinity tools, the enchantment applicator and the guide book.
+- No fluid inputs (nothing in this slice consumes a fluid) and no config file.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/industrialforegoing/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Buuz135", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/industrialforegoing"
+icon = "icons/industrialforegoing.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "industrialforegoing-0.1.0.hnmod"
+sha256 = "2f874866896b55efe6c1d73157666235143f462711014802a2c49ba83424a43c"

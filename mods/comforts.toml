@@ -1,0 +1,34 @@
+id = "comforts"
+kind = "native-mod"
+name = "comforts"
+summary = "A Horizon port of comforts."
+description = """
+A port of [Comforts](https://github.com/illusivesoulworks/comforts) by Illusive Soulworks for Horizon — slice 1, a sleeping bag that sleeps through the night and **never sets the respawn point**.
+
+**Implemented so far**
+
+- One block, `comforts:sleeping_bed`, on the `minecraft:white_bed` template (bed class, `facing`/`part`/`occupied`), 3 px high, hardness 0.1, wool sounds, `occludes: false`, head-only self-drop, a 3-white-wool recipe, the `comforts:sleeping_bags` block and item tags, a creative tab and its icon.
+- Sleeping uses the engine's bed path (`AbstractBed` → `PlayerEffect::Sleep` → `try_sleep`): reach, obstruction, the monster check, the sleep list, the stat and the `slept_in_bed` trigger are vanilla's — minus the respawn point, which is the mod's whole point.
+- Upstream's sleeping config keys, and one `.hnmod` that carries and loads its own content.
+
+**Not yet ported**
+
+- The block id is `comforts:sleeping_bed` rather than upstream's `comforts:sleeping_bag_white` because of the pin's `_bed` suffix rule; only the plain white variant is carried.
+- The other 15 dyed bags, the 16 hammocks, `rope_and_nail`, the sleeping-bag **item** (auto-use on placement), the block-entity model (upstream uses a Java renderer) and day sleeping as a block type.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/comforts/LICENSE` and `NOTICE.md`, the full GNU LGPL v3 with Illusive Soulworks' notice) and are also in this repository. LGPL-3.0-or-later; the complete corresponding source is this repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["illusivesoulworks", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/AdLf0208/comforts"
+icon = "icons/comforts.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "comforts-0.1.0.hnmod"
+sha256 = "9a210bc9d6d1c5f7e2d10486bb15aca6c78e4b156e0c0b5bd0f952edd91c2c06"

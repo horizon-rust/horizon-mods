@@ -1,0 +1,30 @@
+## Horizon registry entry for No Resource Pack Warnings (port of SpaceWalkerRS/no-resource-pack-warnings).
+id = "no_resource_pack_warnings"
+kind = "native-mod"
+name = "No Resource Pack Warnings"
+summary = "Stops the resource-pack compatibility warnings and lets any pack load."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- Every resource-pack compatibility check reads as compatible: packs of the wrong format load and select without the warning screen.
+- Upstream redirects `PackCompatibility.isCompatible()` to true in the options-side pack reload and the pack-selection screen; Horizon routes packs through its configuration adapter, so the port overrides the one verdict the adapter applies and extends to a selection UI when one lands.
+
+Exact 1:1 Rust port of [no-resource-pack-warnings](https://github.com/SpaceWalkerRS/no-resource-pack-warnings) by SpaceWalkerRS (MIT); upstream code translated code-for-code, MIT carried, credited upstream. Ported to Rust by sparticle.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-no-resource-pack-warnings"
+categories = ["utility"]
+tags = ["resource-packs", "qol"]
+
+icon = "icons/no_resource_pack_warnings.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "no_resource_pack_warnings-1.0.0.hnmod"
+sha256 = "6d098bb36d84bab9d6be767c303649f988068b9b232d0a58aed377c7f18f330e"
+changelog = "Initial port of no-resource-pack-warnings (SpaceWalkerRS, MIT): compatibility verdicts forced true on the adapter path; a future pack-selection UI extends the same override."

@@ -1,0 +1,31 @@
+## Horizon registry entry for MoreChatHistory (exact 1:1 Rust port of MoreChatHistory by JackFred).
+id = "morechathistory"
+kind = "native-mod"
+name = "MoreChatHistory"
+summary = "Expands the chat history cap from 100 entries to 16,384."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- The chat history deque is created with capacity 16384 instead of 100.
+- The display queue, send queue and recent-chat caps all read 16384 instead of 100.
+- Trimming drops from the oldest side exactly as vanilla does; nothing else in the chat paths changes.
+
+Exact 1:1 Rust port of [MoreChatHistory](https://github.com/JackFred2/MoreChatHistory) by JackFred (CC0-1.0); upstream code translated code-for-code, CC0-1.0 carried, credited upstream. Ported to Rust by sparticle.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-morechathistory"
+categories = ["utility"]
+tags = ["chat", "qol"]
+
+icon = "icons/morechathistory.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "morechathistory-1.0.0.hnmod"
+sha256 = "5b89626b1f953ded8e6b9f8352e7311fa1b16a7414bacc5d17459068f9a3cebb"
+changelog = "Initial port of MoreChatHistory (JackFredMods/MoreChatHistory, CC0-1.0): the 16384-entry history cap for the display queue, send queue and recent-chat list, oldest-side trimming kept."

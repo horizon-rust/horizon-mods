@@ -1,0 +1,14 @@
+[package]
+name = "horizon-mod-morechathistory"
+version = "1.0.0"
+edition = "2024"
+license = "CC0-1.0"
+publish = false
+description = "Expands the chat history cap from 100 entries to 16384: an exact 1:1 Horizon Rust port of MoreChatHistory (JackFred, CC0-1.0)."
+
+[lib]
+path = "src/lib.rs"
+
+# The standalone test build compiles the game-touchpoint half out.
+[features]
+standalone = []

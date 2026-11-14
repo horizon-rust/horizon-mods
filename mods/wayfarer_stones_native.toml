@@ -3,7 +3,7 @@ kind = "native-mod"
 name = "Wayfarer Stones"
 summary = "Place stones around your world, activate them, and travel between the ones you know."
 description = """
-**This mod has two parts, and you need both.** Install this one and [Wayfarer Stones (assets)](https://playhorizon.dev/mods/wayfarer_stones), then press Build.
+**One file since 0.6.2:** the textures, text, recipes and villages are inside it, so the separate assets mod is no longer needed. Install this one and press Build.
 
 - **Place** a stone, or find one in a village. Right-click it once to add it to your list.
 - **Travel** from any stone you know: pick a destination on the screen, or search for it. You land beside the stone, on solid ground.

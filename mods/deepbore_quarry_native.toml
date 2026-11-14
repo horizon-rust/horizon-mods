@@ -3,7 +3,7 @@ kind = "native-mod"
 name = "Deepbore Quarry"
 summary = "A machine that digs a square pit down to bedrock on furnace fuel and fills a chest, under a moving gantry with a drill."
 description = """
-**This mod has two parts, and you need both.** Install this one, the native part, and [Deepbore Quarry (assets)](https://playhorizon.dev/mods/deepbore_quarry), then press Build. If one is missing, the game says so in chat.
+**One file since 0.1.1.** Install this mod and press Build: its textures, text and recipes ride inside it. The separate assets mod is no longer needed; if you already have it, it does no harm.
 
 - **Place** a quarry. The pit lies beyond it, the way you are looking, and goes from the quarry's own level down to bedrock.
 - **Put a chest** against another side of it, and fuel in its slot: anything a furnace burns. One coal digs eight blocks.

@@ -23,3 +23,13 @@ id = "baritone"
 sha256 = "b1a79d09061c30f757f428d9702a1a9f39a3c11d7ad17c96d48e101150e98e0c"
 reason = "Replaced by 1.1.52: the secret half of the key that signed 1.1.38 was lost, so the entry has a new key and this version can no longer be verified."
 date = "2026-11-08"
+
+[[revoked]]
+id = "wayfarer_stones"
+reason = "No longer needed: Wayfarer Stones 0.6.3 carries this content inside it. Update Wayfarer Stones and remove this one."
+date = "2026-11-10"
+
+[[revoked]]
+id = "deepbore_quarry"
+reason = "No longer needed: Deepbore Quarry 0.1.2 carries this content inside it. Update Deepbore Quarry and remove this one."
+date = "2026-11-10"

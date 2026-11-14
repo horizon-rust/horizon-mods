@@ -1,0 +1,31 @@
+## Horizon registry entry for FPS - Display (exact 1:1 Rust port of Grayray75/FPS-Display, LGPL-3.0-only).
+id = "fpsdisplay"
+kind = "native-mod"
+name = "FPS - Display"
+summary = "FPS counter overlay with advanced min/avg/max stats, keybind toggle, and Cloth/YACL config screens, full 1:1 port."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- **HUD overlay 1:1**: the HudMixin TAIL inject ported as exact code translation: simple and advanced ("min | avg | max") FPS text, gui-scale offset division, screen-space clamping, alpha-packed text color and the scaled matrix-stack draw path.
+- **Keybind + lifecycle 1:1**: the toggle keymapping with Toggle and PushToShow keybind modes, FPS history sampling (420-frame window) on the start tick, and config save on client stop.
+- **Config 1:1**: ConfigData/ConfigManager with Gson-matching JSON tokens and both load failure branches, plus the ModMenu backend pick between YACL, Cloth Config and the vanilla fallback screen, each screen ported line-for-line.
+
+Exact 1:1 Rust translation of [FPS - Display](https://modrinth.com/mod/fpsdisplay) (upstream Grayray75/FPS-Display, LGPL-3.0-only, v5.2.0). The upstream LGPL-3.0-only license and credit are carried; ported to Rust by sparticle. Known engine-stage seams (tracked in the repo README): the mixin carrier splice for the Hud extractRenderState TAIL inject and the keybinding/tick/lifecycle event registrations wire in at engine stage; no Horizon API gaps.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-only"
+source = "https://github.com/Sparticle62ops/horizon-fpsdisplay"
+categories = ["utility"]
+tags = ["hud", "fps", "overlay"]
+
+icon = "icons/fpsdisplay.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "5.2.0"
+game = "26.3"
+file = "fpsdisplay-5.2.0.hnmod"
+sha256 = "9b8f214a4a0d8ef93f0bedffda6ca9e1ddcf1f549db9d81db83087fc11efbfbf"
+changelog = "Initial exact 1:1 Rust port of FPS - Display (Grayray75/FPS-Display, LGPL-3.0-only, v5.2.0): HUD overlay, keybind toggle modes, FPS history, config manager, ModMenu/Cloth/YACL screens and the Hud mixin as exact code translation."

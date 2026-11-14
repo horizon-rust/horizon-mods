@@ -1,0 +1,14 @@
+[package]
+name = "horizon-mod-fpsdisplay"
+version = "5.2.0"
+edition = "2021"
+license = "LGPL-3.0-only"
+publish = false
+description = "Exact 1:1 Rust translation of FPS - Display (Grayray75/FPS-Display, LGPL-3.0-only) for the Horizon client."
+
+[lib]
+path = "mixins/fpsdisplay/runtime.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }

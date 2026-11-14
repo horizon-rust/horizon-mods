@@ -1,0 +1,13 @@
+[package]
+name = "first-person-model"
+version = "1.0.0"
+edition = "2021"
+license = "MIT"
+description = "Exact 1:1 Rust translation of tr7zw/FirstPersonModel (First-person Model)"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }

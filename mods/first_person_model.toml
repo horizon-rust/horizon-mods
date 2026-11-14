@@ -1,0 +1,32 @@
+## Horizon registry entry for First-person Model (exact 1:1 Rust translation of the MIT mod).
+id = "first_person_model"
+kind = "native-mod"
+name = "First-person Model"
+summary = "Renders the full player model in first person instead of the vanilla floating hands, with the upstream offset logic, dynamic hands and per-arm visibility."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+An exact 1:1 Rust translation of [First-person Model](https://modrinth.com/mod/first-person-model): the upstream Java by tr7zw ([tr7zw/FirstPersonModel](https://github.com/tr7zw/FirstPersonModel)) translated code-for-code, carrying the upstream MIT license and credit in full.
+
+- **First-person player rendering**: the camera entity's own model rendered in first person instead of the floating hands, with the upstream body offsets (sneak 0.27, swim up 0.60, swim down 0.50, vehicle 0.20) and the z=5000 body-hide trick.
+- **Logic handler**: swim, crawl, vehicle and inventory offset states, dynamic hands and third-person-forward toggles, 1:1.
+- **19 upstream mixins**: model parts, render dispatch, held item, fishing bobber, elytra wings, armor and feature renderers.
+- **Config**: FirstPersonSettings with ConfigUpgrader v0 to v2, vanilla hands and auto-toggle item lists.
+
+Port of [tr7zw/FirstPersonModel](https://github.com/tr7zw/FirstPersonModel), copyright (c) 2019 tr7zw, MIT: the license text ships with the source. 26 unit tests on the translated logic. Rust port by sparticle, upstream by tr7zw."""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-first-person-model"
+categories = ["utility"]
+tags = ["rendering", "first-person", "gui"]
+
+icon = "icons/first_person_model.webp"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.0.0"
+game = "26.3"
+file = "first_person_model-1.0.0.hnmod"
+sha256 = "a0f9cca80f97bc723d210aff7270476d1d9d0a9f0675b06b81540ce4bbbbba44"
+changelog = "Exact 1:1 Rust translation of First-person Model (MIT) by tr7zw, license and upstream credit carried: first-person player rendering with the upstream offset logic, dynamic hands, all 19 mixins and the config upgrade path."

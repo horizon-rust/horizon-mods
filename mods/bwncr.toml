@@ -1,0 +1,33 @@
+id = "bwncr"
+kind = "native-mod"
+name = "Bad Wither No Cookie - Reloaded"
+summary = "A port of Bad Wither No Cookie - Reloaded: silence the world-wide wither and ender dragon sounds, thunder, and any sound you list."
+description = """
+A port of [Bad Wither No Cookie - Reloaded](https://gitlab.com/kreezxil/BadWitherNoCookie) by Kreezxil (originally by droidicus, with Eleksploded, Mrbysco and contributors) to Horizon, as a native mod. Ported by DispatchedToHeaven.
+
+- **Silences the world-wide sounds**, each with its own option (all on by default): the wither's spawn and death, the ender dragon's death, the thunder of lightning, and the wandering trader's and llamas' ambient sounds.
+- **Silence Us**: any other sound event, one per line (`entity.sheep.step`, `entity.cow.ambient`, a mod's own).
+- **`/bwncr listen`** shows the name of every sound in chat, to find the ones to silence; **Debug Mode** writes each sound and what the mod did with it to the log.
+- **Its own config screen** (Cloth Config, as in Java), from Mod Menu's Configure or Options > Mods > Bad Wither No Cookie Reloaded > Configure...; kept in `config/bwncr.toml`, as in Java. English and Russian.
+
+Client only: it changes what you hear, on any server.
+
+Built for Horizon Nightly 2026-11-08 (`fdc87ae`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+
+**Credits.** Bad Wither No Cookie - Reloaded is Copyright (c) droidicus, Kreezxil, Eleksploded, MIT License; the icon is the mod's own logo. The config screen follows Cloth Config by shedaniel (LGPL-3.0). Ported to Horizon by DispatchedToHeaven; the port rewrites the mod in Rust under the MIT licence and is not affiliated with its authors, Mojang or Microsoft. The Cloth Config parts (cloth.rs, cloth_sprites.rs) are under the GNU LGPL-3.0; the rest of the port is MIT."""
+authors = ["DispatchedToHeaven"]
+owners = ["DeportedToHell"]
+owner_ids = [344119465]
+license = "MIT AND LGPL-3.0-only"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/19e159b853ccc0648927458e4f29be73bb0ac82e/bwncr"
+icon = "icons/bwncr.png"
+categories = ["utility", "game-mechanics"]
+tags = ["sound", "silence", "wither", "ender-dragon", "thunder", "client", "port"]
+
+[[versions]]
+version = "1.0.3"
+published = "2026-11-11"
+game = "26.3"
+file = "bwncr-1.0.3.hnmod"
+sha256 = "ca4cdd215eac713beab711a8ab2b3424586d37d0e633fd2a03209aa9cfe1daa9"
+changelog = "First release (replaces #641): the licence now names the LGPL-3.0 of the config screen's Cloth Config parts (cloth.rs, cloth_sprites.rs), with the LGPL and GPL texts in the bundle. Port by DispatchedToHeaven. Built for Horizon Nightly 2026-11-08 (fdc87ae)."

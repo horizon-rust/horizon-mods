@@ -29,7 +29,7 @@ version = "1.0.0"
 published = "2026-10-31"
 game = "26.3"
 file = "crosshair_indicator-1.0.0.hnmod"
-sha256 = "96beba1f7c94fca492b552fb12af0d20047dc1799f0801607841d56b12786226"
+sha256 = "7238f0be09d9b1425b8f4665c9bcba9c4ea94489845c57183fd456367ac50f9b"
 signature = """
 untrusted comment: signature from minisign secret key\r
 RUS411U2KXdTNz67XDjUwaJ8if7+jDk+qXnJLdhtyjh8mk04UuZ2bme/Tzcpi1Od4ppYmvqzfZ+rEAeG2hb9Lytn+J2nFy1u8gc=\r

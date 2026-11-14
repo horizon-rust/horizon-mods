@@ -1,0 +1,30 @@
+## Horizon registry entry for Blur+ (port of Motschen/Blur).
+id = "blur_plus"
+kind = "native-mod"
+name = "Blur+"
+summary = "Spices up the vanilla blur effect: animations, colors, gradients and lots of customizability."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- Blur with the ten upstream easing curves and the animation state machine (blur radius, background alpha, gradient).
+- HSB and hex colors, packed gradient model, per-screen gates (title, container, sign, book, death, command block, options), options coefficient, debug HUD.
+
+Port of [Blur+](https://github.com/Motschen/Blur) by Motschen (MIT); credited upstream, original MIT license carried verbatim. The drawing itself (strata, gradients, text) is a seam returning draw specs for the client; gaps are documented in the port README and tracked on horizon-rust/horizon.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-blur-plus"
+categories = ["utility"]
+tags = ["blur", "graphics", "qol"]
+
+icon = "icons/blur_plus.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "blur_plus-1.0.0.hnmod"
+sha256 = "fbdfe0a387ab8049034bec65c71bccea60990201ee523f2e03ccbd212108456a"
+changelog = "Initial port of Blur+ (Motschen/Blur commit 7f57397, MIT): 1:1 logic core with config + v3 migration, the ten easing curves, the animation state machine, HSB/hex color math, the render-pass flow, screen gates, options coefficient and the debug HUD renderer."

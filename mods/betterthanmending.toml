@@ -1,0 +1,28 @@
+id = "betterthanmending"
+kind = "native-mod"
+name = "BetterThanMending"
+summary = "Sneak-use to repair mending gear with experience."
+description = """
+Sneak-use to repair mending gear with experience.
+
+A port of [BetterThanMending](https://github.com/legobmw99/BetterThanMending/tree/fabric) 1.3.0 by legobmw99, published under its licence, GPL-3.0-only. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "legobmw99"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "GPL-3.0-only"
+source = "https://github.com/lavoide/horizon-ports/tree/main/betterthanmending"
+icon = "icons/betterthanmending.png"
+categories = ["magic"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-12"
+game = "26.3"
+file = "betterthanmending-0.1.2.hnmod"
+sha256 = "ebf8e82895bc07aa0807b329f76edad59c5ecef92e1dbfb127285f8a325b45ad"
+changelog = "No experience is taken when the repair fails. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

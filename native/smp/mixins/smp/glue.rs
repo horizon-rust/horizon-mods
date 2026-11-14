@@ -163,6 +163,8 @@ const RTP_TICKET: &str = "smp:rtp";
 /// The players who left (`player_left`), with where they stood when the
 /// server still listed them, and when.
 static LEFT: Mutex<Vec<(u128, String, Option<Place>, i64)>> = Mutex::new(Vec::new());
+/// Spawn news for `Places`, from the hooks: a join, a respawn, or a spawn point set (the cause).
+static SPAWNS: Mutex<Vec<(u128, &'static str)>> = Mutex::new(Vec::new());
 /// What each `/rtp`'s reads cost the Overworld's tick, by player: reads,
 /// total and longest (µs), for the line logged when they land.
 static RTP_COST: Mutex<Vec<(u128, u32, u64, u64)>> = Mutex::new(Vec::new());
@@ -1140,6 +1142,30 @@ pub(in crate::game) fn player_left(game: &mut Game<'_>, uuid: u128, name: &str) 
     let now = chrono::Utc::now().timestamp_millis();
     LEFT.lock().unwrap_or_else(|e| e.into_inner()).push((uuid, name.to_owned(), at, now));
     BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
+}
+
+/// A joining, respawning or spawn-setting player, for `/rtp`'s random start (`Places::arrived`, `respawned`,
+/// `spawn_point`).
+pub(in crate::game) fn spawn_news(game: &mut Game<'_>, uuid: u128, kind: &'static str) {
+    if !game.native_on(ID) {
+        return;
+    }
+    SPAWNS.lock().unwrap_or_else(|e| e.into_inner()).push((uuid, kind));
+    BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
+}
+
+/// Hands the spawn news to `Places`.
+fn note_spawns(smp: &mut Smp) {
+    let news = std::mem::take(&mut *SPAWNS.lock().unwrap_or_else(|e| e.into_inner()));
+    if let Ok(p) = &mut smp.places {
+        for (uuid, kind) in news {
+            match kind {
+                "join" => p.arrived(uuid),
+                "respawn" => p.respawned(uuid),
+                cause => p.spawn_point(uuid, cause),
+            }
+        }
+    }
 }
 
 /// The players who left since the last look, into `last_positions.json`.
@@ -2512,6 +2538,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         }
     }
     note_leavers(smp);
+    note_spawns(smp);
     // `/vanish`, once a second: the game told who is hidden (after a
     // restart), and the subtitle sent to each vanished player on.
     let vanished = smp.vanish.as_ref().map(|v| v.quiet()).unwrap_or_default();

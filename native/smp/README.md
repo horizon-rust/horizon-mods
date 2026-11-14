@@ -43,7 +43,7 @@ header and footer).
 | `/home [name]`, `/sethome [name]`, `/delhome [name]`, `/homes` | your homes (`home` when unnamed): go, set or move one where you stand, delete, list |
 | `/warp <name>`, `/warps` | to a warp, the list; `/setwarp <name>`, `/delwarp <name>` for operators of level 3 |
 | `/tpa <player>`, `/tpaccept [player]`, `/tpdeny [player]` | asks to go to a player (60 s to answer); answers a request |
-| `/rtp`, `/wild` | to a random safe spot 500 to 10,000 blocks from the spawn, in the Overworld only; once every 5 minutes |
+| `/rtp`, `/wild` | to a random safe spot 500 to 10,000 blocks from the spawn, in the Overworld only; once every 10 seconds |
 | `/rules` | the server's rules |
 | `/back` | back to where you died, or where your last teleport took you from (warmup and cooldown as any teleport) |
 | `/afk` | marks you away from the keyboard until you move, turn or run a command |
@@ -250,10 +250,12 @@ berry bush or dripstone) with air or grass above it, outside another player's cl
 with none the next chunk is tried. On a game that cannot say what the terrain is, every drawn column counts. With no dry
 land among the 96, no spot after the six, or no land loaded `rtp_search_seconds` (30) after the warmup, it says so and
 nothing is spent.
-A teleport made starts `rtp_cooldown_seconds` (300) for that player, kept in `places.json` over restarts ("Wait 2 min
+A teleport made starts `rtp_cooldown_seconds` (10) for that player, kept in `places.json` over restarts ("Wait 8 s
 before your next /rtp."); a teleport called off (a move, a hit, the game failing it) doesn't. Elsewhere than the
 Overworld it refuses. The chunks it forced are let go 10 s after the landing, or at the next start if the server
 stopped first; a chunk an operator forced already is used and left forced. `/back` returns from it as from any teleport.
+
+**Random start.** A player who joins for the first time, with no spawn point (bed, respawn anchor or command), is sent to a random spot as `/rtp` finds one, at once: no warmup, no cooldown, and moving doesn't call it off. They are placed at the world spawn first and move when the land has loaded. Every death after that sends a player without a spawn point the SMP has seen set to a random spot, including veterans: a bed set before this feature isn't known to it, so it is overridden until the player sleeps in a bed again (or sets an anchor). Players with one it has seen are left where vanilla puts them.
 
 **Claims.** In a claimed chunk, only its owner, the players they trust and operators of level 3 break blocks or right
 click blocks: doors, chests, levers, buttons, placing a block, a bucket or flint on a block. Anyone else's click does

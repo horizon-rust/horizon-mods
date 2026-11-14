@@ -1,0 +1,24 @@
+id = "vastenchanting"
+kind = "mod"
+name = "Vast Enchanting (content)"
+summary = "The blocks, items, art, recipes and words of Vast Enchanting. Needs the native mod."
+description = """
+The content half of Vast Enchanting: the Vast Enchanting Table, 18 shelves, three tomes and two archives, with art drawn by the mod's own code, their recipes, loot tables, item tags and names in English and Brazilian Portuguese. **The native mod `vastenchanting_native` does the work**, and both are needed.
+
+The art, recipes and words are this mod's own; Apothic Enchanting's assets and lang are all rights reserved and none of them are used."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-enchanting"
+icon = "icons/vastenchanting.png"
+categories = ["decoration", "magic"]
+tags = ["enchanting", "bookshelves", "translation"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "vastenchanting-0.1.0.hmod"
+sha256 = "cd7c61cbd54c886dfb9d334dd1c6c467a773ea8ea14c4802d95e87259013ec0a"
+changelog = "First release: blocks, items, art, recipes and words for the Vast Enchanting Table, 18 shelves, three tomes and two archives."

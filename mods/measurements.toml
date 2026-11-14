@@ -1,0 +1,39 @@
+id = "measurements"
+kind = "native-mod"
+name = "measurements"
+summary = "A Horizon port of measurements."
+description = """
+A port of [Measurements](https://github.com/Mrbysco/Measurements) for Horizon.
+
+**Implemented so far**
+
+- The item `measurements:tape_measure`: right-click a block to place point A, right-click again to place point B and finish the measurement. The action bar shows `Distance: <d> blocks (X: <dx>, Y: <dy>, Z: <dz>)`.
+- The distance is Euclidean over the coordinate differences, printed with one decimal (`5.0`, `7.1`, `0.0`), with the deltas as integers.
+- The next click starts a new point A; shift-right-click removes the latest measurement (`Measurement undone (N left)`, or `Measurement cleared`).
+- The same block twice reports `Distance: 0.0 blocks (X: 0, Y: 0, Z: 0)`.
+- A session is dropped when the tape leaves the main hand, when the player changes dimension, and one tick after a player leaves.
+
+**Not yet ported**
+
+- **Delivery is the action bar, not an in-world box.** Upstream is a client-only renderer (`MeasurementBox` draws an AABB and three axis labels); it has no chat/action-bar readout and no Euclidean distance. The pin has no client render hook usable in the headless harness, so the port reports through `native_action_bar`. Deferred: the drawn box, its colours, text size, line width and the live crosshair preview.
+- **The port prints the Euclidean distance (one decimal) and coordinate differences**, where upstream's labels are inclusive block counts (`|Δ|+1`): the same 0→5 measurement reads 5 here and 6 in upstream's label.
+- One process-wide client list upstream becomes per-player sessions here, pruned one tick after a player leaves (the pin has no quit hook).
+- The "still holding" reset checks the main hand only; an off-hand-only tape can start a measurement and is cleared on the next player tick.
+- The recipe is accepted by `horizon-mod check` with the supplied `#c:ingots/iron` tag, but the harness did not craft it in game.
+
+MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Mrbysco", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/measurements"
+icon = "icons/measurements.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "measurements-0.1.0.hnmod"
+sha256 = "2e25de61839f3ba8c5d6f3c91a50b3570be594dca718da770890a6cddc8e33cb"

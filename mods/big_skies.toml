@@ -1,0 +1,40 @@
+id = "big_skies"
+kind = "native-mod"
+name = "Big Skies"
+summary = "Adds atmospheric dynamic weather based on climate across all biomes."
+description = """
+Description: Weather is a real place on the map rather than a switch for the whole world. Storms, showers, fronts and overcast decks are born, grow, drift with the wind and die, so you can stand in sunshine and watch a thunderstorm on the horizon, see its rain shaft and lightning, and hear it rumble long before it arrives.
+
+A physical sky (Rayleigh, Mie and ozone scattering) with golden sunsets, violet twilight and haze over Horizon's distant terrain.
+Soft volumetric clouds at real scale, from fair-weather cumulus to 12 km thunderstorms with anvils.
+
+Clouds that suit the biomes under them; snow on the peaks and rain in the valleys.
+Thunder that depends on distance, morning valley fog, northern lights, shooting stars, rainbows after rain, and mist with spray rainbows at waterfalls.
+/skies for the forecast and controls (bring a storm, hold a kind of day, set the wind, timelapse).
+
+For the best experience I highly recommended that you turn the game's Clouds, Fog and Weather off and set your LOD Distance up to 128 or more. 
+
+Pairs with the Natural Lighting shader pack: passing clouds dim its light and fade its shadows."""
+authors = ["Dangerousbros"]
+owners = ["Dangerousbros"]
+owner_ids = [73591784]
+license = "MIT"
+source = "https://github.com/Dangerousbros/big-skies"
+icon = "icons/big_skies.png"
+categories = ["decoration", "adventure", "library"]
+tags = ["weather", "sky", "clouds", "storms", "fog", "atmosphere"]
+screenshots = ["screenshots/big_skies/1.jpg", "screenshots/big_skies/2.jpg", "screenshots/big_skies/3.jpg", "screenshots/big_skies/4.jpg", "screenshots/big_skies/5.jpg", "screenshots/big_skies/6.jpg", "screenshots/big_skies/7.jpg"]
+key = "RWT/xhEt5XS71SRk1NbR5GH1N0LsquMUGltgpw+6q2+esgnXjbhT8uBP"
+
+[[versions]]
+version = "0.3.0"
+published = "2026-11-09"
+game = "26.3"
+file = "big_skies-0.3.0.hnmod"
+sha256 = "69a1fc8393ccc37d31e712fbbf6c3480c1a76cb91489b70bfc181ac0a6729239"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUT/xhEt5XS71Xmjx2qVSS8wnpGBGldLKzQUTpFhf4v1pdkLua6/EgyyNuEFTZZXC+XaWOf5bRWJkgv3SNTV+Cn1zA9r9oSJ0AU=\r
+trusted comment: big_skies 0.3.0\r
+NUkK+tD0mfeIpfI9GiDKaWhDcBahH1X7soryYPyxHRiA3R9dQFAFSWU12HBgjAQb+X8W570FUqaZINEeUK1PBw=="""
+changelog = "Initial release."

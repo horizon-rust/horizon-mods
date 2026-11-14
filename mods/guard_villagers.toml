@@ -1,0 +1,31 @@
+id = "guard_villagers"
+kind = "native-mod"
+name = "Guard Villagers"
+summary = "Equips villages with armored guards that actively patrol, fight off raids, and rally together if provoked."
+description = """
+Your villages can now actually fight back. Guard Villagers adds iron-armored guards to every village (two for every three villagers) to hold the line against whatever comes out at night. Guards are added on top of your existing villagers, never converted, so your librarians, farmers, and toolsmiths keep their jobs and trades untouched while armed patrols walk beside them.
+
+They wear full iron armor and carry either a sword, a sword and shield, or a crossbow (about one in three is an archer). They hunt down zombies, skeletons, spiders, creepers, and vindicators on sight, and if you hit one, every guard in that village sprints at you at triple speed. Stray arrows from archers won't start friendly-fire brawls, and neighboring villages stay out of fights unless one of their own gets hit. Even better: breed two guards together and you get a baby guard, while losing villagers to raids shrinks your garrison right along with them.
+
+It works anywhere villagers live. Natural towns, custom player-built bases, or even a lone farmer out in the middle of nowhere all get their own guards automatically. To see it fast, find a village (/locate structure #minecraft:village), set /time set night, and wait a minute for them to show up, then hit one if you dare."""
+authors = ["CGRLabs"]
+owners = ["CGRLabs"]
+owner_ids = [213680048]
+license = "MIT"
+source = "https://github.com/CGRLabs/guard-villagers"
+icon = "icons/guard_villagers.png"
+categories = ["game-mechanics", "utility"]
+tags = ["villagers", "village", "guards", "combat", "defence", "survival", "vanilla-friendly"]
+key = "RWSjKGIJUKKXHvvhxzNN2VPPrXSEr47JXVgGpCwrOOHoneuQjTWWvk1g"
+
+[[versions]]
+version = "0.7.1"
+published = "2026-11-14"
+game = "26.3"
+file = "guard_villagers-0.7.1.hnmod"
+sha256 = "a5dd35d47faecf648b3adf385d4fc9a5c9fbdc57c149eb39ed87ae9dd7d0290e"
+signature = """
+untrusted comment: signature from Horizon Hub signing key (CGRLabs)
+RUSjKGIJUKKXHgXjz82z8jRdXh+S0pZJLQ9ibnJXbUr4PPXyG8ejyK8kDw2+j260aZTCPMMHSg/HDGFGIgwFoXCO4iy5J358HQc=
+trusted comment: timestamp:1794500431\tfile:guard_villagers-0.7.1.hnmod
+xzJZcivyZDrDXoNktIToLm7fVOavxY4LQcxxKKTlAktuoJpIa6fUwa8xN/FqGaNdVpNsnOaZoZN1L6bQrX6lAw=="""

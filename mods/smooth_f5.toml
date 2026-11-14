@@ -1,0 +1,30 @@
+## Horizon registry entry for Smooth F5 (port of Coun7ered/smooth_f5).
+id = "smooth_f5"
+kind = "native-mod"
+name = "Smooth F5"
+summary = "Smooths the third-person camera: no hard snaps when you toggle F5, gentle springs while you move, an eased return to first person."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- No hard camera snaps when toggling between perspectives.
+- Gentle camera springs while you move; eased return into first person.
+
+Port of [Smooth F5](https://github.com/Coun7ered/smooth_f5) by Countered (CC0-1.0); credited upstream, original license preserved. Feature gaps vs upstream are documented in the port README and tracked on horizon-rust/horizon.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-smooth-f5"
+categories = ["utility"]
+tags = ["camera", "perspective", "animation", "qol"]
+
+icon = "icons/smooth_f5.png"
+
+[[versions]]
+published = "2026-11-06"
+version = "1.0.0"
+game = "26.3"
+file = "smooth_f5-1.0.0.hnmod"
+sha256 = "c08138cb7823fff318859976adcd6298f33bd8d841d5206e8c028008535d9932"
+changelog = "First release: eased perspective toggle, camera springs, first-person blend-in on the F5 key."

@@ -11,17 +11,25 @@ A port of [BetterF3](https://github.com/TreyRuffy/BetterF3) by cominixo and Trey
 - **F3+M** opens the config, **F3+F** / **Shift+F3+F** change the render distance, **Ctrl+F3+F** the simulation distance.
 - **BetterF3's own config screens** (Cloth Config), from Mod Menu's Configure, Options > Mods > BetterF3 or F3+M. English and Russian.
 
-Built for Horizon Nightly 2026-11-07 (`2ebf00a`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
 
-**Credits.** BetterF3 is Copyright (c) cominixo and TreyRuffy, MIT License. This port rewrites it in Rust under the same licence and is not affiliated with its authors, Mojang or Microsoft."""
+**Credits.** BetterF3 is Copyright (c) cominixo and TreyRuffy, MIT License. This port rewrites it in Rust under the same licence and is not affiliated with its authors, Mojang or Microsoft. The Cloth Config parts (cloth.rs, cloth_sprites.rs) are under the GNU LGPL-3.0; the rest of the port is MIT."""
 authors = ["DeportedToHell"]
 owners = ["DeportedToHell"]
 owner_ids = [344119465]
-license = "MIT"
-source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/betterf3"
+license = "MIT AND LGPL-3.0-only"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/betterf3"
 icon = "icons/betterf3.png"
 categories = ["utility"]
 tags = ["f3", "debug", "hud", "customization", "port"]
+
+[[versions]]
+version = "1.0.3"
+published = "2026-11-14"
+game = "26.3"
+file = "betterf3-1.0.3.hnmod"
+sha256 = "e6a866c55ac0d0c8b5a800a1340b7e124e8656cb44484736e7e2f114dd3485e2"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064). Replaces 1.0.2 (#693)."
 
 [[versions]]
 version = "1.0.0"

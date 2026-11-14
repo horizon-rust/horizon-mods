@@ -1,0 +1,33 @@
+## Horizon registry entry for Polymorph (exact 1:1 Rust translation of the LGPL-3.0-or-later mod).
+id = "polymorph"
+kind = "native-mod"
+name = "Polymorph"
+summary = "Recipe conflict resolution: when several recipes produce the same item, the crafter picks between them instead of the menu silently taking the first match."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+An exact 1:1 Rust translation of [Polymorph](https://modrinth.com/mod/polymorph): the upstream Java by Illusive Soulworks ([IllusiveSoulworks/polymorph](https://github.com/IllusiveSoulworks/polymorph)) translated code-for-code, carrying the upstream license and credit in full.
+
+- **Conflict keying**: RecipePair, RecipeCache, RecipeData, BlockEntityRecipeData and PlayerRecipeData: per-block-entity and per-player selected recipes, cache invalidation and data write-back.
+- **Lookup ladder**: RecipeManager (get_player_recipe, then get_block_entity_recipe), with the PolymorphApiSeam for engine-facing recipe access.
+- **Wrappers**: IngredientWrapper, RecipeWrapper and CraftingRecipeWrapper with the shaped/shapeless conflict comparison transcribed from upstream.
+- **Network**: all seven packets (C2S: PlayerRecipeSelection, BlockEntityListener, PersistentRecipeSelection; S2C: PlayerRecipeSync, RecipesList, HighlightRecipe, UpdatePreview) with their FriendlyByteBuf field order, the ServerPacketEnv / ClientPacketEnv seams and the client handler ladder.
+- **Ticker**: the block-entity ticker-side listener registration.
+
+Port of [IllusiveSoulworks/polymorph](https://github.com/IllusiveSoulworks/polymorph), copyright (C) 2020-2022 Illusive Soulworks, LGPL-3.0-or-later: the license text ships with the source. 66 unit tests on the translated logic. Rust port by sparticle, upstream by Illusive Soulworks."""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-polymorph"
+categories = ["utility"]
+tags = ["crafting", "recipes", "gui"]
+
+icon = "icons/polymorph.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.0.0"
+game = "26.3"
+file = "polymorph-1.0.0.hnmod"
+sha256 = "3f71bd20e722d3a9f640941f45d73ee619752a24768e0e472d752b46af68f1ef"
+changelog = "Exact 1:1 Rust translation of Polymorph (LGPL-3.0-or-later) by Illusive Soulworks, license and upstream credit carried: conflict keying and cache, the recipe lookup ladder, all seven network packets, and the block-entity ticker."

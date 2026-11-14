@@ -1,0 +1,40 @@
+id = "laserbridges"
+kind = "native-mod"
+name = "laserbridges"
+summary = "A Horizon port of laserbridges."
+description = """
+A port of [Laser Bridges &amp; Doors](https://github.com/Mars-The-Planet/Laser-Bridges-And-Doors) (MIT, by Mars) for Horizon. This first slice is the **laser sources and the beams they project**.
+
+**Implemented so far**
+
+- In scope: the four sources `laser_source_block`, `laser_source_fullblock`, `laser_fence_source_block` and `laser_fence_source_fullblock`, with the upstream state set (`face` × `facing` × `powered` × `color`) and their upstream outlines and powered outlines.
+- The two beams `laser_block_powered` and `laser_fence_powered` (unbreakable, light 10, thin collidable plates) that the sources write and clear.
+- Placement: the clicked face becomes `face` and the placer's direction `facing`, with the attached variants' sturdy-support requirement.
+- The bridge generator: the beam's length, the blocks it cuts through, where an obstruction stops it, and shrinking back when a source is switched off or removed.
+- Redstone-driven switching, the carried models, textures, sounds metadata, recipes, loot and language, and the source and beam blocks declared as one content pack inside the `.hnmod`.
+
+**Not yet ported**
+
+- The two receivers (`laser_attached_receiver`, `laser_attached_receiver_fence`): their blocks, models, textures, lang and recipes, and their redstone output (the colour copy from the laser in front).
+- Dyeing a source with a dye or from a dispenser.
+- The `laserbridges:on`/`off` playback sounds.
+- The `config/laserbridges.json` options (`max_length`, `blocks_cut_through_by_lasers`): the port uses upstream's defaults.
+- A colour change mid-line strands the far cells — upstream's exact-state test, kept deliberately.
+- Beam blocks are unbreakable like upstream (the bedrock template), so a beam has no drop and no break sound.
+
+MIT; the original copyright and permission notices travel inside the archive at `mixins/laserbridges/LICENSE`."""
+authors = ["Mars", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/laserbridges"
+icon = "icons/laserbridges.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "laserbridges-0.1.0.hnmod"
+sha256 = "03342186471cb9f70eba549fdc25ad15cd6dc362583edab3b6b44a69059a6753"

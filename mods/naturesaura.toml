@@ -1,0 +1,41 @@
+id = "naturesaura"
+kind = "native-mod"
+name = "naturesaura"
+summary = "A Horizon port of naturesaura."
+description = """
+A port of [Nature's Aura](https://github.com/Ellpeck/NaturesAura) for Horizon.
+
+**Implemented so far**
+
+- The chunk aura: drain spots (base 1,000,000 + spots) and the aura bloom (150,000 aura once, when it appears).
+- The Nature's Altar's 9×4×9 multiblock and its **500,000-aura container** (300 aura a tick from the area, only in the Overworld and the Nether).
+- The ritual for the three catalyst-free recipes, the right-click insert/take, and the materials that make the multiblock buildable in game.
+- Why this is the smallest honest loop: the altar's only inputs are aura and one item, its only output one item, so the loop closes with no GUI, no energy, no fluid and no multiblock-machine API, yet every piece of it is the mod's own core behaviour.
+
+**Not yet ported**
+
+| Gap | Shape | What the slice does instead |
+|---|---|---|
+| `IAuraType` per dimension | the pin has no aura-type registry | the altar pulls in the Overworld and the Nether and not in the End — upstream's rule, no type objects |
+| Aura spot storage | NeoForge attaches to `LevelChunk`; the pin has `Holder::Chunk` attachments | a `ChunkAura` codec compound `{spots: [...]}`; same arithmetic |
+| The client aura overlay | no client HUD in the slice | `sync: false`; the readouts are commands, and a later slice adds the overlay |
+| The altar's waterlogging | the slice's templates have no waterlogged state | not carried |
+| The bloom's ground set | `minecraft:poppy` allows mycelium, moss, mud and rooted dirt too | upstream's five grounds plus four extra template grounds |
+| Aura-container items | the altar's "fill the held item's aura" branch | not in the slice; the tick goes straight to the recipe |
+
+A saved altar whose recipe index is no longer in the table drops the run instead of panicking. MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Ellpeck", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/naturesaura"
+icon = "icons/naturesaura.png"
+categories = ["utility", "equipment", "game-mechanics"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "naturesaura-0.1.0.hnmod"
+sha256 = "f354fd5ca632c02fda37de30e0a4418d0afd6d3ea918715de384ab9a7a80b0fa"

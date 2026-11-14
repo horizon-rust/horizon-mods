@@ -1,0 +1,30 @@
+id = "trinketlantern"
+kind = "mod"
+name = "Wearable lanterns"
+summary = "Wearable lanterns for the trinket lantern slot."
+description = """
+Wearable lanterns for the trinket lantern slot.
+
+**Needs** [trinkets](https://playhorizon.dev/mods/trinkets) and [trinkets_native](https://playhorizon.dev/mods/trinkets_native) installed too.
+
+**Differences from the original:** The lanterns have their own creative tab and are worn through the Trinkets port's menu on the G key. Their light comes from the Radiant Gear port and couldn't be seen in testing, because Horizon's dynamic lighting showed no light at all in the tested build.
+
+A port of [Wearable lanterns](https://github.com/AbsentAbigail/WearableLantern) 1.0.1 by tsuki, Absent Abigail, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "tsuki", "Absent Abigail"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/trinketlantern"
+icon = "icons/trinketlantern.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "1.0.1-horizon.1"
+published = "2026-11-11"
+game = "26.3"
+file = "trinketlantern-1.0.1-horizon.1.hmod"
+sha256 = "39873090fa9fd7338c5815adf6031603c590d95c8cfecf391139480af3b2e1e5"
+changelog = "First release."

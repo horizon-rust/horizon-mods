@@ -1,0 +1,30 @@
+id = "jecharacters"
+kind = "native-mod"
+name = "Just Enough Characters"
+summary = "Chinese pinyin matching, keyboard layouts and configuration for Searchables consumers."
+description = """
+Adds Chinese pinyin matching for native Searchables consumers, keyboard layouts and the original configuration. Requires **Searchables ^1.0.3**. Use the single combined `jecharacters-4.6.4.hmod` with the single combined Searchables archive: each includes native code and language resources under its own mod ID. Ordinary launcher 0.2.59 supports this installation flow.
+
+Matching reaches consumers through Searchables; additional consumers need their own integration.
+
+Port of [Just Enough Characters by Towdium (Juntong Liu)](https://github.com/Towdium/JustEnoughCharacters). Includes [pinin-rs by Lasm Gratel](https://github.com/LasmGratel/pinin-rs) and [PinIn by Towdium](https://github.com/Towdium/PinIn), under MIT. Separately licensed plain-text dictionary data is credited to [rime-terra-pinyin](https://github.com/rime/rime-terra-pinyin) (LGPL-3.0) and [pinyin-data](https://github.com/mozillazg/pinyin-data) (MIT). The complete package is `MIT AND LGPL-3.0-only`; full notices, data source and reconstruction instructions are included.
+
+Native source mod for Horizon 26.3. The launcher compiles it into the game, with the game's account permissions. The published build targets Horizon `1453e0e614af4b2d04dd0d228a94162b5d459910` (API 415) and horizon-mixins `5a64af938ec86b00d53d16a408aabc0038fb3e57`; latest Nightly compatibility is pending registry CI.
+"""
+authors = ["Vex193"]
+owners = ["Vex193"]
+owner_ids = [260219205]
+license = "MIT AND LGPL-3.0-only"
+source = "https://github.com/Vex193/horizon-ports/tree/e4d9d4f00b4d1a705a59b83a4b32ad048a1c3e80/mods/jecharacters/source"
+icon = "icons/jecharacters.png"
+categories = ["utility"]
+tags = ["port","search","library"]
+
+[[versions]]
+version = "4.6.4"
+published = "2026-11-13"
+game = "26.3"
+file = "jecharacters-4.6.4.hmod"
+sha256 = "1c1954caa80c3c87559c05bb9b7213b1b2f1c4cb4d4a92abada8913e78ad57ae"
+changelog = "Initial native registry submission. Pinned Horizon API 415 validation and archive checks are recorded in the source repository; latest Nightly CI is pending."
+

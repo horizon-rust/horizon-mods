@@ -1,0 +1,28 @@
+id = "no_telemetry"
+kind = "native-mod"
+name = "No Telemetry"
+summary = "Disables in-game usage telemetry, outbox writes and the anonymous usage-count heartbeat."
+description = """
+Disables the game's usage telemetry endpoint, consent predicate, outbox writes and anonymous usage-count heartbeat startup. It is always active while installed and does not create a configuration file. Its scope is the game; a separately installed launcher has its own behavior.
+
+Independent MIT Rust implementation of the documented behavior of [No Telemetry by kb1000](https://github.com/kb-1000/no-telemetry). The original project is MPL-2.0; its credit and complete upstream notice are retained separately. No original implementation code is included.
+
+Native source mod for Horizon 26.3. The launcher compiles it into the game, with the game's account permissions. The published build targets Horizon `1453e0e614af4b2d04dd0d228a94162b5d459910` (API 415) and horizon-mixins `5a64af938ec86b00d53d16a408aabc0038fb3e57`; latest Nightly compatibility is pending registry CI.
+"""
+authors = ["Vex193"]
+owners = ["Vex193"]
+owner_ids = [260219205]
+license = "MIT"
+source = "https://github.com/Vex193/horizon-ports/tree/e4d9d4f00b4d1a705a59b83a4b32ad048a1c3e80/mods/no_telemetry/source"
+icon = "icons/no_telemetry.png"
+categories = ["utility"]
+tags = ["port","privacy"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-13"
+game = "26.3"
+file = "no_telemetry-1.0.0.hnmod"
+sha256 = "2e647175add361ec9b7e50e44c46baae415e1d92a54e74cc5880da52a5ffe6e8"
+changelog = "Initial native registry submission. Pinned Horizon API 415 validation and archive checks are recorded in the source repository; latest Nightly CI is pending."
+

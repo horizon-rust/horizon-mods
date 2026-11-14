@@ -1,0 +1,28 @@
+id = "advancementnomore"
+kind = "native-mod"
+name = "AdvancementNoMore"
+summary = "Disables advancement loading and progression while preserving existing progress files."
+description = """
+Disables the advancement subsystem: tree loading, player advancement progression, grant/revoke, synchronization and advancement saves. Existing advancement progress JSON files are preserved. Advancement-driven rewards and recipe unlocks have no advancement tree to execute. The installed mod is always active and has no configuration file.
+
+Port of [AdvancementNoMore by 狂想ThePotato / MCTeamPotato](https://github.com/MCTeamPotato/AdvancementNoMore), under MIT. Original copyright and license notices are retained.
+
+Native source mod for Horizon 26.3. The launcher compiles it into the game, with the game's account permissions. The published build targets Horizon `1453e0e614af4b2d04dd0d228a94162b5d459910` (API 415) and horizon-mixins `5a64af938ec86b00d53d16a408aabc0038fb3e57`; latest Nightly compatibility is pending registry CI.
+"""
+authors = ["Vex193"]
+owners = ["Vex193"]
+owner_ids = [260219205]
+license = "MIT"
+source = "https://github.com/Vex193/horizon-ports/tree/e4d9d4f00b4d1a705a59b83a4b32ad048a1c3e80/mods/advancementnomore/source"
+icon = "icons/advancementnomore.png"
+categories = ["utility"]
+tags = ["port","advancements"]
+
+[[versions]]
+version = "1.0.1-rust.1"
+published = "2026-11-13"
+game = "26.3"
+file = "advancementnomore-1.0.1-rust.1.hnmod"
+sha256 = "9f8105ca860bb5bac9c17cef814cc492f477062afd925655ed920c9c3bdc008d"
+changelog = "Initial native registry submission. Pinned Horizon API 415 validation and archive checks are recorded in the source repository; latest Nightly CI is pending."
+

@@ -1,0 +1,30 @@
+id = "openloader"
+kind = "native-mod"
+name = "OpenLoader"
+summary = "Loads global resource and data packs from folders and ZIP files."
+description = """
+Loads folder and ZIP packs from `config/openloader/resources` and `config/openloader/data`, with additional folders and enable flags in `config/openloader/advanced_options.json`. Configuration is read at first use until restart; F3+T and `/reload` rediscover pack files. Data packs use normal world selection and `/datapack` commands.
+
+Use supported Minecraft 26.3 pack content. Older Java pack contents require separate conversion.
+
+Independent MIT Rust implementation of the documented global pack-loading behavior of [OpenLoader by Darkhax](https://github.com/Darkhax-Minecraft/Open-Loader). The original project is LGPL-2.1; its credit and complete upstream notice are retained separately. No original implementation code is included.
+
+Native source mod for Horizon 26.3. The launcher compiles it into the game, with the game's account permissions. The published build targets Horizon `1453e0e614af4b2d04dd0d228a94162b5d459910` (API 415) and horizon-mixins `5a64af938ec86b00d53d16a408aabc0038fb3e57`; latest Nightly compatibility is pending registry CI.
+"""
+authors = ["Vex193"]
+owners = ["Vex193"]
+owner_ids = [260219205]
+license = "MIT"
+source = "https://github.com/Vex193/horizon-ports/tree/e4d9d4f00b4d1a705a59b83a4b32ad048a1c3e80/mods/openloader/source"
+icon = "icons/openloader.png"
+categories = ["utility"]
+tags = ["port","resources","datapacks"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-13"
+game = "26.3"
+file = "openloader-1.0.0.hnmod"
+sha256 = "7d5422d0be554f75994e711769146fe1e2365ceb00e7fca7f5201b22b2315505"
+changelog = "Initial native registry submission. Pinned Horizon API 415 validation and archive checks are recorded in the source repository; latest Nightly CI is pending."
+

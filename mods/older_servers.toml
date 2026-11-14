@@ -1,0 +1,30 @@
+id = "older_servers"
+kind = "native-mod"
+name = "Older Servers"
+summary = "Join 1.20.2 to 26.2 servers without an environment variable, with a version picker on the Multiplayer screen."
+description = """
+Turns on Horizon's own older-server translation without `HORIZON_OLDER_SERVERS=1` and adds a version picker to the Multiplayer and Direct Connect screens.
+
+- A version button (top right) opens a picker: auto-detect, or a fixed version per server; favourites; versions Horizon can't join are greyed out.
+- F3 shows the client and server versions while connected.
+- Settings in Options > Mods > Older Servers.
+
+The protocol translation is Horizon's (`horizon_client_lib::net::older_server`); this mod switches it on, picks the version and fills a few gaps (teleport confirmation on Grim servers, 1.21.11 items).
+
+**Provenance.** The picker's layout follows ViaFabricPlus's screens (GPL-3.0). None of its code is used: the behaviour and layout were rewritten in Rust with Horizon's own widgets. Not affiliated with ViaFabricPlus. Pinned to Horizon `9f42064` (it reaches `older_servers_enabled`, `older_server` and `item::older_layout`, which are not hook points)."""
+authors = ["BnCatt"]
+owners = ["BnCatt"]
+owner_ids = [262346062]
+license = "MIT"
+source = "https://github.com/BnCatt/horizon-older-servers"
+icon = "icons/older_servers.png"
+categories = ["utility"]
+tags = ["multiplayer", "version", "protocol"]
+
+[[versions]]
+version = "2.2.0"
+published = "2026-11-14"
+game = "26.3"
+file = "older_servers-2.2.0.hnmod"
+sha256 = "1069bfcc0d759e132b054cc88ae0faeb9b68cdd3d9e4c79788dc5c3db15d0432"
+changelog = "First listing. 2.2.0: Nightly 9f42064 (2026-11-13), 1.20.2 to 1.20.4 added to the picker."

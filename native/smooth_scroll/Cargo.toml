@@ -1,0 +1,12 @@
+[package]
+name = "smooth-scroll"
+version = "3.0.1"
+edition = "2021"
+license = "GPL-3.0-only"
+description = "Exact 1:1 Rust translation of SmajloSlovakian/Minecraft-Smooth-Scrolling (Smooth Scrolling)"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+serde_json = { version = "1", features = ["preserve_order"] }

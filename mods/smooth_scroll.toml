@@ -1,0 +1,31 @@
+## Horizon registry entry for Smooth Scrolling (exact 1:1 Rust translation of the GPL-3.0-only mod).
+id = "smooth_scroll"
+kind = "native-mod"
+name = "Smooth Scrolling"
+summary = "Makes every list scroll smoothly (chat, inventories, menus, creative tabs) instead of jumping one slot per wheel tick."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+An exact 1:1 Rust translation of [Smooth Scrolling](https://modrinth.com/mod/smooth-scroll): the upstream Java by SmajloSlovakian ([SmajloSlovakian/Minecraft-Smooth-Scrolling](https://github.com/SmajloSlovakian/Minecraft-Smooth-Scrolling)) translated code-for-code, carrying the upstream license and credit in full.
+
+- **Smooth chat scrolling** with inertia, snapping and animation settings carried from upstream, including the chat-position-with-scaling fix.
+- **Inventories and containers**: AbstractContainerScreen, AbstractScrollArea, ItemPickerMenu, creative tabs, EditBox, Hud, MouseHandler, precise scissor rects, suggestions list, screens and the miscellaneous set, all 1:1.
+- **Config screen** under Mod Menu with the upstream option set (SmoothSc config, NewConfig base, custom slider and tab widgets).
+
+Port of [SmajloSlovakian/Minecraft-Smooth-Scrolling](https://github.com/SmajloSlovakian/Minecraft-Smooth-Scrolling), copyright (C) SmajloSlovakian, GPL-3.0-only: the license text ships with the source. 109 unit tests on the translated logic. Rust port by sparticle, upstream by SmajloSlovakian."""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "GPL-3.0-only"
+source = "https://github.com/Sparticle62ops/horizon-smooth-scroll"
+categories = ["utility"]
+tags = ["scrolling", "ui", "chat", "gui"]
+
+icon = "icons/smooth_scroll.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.0.0"
+game = "26.3"
+file = "smooth_scroll-1.0.0.hnmod"
+sha256 = "eb715eb894fe59bd92868b8ea700ce1d1aa24ee0ae5c6b0deba5359fcdf98a59"
+changelog = "Exact 1:1 Rust translation of Smooth Scrolling (GPL-3.0-only) by SmajloSlovakian, license and upstream credit carried: smooth chat scrolling, container and menu mixins, config screen, all with the upstream option set."

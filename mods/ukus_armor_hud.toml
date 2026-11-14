@@ -1,0 +1,29 @@
+id = "ukus_armor_hud"
+kind = "native-mod"
+name = "uku's Armor HUD"
+summary = "A port of uku's Armor HUD 0.14.0: a vanilla-like armour widget beside the hotbar with durability, warnings and its tabbed config screen."
+description = """
+A port of [uku's Armor HUD](https://modrinth.com/mod/ukus-armor-hud) 0.14.0+mc26.3 ([uku3lig/armor-hud](https://github.com/uku3lig/armor-hud), MIT, Copyright (c) 2021 BerdinskiyBear, fork by uku) to Horizon.
+
+A minimalist, vanilla-like widget beside the hotbar with your armour, its durability bars, and a warning icon (plus a breaking sound) when a piece runs low. The original's options are reproduced with its own numbers: anchors, sides, X/Y offsets, the four slot styles, horizontal and vertical layouts, when the widget shows, the off-hand slot and attack indicator, durability as bar/number/percentage, reversed order, empty slot icons, warning thresholds and bob, pushing boss bars, effect icons and subtitles out of the way.
+
+- **Options > Mods > uku's Armor HUD**: the switch, its keys (Toggle Armor Hud, Open Config Screen; unbound like the original's) and every option.
+- The tabbed config screen (Style, Position, Warning) opens in a world with its key.
+
+Hook API 411; every read of game internals sits in one module (`peek.rs`). The icon, warning icon and breaking sound are the original's (MIT). Not affiliated with uku or BerdinskiyBear."""
+authors = ["BerdinskiyBear", "uku", "BnCatt"]
+owners = ["BnCatt"]
+owner_ids = [262346062]
+license = "MIT"
+source = "https://github.com/BnCatt/horizon-armor-hud"
+icon = "icons/ukus_armor_hud.png"
+categories = ["equipment", "utility"]
+tags = ["hud", "armor", "durability"]
+
+[[versions]]
+version = "0.14.0"
+published = "2026-11-14"
+game = "26.3"
+file = "ukus_armor_hud-0.14.0.hnmod"
+sha256 = "365de999277e387c8e46a11d5eb0132727a5b9177b307ce0695236e0693e8c7e"
+changelog = "First listing. Built from commit c487a25 (hook API 411; tested on Horizon 9f42064, Nightly 2026-11-13)."

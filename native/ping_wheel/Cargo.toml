@@ -1,0 +1,16 @@
+[package]
+name = "ping-wheel"
+version = "26.3.0"
+edition = "2021"
+license = "MIT"
+description = "Exact 1:1 Rust translation of Ping Wheel by LukenSkyne (MIT)"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.test]
+opt-level = 0

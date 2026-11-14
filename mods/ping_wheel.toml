@@ -1,0 +1,34 @@
+## Horizon registry entry for Ping Wheel (exact 1:1 Rust translation of the MIT mod).
+id = "ping_wheel"
+kind = "native-mod"
+name = "Ping Wheel"
+summary = "A radial ping wheel: ping locations and directions, private and team channels, distance display and a full settings screen."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+An exact 1:1 Rust translation of [Ping Wheel](https://modrinth.com/mod/ping-wheel): the upstream Java by LukenSkyne ([LukenSkyne/ping-wheel](https://github.com/LukenSkyne/ping-wheel)) translated code-for-code, carrying the upstream license and credit in full.
+
+All fourteen upstream modules are carried 1:1 as a Horizon client runtime splice, with crate:: mapped to super:: for the carrier:
+
+- **Screens**: the SettingsScreen with its nine options (volume, duration, distance, correction, ping size, item and direction toggles, player-info and team-color modes), the 128-character channel EditBox and the Done button.
+- **Render**: the overlay, direction-indicator and ping-location renderers, with the upstream safe-zone math and distance formatting.
+- **Network**: the network play channel with the ping data payload.
+- **Integration**: the client integration with the team-context ladder (voice chat, FTB teams, vanilla team, none), legacy migration and the resource-reload listener.
+
+Port of [LukenSkyne/ping-wheel](https://github.com/LukenSkyne/ping-wheel), copyright (c) LukenSkyne, MIT: the license text ships with the source. 52 unit tests on the translated logic. Rust port by sparticle, upstream by LukenSkyne."""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-ping-wheel"
+categories = ["utility"]
+tags = ["ping", "hud", "multiplayer"]
+
+icon = "icons/ping_wheel.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.0.0"
+game = "26.3"
+file = "ping_wheel-1.0.0.hnmod"
+sha256 = "95292c0503150a128975fd069b0f0fa43e04cd141ce56711b7321ff71c552ec4"
+changelog = "Exact 1:1 Rust translation of Ping Wheel (MIT) by LukenSkyne, license and upstream credit carried: all fourteen upstream modules, 1:1, screens, renderers, the network channel and the client integration."

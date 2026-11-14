@@ -1,0 +1,36 @@
+id = "chisel"
+kind = "native-mod"
+name = "chisel"
+summary = "The chisel tool and the whole andesite block family, with 32 variants that convert in place."
+description = """
+A Horizon port of [Chisel Reborn](https://github.com/matthewperiut/Chisel-Fabric) (GPL-2.0-only, by **matthewperiut**; the original Chisel by **ttterrag1098** and contributors) for Horizon. This first slice carries the whole **andesite** block family and the **chisel** tool that converts between its members.
+
+**Implemented so far**
+
+- **The chisel converts on a mining attempt**, as upstream's `ChiselItem.canMine` does: with a chisel in hand, left-clicking a block that belongs to a chisel group replaces it with the next member of that group and cancels the break, so the chisel never mines. One press converts exactly one block (implemented on the dig's start event, which is cancellable).
+- **The andesite family, carried whole:** 32 variants — 30 plain cubes, the two `axis` variants (`pillar`, `twist`) and the three weighted-model variants (`chaotic_bricks`, `cut`, `french`) — with their blockstates, 58 block models, 32 item models and item definitions, 61 textures, 32 loot tables, the language file, the chisel item and its recipe, and the pickaxe tag.
+- **Group order** is upstream's 34 members: `minecraft:andesite`, `minecraft:polished_andesite`, then the 32 `chisel:<style>/andesite` in registration order.
+- **Block shapes follow upstream's registration:** `PillarBlock` (an `axis` property, default `y`) for the `pillar`/`twist` styles, a plain `Block` for the rest, both copying andesite's settings; the item is a single-stack tool with a mining-speed bonus and one shaped recipe (iron ingot + stick).
+
+**Not yet ported**
+
+- the other block materials and their families (only `andesite` is carried in this slice);
+- the chisel GUI, the "chiseled" templates and the remaining styles of other materials;
+- the mod's own advancement/tab beyond the carried creative tab entry.
+
+Original copyright and licence notices are kept in this repository (GPL-2.0 text and a NOTICE naming the authors). Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is welcome."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "GPL-2.0-only"
+source = "https://github.com/AdLf0208/chisel"
+icon = "icons/chisel.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "chisel-0.1.0.hnmod"
+sha256 = "4a872f764fbb7b001512af560606a4be3445d6af942a89459ac0a047b44a6eeb"

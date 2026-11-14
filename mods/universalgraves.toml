@@ -1,0 +1,45 @@
+id = "universalgraves"
+kind = "native-mod"
+name = "Universal Graves"
+summary = "Your items and experience go into a grave where you died, protected from other players for a while. Works on the server alone."
+description = """
+A port of [Universal Graves](https://github.com/Patbox/UniversalGraves) by Patbox to Horizon. Not affiliated with the original author.
+
+**Graves.** When you die, your items and some of your experience go into a grave where you fell instead of scattering on the ground. The grave looks for a free spot nearby, stays out of the void and lava, and keeps away from the world border. A message in chat tells you where it is.
+
+**Protection.** For 15 minutes only you can open your grave. After that anyone can. Graves can't be blown up. A grave breaks by itself only if you set a time for it in the config.
+
+**Getting your items back.** Right-click the grave to open it, or sneak and right-click (or hit it) to take everything at once. Items go back to the slots they came from, armor included. With Accessories installed, the grave also takes what you wear in its slots.
+
+**Death compass.** After you respawn you get a compass that points to your grave. Use it to look inside the grave from anywhere.
+
+**/graves** lists your graves. Operators can see everyone's graves (`/graves all`, `/graves player <name>`), break them, take items out, move them or teleport to them.
+
+**Config.** The original's file, `config/universal-graves/config.json`, with the same settings. `/graves reload` reads it again.
+
+**Server-side.** Like the original, it works on the server alone: players don't need the mod. Translated into the original's 24 languages.
+
+Not yet: the mod's own game rules, custom grave models, predicates and claims (Horizon has no way for them yet). Full list in the README."""
+authors = ["DispatchedToHeaven"]
+owners = ["DispatchedToHeaven"]
+owner_ids = [211231405]
+license = "LGPL-3.0-only"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/a7978c52e5bb7cf7dda8eab365118c5596db7556/universalgraves"
+icon = "icons/universalgraves.png"
+categories = ["utility"]
+tags = ["graves", "death", "items", "server-side", "port"]
+screenshots = ["screenshots/universalgraves/1.png", "screenshots/universalgraves/2.png"]
+key = "RWRKE9PraqtKIBNLiCXXKIdqfZ6tUGUVxdzMWkSmPfMz3PcTDxnyAEbv"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-14"
+game = "26.3"
+file = "universalgraves-1.0.0.hnmod"
+sha256 = "94ae7eb6ba9a730a0a44e6429bddb57adffc553992f52f1e57b966a49815bdfe"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURKE9PraqtKIIS7Zc7WMetf4SsJtUlNearmMKzLXwuU6YBldtOzz0A9/yQO3cxnd1ZQvuJM7WNdKXVy8bhbUZVlAivtEC+sNg4=\r
+trusted comment: timestamp:1794669443\tfile:universalgraves-1.0.0.hnmod\thashed\r
+GHNSNVsez0NxQAKursCOBfwOCzsSoKjFGdlaHDFJu8eC8yipGrOMYvXL5xpRfOZUwj3Jp4nuR97ijzeXCFq6Dw=="""
+changelog = "First release: graves with items and experience, protection, expiry, menus, /graves, death compass, Accessories slots, the original's config."

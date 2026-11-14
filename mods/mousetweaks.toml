@@ -14,17 +14,25 @@ A port of [Mouse Tweaks](https://github.com/YaLTeR/MouseTweaks) by Ivan Molodets
 
 Settings: Options > Mods > Mouse Tweaks. Every action is an ordinary slot click, so it works on servers too.
 
-Built for Horizon Nightly 2026-11-07 (`2ebf00a`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
 
 **Credits.** Mouse Tweaks is Copyright (c) 2023 Ivan Molodetskikh, BSD 3-Clause License. This port rewrites its logic in Rust under the same licence and is not affiliated with Ivan Molodetskikh, Mojang or Microsoft."""
 authors = ["DeportedToHell"]
 owners = ["DeportedToHell"]
 owner_ids = [344119465]
 license = "BSD-3-Clause"
-source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/mousetweaks"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/mousetweaks"
 icon = "icons/mousetweaks.png"
 categories = ["storage", "utility"]
 tags = ["inventory", "mouse", "drag", "scroll", "port"]
+
+[[versions]]
+version = "1.1.1"
+published = "2026-11-14"
+game = "26.3"
+file = "mousetweaks-1.1.1.hnmod"
+sha256 = "a92a067c5f5c0479ebf34dbab162091a9f799d07b1ebbb27cd44348c4ed69b51"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064). Replaces 1.1.0 (#509)."
 
 [[versions]]
 version = "1.1.0"

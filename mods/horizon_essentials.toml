@@ -1,0 +1,33 @@
+id = "horizon_essentials"
+kind = "native-mod"
+name = "Essentials"
+summary = "A native port of EssentialsX for Horizon (Minecraft 26.3) with 163 commands, economy, teleportation, kits, and moderation."
+description = """
+A complete native port of **EssentialsX** to **Horizon** (Minecraft: Java Edition 26.3 rewritten in Rust).
+
+ ### Features
+ - **All 163 EssentialsX commands**: `/home`, `/sethome`, `/spawn`, `/warp`, `/tpa`, `/back`, `/fly`, `/god`, `/heal`, `/feed`, `/workbench`, `/kit`, `/balance`, `/pay`, `/ban`, `/mute`, `/jail`, and more.
+ - **Works with vanilla clients**: Players connect using standard Minecraft 26.3 clients with no mods required.
+ - **Singleplayer Support**: Works in local singleplayer worlds with host OP level 4 and isolated saves under `<world>/essentials/`.
+ - **Full Configuration & Permissions**: Uses standard Essentials configuration formats (`config.yml`, `permissions.yml`, `kits.yml`)."""
+authors = ["LmVictor20"]
+owners = ["LmVictor20"]
+owner_ids = [110595671]
+license = "GPL-3.0-or-later"
+source = "https://github.com/LmVictor20/horizon-essentials"
+icon = "icons/horizon_essentials.png"
+categories = ["economy", "utility", "management"]
+tags = ["commands", "administration", "port"]
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-09"
+game = "26.3"
+file = "horizon_essentials-0.2.2.hnmod"
+sha256 = "b249cdfba2c051a7e64692ab211207564721233cd56050a7766a41589a36bf9f"
+changelog = """
+Version 0.2.2 (addresses the review on #406):
+ - Userdata: a malformed or unreadable player file is logged and marked broken; it is never overwritten or deleted (saves, /essentials cleanup and user removal skip it), and the player gets an in-memory account for the session
+ - Data files written by Essentials (kits.yml, jail.yml, worth.yml, spawn.yml, warps/...): a corrupt existing file is copied to <file>.broken-<timestamp> before it is replaced
+ - Regression tests for malformed YAML, non-UTF-8 files and cleanup/removal
+ - Bundled GPL-3.0 LICENSE and NOTICE with EssentialsX attribution"""

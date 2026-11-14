@@ -1,0 +1,40 @@
+id = "no_realms"
+kind = "native-mod"
+name = "No Realns"
+summary = "Removes the Minecraft Realms button from Horizon's title screen."
+description = """
+Removes the **Minecraft Realms** button from Horizon's title screen. The Friends / Language /
+Accessibility icon row and the Options / Quit row move up by one 24 px step, so the menu has no
+empty gap and the icons do not overlap the buttons below them.
+
+- **Title screen only.** Every other screen's button list is returned unchanged.
+- **No hole.** The rows below the removed button close up instead of leaving an empty row.
+- **Nothing else.** No gameplay, network, file or player-data access, no background work and no
+  telemetry: the whole mod is two small hook helpers and one metadata module.
+
+**Install:** open the launcher's Mods page, install `no_realms-1.0.0.hnmod`, press Build and
+confirm the native-code warning. Native mods are compiled into the game and run with your
+account's permissions, so install them only from authors you trust.
+
+**Compatibility:** Minecraft/Horizon 26.3, pinned to Horizon Nightly 2026-11-08
+(`fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca`) and horizon-mixins
+`e8cd0aa38cffef49cb2e088ef716baa107148c02`. `Title::buttons` has no native hook point, so the
+mod pins the exact commit it builds on and is not claimed to build on other Nightlies.
+
+MIT licensed. Source: <https://github.com/cinovenx/horizon-no-realms>."""
+authors = ["cinovenx"]
+owners = ["cinovenx"]
+owner_ids = [335099900]
+license = "MIT"
+source = "https://github.com/cinovenx/horizon-no-realms"
+icon = "icons/no_realms.png"
+categories = ["utility"]
+tags = ["fix", "utility", "menu", "realms", "client-side"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-12"
+game = "26.3"
+file = "no_realms-1.0.0.hnmod"
+sha256 = "8f7376f3693317eaf506532d95ed1d0fda2a4eab3626738c56e5eafdfe2ac0cf"
+changelog = "First release. Removes the Realms button and closes the 24 px gap. Pinned to Nightly 2026-11-08 (fdc87ae) and Horizon Mixins e8cd0aa."

@@ -1,0 +1,33 @@
+## Horizon registry entry for MaLiLib (exact 1:1 Rust rewrite of the LGPL-3.0 mod).
+id = "malilib"
+kind = "native-mod"
+name = "MaLiLib"
+summary = "Core client library mod providing configuration systems, hotkey management, GUI widgets, positioning and NBT for Horizon Minecraft."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it.
+
+An exact 1:1 Rust rewrite of [MaLiLib](https://github.com/sakura-ryoko/malilib): the upstream Java by masa and sakura-ryoko rewritten code-for-code into clean, idiomatic Rust.
+
+- **NBT Engine**: High-performance Big-Endian binary NBT reader and writer supporting all standard tag types with automatic Gzip, Zlib, and raw compression detection.
+- **Math & Positioning**: BlockPos, Vec3d, IntBoundingBox with volumetric calculation, intersection, containment and iteration, BlockRotation, BlockMirror, and layer slicing (LayerRange / LayerMode).
+- **Configuration Engine**: Typed configuration options (Boolean, Integer, Double, String, Color, OptionList) with JSON persistence to disk (`~/.horizon/config/malilib.json`).
+- **Hotkey & Keybind System**: Multi-key combinations (e.g. `M, C`), modifier handling (Ctrl, Shift, Alt, Meta), and trigger modes (Press, Release, Hold, Toggle).
+- **GUI Framework**: Widget abstractions for Buttons, Sliders, TextFields, Labels, and tabbed screens.
+
+Upstream project by masa and sakura-ryoko. LGPL-3.0 license text and upstream credit carried in full."""
+authors = ["masa", "sakura-ryoko", "AzambekDev"]
+owners = ["AzambekDev"]
+owner_ids = [122017984]
+license = "LGPL-3.0"
+source = "https://github.com/AzambekDev/horizon-mods"
+categories = ["library", "utility"]
+tags = ["library", "config", "hotkeys", "gui", "nbt"]
+
+icon = "icons/malilib.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "0.30.2"
+game = "26.3"
+file = "malilib-0.30.2.hnmod"
+sha256 = "77a6a6bb47bcd604b27d9d5f316e22c83fff95fdccc36d7a94cb676b6c9ad544"
+changelog = "Initial 1:1 Rust rewrite of MaLiLib for Horizon 26.3, providing NBT, positioning, hotkeys, GUI widgets, and configuration systems."

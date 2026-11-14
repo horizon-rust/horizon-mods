@@ -1,0 +1,19 @@
+[package]
+name = "litematica"
+version = "0.29.1"
+edition = "2021"
+authors = ["masa", "sakura-ryoko", "Horizon Port Team"]
+description = "A modern schematic mod for Horizon Minecraft"
+license = "LGPL-3.0"
+
+[dependencies]
+malilib = { path = "../malilib" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+byteorder = { workspace = true }
+flate2 = { workspace = true }
+log = { workspace = true }
+bytemuck = { version = "1.21", features = ["derive"] }
+
+[dev-dependencies]
+tempfile = "3.14"

@@ -1,0 +1,10 @@
+[mod]
+id = "malilib"
+version = "0.30.2"
+priority = 10
+
+[compatibility]
+horizon_revision = "main"
+
+[api]
+path = "."

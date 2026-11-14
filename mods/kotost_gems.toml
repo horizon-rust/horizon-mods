@@ -1,0 +1,27 @@
+id = "kotost_gems"
+kind = "mod"
+name = "Kotost Gems"
+summary = "Gems for Kotost Skill Tree: citrine, iriscite, jade, ruby and sapphire in six tiers, and vacucite."
+description = """
+The gem items for the native mod **Kotost Skill Tree** (`kotost_skilltree` 0.2.0): citrine, iriscite, jade, ruby and sapphire, each in six tiers from "crumbled" to "exceptional", and vacucite, with their icons and Russian and English names, in their own creative tab.
+
+This pack has only the items. Drops from ores, sockets in tools, weapons and armour, socketing on the anvil, tooltips and bonuses are the skill tree's: install both, on the server and the client.
+
+The textures and names come from Passive Skill Tree 0.6.14a by Daripher (GPL-3.0), baked by `tools/bake.py` in the source repository. No Minecraft code or assets are included."""
+authors = ["Kotost Games"]
+owners = ["Leks2000"]
+owner_ids = [107043945]
+license = "GPL-3.0-or-later"
+source = "https://github.com/Leks2000/kotost-skilltree"
+icon = "icons/kotost_gems.png"
+categories = ["equipment"]
+tags = ["gems", "sockets", "skill", "tree", "rpg", "items"]
+screenshots = ["screenshots/kotost_gems/1.png", "screenshots/kotost_gems/2.png", "screenshots/kotost_gems/3.png"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-14"
+game = "26.3"
+file = "kotost_gems-0.2.0.hmod"
+sha256 = "e3aad2eebf6d82ffdd367e28db1f76f56d3c5339bf019175a12893d1fd11412c"
+changelog = "First release."

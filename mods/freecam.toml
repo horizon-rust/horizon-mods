@@ -25,6 +25,19 @@ tags = ["freecam", "camera", "spectator", "tripod", "port"]
 key = "RWR4cJC6Jj3EWGi26o29Rs3hAIPWqf8koFdXV4bBLF/Tm84QPfRAYjO5"
 
 [[versions]]
+version = "0.1.2"
+published = "2026-11-09"
+game = "26.3"
+file = "freecam-0.1.2.hnmod"
+sha256 = "62e37df955c17028565d1de823555642b2c7e080d0352a05446053cda294ab0d"
+signature = """
+untrusted comment: signature from rsign secret key
+RUR4cJC6Jj3EWAVq22qflj3d/clgCSxiVlCZJKjjhPb0mm45o23piR9/SWFS1fHvmxsEc3rzVBXyaA4qBgfswAuNPBfdV4kuIgw=
+trusted comment: freecam 0.1.2 for Horizon (Minecraft 26.3), built from github.com/hakergeniusz/freecam
+xEvYvguffGJQbhe62jOPJ+NMwWD9LhToREjX7AcAZN2gmamz2rgCr+NyRT9YNBypk6oAEerxk0aDe1yGTG/pCw=="""
+changelog = "Scope the freeze gate to the freecam's own thread: the flag is per-thread, so the integrated server's own Game — which shares the motion method and whose freecam never flew — can no longer clear the camera thread's freeze or freeze anything else. Adds the requested integrated-server test (a second player falls with gravity while the camera's player holds frozen) and fixes the runtime VERSION const the 0.1.1 bump missed."
+
+[[versions]]
 version = "0.1.0"
 published = "2026-10-31"
 game = "26.3"

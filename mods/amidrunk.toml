@@ -1,0 +1,29 @@
+id = "amidrunk"
+kind = "shader"
+name = "Am I Drunk?"
+summary = "xsoras's Am I Drunk! ported to Horizon: a cursed drunk-like screen with sway, fisheye, double vision and blur."
+description = """
+An unofficial port of [Am I Drunk!](https://modrinth.com/shader/amidrunk) 1.1 by **xsoras** to Horizon's own shader format. All credit for the effect goes to xsoras; this port is not affiliated with or endorsed by them. Licensed Apache-2.0, like the original.
+
+The original's effect, translated line for line: a drunken sway and drifting view, a breathing zoom, fisheye distortion, a chromatic split with double vision, ghost trails, a pulsing blur towards the edges, a warm colour tint, grain and a vignette. The world itself looks like vanilla, as in the original.
+
+No settings: pick it and it runs.
+
+Source: https://github.com/fbikat/amidrunk-horizon"""
+authors = ["xsoras", "fbikat"]
+owners = ["fbikat"]
+owner_ids = [253167313]
+license = "Apache-2.0"
+source = "https://github.com/fbikat/amidrunk-horizon"
+icon = "icons/amidrunk.png"
+categories = ["cartoon", "vanilla-like", "low"]
+tags = ["drunk", "distortion", "fisheye", "funny", "cursed", "wobble", "meme", "port"]
+screenshots = ["screenshots/amidrunk/1.jpg", "screenshots/amidrunk/2.jpg"]
+
+[[versions]]
+version = "1.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "amidrunk-1.1.0.hshader"
+sha256 = "7298520614472ced2ab6e93cdbd465f0d1778f6160bfb2b7208aec5bc1a6f1f1"
+changelog = "First release."

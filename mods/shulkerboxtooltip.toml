@@ -10,17 +10,25 @@ A port of [ShulkerBoxTooltip](https://github.com/MisterPeModder/ShulkerBoxToolti
 - The **ender chest** (synced in single player and on Horizon servers with the mod, otherwise what it held when you last opened it) and **bundles** (three themes).
 - **ShulkerBoxTooltip's own config screen** (Mod Menu's Configure, or Options > Mods > Shulker Box Tooltip > Configure...): five tabs, every option, reset and undo. English and Russian.
 
-Built for Horizon Nightly 2026-11-08 (`fdc87ae`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
 
 **Credits.** ShulkerBoxTooltip is Copyright (c) MisterPeModder, MIT License; the textures are its own. This port rewrites it in Rust under the same licence and is not affiliated with MisterPeModder, Mojang or Microsoft."""
 authors = ["DeportedToHell"]
 owners = ["DeportedToHell"]
 owner_ids = [344119465]
 license = "MIT"
-source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/shulkerboxtooltip"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/shulkerboxtooltip"
 icon = "icons/shulkerboxtooltip.png"
 categories = ["storage", "utility"]
 tags = ["shulker", "tooltip", "inventory", "preview", "port"]
+
+[[versions]]
+version = "1.0.2"
+published = "2026-11-14"
+game = "26.3"
+file = "shulkerboxtooltip-1.0.2.hnmod"
+sha256 = "418af3e6360a23601587fcf56786fed07dcf71ad699c624c85f4ca9551e1a5f8"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064). Replaces 1.0.1 (#507)."
 
 [[versions]]
 version = "1.0.1"

@@ -13,17 +13,25 @@ A port of [Mod Menu](https://github.com/TerraformersMC/ModMenu) by Prospector an
 - **Configure** opens the mod's own config screen (for mods that have one), else its settings page, and comes back to the mods screen after; a click on a row's icon or a double click does the same.
 - **Open Mods Folder**, **Mod Menu's 21 options**, an **Open Mod Menu** key. English and Russian.
 
-Built for Horizon Nightly 2026-11-07 (`2ebf00a`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
 
 **Credits.** Mod Menu is Copyright (c) 2018-2020 Prospector, MIT License; the textures are Mod Menu's own. This port rewrites Mod Menu in Rust under the same licence and is not affiliated with TerraformersMC, Prospector, Mojang or Microsoft."""
 authors = ["DeportedToHell"]
 owners = ["DeportedToHell"]
 owner_ids = [344119465]
 license = "MIT"
-source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/modmenu"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/modmenu"
 icon = "icons/modmenu.png"
 categories = ["management", "utility"]
 tags = ["modmenu", "mods-list", "ui", "settings", "port"]
+
+[[versions]]
+version = "1.1.3"
+published = "2026-11-14"
+game = "26.3"
+file = "modmenu-1.1.3.hnmod"
+sha256 = "095e5f36d43663243e86c4b8943ed6ee52ecd643658821d7d7ca9cc35788a126"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064). Replaces 1.1.2 (#552)."
 
 [[versions]]
 version = "1.1.2"

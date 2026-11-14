@@ -1,0 +1,45 @@
+id = "tristanpbty_armor_hud"
+kind = "native-mod"
+name = "TristanPbty's Armor HUD"
+summary = "A lightweight native armor HUD for Horizon."
+description = """
+# TristanPbty's Armor HUD
+
+TristanPbty's Armor HUD is a lightweight native Horizon mod that displays the player's equipped armor in a clean and minimal HUD.
+
+## Features
+- Minimal and clean armor HUD.
+- Displays equipped armor pieces.
+- Lightweight native implementation.
+- Inspired by Uku's Armor HUD.
+
+## How to use
+Install the mod through Horizon and launch the game. The armor HUD will display your currently equipped armor.
+
+## Credits
+Created by TristanPbty."""
+authors = ["TristanPbty"]
+owners = ["TristanPbty"]
+owner_ids = [312256864]
+license = "MIT"
+source = "https://github.com/TristanPbty/tristanpbty-armor-hud"
+icon = "icons/tristanpbty_armor_hud.png"
+categories = ["equipment", "utility"]
+tags = ["armor", "hud", "minecraft", "native", "interface", "utility"]
+screenshots = ["screenshots/tristanpbty_armor_hud/1.png"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-09"
+game = "26.3"
+file = "tristanpbty_armor_hud-1.0.0.hnmod"
+sha256 = "f37dcedde708849ba4af53c5a8a179a2dc4ca8c44b29e1674ed2e132905ac942"
+changelog = """
+Initial release of TristanPbty's Armor HUD!
+
+- Added a minimal armor HUD inspired by Uku's Armor HUD.
+- Native implementation for Horizon.
+- Clean and lightweight interface.
+- Displays the player's equipped armor pieces.
+
+Created by TristanPbty."""

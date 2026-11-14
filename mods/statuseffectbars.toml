@@ -1,0 +1,35 @@
+## Horizon registry entry for Status Effect Bars (exact 1:1 Rust translation of the LGPL mod).
+id = "statuseffectbars"
+kind = "native-mod"
+name = "Status Effect Bars"
+summary = "Adds customizable bars to the status effects overlay to show the remaining duration of effects on the player and in the inventory."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+An exact 1:1 Rust translation of [Status Effect Bars](https://modrinth.com/mod/status-effect-bars): the upstream Java by A5b84 ([A5b84/status-effect-bars](https://github.com/A5b84/status-effect-bars), master @7c00964) translated code-for-code, carrying the upstream license and credit in full.
+
+All upstream modules are carried 1:1 as a Horizon client runtime splice, with crate:: mapped to super:: for the carrier:
+
+- **Config**: Direction (horizontal/vertical, top-to-bottom / bottom-to-top), ColorMode (effect color, custom background/foreground, full lifetime vs remaining time), the StatusEffectBarsConfig defaults (0x80000000 background, 0x80ffffff foreground, max_remaining_duration = i32::MAX, min_ambient_age 90, HUD layout 3x2, inventory layout 4x3, thickness 1, relative_to_end true), plus the i18n provider for translated effect names.
+- **StatusEffectBarRenderer**: the exact fill layout math (padding, relative-to-end anchoring, height use, axis swap for vertical bars, lerp_int progress and the RGB foreground blend), against the same GraphicsHost and DeltaTrackerHost seam shapes.
+- **Mixins**: all four upstream mixins carried with their comments: MobEffectInstanceMixin (adds the maxDuration attribute the renderer reads), LivingEntityMixin (the max-duration carry rule when a same-amplifier effect is re-added), HudMixin (HUD bars) and EffectsInInventoryMixin (inventory bars, SPRITE_SQUARE_SIZE = 24).
+
+The fabric client entrypoint `StatusEffectBars` maps to the carrier's client-init hook; the ModMenu config-screen entrypoint joins the config-screen batch later.
+
+Port of [A5b84/status-effect-bars](https://github.com/A5b84/status-effect-bars), copyright (c) A5b84, LGPL-3.0-or-later per upstream fabric.mod.json (Modrinth lists LGPL-3.0-only): the license text ships with the source. 17 unit tests on the translated logic. Rust port by sparticle, upstream by A5b84."""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-status-effect-bars"
+categories = ["utility"]
+tags = ["hud", "ui", "status-effects"]
+
+icon = "icons/statuseffectbars.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.0.0"
+game = "26.3"
+file = "statuseffectbars-1.0.0.hnmod"
+sha256 = "c6904703864adb93a1dea806090016818a1bb74aead7d7cefdd153c20064eea1"
+changelog = "Exact 1:1 Rust translation of Status Effect Bars (LGPL) by A5b84, license and upstream credit carried: the config set, i18n provider, the bar renderer's layout math and all four upstream mixins."

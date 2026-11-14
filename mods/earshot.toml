@@ -1,0 +1,40 @@
+id = "earshot"
+kind = "native-mod"
+name = "Earshot"
+summary = "Proximity voice chat that works with Simple Voice Chat servers: 3D audio, push to talk, voice groups"
+description = """
+Proximity voice chat for Horizon. Talk to the players near you on servers that run **Simple Voice Chat**: with Java players using Simple Voice Chat, and with other Horizon players using Earshot.
+
+- **Proximity voice** with 3D audio: voices come from where players stand and fade with distance.
+- **Push to talk** (Mouse 4) or **voice activation** with a live mic level.
+- **Voice groups**: create one (with an optional password), join with a click, leave. Group members hear each other at any distance, and a panel in the top-left corner lights up whoever is talking.
+- **Group invites** in chat, in Earshot's own words, with the join link still clickable.
+- **Noise reduction**, **per-player volume**, **mute** (M) and **deafen** (N).
+- A **mic icon** on the HUD and a **speaker icon** beside talking players' name tags.
+- Voice menu on **V**. Keys and a Debug info switch in Options > Mods > Earshot.
+
+Works with servers running Simple Voice Chat 2.6.27 (Fabric and Paper). Tested on Windows and Linux.
+
+**Network use:** on a server that runs Simple Voice Chat, Earshot asks it for a voice key over the game connection, then sends and receives encrypted (AES-128-GCM) voice over UDP to the address the server names (default port 24454). It contacts nothing else, and on a server without Simple Voice Chat it sends nothing.
+
+**Server side:** installed on a Horizon dedicated server, Earshot also runs a Simple Voice Chat-compatible voice server. Once a player connects, it listens on **UDP port 24454 on all network interfaces (0.0.0.0)** and tells connected players about it over the game connection. Turn it off by writing `false` into `horizon-mods/.horizon-mod-data/earshot/server_voice` on the server; `server_port` and `voice_host` in the same folder change the port and the address players are told. In a game with a window (playing yourself), Earshot never listens.
+
+Earshot is an independent project, **not affiliated with or endorsed by Simple Voice Chat** or its author. It contains no Simple Voice Chat code or assets; its protocol support comes only from our own network captures (PROTOCOL.md in the source).
+
+Source: https://github.com/selfmonoraque5/earshot"""
+authors = ["selfmonoraque5"]
+owners = ["selfmonoraque5"]
+owner_ids = [86315101]
+license = "MIT"
+source = "https://github.com/selfmonoraque5/earshot"
+icon = "icons/earshot.png"
+categories = ["utility", "social"]
+tags = ["voice-chat", "proximity", "simple-voice-chat", "multiplayer", "audio"]
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-11"
+game = "26.3"
+file = "earshot-1.0.1.hnmod"
+sha256 = "17cad4b7d77527e7a44696889181c52592dcf1538a72588b6f531addf2305dc9"
+changelog = "First release"

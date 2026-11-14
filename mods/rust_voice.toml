@@ -1,0 +1,104 @@
+id = "rust_voice"
+kind = "native-mod"
+name = "Rust Voice"
+summary = "Proximity voice chat for Plasmo Voice and Simple Voice Chat servers: neural noise suppression, 3D voices around corners, mic badges, groups and discs."
+description = '''
+Proximity voice chat for [Horizon](https://playhorizon.dev), the Rust rewrite of Minecraft 26.3. Talk to players on servers running **Plasmo Voice** or **Simple Voice Chat**, including players who use those mods on the regular Java launcher.
+
+**A native Horizon mod**: the launcher compiles it into the game. Native mods are not sandboxed and run with your account's rights, so read the source before you build it.
+
+## What it does
+
+- **Two protocols in one mod.** On joining a server it asks for both Plasmo Voice (v2) and Simple Voice Chat (compatibility 20 and 21, including Horizon's own voicechat-server) and uses whichever the server answers. The Advanced tab shows which one is in use.
+- **Clean microphone:** RNNoise neural noise suppression (as in Plasmo Voice) and automatic voice activation by its speech detector, plus a high-pass filter, automatic gain with a soft limiter, a noise gate with pre-roll and hysteresis, and a spectral noise suppressor. *Learn noise* records the room's own hum so it can be removed.
+- **3D voices:** stereo panning with head shadow (HRTF-like timing and level differences), quieter and duller with distance (the air takes the highs away), muffled behind walls.
+- **Sound goes around corners:** when a wall is between you, the voice comes from the doorway or corridor it travels through (a path search over nearby blocks) instead of straight through the wall.
+- **Badges over names:** a microphone icon over each player that fills purple with their voice level, a red slash drawn when they mute, dimmed when the player is behind a wall.
+- **Groups:** Simple Voice Chat groups can be joined (with a password), left and created from the menu; group invites (Plasmo Voice groups addon) show as a small bar, Y to accept, N to decline.
+- **Discs (pv-addon-discs):** the track title over the jukebox, music notes, the jukebox you look at is louder, and a key to pin one disc.
+- **Groups at a glance:** while you talk, the HUD shows a white microphone for nearby voice and a purple microphone when your voice goes to your group (Plasmo Voice groups addon, Simple Voice Chat groups). Players talking in your group get a purple frame and, if you like, their own list in a corner you choose, separate from everyone else (Overlay tab, can be turned off). The Groups volume slider sets their volume.
+- **Plasmo Voice activations:** voice activation, push to talk on up to three keys, per-activation distance, as the server defines them.
+- **English, Russian and Ukrainian interface:** follows the language set in the game (Options > Language), or pick one on the Advanced tab.
+- **Menu** (key **M**, or `/voice`, `/vm`): devices, per-player volume (scroll with the wheel), activations, overlay, hotkeys (rebind inside the menu) and advanced settings. `/voice mute` and `/voice deaf` toggle the microphone and the voice chat.
+
+## What it doesn't do (yet)
+
+- Simple Voice Chat **whisper** is not sent.
+- Simple Voice Chat location sounds (from server plugins) are played, but not placed in the world.
+
+## What it touches
+
+- **Network:** one UDP connection to the voice port of the Minecraft server you are playing on (the address and port that server sends). Plasmo Voice audio is AES-CBC encrypted with the key the server sends (exchanged with RSA); Simple Voice Chat packets are AES-128-GCM encrypted with the server's secret. It contacts no other host.
+- **Microphone and speakers:** through cpal, only while you are connected to a voice server or run the microphone test from the menu. The microphone is only sent while an activation is on (voice activation or a held push-to-talk key).
+- **Files**, all in `~/.config` (on Windows `%USERPROFILE%\.config`): `horizon-voice-mod.conf` (settings), `horizon-voice-mod.noise` (learned noise profile), `horizon-voice-mod.mute` (microphone switch) and `horizon-voice-mod.log` (log). Nothing else is read or written.
+- **Game state:** besides the mod API, it reads the language selected in the game (`horizon_client::lang`) to pick the menu language.
+
+## Not affiliated
+
+Not made, endorsed or supported by the Plasmo Voice or Simple Voice Chat projects. It contains none of their code or assets: the protocols are implemented from scratch in Rust, and the icons are drawn for this project.
+
+## License
+
+MIT, see [LICENSE](https://github.com/aniliass/rust-voice/blob/main/LICENSE). The embedded RNNoise code is nnnoiseless 0.5.2 (BSD-3-Clause, notice in `rnnoise.rs`). Source: [github.com/aniliass/rust-voice](https://github.com/aniliass/rust-voice).
+
+---
+
+## На русском
+
+Голосовой чат по расстоянию для [Horizon](https://playhorizon.dev), переписанного на Rust Minecraft 26.3. Говорите с игроками на серверах с **Plasmo Voice** или **Simple Voice Chat**, в том числе с теми, кто играет с этими модами в обычном Java-лаунчере.
+
+**Нативный мод Horizon**: лаунчер встраивает его в игру при сборке. Нативные моды работают без песочницы, с правами вашей учётной записи, поэтому прочитайте исходники перед сборкой.
+
+### Что умеет
+
+- **Два протокола в одном моде.** При входе на сервер мод запрашивает и Plasmo Voice (v2), и Simple Voice Chat (совместимость 20 и 21, включая собственный voicechat-server Horizon) и работает с тем, кто ответил. Какой используется, видно во вкладке «Продвинутые».
+- **Чистый микрофон:** нейросетевое шумоподавление RNNoise (как в Plasmo Voice) и автоматическое включение микрофона по речи, а также фильтр низких частот, автоусиление с мягким ограничителем, шумовой порог с предзахватом и гистерезисом, спектральное шумоподавление. «Запомнить шум» записывает гул комнаты, чтобы его вычитать.
+- **Голоса в 3D:** стерео с «тенью головы» (разница во времени и громкости между ушами), тише и глуше с расстоянием (воздух съедает верха), глуше за стенами.
+- **Звук огибает углы:** если между вами стена, голос идёт из двери или коридора, через который он проходит (поиск пути по ближайшим блокам), а не сквозь стену.
+- **Значки над никами:** микрофон над каждым игроком заполняется фиолетовым по громкости голоса, при выключении рисуется красная черта, за стеной значок тускнеет.
+- **Группы:** в группы Simple Voice Chat можно вступать (с паролем), выходить и создавать их из меню; приглашения в группу (аддон групп Plasmo Voice) — маленькая полоска, Y — принять, N — отказаться.
+- **Пластинки (pv-addon-discs):** название трека над проигрывателем, ноты, громче тот проигрыватель, на который смотрите, и клавиша, чтобы закрепить пластинку.
+- **Группы сразу видно:** пока вы говорите, на экране белый микрофон — голос рядом, фиолетовый микрофон — голос в группу (аддон групп Plasmo Voice, группы Simple Voice Chat). Кто говорит в вашей группе, отмечен фиолетовой рамкой и по желанию собран в отдельный список в своём углу экрана (вкладка «Оверлей», можно выключить). Ползунок «Группы» задаёт их громкость.
+- **Активации Plasmo Voice:** голосовая активация, push-to-talk на трёх клавишах, дистанция для каждой активации, как их задал сервер.
+- **Русский, украинский и английский интерфейс:** берётся язык, выбранный в самой игре (Настройки > Язык), или любой на выбор во вкладке «Продвинутые».
+- **Меню** (клавиша **M**, или `/voice`, `/vm`): устройства, громкость каждого игрока (листается колесом), активации, оверлей, клавиши (переназначаются прямо в меню) и продвинутые настройки. `/voice mute` и `/voice deaf` выключают микрофон и голосовой чат.
+
+### Чего пока нет
+
+- **Шёпот** Simple Voice Chat не отправляется.
+- Звуки «в точке мира» от плагинов Simple Voice Chat играют, но без привязки к месту.
+
+### К чему мод обращается
+
+- **Сеть:** одно UDP-подключение к голосовому порту Minecraft-сервера, на котором вы играете (адрес и порт присылает этот сервер). Звук Plasmo Voice шифруется AES-CBC ключом от сервера (обмен через RSA), пакеты Simple Voice Chat — AES-128-GCM секретом от сервера. Других адресов мод не трогает.
+- **Микрофон и динамики:** через cpal, только пока есть подключение к голосовому серверу или идёт проверка микрофона из меню. Голос отправляется только при включённой активации (голосовая активация или зажатая клавиша push-to-talk).
+- **Файлы**, все в `~/.config` (на Windows `%USERPROFILE%\.config`): `horizon-voice-mod.conf` (настройки), `horizon-voice-mod.noise` (запомненный шум), `horizon-voice-mod.mute` (выключатель микрофона) и `horizon-voice-mod.log` (лог). Больше ничего не читается и не пишется.
+- **Игра:** кроме API для модов, мод читает выбранный в игре язык (`horizon_client::lang`), чтобы показать меню на нём.
+
+### Не связан с другими проектами
+
+Не сделан, не одобрен и не поддерживается авторами Plasmo Voice или Simple Voice Chat. В нём нет их кода и картинок: протоколы написаны с нуля на Rust, иконки нарисованы для этого проекта.
+
+### Лицензия
+
+MIT, см. [LICENSE](https://github.com/aniliass/rust-voice/blob/main/LICENSE). Встроенный код RNNoise — nnnoiseless 0.5.2 (BSD-3-Clause, текст лицензии в `rnnoise.rs`). Исходники: [github.com/aniliass/rust-voice](https://github.com/aniliass/rust-voice).'''
+authors = ["AniLiaSS"]
+owners = ["aniliass"]
+owner_ids = [319097214]
+license = "MIT"
+source = "https://github.com/aniliass/rust-voice"
+icon = "icons/rust_voice.png"
+categories = ["social", "utility"]
+tags = ["voice", "voicechat", "proximity", "plasmo-voice", "simple-voice-chat", "multiplayer"]
+screenshots = ["screenshots/rust_voice/1.png", "screenshots/rust_voice/2.png"]
+
+[[versions]]
+version = "0.1.46"
+published = "2026-11-11"
+game = "26.3"
+file = "rust_voice-0.1.46.hnmod"
+sha256 = "1e54414fbeb292500428d443e282dc9c5c551f835f48841be71d729a07b23e20"
+changelog = """
+Replaces 0.1.44, which was never published. Fixes all findings from the review of #548: voice and microphone stop as soon as you leave a server; a server can no longer make the client allocate memory with a huge distance range; IPv6 voice servers work; the Local volume no longer mutes groups and discs; holding a player's volume slider while scrolling no longer moves it to another player.
+
+New: RNNoise noise suppression (as in Plasmo Voice) and automatic voice activation by a neural speech detector; Simple Voice Chat groups in the menu (join with a password, leave, create); group invites; Simple Voice Chat 2.6 and Horizon's voicechat-server; pv-addon-discs: track titles, music notes, the jukebox you look at is louder, pinning a disc; a simpler Devices tab with fine tuning under Advanced."""

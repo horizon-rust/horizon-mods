@@ -1,0 +1,33 @@
+id = "terraforged_native"
+kind = "native-mod"
+name = "TerraForged for Horizon (Customize Preview)"
+summary = "Experimental TerraForged terrain, classic biome variants and 28 world-local Customize controls for Horizon 26.3."
+description = """
+An unofficial native Rust port of TerraForged world generation, separate from the Java Fabric/NeoForge mod.
+
+This experimental preview adds continent, terrain, biome, climate and river controls to new-world creation. Choose World Type: TerraForged, then Customize. Done saves settings per world; Cancel/Escape discard the draft; Reset restores defaults; Re-Create restores saved choices. Classic biome variants and native pillar/marsh features are included.
+
+This is an initial 28-control native editor, NOT Java's complete Customize interface. No Java preset browser, map preview, import/export, complete settings pages or adjustable world height/sea level. Configure new worlds rather than altering generated terrain.
+
+Requires Minecraft Java 26.3 ownership, the exact pinned custom Horizon engine and matching native bundle. Current qualification is Windows x64 Vulkan singleplayer with TerraForged alone. This build depends on engine changes in TheApple05/horizon, not yet qualified against the newest official Nightly. Keep preview worlds separate: stable 0.1.0 refuses customized worlds' new generator ID. Native code is compiled into the game and runs with the player's permissions.
+
+Qualification: three-world create/save, edited-world reopen with additional generation, Re-Create, Cancel/Reset, GUI-scale changes, image review and 15,360 independent saved biome comparisons passed. Malformed-world and old-stable refusal preserved saved files on disposable copies. Broad Windows host tests retain an unchanged one-ULP drop-motion physics failure; no fully green host suite, long-duration, multiplayer, modpack, other-OS or full Java parity claim.
+
+Release notes and exact identities: https://github.com/TheApple05/TerraForged-Horizon/releases/tag/v0.1.1-customize.dev1
+"""
+authors = ["TerraForged Revival contributors"]
+owners = ["TheApple05"]
+owner_ids = [75060304]
+license = "MIT"
+source = "https://github.com/TheApple05/TerraForged-Horizon"
+icon = "icons/terraforged_native.png"
+categories = ["utility"]
+tags = ["terrain", "worldgen", "biomes"]
+
+[[versions]]
+version = "0.1.1-customize.dev1"
+published = "2026-11-08"
+game = "26.3"
+file = "https://github.com/TheApple05/TerraForged-Horizon/releases/download/v0.1.1-customize.dev1/terraforged_native-0.1.1-customize.dev1.hnmod"
+sha256 = "47def4a62af35635c0646121b655e31a01dfe02283c66917a164dc47640ead3e"
+changelog = "Experimental initial 28-control native Customize editor; world-local saved settings and Re-Create. Requires the pinned custom engine; official Nightly compatibility awaits review."

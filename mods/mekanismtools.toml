@@ -1,0 +1,39 @@
+id = "mekanismtools"
+kind = "mod"
+name = "Mekanism: Tools"
+summary = "72 Mekanism: Tools items — tools, paxels, armour and shields in six materials."
+description = """
+A port of [Mekanism: Tools](https://github.com/mekanism/Mekanism) by Aidan C. Brady and the Mekanism contributors for Horizon: 72 tools, paxels, armour pieces and shields.
+
+**Implemented so far**
+
+- 72 items: 30 tools (axe, hoe, pickaxe, shovel and sword in bronze, lapis lazuli, osmium, refined glowstone, refined obsidian and steel), 12 paxels, 24 armour pieces and 6 shields.
+- The mod's own item models, 78 textures, equipment definitions, 65 recipes, the `c:` and `minecraft:` tool/armour tags and the language file.
+- All 72 items are give-able, all 24 armour pieces equip into their own slot, and the creative tab lists every item.
+- Paxels carry the pickaxe/axe/shovel rules of the three tools they replace.
+- Attack damage is read from the item: the in-game check measures the steel sword at 6.888 against a stick's 0.940, and the run passes.
+
+**Not yet ported**
+
+- **This is an add-on**: it requires the parent mod **Mekanism**. 55 of the 65 recipes need Mekanism items (`#c:ingots/osmium`, `#c:ingots/steel`, the alloys), so **only 10 recipes work without it**; the rest are listed but unobtainable until the Mekanism port (`mekanism`) is installed and merged first.
+- **No survival recipes for the eleven non-netherite paxels.** The paxel recipes are dropped at carry time (`tools/gen_content.py`), so `netherite_paxel` — which needs a diamond paxel — cannot be crafted either. The paxels are creative/give only, and the netherite upgrade is unreachable.
+- An item's harvest tier, durability and attack damage are the vanilla template's (iron/diamond/golden/netherite), not Mekanism's per-material numbers.
+- Shields use the vanilla shield template; upstream's own shield behaviour is not carried.
+- A data-tier carry: the 72-item census is a test-only Rust module (no injection).
+
+MIT: the original copyright and licence travel inside the bundle (`mixins/mekanismtools/LICENSE` and `data/mekanismtools/license/`), not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Aidancbrady", "Thommy101", "Thiakil", "pupnewfster", "dizzyd", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/mekanismtools"
+icon = "icons/mekanismtools.png"
+categories = ["equipment", "technology"]
+tags = ["port", "tools", "armour", "equipment"]
+
+[[versions]]
+version = "10.7.19"
+published = "2026-11-12"
+game = "26.3"
+file = "mekanismtools-10.7.19.hmod"
+sha256 = "0cd30ee5b65d889b6d6fcbdf49a4e1c4b716ea9739e504211786b2ab8c3f4990"

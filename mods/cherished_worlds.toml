@@ -1,0 +1,31 @@
+## Horizon registry entry for Cherished Worlds (exact 1:1 port of the LGPL-3.0-or-later mod).
+id = "cherished_worlds"
+kind = "native-mod"
+name = "Cherished Worlds"
+summary = "Favorite/pin/bookmark worlds: favorites always sort to the top of the list and cannot be deleted."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- **Favorite worlds**: star, unstar, and rename worlds, servers, and LAN worlds; the set persists to the client favorites file.
+- **Favorites-first sort**: the world and server lists render favorites at the top, then by most recently played, stable and deterministic.
+- **Delete and swap guards**: a favorite cannot be deleted while it is starred, and the server-list swap guard keeps favorites out of bad swaps.
+
+Exact 1:1 Rust translation of [Cherished Worlds](https://modrinth.com/mod/cherished-worlds) by Illusive Soulworks ([illusivesoulworks/cherishedworlds](https://github.com/illusivesoulworks/cherishedworlds)): every upstream Java class maps to one Rust module with the same names, logic, defaults, and control flow, carrying the upstream license and credit in full. LGPL-3.0-or-later: copyright (c) 2021 Illusive Soulworks; the license text ships with the source. Ported to Rust by sparticle.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-cherished-worlds"
+categories = ["utility"]
+tags = ["worlds", "favorites", "launcher"]
+
+icon = "icons/cherished_worlds.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "cherished_worlds-1.0.0.hnmod"
+sha256 = "7d167eca2380c64619dca5706d2b4d75ea993d4b1c56cdf4a90607d45231afd7"
+changelog = "Exact 1:1 Rust translation of Cherished Worlds (LGPL-3.0-or-later): every upstream Java class mapped code-for-code, favorite set, favorites-first sort, delete and swap guards; launcher UI seam noted in README."

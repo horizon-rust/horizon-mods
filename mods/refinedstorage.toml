@@ -1,0 +1,38 @@
+id = "refinedstorage"
+kind = "native-mod"
+name = "refinedstorage"
+summary = "A Horizon port of refinedstorage."
+description = """
+A port of [Refined Storage 2](https://github.com/refinedmods/refinedstorage2) by Refined Mods for Horizon — slice 1, the item network.
+
+**Implemented so far**
+
+- **Network:** the connected component of the four network blocks over face-adjacent positions, capped at 512 blocks. A component with a controller is **online**; without one nothing works (upstream: the controller is the network's root and every node is inactive without it). The grid's `active` block state and the `/refinedstorage info` line both read it.
+- **Cable connections** (upstream `computeConnections`): six boolean state properties (`north/east/south/west/up/down`), each written from whether the neighbour is a network block.
+- **Disk Drive** with nine disk slots, and the **1k Storage Disk** whose items live in its item component, so the disk carries its contents when moved.
+- **Grid:** a 9×6 menu that searches the network, withdraws and deposits. Two grids never show the same items — each grid's view sets aside what the other open grids already show — so the last ten diamonds cannot be taken twice.
+- A deposit the network refuses stays in the slot **as its remainder only**, so a full disk cannot duplicate the items the player tried to add.
+- The `/refinedstorage info|filter` commands, the four blocks' content (models, textures, loot, tags, creative tab) and the disk's component.
+
+**Not yet ported**
+
+- **No energy:** the controller is the network's on/off root but consumes and stores nothing; its `energy_type` state has two values where upstream has four.
+- **The rest of the mod:** crafters, exporters/importers, external storage, interfaces, relays, network transmitters/receivers, the security manager, the wireless transmitter/grid, the portable grid, the crafting/pattern grids, autocrafting, fluid storage and disks, the other disk sizes (4k/16k/64k/creative), storage blocks, upgrades, the config file and the coloured variants of every block.
+- **No recipes:** the five items need Refined Storage's own chain (`quartz_enriched_iron`, `machine_casing`, processors, cores, `1k_storage_part`, `storage_housing`) and NeoForge `#c:` tags, so they come from the creative tab.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/refinedstorage/LICENSE` and `NOTICE.md`, with Refined Mods' MIT notice) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["refinedmods", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/refinedstorage"
+icon = "icons/refinedstorage.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "refinedstorage-0.1.0.hnmod"
+sha256 = "0b66dd7db04b42b59f77fd97d6293ea1a6b702b8d1a55628881c958845105c25"

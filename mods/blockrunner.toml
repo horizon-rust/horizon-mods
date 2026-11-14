@@ -1,0 +1,30 @@
+id = "blockrunner"
+kind = "native-mod"
+name = "Block Runner"
+summary = "Walk faster on path blocks."
+description = """
+Walk faster on path blocks.
+
+**Differences from the original:** The speed boost only applies to players whose own game has this mod installed, so a LAN guest without it walks at normal speed. Mobs are not faster on these blocks.
+
+A port of [Block Runner](https://github.com/Fuzss/blockrunner) 8.0.4 by Fuzs, published under its licence, MPL-2.0. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Fuzs"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MPL-2.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/blockrunner"
+icon = "icons/blockrunner.png"
+categories = ["transportation"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-11"
+game = "26.3"
+file = "blockrunner-0.2.1.hnmod"
+sha256 = "f4629ff36a5ddf7fbba372c87218e7bd1b1699802a08b0f53469e8081e13af12"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

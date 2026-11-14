@@ -1,0 +1,37 @@
+id = "enderstorage"
+kind = "native-mod"
+name = "enderstorage"
+summary = "A Horizon port of enderstorage."
+description = """
+A port of [EnderStorage](https://github.com/chicken-bones/EnderStorage) for Horizon.
+
+**Implemented so far**
+
+- The ender chest, keyed by its three wool colours, with the mod's own model, texture, blockstate, recipe, loot table and language.
+- Upstream keeps **one inventory per frequency** in a world-global manager and every chest with that frequency opens the same container. Horizon gives a mod block entity its own slots, so the port keeps the frequency store as the truth and mirrors it into each chest once per tick.
+- The mirror is a **three-way merge on counts**: an untouched slot adopts the store, and a slot a chest changed is applied to the store as a **delta**, so two chests that each withdraw from one stack subtract twice and two that each insert add twice. A stack that no longer fits stays in the chest that inserted it rather than being destroyed.
+- The store persists per world and survives a relaunch.
+
+**Not yet ported**
+
+- **The tank is deferred.** The pin can declare a block's fluid tanks in its block entity, but there is no bucket path into a mod block's tanks (only mods call the fluid helpers), so the tank's player interaction needs a `use_item_on` bucket handler with a held-stack swap. That is the next slice; the fluid store already merges the same way.
+- **The pouch is deferred.** A pouch opens the same inventory from an item; a mod item has no menu route at this pin.
+- Personal (owned) frequencies, the lid animation and the custom renderer are not carried.
+- A slot whose *item* is replaced on two chests in the same tick is a genuine tie: one slot holds one item, so the later edit wins and the other stack remains in its own chest.
+
+MIT: the original copyright (`Copyright (c) 2020 covers1624, ChickenBones, Christopher R. Thompson (Ecu)`) and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["chicken-bones", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/enderstorage"
+icon = "icons/enderstorage.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "enderstorage-0.1.0.hnmod"
+sha256 = "74b3b8d1ec8f95d82212c3788124fb19c693f0684d2a49b4dbfb43a6aa561ffa"

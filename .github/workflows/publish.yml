@@ -60,6 +60,13 @@ jobs:
             gh release create "$tag" "$dir/$file" --title "$id $version" --latest=false \
               --notes "Reviewed in the registry: mods/$id.toml. SHA-256 $sha."
           done
+      - name: Last updated
+        run: |
+          # A project's `updated` is its newest version's `published`, so a reader can
+          # sort by it beside `downloads` without walking every version.
+          jq '.projects |= map(([.versions[].published // empty] | max) as $d
+              | if $d != null then .updated = $d else . end)' site/index.json > index.updated.json
+          mv index.updated.json site/index.json
       - name: Download counts
         run: |
           # Each version's file is the asset at its URL: a project's downloads

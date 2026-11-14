@@ -1,0 +1,36 @@
+id = "torchmaster"
+kind = "native-mod"
+name = "torchmaster"
+summary = "A Horizon port of torchmaster."
+description = """
+A port of [Torchmaster](https://github.com/Xalcon/TorchMaster) for Horizon.
+
+**Implemented so far**
+
+- The **Mega Torch** (`torchmaster:megatorch`) vetoes natural spawns of every non-friendly entity category (vanilla: `monster`) in a cube of `megaTorchRadius` (default 64) around it, upstream's `MegatorchEntityBlockingLight`.
+- The **Dread Lamp** and the terrasteel/mega-torch family's carried blocks, models, textures and recipes from the jar.
+- The lights are persisted per world (a `lights.tsv` file beside the world), block changes register and prune them, and the spawn veto answers through the pin's `potential_spawns` hook with an installed minimal API shim.
+- `/torchmaster info` reports the registered lights and their ranges.
+
+**Not yet ported**
+
+- **Spawners are deliberately not blocked.** Upstream's `blockOnlyNaturalSpawns` defaults to true and the pin's pre-spawn hook only fires for the natural path; the "block spawners too" mode has no hook and is not carried.
+- **Phantoms and village sieges.** Upstream also vetoes phantom spawns and village sieges; the latter has a pin hook (village_siege), but phantoms do not pass through `potential_spawns`. Both are later slices.
+- The faint/feral lantern variants and the config file are not carried.
+
+MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Xalcon", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/torchmaster"
+icon = "icons/torchmaster.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "torchmaster-0.1.0.hnmod"
+sha256 = "b3488d60cb862818101ef1ab06df9b5e66482b4d348dd728a0c350b12a49897a"

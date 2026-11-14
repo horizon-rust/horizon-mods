@@ -1,0 +1,31 @@
+id = "karak_house"
+kind = "mod"
+name = "Karak Tea"
+summary = "Discover Karak Houses in villages and enjoy six drinks with special powers."
+description = """
+Discover Karak Houses in newly generated villages, with five designs inspired by their surroundings. Meet the Karak Seller and choose from six drinks with distinct powers. A regular Karak Tea costs one emerald, and sellers sometimes offer a complimentary cup. Drinks have individual timers and can be combined.
+
+Install the mod in Horizon 26.3, enable Karak Tea under Options > Mods, restart, and explore newly generated terrain. Tested on Horizon nightly 66f3981."""
+authors = ["Kian Konrad"]
+owners = ["Kian-hdr"]
+owner_ids = [64419110]
+license = "MIT"
+source = "https://github.com/Kian-hdr/karak-tea-minecraft"
+icon = "icons/karak_house.png"
+categories = ["food", "magic", "worldgen"]
+tags = ["tea", "karak", "villages", "drinks"]
+screenshots = ["screenshots/karak_house/1.jpg", "screenshots/karak_house/2.jpg", "screenshots/karak_house/3.jpg", "screenshots/karak_house/4.jpg", "screenshots/karak_house/5.jpg", "screenshots/karak_house/6.jpg", "screenshots/karak_house/7.jpg", "screenshots/karak_house/8.jpg"]
+key = "RWRU1Ij+ElkOcSfAwfoL9w7yRrX2JjdT2MuP0R3zXvJo5wF7lY7j/sXy"
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-07"
+game = "26.3"
+file = "karak_house-0.2.0.hmod"
+sha256 = "ea0db324ecfab441994811829cd3cd544b522576438a2f597a9f956b71f57b64"
+signature = """
+untrusted comment: signature from minisign secret key
+RURU1Ij+ElkOcalIWusIf9AeNh0s8HRJUKIK5nDI6KP/nVWCC/+Nae4zIzIiHTtyZiKmhaufqAgmVNMkTSy+N/dc4Hvivk2fWQY=
+trusted comment: Karak Tea 0.2.0
+x0XJ/brngHYqU7mTfj930gEr90/jjBpMGhToBLwGsaZ3MuhkwG+2v4IpY8wLVe1kAFMsWi7qCnEnn8iEj4egDw=="""
+changelog = "First public release: five village-specific Karak Houses and six drinks."

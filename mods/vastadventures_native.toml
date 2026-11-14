@@ -1,0 +1,35 @@
+id = "vastadventures_native"
+kind = "native-mod"
+name = "Vast Adventures"
+summary = "Loot with rarities and affixes, gems and sockets, bosses, elites, rogue spawners and boss dungeons. Needs its content mod."
+description = """
+A native mod for an adventure layer over the game, built from the MIT code and data of [Apotheosis](https://github.com/Shadows-of-Fire/Apotheosis)' adventure module (by Shadows_of_Fire), with names, words and art of its own. **Install the content mod `vastadventures` too**: it holds the gems, materials, seals, names and world generation.
+
+- **Affix loot**: chests, mob drops and fishing give weapons, tools and armour with a rarity (Common to Mythic) and affixes: attribute bonuses, status effects on hit or when hurt, damage reduction, enchantment bonuses, executing, thunderstruck, cleaving, radial mining, telepathic and festive drops, and combat stats (crit chance and damage, life steal, fire and cold damage, armour pierce and shred, dodge, healing received, experience gained, draw speed...). The tooltip shows them.
+- **Gems and sockets**: 21 gems at six purities, socketed at the anvil.
+- **Salvaging, reforging and gem cutting** at the grindstone and anvil, and the Seals of Sockets, Extraction and Erasure.
+- **Bosses and elites**: now and then a monster is a boss with better stats, gear and a gem, or an elite; some bosses only in their biomes. `/vastadventures boss` summons one.
+- **World tier** (`/vastadventures tier`: Calm, Wilds, Rising, Peril, Apex): one per world; higher tiers roll rarer loot and give luck.
+- **Rogue spawners and boss dungeons** in new chunks (from the content mod); a boss dungeon's spawner becomes a boss when a player comes near.
+
+**What it changes in the game**: loot tables (adds affix loot and gems), the player's attributes from their gear, melee and projectile damage, healing and block experience for the player, natural monster spawns (bosses and elites), the anvil and grindstone results, and block drops for radial and telepathic tools. It adds the `/vastadventures` command. It reads and writes only the world's `data/vastadventures/world_tier.dat`; no network, no other files.
+
+It carries an empty trait mod (`api/`): the game asks some hook points, the player's melee hit among them, only while one is loaded.
+
+Pinned to Horizon fdc87ae (Nightly 2026-11-08). Not yet: the augmenting and reforging tables, the tier screen, and the effects Horizon has no equivalent for (listed in the README). Not affiliated with or endorsed by Apotheosis' authors; none of its assets or lang are used."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-adventures"
+icon = "icons/vastadventures_native.png"
+categories = ["adventure", "equipment", "mobs"]
+tags = ["loot", "affixes", "gems", "bosses", "rpg", "dungeons"]
+
+[[versions]]
+version = "0.9.0"
+published = "2026-11-11"
+game = "26.3"
+file = "vastadventures_native-0.9.0.hnmod"
+sha256 = "c8251ef31c170e1813e4412e1e6a6c349bebf7b0bf29e8b4cb8a55be1b2fa5c6"
+changelog = "First release as Vast Adventures (0.9.0), built from the MIT code and data of Apotheosis' adventure module, with names, words and art of its own: affix loot with rarities, gems and sockets, salvaging, reforging, gem cutting and seals, bosses and elites, effect affixes and combat stats, rogue spawners and boss dungeons (with the content mod). Replaces the withdrawn apotheosis_native 0.8.0 submission."

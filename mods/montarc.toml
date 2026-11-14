@@ -7,18 +7,23 @@ Bright, colorful shader pack for Horizon. Horizon had no shaders on the registry
 
 ## What you get
 
-- **Soft shadows.** Sun and moon cast them. Water and stained glass tint the light that goes through.
+- **Soft shadows.** Sun and moon cast them. Water and stained glass tint the light that goes through. Pick the shadow map size and distance in game.
 - **Sky and fog match.** Blue day, orange sunsets, dark blue night. Far terrain fades into the sky, no hard line at the horizon.
-- **Colored light.** Torches are warm, soul fire is blue, redstone is red, sea lanterns are cyan, amethyst is purple.
-- **Water that looks like water.** Waves, depth color, reflections, sun glitter and foam on the shore.
+- **Colored light.** Torches are warm, soul fire is blue, redstone is red, sea lanterns are cyan, amethyst is purple. The Nether portal glows violet, the End portal cyan-green.
+- **Water that looks like water.** Waves, depth color, reflections, sun glitter and foam on the shore. Swim under it and sunlight dances on the seabed.
+- **Rain that looks like rain.** Rain and snow are lit by the sky, the moon and your torches. Puddles gather on flat ground and mirror the sky, with raindrop rings.
 - **Wind.** Grass, flowers, crops and leaves move. Rain makes it stronger.
 - **Nether and End look different.** Nether is hot and hazy, with heat shimmer. End is cold and purple.
-- **29 options.** Everything can be tuned or turned off in game.
+- **Sunbeams.** Optional light rays toward the sun, off by default.
+- **34 options.** Everything can be tuned or turned off in game.
 
 ## Slow? Try this
 
+- Shadow map size: 1024 or 512
+- Shadow distance: 64
 - Shadow quality: Low
 - Water reflections: off
+- Rain puddles: off
 - Bloom: off
 - Shadows: off. Biggest gain.
 
@@ -27,14 +32,35 @@ Bright, colorful shader pack for Horizon. Horizon had no shaders on the registry
 - Horizon shader API is 0.1, experimental. It can change.
 - Entities, block entities and particles are not shaded yet. There is no stage for them.
 - Nether and End sky is vanilla. The sky stage only draws in the Overworld.
-- Shadow bias may need tuning on some GPUs. If you see stripes on surfaces, change `Shadow bias`."""
+- Shadow bias may need tuning on some GPUs. If you see stripes on surfaces, change `Shadow bias`.
+- Rain puddles form on any flat ground under open sky, not only on grass and dirt.
+- Underwater light does not depend on how deep you are, only on sky light and distance, so deep water looks as lit as shallow.
+- Sunbeams are new and still rough. They need a visible sun and may look strong or patchy in some scenes. Lower the setting or turn it off.
+"""
 authors = ["Muurrcc"]
 owners = ["Muurrcc"]
 license = "MIT"
 source = "https://github.com/Muurrcc/montarc"
 icon = "icons/montarc.png"
 categories = ["semi-realistic", "colored-lighting", "shadows"]
-tags = ["colorful", "shadows", "water", "wind", "bloom", "fxaa"]
+tags = ["colorful", "shadows", "water", "wind", "bloom", "fxaa", "rain", "puddles", "caustics", "sunbeams"]
+screenshots = ["screenshots/montarc/1.jpg", "screenshots/montarc/2.jpg", "screenshots/montarc/3.jpg", "screenshots/montarc/4.jpg", "screenshots/montarc/5.jpg", "screenshots/montarc/6.jpg", "screenshots/montarc/7.jpg"]
+
+[[versions]]
+version = "1.6.0"
+published = "2026-11-11"
+game = "26.3"
+file = "montarc-1.6.0.hshader"
+sha256 = "dfae07cc2f2427f435f31af584689d766b58720a9ceff33d53511240ce97ce28"
+changelog = """
+- Portals: the Nether portal glows violet and the End portal and gateway glow cyan-green.
+- Shadows: new "Shadow map size" (512 to 2048) and "Shadow distance" (64 to 160) options, so you can trade shadow sharpness for FPS in game.
+- Weather: rain and snow now have their own look, lit by the sky, the moon, torches and lightning. Night rain stays faint instead of covering the screen.
+- Rain puddles: puddles that mirror the sky, with raindrop rings, on flat open ground while it rains ("Rain puddles", needs "Wet surfaces").
+- Sunbeams: optional light rays toward the sun ("Sunbeams", off by default, costs a little FPS).
+- Underwater: sunlight patterns dance on the seabed when you swim ("Underwater light").
+- Screenshots added.
+"""
 
 [[versions]]
 version = "1.1.1"

@@ -1,0 +1,38 @@
+id = "iceandfire"
+kind = "native-mod"
+name = "iceandfire"
+summary = "A fire dragon end to end: its egg hatches in flame and the dragon takes flight."
+description = """
+A Horizon port of [Ice and Fire Community Edition](https://github.com/iafenvoy/IceAndFire) (LGPL-3.0, by **IAFEnvoy**, **xiaowu** and **uoay**) for Horizon. This first slice is **one fire dragon, end to end**: its egg, its hatching and its flight.
+
+**Implemented so far**
+
+- **The fire dragon egg** (`iceandfire:dragonegg_red` places `iceandfire:dragon_egg`) ages only while the egg's block is on fire, exactly as the mod's `DragonEggEntity` does: one step per 100 ticks, 72 steps, and the progress is stored in the block state so it survives a reload.
+- **Hatching** at the mod's own `eggBornTime` of 7200 ticks turns the cell to air and summons one **tamed, owned and homed** `iceandfire:fire_dragon`, with the mod's health (500 × 0.04 = 20).
+- **Flight:** the dragon hovers at the mod's +0.08 blocks/tick, and a wild dragon pursues the nearest player within 128 blocks at 0.78 blocks/tick, holding at the 2-block tackle reach.
+
+**Not yet ported**
+
+- fire breath and biting: mobs cannot damage or mount at this pin, so combat and riding are out of reach for now, and the port supplies the AI itself because the goal registry is still a draft API;
+- the other 21 entity types (ice and lightning dragons, hippogryphs, cyclops, sea serpents, pixies and the rest) and the other 11 egg colours;
+- dragon growth, hunger, loot, sounds and the mod's own model (the dragon draws with the wandering trader's until the mob-submit hook exists);
+- dragon roosts and the mod's ore and gear families.
+
+**Licence.** LGPL-3.0: the port ships the LGPL-3.0 and GPL-3.0 texts and a notice naming the authors, the upstream URL and the exact jar with its sha256; it is a derivative under the same licence and its complete source is published, with no further restriction added.
+
+Original copyright and licence notices are kept in this repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is welcome."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/AdLf0208/iceandfire"
+icon = "icons/iceandfire.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "iceandfire-0.1.0.hnmod"
+sha256 = "1ece4a6413f3c9773acb81d4b610442fae1c67e3ab3f15cf5ebb46046f31b0bf"

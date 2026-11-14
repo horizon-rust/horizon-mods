@@ -1,0 +1,53 @@
+id = "theurgy_native"
+kind = "native-mod"
+name = "Theurgy (Native)"
+summary = "Native code for Theurgy, the classical alchemy mod. Needs the Theurgy (Assets) content mod."
+description = """
+# Theurgy (Native)
+
+The **code** half of [Theurgy for Horizon](https://github.com/ReenkyPig-Studio/theurgy-horizon), a Rust port of [Theurgy](https://github.com/klikli-dev/theurgy) by klikli-dev. Theurgy is a mod about classical alchemy: refine raw materials, replicate matter and transmute it into something else.
+
+## What it does
+
+It is the native Horizon implementation of Theurgy's behaviour, built into the game by the launcher:
+
+- the alchemical apparatus (calcination, liquefaction, distillation, incubation, fermentation, digestion, reformation and the rest), their heat and mercury flux
+- mercurial logistics, wires and item/fluid filters
+- items such as divination rods and the mercurial wand
+- the sal ammoniac fluid, ore generation and the block and item renderers
+- the Hermetica guide book screen, the recipe screen and the mod's key bindings
+
+## What it needs
+
+On its own this file has no textures, models, recipes or block definitions. Those are in the separate content mod **Theurgy (Assets)**, id `theurgy`, and **both are required**. Install the two together, or use the Theurgy modpack that bundles them.
+
+Pinned to Horizon `fdc87ae` (nightly-2026-11-08), Minecraft 26.3. Ported from Theurgy `release/v26.3-1.120.1`. JEI/EMI, Jade and KubeJS integrations are not included: those mods do not exist on Horizon.
+
+## What it touches
+
+- Files: it reads `config/theurgy.json` (or the file named by `THEURGY_CONFIG_FILE`) and reads and writes each player's guide book progress, `<uuid>.theurgy_book.json`, in the world's player data folder. Nothing else.
+- Network: it opens no connections of its own. Client and server talk only through the game's own connection (the `theurgy:book` channel and the game's block and menu updates).
+- It starts no processes. Its only dependency is `serde_json`, from Horizon's lock file.
+
+## Credits and licence
+
+Original mod: [Theurgy](https://github.com/klikli-dev/theurgy) © klikli-dev, MIT. This port's code is MIT; the upstream licence texts and third-party notices (Modonomicon, NeoForge) are in the bundle and in the source repository.
+
+This port is not affiliated with or endorsed by klikli-dev. Please do not report issues with this port upstream; use the [port's issue tracker](https://github.com/ReenkyPig-Studio/theurgy-horizon/issues)."""
+authors = ["klikli-dev (original)", "Theurgy Horizon contributors"]
+owners = ["Mininaut"]
+owner_ids = [87039532]
+license = "MIT"
+source = "https://github.com/ReenkyPig-Studio/theurgy-horizon"
+icon = "icons/theurgy_native.png"
+categories = ["magic", "technology"]
+tags = ["alchemy", "native", "transmutation", "replication", "automation", "logistics", "port"]
+screenshots = ["screenshots/theurgy_native/1.jpg", "screenshots/theurgy_native/2.png", "screenshots/theurgy_native/3.png", "screenshots/theurgy_native/4.png", "screenshots/theurgy_native/5.png"]
+
+[[versions]]
+version = "1.120.1"
+published = "2026-11-11"
+game = "26.3"
+file = "theurgy_native-1.120.1.hnmod"
+sha256 = "c91360aeda5bc1ce20a034528d4781c397e5171db5c429cb062f8bf320e65ee9"
+changelog = "Initial release: the native code of the Horizon port of Theurgy 1.120.1 for Minecraft 26.3. Needs the Theurgy (Assets) content mod, id `theurgy`."

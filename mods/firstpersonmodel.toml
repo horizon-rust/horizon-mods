@@ -11,17 +11,25 @@ A port of [First-person Model](https://github.com/tr7zw/FirstPersonModel) by tr7
 - **F6** turns it on and off.
 - **The original's config screen** (four tabs, sliders, item lists with search), from Mod Menu's Configure or Options > Mods > FirstPerson. English and Russian.
 
-Built for Horizon Nightly 2026-11-07 (`2ebf00a`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
 
 **Credits.** First-person Model is Copyright (c) tr7zw, MIT License, with its MIT TRender GUI. This port rewrites it in Rust under the same licence and is not affiliated with tr7zw, Mojang or Microsoft."""
 authors = ["DeportedToHell"]
 owners = ["DeportedToHell"]
 owner_ids = [344119465]
 license = "MIT"
-source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/firstpersonmodel"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/firstpersonmodel"
 icon = "icons/firstpersonmodel.png"
 categories = ["decoration", "utility"]
 tags = ["first-person", "player-model", "camera", "immersion", "port"]
+
+[[versions]]
+version = "1.0.3"
+published = "2026-11-14"
+game = "26.3"
+file = "firstpersonmodel-1.0.3.hnmod"
+sha256 = "e1384669958837ca514c9b3a8d07aaf4a83e45de287a9821fa0eb945989e17ee"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064). Replaces 1.0.2 (#955)."
 
 [[versions]]
 version = "1.0.0"

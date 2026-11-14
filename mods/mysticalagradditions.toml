@@ -1,0 +1,40 @@
+id = "mysticalagradditions"
+kind = "native-mod"
+name = "mysticalagradditions"
+summary = "A Horizon port of mysticalagradditions."
+description = """
+A port of [Mystical Agradditions](https://github.com/BlakeBr0/MysticalAgradditions) for Horizon.
+
+**Implemented so far**
+
+- The six tier-6 crops `mysticalagradditions:<name>_crop` (`nether_star`, `dragon_egg`, `gaia_spirit`, `awakened_draconium`, `neutronium`, `nitro_crystal`) on the `minecraft:wheat` template: `age` 0..7, the jar's 4-pixel outline with an empty collision, and vanilla crop random tick.
+- Their seeds (`<name>_seeds`, a plain item with `place_block`, as the parent port does) and essences (`<name>_essence`).
+- The six cruxes `<name>_crux` on the `minecraft:stone` template: hardness 5.0, blast resistance 10.0, `requires_tool`, and the jar's `mineable/pickaxe` + `needs_stone_tool` membership.
+- `insanium_farmland` on the `minecraft:farmland` template, in `#minecraft:supports_crops`, `#minecraft:grows_crops` and `#minecraft:mineable/shovel`.
+- The growth gate: a crop only grows while its own crux is two blocks below it. The parent's `requiresEffectiveFarmland` default is false; when true the block below must be insanium farmland.
+- Bone meal only targets a crop that can grow and is under age 7, and never advances it (the jar's `isValidBonemealTarget`/`isBonemealSuccess`).
+- 26.3 loot tables: a ripe crop gives 1 essence + 1 seed, a young one 1 seed (tier 6's `secondarySeedDrop` is false, so there is no second roll); the farmland gives itself with silk touch, else dirt + a 25% insanium essence.
+- The jar's `MEM/ESE/MEM` seed recipe for `nether_star` and `dragon_egg`, the nether-star and dragon-egg crux recipes, and insanium farmland (essence + farmland), with `#c:storage_blocks/diamond` supplied as a tag.
+- One tier-6 line is proved end to end in game (awakened draconium): planted, held at `random_tick_speed 0`, grown to age 7, and a survival break drops exactly 1 essence + 1 seed.
+
+**Not yet ported**
+
+- **Fertilized essence** is not carried (`runtime.rs` explicitly leaves it out), so no crop can be fertilized by it.
+- **Four integration recipe families are missing**: the seed/crux recipes that depend on other mods' materials (`tools/carry_content.py` records which ones were dropped), so those tiers cannot be reached from survival yet.
+- The remaining tiers' crops are content only where the jar defines them; the awakened-draconium line is the one proved in game.
+- **This is an add-on**: it requires the parent mod **Mystical Agriculture**, whose Horizon port (`mysticalagriculture`) supplies the essence, farmland and growth rules this port builds on."""
+authors = ["BlakeBr0", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/mysticalagradditions"
+icon = "icons/mysticalagradditions.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "mysticalagradditions-0.1.0.hnmod"
+sha256 = "134efc0e3bfd2083cda249260688fae08dbbce7e65949297a47126c3644bce7b"

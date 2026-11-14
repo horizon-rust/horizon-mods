@@ -1,0 +1,34 @@
+id = "clumps"
+kind = "native-mod"
+name = "Clumps"
+summary = "A port of Clumps: experience orbs of any value clump into one orb worth all of them, and you pick it up whole. Less lag with many orbs."
+description = """
+A port of [Clumps](https://github.com/jaredlll08/Clumps) by Jaredlll08 (BlameJared) to Horizon, as a native mod. Ported by DispatchedToHeaven.
+
+- **Experience orbs of any value clump together** into one orb worth all of them: orbs that come near each other, and new experience that drops by an orb already there. Far fewer orbs, less lag when many drop at once (mob farms, smelting, the ender dragon).
+- **You pick a clumped orb up whole**, all its points at once: Mending repairs with it first, the rest goes to your experience bar.
+- No settings, as in Java. Mod Menu shows its icon, credits and links. English and Russian.
+
+Server side, as in Java: it works where your game runs the world (single player and a LAN world you host) and on a Horizon server with the mod. Turned on or off in Options > Mods, it changes the next time the world loads.
+
+Differences from Java: a clump keeps its total rather than Clumps' list of orb values (the experience is the same), the 2-tick pickup delay stays, and Clumps' Java API events have no Horizon counterpart.
+
+Built for Horizon Nightly 2026-11-08 (`fdc87ae`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+
+**Credits.** Clumps is Copyright (c) 2021 Jaredlll08, MIT License, with contributions from Darkhax, ChampionAsh5357, FalseHonesty, Chloe Dawn, Griefed and others; the icon is the mod's own. Ported to Horizon by DispatchedToHeaven; the port rewrites the mod in Rust under the MIT licence and is not affiliated with its author, Mojang or Microsoft."""
+authors = ["DispatchedToHeaven"]
+owners = ["DeportedToHell"]
+owner_ids = [344119465]
+license = "MIT"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/clumps"
+icon = "icons/clumps.png"
+categories = ["optimization", "utility"]
+tags = ["experience", "xp", "orbs", "lag", "performance", "server", "port"]
+
+[[versions]]
+version = "1.0.2"
+published = "2026-11-10"
+game = "26.3"
+file = "clumps-1.0.2.hnmod"
+sha256 = "a784899c53ff4e5a1bfeb7328b623cbc30c72e1a94c7331adb9fb2c31c0820f2"
+changelog = "First release (replaces #542 and #634): the port author is DispatchedToHeaven (formerly Kastromovskiy). Built for Horizon Nightly 2026-11-08 (fdc87ae)."

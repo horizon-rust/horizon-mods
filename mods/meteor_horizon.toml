@@ -1,0 +1,52 @@
+id = "meteor_horizon"
+kind = "native-mod"
+name = "Meteor for Horizon"
+summary = "Meteor Client ported to Horizon: every module, the ClickGUI, the HUD and commands. Unofficial."
+description = """
+[Meteor Client](https://github.com/MeteorDevelopment/meteor-client) ported to Horizon as a native mod: all 169 of Meteor's modules with every setting, the ClickGUI, the HUD and its editor, commands, Starscript, friends, macros, profiles, waypoints, markers and proxies.
+
+An unofficial port of Meteor Client `e3a2e77`. It is not made, endorsed or supported by Meteor Development or by the Horizon project. The original is the work of [Meteor Development](https://github.com/MeteorDevelopment) (MineGame159, squidoodly, seasnail and the contributors).
+
+It has no account system: you play with your own account, through Horizon's sign-in.
+
+**It has combat and movement modules, and many servers ban utility mods: use it where it is allowed.**
+
+## Usage
+
+Turn it on in the launcher's Mods tab and press **Build**. The first build takes a few minutes.
+
+Open the ClickGUI with **Right Shift**. Commands start with `.` (`.commands` lists them). Everything is saved in `meteor-client/` in the game folder, in Meteor's own NBT files.
+
+## What it needs
+
+The Horizon Nightly of 2026-11-08 (`fdc87aec`). On a newer Horizon it is left out of the build until a release for that version is out. Excavator and Infinity Miner need Baritone, as in Meteor.
+
+## Network
+
+No telemetry. It connects only for what you ask: `.name-history` to `laby.net`, proxies and Swarm to the addresses you give them, and Discord Presence to the local Discord client.
+
+## Licence
+
+GPL-3.0-only, as Meteor Client is. `LICENSE` and `NOTICE` in the source list its copyright and what it includes."""
+authors = ["Meteor Development", "malidev"]
+owners = ["malithedeveloper"]
+owner_ids = [46960964]
+license = "GPL-3.0-only"
+source = "https://github.com/malithedeveloper/meteor-horizon"
+icon = "icons/meteor_horizon.png"
+categories = ["utility"]
+tags = ["meteor-client", "utility", "anarchy", "client", "qol"]
+key = "RWSjN7+g9Hbgso6CjEWjvTQYUScmFAQjBMSY/PjjRUTLBl5g4tk094lZ"
+
+[[versions]]
+version = "0.1.5"
+published = "2026-11-09"
+game = "26.3"
+file = "meteor_horizon-0.1.5.hnmod"
+sha256 = "01a452eff3fff6d7149e60646cb32a4336ddda6dc70567f6d654e0e9576284bd"
+signature = """
+untrusted comment: signature from minisign secret key
+RUSjN7+g9HbgsrDF7DElEUz3MZXUnWGfQOkHoeH+1jMrbF6R7UehFuISXr3LXMOg/9NivvJo8LhCnb00Utw7PTm1WlrIwNHhagU=
+trusted comment: timestamp:1794251753\tfile:meteor_horizon-0.1.5.hnmod\thashed
+Jj5staxWLx0Q9ruVzTleQyMLf2s2vv2u0zYM0T5sUARcKCyyl9Y0WiOfg4EU2Vl2IJurogBMKIM/usqI5hB1AQ=="""
+changelog = "First version on the registry. Meteor's Accounts system and its session override are removed, as asked in the review of #448. Profile names can no longer leave the profiles folder (review of #456)."

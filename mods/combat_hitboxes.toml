@@ -1,0 +1,27 @@
+id = "combat_hitboxes"
+kind = "native-mod"
+name = "Combat Hitbox"
+summary = "Customizable hitboxes with dynamic in-reach target indication, opacity controls, and line thickness."
+description = "Markdown description detailing the in-range reach highlighting, opacity adjustment (10% to 100%), and outline thickness settings."
+authors = ["P1xel"]
+owners = ["honk458"]
+owner_ids = [180249653]
+license = "MIT"
+source = "https://github.com/honk458/Combat-Hitbox-For-Horizon"
+icon = "icons/combat_hitboxes.png"
+categories = ["utility"]
+tags = ["hitbox", "combat", "pvp"]
+key = "RWR6loaK55j0RCu0fcsgfSR2ceS7WkaX+6NbuuwqbQ11O5zIr4YlPvSa"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-11"
+game = "26.3"
+file = "combat_hitboxes-1.0.0.hnmod"
+sha256 = "e4efe2a164cea644a1460b05560cdae102ef26da7ed8b0cb4c5c21554c9bcc12"
+signature = """
+untrusted comment: signature from minisign secret key
+RUR6loaK55j0RFtCOyzRwsikf1iUCmxi8kLkAfsyxxuQBBHHzknc9lSizIKnbaBJSGPcQz17634kaUdS9xz5if3iSHzoC0Jb+gs=
+trusted comment: timestamp:1794369128\tfile:combat_hitboxes.hnmod\thashed
+hQ8ztMp0u3t1y9elWjR7SpdUo7Dzi9Xg9wKnH3anU2QvhBFO9O3uQ+dnPhSFjByMVQOgRUFj433MJnYrkqpKCg=="""
+changelog = "Customizable hitboxes with dynamic in-reach target indication, opacity controls, and line thickness sliders."

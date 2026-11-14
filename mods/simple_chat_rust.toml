@@ -1,0 +1,38 @@
+id = "simple_chat_rust"
+kind = "native-mod"
+name = "Simple Chat Rust"
+summary = "Proximity voice chat that talks with the Simple Voice Chat mod and plugin: its screens, groups, per-player volumes, noise suppression, 2.6 and 2.7 protocols."
+description = """
+Proximity voice chat for Horizon that talks with the [Simple Voice Chat](https://github.com/henkelmax/simple-voice-chat) mod and plugin: on any server with it you can talk with players on the regular Java launcher.
+
+- **Voice Chat (V)**: Settings, Group, Adjust Volumes and mic/voice toggles, as the Java mod lays them out.
+- **Settings**: voice volume, mic amplification, **noise suppression** (rnnoise), push to talk or voice activation with a live mic meter, microphone/speaker selection, chat messages.
+- **Groups**: join, password groups, Create Group; members on screen, framed while they talk; group names above players.
+- **Adjust Volumes**: a slider per player, 0-400 %, kept per player.
+- Positional audio: voices get quieter with distance and pan left/right.
+- Keys: V, push to talk (Caps Lock), mute (J), voice chat off/on (K), hide icons (H). `/vc` commands too.
+- Both protocols: **2.6.x** (compat 20) and **2.7** (21), remembered per server.
+
+**Install.** The release also has `opus.dll`, `rnnoise.dll` and their licences: put the DLLs in `horizon-mods/.horizon-mod-data/simple_chat_rust/`.
+
+**How it relates to Horizon Voice Chat (`voicechat`).** It started as a fork of [Nirokx/horizon-voice-chat](https://github.com/Nirokx/horizon-voice-chat) (MIT, credited; thanks to Nirokx for the base). Since then most of it has been rewritten and extended: the Java mod's screens and HUD, groups, per-player volumes, noise suppression, both protocol versions, device selection, Windows audio libraries and hook points instead of internal targets. It is now close to a different mod, so it is listed under its own id rather than as an update of `voicechat`.
+
+**Where the protocol comes from.** The protocol and audio code were written (with Claude Code) by reading Simple Voice Chat's source and following its implementation; no code is copied verbatim (Rust vs Java), and comments name its classes. Tested live against Paper 26.3 with the Simple Voice Chat 2.6.27 plugin. Not affiliated with Max Henkel or the Simple Voice Chat project.
+
+Credits: Nirokx (original), guvum (screens, HUD icons, noise suppression), BnCatt (hook points, audio libraries, settings, icons)."""
+authors = ["BnCatt", "guvum", "Nirokx"]
+owners = ["BnCatt"]
+owner_ids = [262346062]
+license = "MIT"
+source = "https://github.com/BnCatt/simple-chat-rust"
+icon = "icons/simple_chat_rust.png"
+categories = ["social", "utility"]
+tags = ["voice", "voicechat", "proximity", "multiplayer"]
+
+[[versions]]
+version = "1.1.3"
+published = "2026-11-14"
+game = "26.3"
+file = "simple_chat_rust-1.1.3.hnmod"
+sha256 = "d01885e1370d6fa8bbf6144541f715f052d8d6a0f9b77d59a223626a1bc05ad0"
+changelog = "First listing (resubmitted through the form; the earlier PR #324 was closed). Hook API 409, tested on Horizon 9f42064 (Nightly 2026-11-13)."

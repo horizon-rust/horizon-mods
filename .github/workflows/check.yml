@@ -21,14 +21,21 @@ jobs:
       GH_REPO: ${{ github.repository }}
       HORIZON_REV: ${{ vars.HORIZON_REV || 'main' }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
-          path: base
+      # The main the pull request is merged into, not the event's base.sha: a re-run (or a run that waited in the
+      # queue) keeps the old base.sha while GitHub rebuilds the merge commit on today's main, so everything main
+      # gained in between would count as the pull request's own (the same as native-compat.yml's #425).
       - uses: actions/checkout@v4
         with:
           path: head
           persist-credentials: false
+          fetch-depth: 2
+      - name: The main commit it is merged into
+        id: merged
+        run: echo "base=$(git -C head rev-parse HEAD^1)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.merged.outputs.base }}
+          path: base
       # A fork's run gets no repository variables, so HORIZON_REV is a branch name: pin it to its commit, or the
       # cache below keeps serving the tool built the first time (#136 failed on 2026-11-07 with an 11-03 tool).
       - name: Pin the tool's revision

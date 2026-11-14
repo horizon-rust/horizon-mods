@@ -1,0 +1,49 @@
+id = "particlerain"
+kind = "native-mod"
+name = "Particle Rain"
+summary = "Rain, snow, sandstorms and fog as real particles, with ripples, splashes and wind that changes direction. A port of PigCart's Particle Rain."
+description = """
+**Weather you can feel.** A port of [Particle Rain](https://github.com/PigCart/particle-rain) by **PigCart** to Horizon, as a native mod. The game's flat rain and snow curtains are gone: every drop, flake and grain of sand is a real particle in the world, blown by the wind.
+
+### 🌧️ Rain and storms
+- Raindrops fall at an angle with the wind, coloured by the biome's water and the sky. In a thunderstorm they turn into a **heavy downpour**.
+- **Ripples** spread across lakes and rivers, drops **splash** on the ground, **streaks** run down stone and glass walls, **steam** rises from magma.
+
+### ❄️ Snow
+- Spinning snowflakes in cold biomes and thick **blizzards** in storms, with their own snowfall sound.
+
+### 🏜️ Sandstorms
+- While it rains elsewhere, deserts and badlands get **swirling dust**, a **haze** over the dunes and **tumbleweeds** rolling past, with the sound of a sandstorm all around you.
+
+### 🌫️ Fog
+- Soft **fog** creeps through swamps, jungles and dark forests, and **mist** hangs in the air for a while after the rain stops.
+
+### 🌬️ Changing wind (Horizon port addition)
+- In the original the wind always blows north-west. In this port the wind **slowly turns** over time, so storms come from every side. Everyone on a server sees the same wind. Turn off **Changing Wind Direction** in Wind Options for the original wind.
+
+### ⚙️ Make it yours
+- Particle Rain's own config screens: edit every particle (density, size, speed, colour, texture, biomes) or add new ones. Open them with `/particlerain`, Options > Mods > Particle Rain > Configure..., or Mod Menu.
+- Uses your resource pack's rain and snow textures. English and Russian.
+- Up to 1500 particles, with distance and density settings for weaker PCs.
+
+Not in Horizon: "Sync registries", WindLink and Iris compatibility do nothing; Fabric's `c:` biome tags are defined by the port.
+
+Built for Horizon Nightly 2026-11-08 (`fdc87ae`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+
+**Credits.** Particle Rain is by PigCart, with plunderpixels, HigorFr, LilleboHaugen and CH4ACKO3; translations by megatocha, Sasaki-Akari and good7777865. MIT License. The textures, sounds, icon and texts are the mod's own. Ported to Horizon by DeportedToHell; not affiliated with PigCart, Mojang or Microsoft."""
+authors = ["DeportedToHell"]
+owners = ["DeportedToHell"]
+owner_ids = [344119465]
+license = "MIT"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/ef44e8d287b151d7be6d6ddf6fef05e2f370a4e3/particlerain"
+icon = "icons/particlerain.png"
+categories = ["decoration"]
+tags = ["weather", "rain", "snow", "particles", "wind", "fog", "sandstorm", "ambience", "atmosphere", "port"]
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-11"
+game = "26.3"
+file = "particlerain-1.0.1.hnmod"
+sha256 = "86f78c42a472f6ce373bb9a0f6f26e17da48cf617212e0751ffb0154e177841a"
+changelog = "First release (replaces 1.0.0, #630), with the fix from its review: switching a built-in particle's Blocks or Biomes list between whitelist and blacklist is now saved. Built for Horizon Nightly 2026-11-08 (fdc87ae)."

@@ -33,6 +33,22 @@ categories = ["adventure", "transportation"]
 tags = ["spider-man", "web-swinging", "parkour", "wall-running", "movement"]
 
 [[versions]]
+version = "0.2.4"
+published = "2026-11-14"
+game = "26.3"
+file = "spider_man-0.2.4.hnmod"
+sha256 = "08370d9b3e0142c26e3fa2f2e7ca084195d152cd69dcb6b2e31db6db7d537247"
+changelog = """
+- On Horizon Nightly 2026-11-13 (`9f42064`): 0.2.3 no longer compiled there.
+- A vault off a roof gives the fall back once its flip is done: WASD steers and a web can be shot on the way down.
+
+Supersedes #685.
+
+Pinned build: Horizon `9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0` (Nightly 2026-11-13), Horizon Mixins `5a64af938ec86b00d53d16a408aabc0038fb3e57`. Built on that Horizon on macOS arm64 without errors; `cargo horizon-mod check` (built from the pinned Horizon) passes; horizon-mods' `native_compat.py check` on this file against `9f42064`: applies and compiles. Played on that build: web and zip after 5–20 block drops (no damage), a plain 10-block fall (7 damage), wall run, vault, swing.
+
+SHA-256: `08370d9b3e0142c26e3fa2f2e7ca084195d152cd69dcb6b2e31db6db7d537247`"""
+
+[[versions]]
 version = "0.2.0"
 published = "2026-11-03"
 game = "26.3"

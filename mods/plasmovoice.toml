@@ -1,0 +1,40 @@
+id = "plasmovoice"
+kind = "native-mod"
+name = "Plasmo Voice"
+summary = "A port of Plasmo Voice: proximity voice chat for players and Horizon servers in one mod, working with Java players on Plasmo Voice servers."
+description = """
+A port of [Plasmo Voice](https://github.com/plasmoapp/plasmo-voice) by Plasmo to Horizon, as a native mod. Proximity voice chat: you hear the players near you, from where they stand, and they hear you.
+
+- **Plasmo Voice's own protocol**: a Horizon player talks with Java players on any server that runs Plasmo Voice (Paper, Fabric…). Tested on Paper 26.3 with Plasmo Voice 2.2.0-beta.3: voice both ways, mutes, distances, icons.
+- **One mod for players and servers, as the original**: the same mod is the voice server on a **dedicated Horizon server** (the voice runs on the server's own port, Plasmo Voice's `config.toml`, its commands `/vlist`, `/vmute`, `/vunmute`, `/vmutelist`, `/vreload`, `/vrc`, mutes kept across restarts, permissions, English and Russian messages) and on a world you host: open it to LAN and friends with the mod talk with you, nothing else to install.
+- **Push to talk** (Left Alt) or **voice activation** with its threshold; **mute microphone** (M), **disable voice chat**, the distance and activation keys, the Action button + wheel for a player's volume.
+- **Plasmo Voice's settings screen** on **V**, as in Java: Devices, Volume, Activation, Overlay, Advanced and Hotkeys — microphone and speakers, the level meter with the threshold marker and **Test microphone**, volumes up to 200%, per-player volume and mute, overlay styles and positions, key bindings.
+- **Every option works as in Plasmo Voice**: RNNoise noise suppression (the same model), stereo capture, sound occlusion through blocks, directional sources, the voice distance sphere, the camera as listener.
+- **On screen as in Plasmo Voice**: the microphone icon while you talk, the list of who is talking, the icons above players' heads (talking, muted, voice disabled).
+- Settings in `config/plasmovoice/client.toml`, as in Java. Mod Menu and Options > Mods > Plasmo Voice > Configure... open Plasmo Voice's Mod Menu screen. English and Russian (Plasmo Voice's own translations).
+
+Additions of this port: a microphone before the name of players with voice chat in the player list (Tab) — white while they talk, crossed out in red otherwise — with an option to turn it off; the list of who is talking is on by default; the activation threshold is -60 dB by default (Plasmo Voice: -30).
+
+Not available in Horizon: HRTF (it comes from OpenAL Soft) and the Javax input device; proxies (Velocity/BungeeCord) aren't supported. Building a Linux server needs ALSA's development package (`libasound2-dev`).
+
+Built for Horizon Nightly 2026-11-08 (`fdc87ae`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+
+**Permission.** Apehum, Plasmo Voice's lead developer, agreed on Telegram (2026-11-10) to this port being published, under the LGPL-3.0, with no further conditions.
+
+**Credits.** Plasmo Voice is by Plasmo (Apehum, KPidS and contributors), GNU LGPL-3.0; the icons and texts are Plasmo Voice's own, the Russian ones from its Crowdin translations. This port rewrites it in Rust under the same licence. Plasmo Voice's Mod Menu screen follows Cloth Config by shedaniel (LGPL-3.0). Opus via libopus (BSD-3-Clause); noise suppression via nnnoiseless / RNNoise (BSD-3-Clause). Not affiliated with Plasmo, Mojang or Microsoft."""
+authors = ["DeportedToHell"]
+owners = ["DeportedToHell"]
+owner_ids = [344119465]
+license = "LGPL-3.0"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/6060e0fba1ee4b720f43e005a4cb12b67ade4eab/plasmovoice"
+icon = "icons/plasmovoice.png"
+categories = ["social", "utility"]
+tags = ["voice-chat", "proximity-chat", "plasmo-voice", "multiplayer", "push-to-talk", "port"]
+
+[[versions]]
+version = "1.0.2"
+published = "2026-11-11"
+game = "26.3"
+file = "plasmovoice-1.0.2.hnmod"
+sha256 = "912462e2f39c9c4137b17e7bfe6d9215fbe44c4fea5493c0849d79dda9126df2"
+changelog = "First release (replaces 1.0.1, #624, and 1.0.0, #605), with the fixes from its review: every Config from the server (/vreload too) restarts the microphone, the encoders and the speakers with its sample rate, codec and MTU; the mono and stereo forms of a frame keep separate noise-suppression states; voice activation measures the microphone after its volume and noise suppression; the Volume tab search also filters the players of addons' source lines and direct sources. Built for Horizon Nightly 2026-11-08 (fdc87ae)."

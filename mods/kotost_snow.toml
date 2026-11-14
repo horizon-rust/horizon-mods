@@ -1,0 +1,30 @@
+id = "kotost_snow"
+kind = "native-mod"
+name = "Kotost Snow"
+summary = "Soft smooth snow, footprints, frosted plants and varied snowfall."
+description = """
+- **Soft snow**: snow layers become one smooth surface with gentle waves, ragged edges at the border of a snowfield, caps that round off on blocks.
+- **Footprints** of players and mobs that press into the snow and fill in over time.
+- **Plants in snow** stand in the snow and turn white with frost.
+- **Snowfall** that is different each time it starts.
+
+See the README in the repository for every setting.
+
+Native source mod: the launcher compiles it after a warning; it runs with your account's permissions. No Minecraft code or assets are included."""
+authors = ["Kotost Games"]
+owners = ["Leks2000"]
+owner_ids = [107043945]
+license = "MIT"
+source = "https://github.com/Leks2000/kotost-snow"
+icon = "icons/kotost_snow.png"
+categories = ["decoration"]
+tags = ["snow", "footprints", "weather", "visual"]
+screenshots = ["screenshots/kotost_snow/1.png", "screenshots/kotost_snow/2.png", "screenshots/kotost_snow/3.png", "screenshots/kotost_snow/4.png"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-12"
+game = "26.3"
+file = "kotost_snow-0.1.1.hnmod"
+sha256 = "1e6a5ff94bd66004c7ef09902456bbbfbace7610f978a6a2405a1bba243ce5a1"
+changelog = "Turning the mod off (`enabled = 0`) now clears the blizzard haze and the fresh powder, so no fog stays on after it is switched off during a blizzard."

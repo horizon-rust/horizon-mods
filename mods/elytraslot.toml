@@ -1,0 +1,32 @@
+id = "elytraslot"
+kind = "native-mod"
+name = "Elytra Slot"
+summary = "Glide with an elytra worn in the trinket cape slot."
+description = """
+Glide with an elytra worn in the trinket cape slot.
+
+**Needs** [trinkets](https://playhorizon.dev/mods/trinkets) and [trinkets_native](https://playhorizon.dev/mods/trinkets_native) installed too.
+
+**Differences from the original:** Only your own player shows the wings of an elytra worn in the trinket slot. Other players' wings from that slot are not drawn. On LAN, the server's movement check only looks at a guest's armour and hands, so a guest gliding with an elytra in the trinket slot may be pulled back.
+
+A port of [Elytra Slot](https://github.com/illusivesoulworks/elytraslot) 6.4.4+1.20.1 by Illusive Soulworks, published under its licence, LGPL-3.0-or-later. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Illusive Soulworks"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/lavoide/horizon-ports/tree/main/elytraslot"
+icon = "icons/elytraslot.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "elytraslot-0.1.1.hnmod"
+sha256 = "d26585db436105ed644d1bfae9032ef06642dad444df1e3a58236fcc8f2812b3"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

@@ -10,17 +10,25 @@ A port of [Smooth Swapping](https://github.com/Schauweg/Smooth-Swapping) by Scha
 - **Smooth Swapping's own config screen**, as in Java (Mod Menu's Configure, or Options > Mods > Smooth Swapping > Configure...): Toggle Mod, the speed slider, the curve editor and the test inventory.
 - Drawing only: it works on servers too.
 
-Built for Horizon Nightly 2026-11-08 (`fdc87ae`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
 
 **Permission and credits.** Published with the permission of the original author Schauweg and the current maintainer Riflusso (given on Discord on 2026-11-08). Smooth Swapping is licensed under the LGPL-3.0; this port keeps that licence and is not affiliated with Mojang or Microsoft."""
 authors = ["DeportedToHell"]
 owners = ["DeportedToHell"]
 owner_ids = [344119465]
 license = "LGPL-3.0"
-source = "https://github.com/DeportedToHell/MCRE-Mods/tree/6060e0fba1ee4b720f43e005a4cb12b67ade4eab/smoothswapping"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/smoothswapping"
 icon = "icons/smoothswapping.png"
 categories = ["utility"]
 tags = ["inventory", "animation", "ui", "port"]
+
+[[versions]]
+version = "1.1.3"
+published = "2026-11-14"
+game = "26.3"
+file = "smoothswapping-1.1.3.hnmod"
+sha256 = "cba3e16d7fe5ab49e110922ea0ead6d91300688183dae546f5002d18122c9498"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064). Replaces 1.1.2 (#702)."
 
 [[versions]]
 version = "1.1.2"

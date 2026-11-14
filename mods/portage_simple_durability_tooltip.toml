@@ -1,0 +1,55 @@
+id = "portage_simple_durability_tooltip"
+kind = "native-mod"
+name = "portage-simple-durability-tooltip"
+summary = "Shows damaged-item durability without enabling Advanced Tooltips. Unofficial Rust port for Horizon."
+description = """
+An unofficial community Rust port of **Simple Durability Tooltip**, originally created by **Infinidoge**, under the MIT license.
+
+Hover over a damaged tool, weapon or armor piece in your inventory to see its remaining and maximum durability in your selected game language, even with Advanced Tooltips disabled.
+
+### Installation and use
+
+1. Install the `.hnmod` through a compatible Horizon native-mod build integration.
+2. Rebuild Horizon with the mod.
+3. Enable **portage-simple-durability-tooltip** in **Options → Mods**.
+4. Open your inventory and hover over a damaged item.
+
+Remove the old `simple_durability_tooltip` 0.1.0 package before upgrading.
+
+Undamaged, unbreakable and hidden-damage items are skipped. Advanced Tooltips keeps its normal display without a duplicate mod line. No configuration, extra keybind, background polling or network requests are added.
+
+### Compatibility
+
+Targets Minecraft **26.3**, Horizon revision `fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca` and horizon-mixins revision `e59da9094f0c2fdda6c627fe9eff22dec6a906f0`.
+
+Six isolated helper tests, official package/signature validation and mixin application passed. A whole-game build and in-game test of version 0.1.1 have not been performed. Latest Nightly compatibility has not been checked.
+
+### Credits
+
+Original creator: **Infinidoge**.
+[Original mod](https://modrinth.com/mod/simple-durability-tooltip) · [Original source](https://github.com/Infinidoge/simple-durability-tooltip)
+
+Port maintainer: **fanthomas-creator**. Original MIT copyright and license notices are preserved. The original creator does not maintain this Rust port."""
+authors = ["fanthomas", "Infinidoge"]
+owners = ["fanthomas-creator"]
+owner_ids = [251568636]
+license = "MIT"
+source = "https://github.com/fanthomas-creator/portage-simple-durability-tooltip/tree/v0.1.1"
+icon = "icons/portage_simple_durability_tooltip.png"
+categories = ["utility", "equipment"]
+tags = ["durability", "tooltip", "client-side", "quality-of-life"]
+screenshots = ["screenshots/portage_simple_durability_tooltip/1.png"]
+key = "RWRLiqviZ3I5J7gJBBVbpgKpOHXFBEolu6HF5y5Z43x8jUr8Ooxje7Zl"
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "portage_simple_durability_tooltip-0.1.1.hnmod"
+sha256 = "f7aa8ef7e3b2193e201459ab789a87410410b62ec56b6f5bfa6ca0960b0962d4"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURLiqviZ3I5JygsBEVyNOjZffxdssj327XjnozbCcQILsTmAONhQHDuPhwj5cS02BN7p+QERNzyM97GaKqYMjDsqKgGbOHpIAU=\r
+trusted comment: portage-simple-durability-tooltip-0.1.1.hnmod\r
+4CuBZfp/nGpD1YhtIgnXRi1VftrjGKIr65gJAjjeaWMAckMt+BKXbVK/2i/8xtTOU3YxXRcRjJIjPE0YIHefCQ=="""
+changelog = "Rename the native port to portage-simple-durability-tooltip. Preserve the existing tooltip behavior and add English documentation, original-author credits, illustrations, reproducible packaging, isolated behavior tests and a verified minisign signature."

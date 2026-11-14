@@ -1,0 +1,30 @@
+id = "smwyg"
+kind = "native-mod"
+name = "Show Me What You Got"
+summary = "Ctrl+T over an item puts it in chat, with its tooltip on hover."
+description = """
+Ctrl+T over an item puts it in chat, with its tooltip on hover.
+
+**Differences from the original:** The shared line arrives as a server message, not as signed player chat. Sharing doesn't work from the creative inventory. If you edit the item name in the chat box, the message goes out as plain text.
+
+A port of [Show Me What You Got](https://github.com/apace100/show-me-what-you-got) 1.1.1 by Apace, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Apace"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/smwyg"
+icon = "icons/smwyg.png"
+categories = ["social"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "smwyg-0.1.1.hnmod"
+sha256 = "f58b21d1c9587a5f2e0db9cd109192dd683e5236b5944e400746a95c451169e3"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

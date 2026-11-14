@@ -15,17 +15,25 @@ A port of [Just Enough Items (JEI)](https://github.com/mezz/JustEnoughItems) by 
 
 Turn other recipe viewers off while this one is on: they use the same place on screen.
 
-Built for Horizon Nightly 2026-11-08 (`fdc87ae`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
 
 **Credits.** Just Enough Items is Copyright (c) 2014-2015 mezz, MIT License; the GUI sprites are JEI's own. This port rewrites JEI in Rust under the same licence and is not affiliated with mezz, Mojang or Microsoft."""
 authors = ["DeportedToHell"]
 owners = ["DeportedToHell"]
 owner_ids = [344119465]
 license = "MIT"
-source = "https://github.com/DeportedToHell/MCRE-Mods/tree/e662a0c6672c8f2b0770fb815bfae6611b9f0e16/justenoughitems"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/justenoughitems"
 icon = "icons/justenoughitems.png"
 categories = ["utility"]
 tags = ["jei", "recipes", "item-list", "recipe-viewer", "search", "port"]
+
+[[versions]]
+version = "1.1.4"
+published = "2026-11-14"
+game = "26.3"
+file = "justenoughitems-1.1.4.hnmod"
+sha256 = "ab666981811ad3273102871f58c33f49d99d9c188a512873e3340ec7b036f5ec"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064). Also includes 1.1.3 (not submitted before): a recipe-category API for other native mods (`justenoughitems_glue::register_category`, contributed by voltzz900). Replaces 1.1.2 (#689)."
 
 [[versions]]
 version = "1.1.2"

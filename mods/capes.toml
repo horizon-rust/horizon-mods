@@ -1,0 +1,29 @@
+## Horizon registry entry for Capes (exact 1:1 Rust translation of the LGPL-2.1-or-later mod).
+id = "capes"
+kind = "native-mod"
+name = "Capes"
+summary = "Cosmetic capes: the upstream Capes client logic, translated 1:1, with its cape provider handling, menus and renderer."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+An exact 1:1 Rust translation of [Capes](https://modrinth.com/mod/capes): the upstream Java by CaelTheColher translated code-for-code, carrying the upstream license and credit in full.
+
+All eight upstream modules (capes_mod, config, handler, menus, mixins, render, util, and the test module) are carried 1:1 as a Horizon client runtime splice, with crate:: mapped to super:: for the carrier. Host seams where the Minecraft and Fabric APIs do not exist in Horizon live behind the port's seam traits.
+
+Port of [CaelTheColher/Capes](https://github.com/CaelTheColher/Capes), copyright (C) CaelTheColher, LGPL-2.1-or-later: the license text ships with the source. 29 unit tests on the translated logic. Rust port by sparticle, upstream by CaelTheColher."""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-2.1-or-later"
+source = "https://github.com/Sparticle62ops/horizon-capes"
+categories = ["cosmetic"]
+tags = ["capes", "cosmetic", "rendering"]
+
+icon = "icons/capes.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.0.0"
+game = "26.3"
+file = "capes-1.0.0.hnmod"
+sha256 = "cc45075840bd9366e4f632ad5222d5c8060df7f5004993ccb48a7b0eccfcef87"
+changelog = "Exact 1:1 Rust translation of Capes (LGPL-2.1-or-later) by CaelTheColher, license and upstream credit carried: all eight upstream modules, 1:1, as a Horizon client runtime splice."

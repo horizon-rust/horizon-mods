@@ -1,0 +1,57 @@
+id = "mosaicary"
+kind = "native-mod"
+name = "Mosaicary"
+summary = "skin wardrobe: the skin catalogue of mosaicary.com in the game, worn in one click"
+description = """
+A skin wardrobe for Horizon. Press **M** in a world, the Mosaicary button on the pause menu, or your own figure
+beside the main menu, and browse the skins of [mosaicary.com](https://mosaicary.com): search by name, tag or player,
+and pick the arms, the category, live eyes, the order and any number of tags. The next skins load by themselves as
+you scroll.
+
+Every card shows its skin worn on the player's figure. Open one and it stands on a big figure you can turn, move and
+bring closer, or let turn and walk by itself. **Wear** puts it on your Minecraft account: you see it at once, other
+players see it when you join again, and players with Mosaicary see it at once if you both share.
+
+**My skins** keeps every skin you wear and your account's own skin from before; keep any skin of the catalogue, add a
+PNG of your own, save a skin's PNG. Your skin stands beside the main menu and the pause menu, its head following the
+pointer and your name over it.
+
+**Live eyes.** Skins made for the Fresh Moves+ resource pack blink and look round with the pack switched on: in the
+wardrobe, beside the menus and in the world. Horizon reads the pack's models itself; Mosaicary keeps the skin pixels
+the pack reads the eyes from, as Entity Texture Features does in Java Edition.
+
+Each skin names who drew it, or the player it was found on, and links to its page on the site.
+
+- Looking at skins is not counted as downloading them; wearing one downloads its file once, and the skin goes to
+  Mojang with your session, as the official launcher sends it.
+- Sharing is asked on the first Wear and off unless you say yes: then mosaicary.com is told which skin you put on
+  and asked which ones the players around you put on. "Delete my data" in the settings removes what it keeps.
+- Works beside 3D Skins: a skin put on with the wardrobe gets its 3D layer at once.
+- English and Russian, following the game's language.
+
+Also made for Java Edition (Fabric, NeoForge, Forge, 1.16.5 to 26.3):
+[Mosaicary on CurseForge](https://www.curseforge.com/minecraft/mc-mods/mosaicary). This Horizon version is written
+for Horizon from scratch in Rust, by the same author."""
+authors = ["MopicMP"]
+owners = ["MopicMP"]
+owner_ids = [239005009]
+license = "LGPL-3.0-only"
+source = "https://github.com/MopicMP/mosaicary-horizon"
+icon = "icons/mosaicary.png"
+categories = ["social", "decoration"]
+tags = ["skins", "wardrobe", "skin-catalogue", "cosmetic", "players", "mosaicary", "fresh-moves"]
+screenshots = ["screenshots/mosaicary/1.png", "screenshots/mosaicary/2.png", "screenshots/mosaicary/3.png", "screenshots/mosaicary/4.png", "screenshots/mosaicary/5.png"]
+key = "RWTxjJ5g20QloaGM28fpiP6vkfTZNAIe2Z90M7oRNWNYcshDeSGgd94n"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-11"
+game = "26.3"
+file = "mosaicary-1.0.0.hnmod"
+sha256 = "5ceafdf9ac8da842b56b45194e305eb5f3f48ba5fa9381a2bb3a91e5847b45e8"
+signature = """
+untrusted comment: signature from minisign secret key
+RUTxjJ5g20QloYhd1Z5h+Bx5LYD/714LPp9EwAe784dr58Aux1MUJrKw14cx71NUzfoTIL3tCI/z9J+JJW1KLUYT/XKVkHBYWAs=
+trusted comment: mosaicary-1.0.0.hnmod for Horizon
+MUn++3fRSP5Cso2zHZaK8kCYz4ZWWZzx9dBExdAgFSJAjSBMRtizh5PhSCG8HXWVJLGw3q1vIkCemFPBdZwlCw=="""
+changelog = "First release for Horizon."

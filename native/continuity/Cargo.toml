@@ -1,0 +1,12 @@
+[package]
+name = "horizon-mod-continuity"
+version = "1.0.0"
+edition = "2024"
+license = "LGPL-3.0-only"
+publish = false
+description = "Connected textures: an exact 1:1 Horizon Rust port of Continuity by PepperCode1 (LGPL-3.0-only)."
+
+[lib]
+path = "src/lib.rs"
+
+[workspace]

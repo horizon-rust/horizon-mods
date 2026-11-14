@@ -1,0 +1,35 @@
+id = "gleaming_ores"
+kind = "resourcepack"
+name = "Gleaming Ores"
+summary = "Animated, glowing ores: a shine sweeps across every ore, so you spot them in the dark. No mods needed"
+description = """
+Ores that shine. Every ore gets new, animated specks that glow in their own colours, so they stand out in a dark cave: cyan diamonds, green emeralds, gold nuggets, red redstone and more.
+
+- **Every ore**: coal, iron, copper, gold, redstone, emerald, lapis and diamond (stone and deepslate), Nether gold and Nether quartz.
+- **Animated shine**: every few seconds a band of light sweeps across each ore, each block at its own moment, so a vein shimmers in waves.
+- **Glow**: the specks are drawn at full brightness in the dark. They don't light up the cave around them.
+- **Variety**: two layouts per ore, turned at random, so veins don't repeat.
+- **Your stone stays yours**: the stone, deepslate and netherrack under the specks are your game's own (or your texture pack's), so ores always match the blocks around them.
+- **No mods needed**: it works in Horizon as it is.
+
+**Fair play:** only ores you can already see gleam; nothing shows through stone, so it's not an X-ray pack. Some servers have their own rules about ore-highlighting packs: check them before you play there.
+
+All the speck art and the icon are Gleaming Ores' own: the pack contains no Minecraft textures.
+
+Source: https://github.com/selfmonoraque5/gleaming-ores"""
+authors = ["selfmonoraque5"]
+owners = ["selfmonoraque5"]
+owner_ids = [86315101]
+license = "MIT"
+source = "https://github.com/selfmonoraque5/gleaming-ores"
+icon = "icons/gleaming_ores.png"
+categories = ["blocks", "16x", "vanilla-like"]
+tags = ["ores", "glowing", "animated", "emissive", "mining", "shine"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-11"
+game = "26.3"
+file = "gleaming_ores-1.0.0.zip"
+sha256 = "22674c39067cbe136c947640765c5514c75433b00abf39bd466f056926abe517"
+changelog = "First release"

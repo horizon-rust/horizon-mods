@@ -1,0 +1,113 @@
+id = "tristanpbty_lib"
+kind = "native-mod"
+name = "TristanPbty's Lib"
+summary = "A shared Rust library for TristanPbty's Horizon native mods."
+description = """
+# TristanPbty's Lib
+
+TristanPbty's Lib is a shared Rust library developed by TristanPbty for Horizon native mods.
+
+It provides reusable components and common functionality to help organize and simplify the development of multiple native Horizon projects.
+
+## Features
+
+- Shared Rust components.
+- Reusable functionality.
+- Centralized code for multiple projects.
+- Modular architecture.
+- Designed for Horizon native mod development.
+
+## How to use
+
+Add TristanPbty's Lib to your Rust project as a dependency.
+
+Use its exported components and functions in your native Horizon mod.
+
+## Requirements
+
+- Rust toolchain.
+- Compatible Horizon native mod development environment.
+
+## Credits
+
+Created and maintained by TristanPbty.
+
+## License
+
+MIT License."""
+authors = ["TristanPbty"]
+owners = ["TristanPbty"]
+owner_ids = [312256864]
+license = "MIT"
+source = "https://github.com/TristanPbty/TristanPbty-Lib"
+icon = "icons/tristanpbty_lib.png"
+categories = ["technology", "library"]
+tags = ["rust", "library", "horizon", "native", "development", "api"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-09"
+game = "26.3"
+file = "tristanpbty_lib-1.0.0.hnmod"
+sha256 = "9d9d4b2b10eeb42514a19654282b043be23489e49ef76a5c3143af8f28f17ed1"
+changelog = """
+What changed
+
+Markdown.
+Its page
+Its page
+Name
+Licence
+MIT
+Summary
+One line for the list.
+Description
+
+Markdown: what it does, how to use it, what it needs.
+0 / 10,000, at least 50
+Categories (1 to 3)
+Adventure
+Decoration
+Economy
+Equipment
+Food
+Game mechanics
+Library
+Magic
+Management
+Minigame
+Mobs
+Optimization
+Social
+Storage
+Technology
+Transportation
+Utility
+World generation
+Tags (optional, up to 10)
+bosses, dungeons
+Separated by commas: lowercase words, digits and -.
+Authors
+Alice, Bob
+Separated by commas.
+Source code
+https://github.com/you/your-mod
+Reviewers read it: the file must be built from it.
+Icon
+Aucun fichier choisi
+A square PNG, 64 to 1024 pixels, at most 256 KiB. It is kept in the registry.
+Screenshots (optional, up to 8)
+Aucun fichier choisi
+PNG or JPEG, at most 1 MiB each, from 320×180 to 3840×2160 pixels. They show in this order.
+Signature
+Signature
+Optional, and recommended: with your minisign key on the project, every later version must be signed with it, so nobody else can publish an update in your name.
+
+Public key
+RW…
+A new project's. Changing a published project's key is a pull request by hand.
+Signature
+Aucun fichier choisi
+The file's .minisig.
+
+I made it, or I may publish it under this licence, and its source is at the address above. I accept the mod policy and I am responsible for this project."""

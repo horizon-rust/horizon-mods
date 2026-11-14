@@ -1,0 +1,14 @@
+[package]
+name = "horizon-mod-better_clouds"
+version = "1.0.0"
+edition = "2021"
+license = "MPL-2.0"
+publish = false
+description = "Exact 1:1 Rust translation of Better Clouds (Qendolin/better-clouds, MPL-2.0) for the Horizon client."
+
+[lib]
+path = "mixins/better_clouds/runtime.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }

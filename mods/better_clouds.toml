@@ -1,0 +1,31 @@
+## Horizon registry entry for Better Clouds (exact 1:1 Rust port of Qendolin/better-clouds, MPL-2.0).
+id = "better_clouds"
+kind = "native-mod"
+name = "Better Clouds"
+summary = "Volumetric clouds with realistic lighting, full 1:1 port: config system, generators, rendering, config GUI, commands and mixins."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- **Cloud rendering 1:1**: the whole upstream pipeline is ported as exact code translation: cloud generators (chunked + random-path), the render pass chain (shadows, fog, depth, photometric lighting), cloud render coordinator and static cloud data.
+- **Config 1:1**: the full upstream config tree (Config/Configs/ConfigManager/Migrations + compat layers) with the same copy/equal/hashCode semantics, presets, and the `/config open|reload|set`, `/dimension enable|disable` and `/debug renderdoc` command tree.
+- **Config GUI 1:1**: ConfigScreen, ConfigGUI, Shader/Noise/SereneSeasons/Dimensions preset GUIs, OptionListWidget and the YACL option/controller surface, ported line-for-line.
+
+Exact 1:1 Rust translation of [Better Clouds](https://modrinth.com/mod/better-clouds) (upstream Qendolin/better-clouds, MPL-2.0, master @d6c33c0). The upstream MPL-2.0 license and credit are carried; ported to Rust by sparticle. Known engine-stage seams (tracked in the repo README): the mixin carrier splice, serialized config load, EventHooks/ModLoader backend resolution, `PresetLoader.ALL_PRESETS` population, the renderdoc full port and the CategoryTab/PlaceholderTab config-GUI widgets wire in at engine stage; no Horizon API gaps.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MPL-2.0"
+source = "https://github.com/Sparticle62ops/horizon-better-clouds"
+categories = ["utility"]
+tags = ["clouds", "sky", "rendering"]
+
+icon = "icons/better_clouds.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.0.0"
+game = "26.3"
+file = "better_clouds-1.0.0.hnmod"
+sha256 = "b961351dcee94bac7e46aa9a54ce8b7162f9ae87c84c0d92949c040069361e02"
+changelog = "Initial exact 1:1 Rust port of Better Clouds (Qendolin/better-clouds, MPL-2.0, @d6c33c0): generators, rendering, config, presets GUIs, commands, mixins and platform init as exact code translation."

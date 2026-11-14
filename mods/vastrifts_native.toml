@@ -1,0 +1,31 @@
+id = "vastrifts_native"
+kind = "native-mod"
+name = "Vast Rifts"
+summary = "Rifts that bring waves of mobs, stronger wave by wave, and rewards for beating them. Needs its content mod."
+description = """
+A native mod of combat events, whose waves follow the MIT data of [Gateways to Eternity](https://github.com/Shadows-of-Fire/GatewaysToEternity) (by Shadows_of_Fire), with names, art and words of its own. **Install the content mod `vastrifts` too** (the sigils, their art, recipes and words in English and Brazilian Portuguese).
+
+- **Place a rift's sigil** and the rift opens: a swirl of its colour and a bar at the top of the screen. Each wave has a few seconds of setup, then its mobs come out around it; kill them all before the wave's time runs out and its rewards drop on the rift. Beat the last wave and it closes with its own rewards.
+- **Seven rifts**: Ember (blazes), Warp (endermen), Mire (slimes), Pasture (crops and animals), Night (the overworld's night mobs), Inferno (the nether fortress) and Golem (iron golems), from small to large, with named mobs in their own gear.
+- **Stronger wave by wave**: health, speed, damage and knockback go up.
+- **Collapse**: if a wave runs out of time, or no player stays within 32 blocks, the rift collapses, its mobs vanish and some strike back (an explosion, blindness, a few mobs). Rifts of hostile mobs don't open on Peaceful.
+
+**What it changes in the game**: it summons the rifts' mobs and rewards (items, experience, a few animals) around a rift block, runs a few commands for its messages and effects, and shows a boss bar to players near a rift. A rift's progress lives in its block's own data; no files, no network.
+
+Pinned to Horizon fdc87ae (Nightly 2026-11-08). Not yet: endless rifts, and the original's attribute bonuses Horizon doesn't read from mob data. Not affiliated with or endorsed by Gateways to Eternity's author; none of its art or words are used."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-rifts"
+icon = "icons/vastrifts_native.png"
+categories = ["adventure", "mobs", "game-mechanics"]
+tags = ["waves", "mob-farms", "combat", "loot"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "vastrifts_native-0.1.0.hnmod"
+sha256 = "d28a9dcd705a061d0f5745c97cbac0bacadcd686e1a2f1e40ba22ee8c9d51a0d"
+changelog = "First release: seven rifts (Ember, Warp, Mire, Pasture, Night, Inferno, Golem) that bring waves of mobs, stronger wave by wave, with rewards for beating them and a collapse if you fail."

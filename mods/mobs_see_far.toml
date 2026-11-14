@@ -1,0 +1,30 @@
+id = "mobs_see_far"
+kind = "native-mod"
+name = "Mobs See Far"
+summary = "Hostile mobs can now see much further"
+description = """
+Hostile mobs can now see much further
+
+The average distance in vanilla Minecraft is 20 blocks
+With this mod, that value becomes 128 blocks
+
+If a player is in survival mode, hostile mobs within a 128-block radius will notice the player and pursue them
+
+(For those who enjoy a hardcore experience)"""
+authors = ["Bogdan_Tokarev"]
+owners = ["bogdan1tokarev1"]
+owner_ids = [350354354]
+license = "MIT"
+source = "https://github.com/bogdan1tokarev1/Mobs-See-Far"
+icon = "icons/mobs_see_far.png"
+categories = ["mobs", "game-mechanics", "utility"]
+tags = ["mobs", "game", "mechanics", "hardcore"]
+screenshots = ["screenshots/mobs_see_far/1.png"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-07"
+game = "26.3"
+file = "mobs_see_far-1.0.0.hnmod"
+sha256 = "81714b7d1ce0f31641ad1a0971fbc96531f9dde8347e8f82c967b3c543b8b5ad"
+changelog = "Mobs can now see much further."

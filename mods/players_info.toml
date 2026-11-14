@@ -1,0 +1,44 @@
+id = "players_info"
+kind = "native-mod"
+name = "Players Info"
+summary = "What you can know of the player you look at, drawn around them: hearts, game mode, ping, armor, held item, posture and recent events."
+description = """
+Aim at a player and what your client knows about them appears **around them** on screen, drawn with the game's own font, sprites and item rendering. It follows them as they move, gets smaller with distance, and fades out a moment after you look away.
+
+- **Above the name tag:** their hearts, drawn like the HUD's health bar (blinking on damage, shaking when low, absorption, hardcore, frozen).
+- **Beside the name tag:** their game mode on the left; their ping bars and latency in ms on the right.
+- **Left of the body:** each armor piece at the height of what it covers, with its enchantment glint and durability bar.
+- **Right of the body:** the held item (name in its rarity colour, enchantments, durability), the off-hand item, posture and action (sneaking, sprinting, swimming, gliding, eating, blocking, drawing a bow...), the mount, distance, coordinates and speed.
+- **Under the feet:** recent events (hit by..., critical hits, totem popped, shield disabled, got on/off, game mode change, item switch), grouped when repeated (`Hit by Alex ×3`).
+
+A **tooltip layout** shows the same information in a vanilla tooltip box at the side of the screen instead.
+
+## Settings
+
+- `I` toggles the mod (rebindable in Options > Mods > Players Info).
+- Options > Mods > Players Info: one button per setting (layout, which player is followed, range, size, background, each piece of information, language French/English/auto).
+- `config/players_info-client.toml`, commented, re-read within a second when edited.
+
+## What it does and doesn't do
+
+- It only shows what the server already sends your client: the tab list, entity data, equipment, passengers and entity events. A server that hides or fakes a value (health hidden by an anti-cheat) gives information to match.
+- Only a player in plain view is shown: line of sight is checked, so nothing through walls, and nothing for invisible players. Spectators are shown only when you are one too.
+- No network access of its own, no files read or written other than its config file.
+
+Needs Horizon at Nightly 2026-11-05 (`f319701`)."""
+authors = ["Reminuscul"]
+owners = ["Reminuscul"]
+owner_ids = [268381945]
+license = "MIT"
+source = "https://github.com/Reminuscul/players-info"
+icon = "icons/players_info.png"
+categories = ["utility"]
+tags = ["hud", "pvp", "players", "info", "health", "actions", "armor", "ping", "combat", "overlay"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-07"
+game = "26.3"
+file = "players_info-1.0.0.hnmod"
+sha256 = "135f3482f1c0c3e1b1845f77453f93a32989769e451eda2d11a72db5d8c05713"
+changelog = "First release."

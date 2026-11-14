@@ -1,0 +1,37 @@
+id = "fluxnetworks"
+kind = "native-mod"
+name = "fluxnetworks"
+summary = "A Horizon port of fluxnetworks."
+description = """
+A port of [Flux Networks](https://github.com/SonarSonic/Flux-Networks) (MIT, by Sonar Sonic and BloCamLimb) for Horizon. This first slice is the network core: one network, five blocks and one readout.
+
+**Implemented so far**
+
+- `fluxnetworks:flux_plug` pulls FE from the blocks beside it (up to its transfer limit and what the network asked for last cycle), buffers it, and gives it to the network.
+- `fluxnetworks:flux_point` takes FE from the network's plugs and storages by priority, up to what the blocks beside it can accept, and pushes it there.
+- `fluxnetworks:basic_flux_storage`, `herculean_flux_storage` and `gargantuan_flux_storage`: network buffers of 2,000,000 / 16,000,000 / 128,000,000 FE with transfer limits of 20,000 / 120,000 / 720,000 FE per tick.
+- Every device declares its FE buffer as the block's energy capability (API 142), so a cable or machine from another mod can read and fill it, and the network runs its pass after each level tick.
+- `/fluxnetworks info|energy|network|priority` readout and configuration commands, plus the carried models, textures, language and recipes inside the one `.hnmod`.
+
+**Not yet ported, and one deliberate deviation**
+
+- A device of **another network is treated as an outside energy block**. Upstream refuses every `IFluxDevice` as an outside block; a one-bundle world has no other block with an FE buffer, so this slice draws the boundary at the network id: a plug or point ignores the devices of its *own* network and treats a device of another network as an ordinary FE block. Two networks placed side by side therefore exchange FE through their plugs and points. `FINDINGS.md` and the support module record it; the e2e's source and receiver are devices on networks 10 and 20.
+- The controller and its GUI, the wireless transmitter, the flux controller and its screen, surge mode, chunk loading, the storage colour layer, the security levels and the config file are later slices.
+- The device blocks' own GUIs and their upgrade items are not carried; configuration goes through the commands.
+
+MIT; the original copyright and permission notices travel inside the archive at `mixins/fluxnetworks/LICENSE`."""
+authors = ["Sonar Sonic", "BloCamLimb", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/fluxnetworks"
+icon = "icons/fluxnetworks.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "fluxnetworks-0.1.0.hnmod"
+sha256 = "e560bcde7bbde79501f5a45121eef93c2baa13e2207f17086df8002713c42a5a"

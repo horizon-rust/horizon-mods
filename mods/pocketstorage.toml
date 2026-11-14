@@ -1,0 +1,37 @@
+id = "pocketstorage"
+kind = "native-mod"
+name = "pocketstorage"
+summary = "A Horizon port of pocketstorage."
+description = """
+A port of [Pocket Storage](https://github.com/Flanks255/PocketStorage) (MIT, by Flanks255) for Horizon. This first slice is the **tier-1 storage unit**: a pocket-sized container whose contents ride the item stack itself.
+
+**Implemented so far**
+
+- `pocketstorage:psu_1`, one of the four tiers the jar ships, built on the `minecraft:iron_ingot` template with `max_stack_size: 1`, with the jar's own model and texture.
+- **8 slots of 255**: upstream's `PSUTier.TIER1` (`slots = 8`, `capacity = 0xFF = 255`), repeated in its `README.MD` and in the jar's language file ("Holds %s different items, up to %s of each"). Insert tops up the slot holding the same item, else takes the first empty slot, else refuses the stack.
+- The contents ride the stack's own component (`pocketstorage:contents`, one compound per filled slot), so a unit that is saved, thrown or picked up keeps what it holds; an empty unit carries no component at all and stacks like a new one.
+- Sneak + right-click a container **deposits** all but one of each kind into it (upstream's `giveItems` rule); sneak + left-click **withdraws** the kinds the unit already holds (upstream's `takeItems` rule). A withdraw takes only plain stacks: a damaged, renamed or enchanted container stack is refused rather than rebuilt from its id, because a saved slot is one `{id, count}` entry and flattening it would destroy the components.
+- `/psu put|list|help` stands in for upstream's screen, which this slice does not carry.
+
+**Not yet ported**
+
+- Tiers 2 to 4 (`psu_2` 16 × 4,095, `psu_3` 32 × 65,535, `psu_4` 64 × 1,048,575): only the tier-1 item is carried. The runtime already holds all four tiers' numbers, but the items, models, tabs and the upgrade path are not shipped.
+- The `pocketstorage:upgrade` recipe type: a shaped recipe whose `D` is the previous unit, needing a `ShapedRecipe.pattern` access transformer. The pin has no custom recipe type a port can register, so a tier 2–4 recipe cannot be authored yet; the three upgrade recipes are a named gap.
+- The storage unit screen, its item handler and the keybind that opens it.
+
+MIT; the original copyright and permission notices travel inside the archive at `mixins/pocketstorage/LICENSE`."""
+authors = ["Flanks255", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/pocketstorage"
+icon = "icons/pocketstorage.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "pocketstorage-0.1.0.hnmod"
+sha256 = "5d9b3502eb8da1b5b2e54274411b296b9831e4ecc4a83458a58d28e90d659373"

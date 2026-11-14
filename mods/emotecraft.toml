@@ -1,0 +1,39 @@
+id = "emotecraft"
+kind = "native-mod"
+name = "Emotecraft"
+summary = "Emotes for Horizon: an emote wheel, 14 dances and gestures with music, your own Blockbench emotes. Everyone sees them, on Java servers too."
+description = """
+**Press B, pick an emote, and everyone around you sees it.** A port of [Emotecraft](https://github.com/KosmX/emotes) 3.5.0 by **KosmX** and **dima_dencep** to Horizon, as one native mod: the client *and* the server.
+
+### 💃 What you get
+- 🎡 **The emote wheel** with live 3D previews of your skin, pages and number keys, as in Java.
+- 🕺 **14 built-in emotes**: Waving, Clap, Back Flip, Kazotsky Kick, Club Penguin, Twerk, Caramell Dance, Let's Groove, Take the L and more. Three of them come with music.
+- 🧩 **Your own emotes**: drop Emotecraft or Blockbench files into `emotes/`, with icons, songs and Molang. The same files work as in Java.
+- ⌨️ **Key binds** for your favourite emotes, the **All Emotes** list with folders and search, and Emotecraft's own settings screens.
+- 🛡️ Armour, held items and the cape follow the dance. Walking stops it. First person works, together with First-person Model.
+
+### 👥 Multiplayer, Java servers included
+- Works in single player, on LAN worlds you host and on dedicated Horizon servers, with `/emotes play|stop|reload`, permissions and server emotes.
+- Speaks Emotecraft's own protocol, so Horizon players emote together with Java players on servers running Emotecraft (Fabric, NeoForge, Paper). Tested on a Fabric 26.3 server with Emotecraft 3.5.0: every emote seen both ways, big custom emotes with songs, server commands.
+
+Differences from Java: Online Emotes and the cloud emote library aren't available. On a Java server, a player who joins in the middle of someone's emote sees their next one. Emotecraft's own after-join route behaves the same way. While the mod is on, B opens Emotecraft's wheel instead of Horizon's own.
+
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+
+**Credits.** Emotecraft © KosmX, dima_dencep and contributors (Kale Ko, ZigyTheBird, BoBkiNN and others), GNU GPL-3.0. Built-in animations by KosmX, Kale Ko, Wah0o, 3APA3EH and SPEmotes; translations by Emotecraft's Crowdin translators. The animation engine follows PlayerAnimationLibrary by ZigyTheBird (MIT, based on GeckoLib and playerAnimator) and mochafloats (MIT); Opus via libopus (BSD-3-Clause). This port rewrites Emotecraft in Rust under the GPL-3.0 and is not affiliated with its authors, Mojang or Microsoft. Found a bug? [Report it here](https://github.com/DeportedToHell/MCRE-Mods/issues)."""
+authors = ["DeportedToHell"]
+owners = ["DeportedToHell"]
+owner_ids = [344119465]
+license = "GPL-3.0-only"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/emotecraft"
+icon = "icons/emotecraft.png"
+categories = ["social"]
+tags = ["emotes", "animations", "emote-wheel", "dances", "blockbench", "multiplayer", "server", "port"]
+
+[[versions]]
+version = "1.0.2"
+published = "2026-11-14"
+game = "26.3"
+file = "emotecraft-1.0.2.hnmod"
+sha256 = "8e075969a6f97bb84b66d7984f797be2573b90b7b24d3efad7d2bbdce7fbe3b9"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064). Replaces 1.0.1 (#705)."

@@ -1,0 +1,36 @@
+id = "rftoolsutility"
+kind = "native-mod"
+name = "rftoolsutility"
+summary = "The RFTools tank: 32,000 mB of one fluid, filled and drained with a bucket."
+description = """
+A Horizon port of [RFTools Utility](https://github.com/McJtyMods/RFToolsUtility) (MIT, by **McJty**) for Horizon. This first slice is **the tank**.
+
+**Implemented so far**
+
+- **`rftoolsutility:tank`, 32,000 mB of one fluid** — the jar's own manual says "up to 32 buckets" and `TankConfiguration.maxCapacity` defaults to 32,000 mB.
+- **Every face accepts and provides** the fluid, and the contents live in the block entity's saved data, so they survive a save, quit and relaunch.
+- **The bucket loop:** a water or lava bucket fills it by 1,000 mB and leaves an empty bucket in hand, an empty bucket drains 1,000 mB and fills, and a full tank, a different fluid or a partial amount is refused.
+- **A declared level 0–8** picks the jar's own `tank0…tank8` textures, and `/rftoolsutility info|tank` reads and sets the contents.
+
+**Not yet ported**
+
+- the mod's other four families: the teleporters, the screens and their 30 modules, the logic gates, the environmental controller, the spawner and the three crafters;
+- the tank's own GUI (this slice uses the commands);
+- fluid push/pull between neighbouring tanks (the slice is the bucket and tank loop).
+
+Original copyright and licence notices are kept in this repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is welcome."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/rftoolsutility"
+icon = "icons/rftoolsutility.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "rftoolsutility-0.1.0.hnmod"
+sha256 = "98ad2799fc18a6288893be4274adacd227098fed3feb6b57923cd8026125b30d"

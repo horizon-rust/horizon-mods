@@ -1,0 +1,19 @@
+id = "hotbar_keys"
+kind = "native-mod"
+name = "Your normal hotbar keys"
+summary = "its just a hotbar keys mod"
+description = "a hotbar keys mod that shows your keybinds on hotbars"
+authors = ["mjostafa2229"]
+owners = ["mostafamjostafa2229-svg"]
+owner_ids = [333369626]
+license = "MIT"
+source = "https://github.com/mostafamjostafa2229-svg/your-normal-hotbar-keys-"
+icon = "icons/hotbar_keys.png"
+categories = ["utility"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-12"
+game = "26.3"
+file = "hotbar_keys-1.0.0.hnmod"
+sha256 = "6181dbca9354202b665104a7745825648a17fd54c14df66ed6f5289e36f69963"

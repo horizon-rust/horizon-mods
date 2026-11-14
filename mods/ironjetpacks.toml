@@ -1,0 +1,38 @@
+id = "ironjetpacks"
+kind = "native-mod"
+name = "ironjetpacks"
+summary = "A Horizon port of ironjetpacks."
+description = """
+A port of [Iron Jetpacks](https://github.com/BlakeBr0/IronJetpacks) by BlakeBr0 for Horizon — slice 2, the iron tier with an item-backed tank.
+
+**Implemented so far**
+
+- `ironjetpacks:jetpack`, the 26.1 single jetpack item fixed to the iron tier: a chest item (right-click equips it), unbreakable, stack size 1, armor 3, with the upstream item model and texture.
+- **Flight:** while the jetpack is in the chest slot and the jump key is held the player rises, at `min(motionY + accel, speedVert) × throttle × sprint` with the upstream acceleration, cap, water and sprint rules; thrust ticks also zero the fall distance.
+- **Engine switch and tank:** an 800,000 FE item-backed tank in the stack's own `minecraft:custom_data`, the engine component (off by default, as upstream), and `/ironjetpacks fuel|engine` — `fuel` is operator-only, `engine` is open to the wearer (the pin has no key-to-server action path, so the command is the switch).
+- A pure 29-test flight model, the content (item, model, texture, recipes, tags, creative tab), and one `.hnmod` that carries both halves.
+
+**Not yet ported**
+
+- **One item, one tier:** 26.1 uses one `jetpack` item with a `jetpack_id` component and a registry of 14 tiers; the pin's content format cannot register that component, so the item id itself is the tier and only iron-tier components are listed.
+- **No HUD/item bar** for the item-backed tank: the charge shows through `/ironjetpacks fuel` only, and the tank has no GUI.
+- **Hover is not toggled:** the runtime and its tests cover the branches, but the pin has no keybind or component plumbing to toggle it.
+- **Guest input** comes from `player_input` flags; there is still no server-side velocity write for a guest, so guest thrust is one-sided.
+- **Horizontal flight** (`moveRelative` with `speedSide`/`sprintSpeed`) is not implemented; sprint's vertical and fuel multipliers are.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/ironjetpacks/LICENSE` and `NOTICE.md`, with BlakeBr0's MIT notice) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["BlakeBr0", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/ironjetpacks"
+icon = "icons/ironjetpacks.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "ironjetpacks-0.1.0.hnmod"
+sha256 = "fec4ae09e4bcd6a121189805b12925bd9c865051a72ad7db9d4847e0be1be17e"

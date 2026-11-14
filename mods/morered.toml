@@ -1,0 +1,39 @@
+id = "morered"
+kind = "native-mod"
+name = "morered"
+summary = "A Horizon port of morered."
+description = """
+A port of [More Red](https://github.com/Commoble/morered) for Horizon.
+
+**Implemented so far**
+
+- The **logic gate plate** family (diode, NOT, AND/OR/NAND/NOR, XOR/XNOR, multiplexer, 2-input AND/NAND, latch, pulse gate): a plate attaches to a face, rotates, reads its input sides, and emits 15 from its output face when its logic function passes.
+- The pure model (`runtime.rs`) has upstream's function table, the 24-entry output-direction table, the clockwise input mapping, the latch's hold/reset rule and the pulse gate's edge/2-tick rule (18 tests).
+- Content: eleven gate blocks plus the `stone_plate` recipe dependency, on an `end_rod` template with the real `facing`/`rotation`/`input_*`/`powered` state properties.
+- The red-alloy wire posts and the spool (select, link, cut), the six bitwise plates and their wires.
+- The gates are proved in game with `ctl`: a placed plate reads its inputs and drives a lamp, a 2-tick pulse arms and clears a latch, and a stone control stays dark.
+
+**Not yet ported**
+
+- Placement orientation: **resolved** — a plate placed through vanilla placement takes its attachment from the clicked face and its rotation from the clicked quadrant (`state_for_placement` plus `use_item_on` rod rotation).
+- The coloured network cables, the bundled cable posts/spools, soldering and the wire spool's remaining modes are deferred.
+- The carried `end_rod` template gives the plates their 2-px shape and collision, but there is **no lit/unlit tint** (the models' tint indices need a block-colour provider); the wire model is simplified to six 2-px plates.
+- A comparator's strength collapses to a boolean (the gates are binary), and inputs are sampled once per tick: a rise and fall of one input inside a single tick collapses to no edge.
+- Loot drops one wire rather than the subwire count (the pin has no equivalent of `WireCountLootFunction`).
+
+MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Commoble", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/morered"
+icon = "icons/morered.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "morered-0.1.0.hnmod"
+sha256 = "b96728b82cf42e34efe456d216338b4ee5c727ac48e134b17b6921470c7f4a0a"

@@ -1,0 +1,32 @@
+## Horizon registry entry for No Resource Pack Warnings (exact 1:1 Rust translation of the MIT mod).
+id = "no_resource_pack_warnings"
+kind = "native-mod"
+name = "No Resource Pack Warnings"
+summary = "A port of No Resource Pack Warnings: outdated or incompatible resource and data packs load and select with no warning screen or red border."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+An exact 1:1 Rust translation of [No Resource Pack Warnings](https://modrinth.com/mod/no-resource-pack-warnings): the upstream Java by Space Walker ([SpaceWalkerRS/no-resource-pack-warnings](https://github.com/SpaceWalkerRS/no-resource-pack-warnings)) translated code-for-code, carrying the upstream license and credit in full.
+
+Upstream is 2 mixins, 69 lines; the port mirrors them file for file. All four `PackCompatibility.isCompatible()` call sites the mod targets are redirected to return `true`, so outdated resource and data packs load and select with no warning screen or red border:
+
+- `Options.updateResourcePacks` and `Options.loadSelectedResourcePacks` (upstream `OptionsMixin`, two redirects)
+- `PackEntry.extractContent` and `PackEntry.handlePackSelection` (upstream `PackEntryMixin`, two redirects)
+
+Port of [SpaceWalkerRS/no-resource-pack-warnings](https://github.com/SpaceWalkerRS/no-resource-pack-warnings), copyright (c) 2022 Space Walker, MIT: the license text ships with the source. 5 unit tests on the translated logic. Rust port by sparticle, upstream by Space Walker."""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-no-resource-pack-warnings"
+categories = ["utility"]
+tags = ["resource-pack", "utility", "port"]
+
+icon = "icons/no_resource_pack_warnings.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.0.0"
+game = "26.3"
+file = "no_resource_pack_warnings-1.0.0.hnmod"
+sha256 = "1c547a01307ee84a9f6c97792c453712570fd1b7839d3b599a4902b2475fc719"
+changelog = "Exact 1:1 Rust translation of No Resource Pack Warnings (MIT) by Space Walker, license and upstream credit carried: the four PackCompatibility.isCompatible() redirects across OptionsMixin and PackEntryMixin, file for file."

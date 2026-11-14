@@ -1,0 +1,39 @@
+id = "solcarrot"
+kind = "native-mod"
+name = "solcarrot"
+summary = "A Horizon port of solcarrot."
+description = """
+A port of [Spice of Life: Carrot Edition](https://github.com/Cazsius/Spice-of-Life-Carrot-Edition) (LGPL-2.1, by Cazsius, Talonos, juliand665 and Mrbysco) for Horizon. This first slice is the food history and the max-health milestones it earns.
+
+**Implemented so far**
+
+- A history per player: a set of food **item ids**. A food is recorded when it finishes being eaten, and re-eating it adds nothing. Filtered foods (below the nutrition floor, blacklisted, or outside a non-empty whitelist) are still remembered but do not count, exactly as upstream's `FoodList.addFood` does.
+- Milestones: `milestones` (default `5,10,15,20,25`) count unique counted foods. Each reached milestone grants `2 * hearts_per_milestone` health points on top of vanilla's 20; a `base_hearts` other than 10 adds `2 * (base_hearts - 10)` to the same modifier, so at the defaults 25 foods give 10 extra hearts.
+- The modifier is reapplied on join, respawn and dimension change, and cleared on death when `reset_on_death` is on.
+- The history is saved per world in `<world>/solcarrot/foods.tsv` (one line per player and food), flushed after every new food and on world close, so `/foodlist size` works for an offline player too.
+- A `config/solcarrot.conf` `key = value` file with the upstream keys and defaults (`base_hearts`, `hearts_per_milestone`, `milestones`, `minimum_food_value`, the `blacklist`/`whitelist`, `reset_on_death`, `limit_progression_to_survival`).
+- `/foodlist size|sync|clear [target]`.
+
+**Not yet ported**
+
+- The **food book** item, its recipe and its screen: the whole client half, with its tooltips, progress list and the "next milestone" line.
+- The client sync packet upstream sends when the history changes; the server keeps the authority and `/foodlist sync` refreshes the count.
+- Sounds and particles on a milestone.
+- Using a per-player attachment instead of the world text file (the pin's attachments are online-only, while the file keeps `/foodlist` working for offline players).
+
+LGPL-2.1-only, like the original; the licence text and the original copyright notice travel inside the archive, and the complete corresponding source is in the port repository."""
+authors = ["Cazsius", "Talonos", "juliand665", "Mrbysco", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-2.1-only"
+source = "https://github.com/AdLf0208/solcarrot"
+icon = "icons/solcarrot.png"
+categories = ["utility", "technology", "storage"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "solcarrot-0.1.0.hnmod"
+sha256 = "dae8511db6b2a92a0f52f5aa00982bc58eb23451f20ac7248992b060c84e3fcd"

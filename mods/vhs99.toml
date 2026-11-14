@@ -1,0 +1,36 @@
+id = "vhs99"
+kind = "shader"
+name = "H-VHS"
+summary = "Adds a visual VHS effect from a camcorder 1990s to horizon launcher"
+description = """
+H-VHS effect
+
+It adds realistic and cool VHS effects from an old 1990s camcorder. 
+
+To use it, download the shader pack, activate it, and have fun! 
+
+It does not require content mods or native mods. 
+
+
+Features: bloom, bobbing effect, film grain and overlays, JPG comprenssion effect.
+
+Bobbing effect is under construction.
+Made by Chainsaww9
+Licence: Apache-2.0"""
+authors = ["Chainsaww9"]
+owners = ["frigocamelo10-lab"]
+owner_ids = [228380185]
+license = "Apache-2.0"
+source = "https://github.com/frigocamelo10-lab/H-VHS-Shader-for-horizon/tree/main"
+icon = "icons/vhs99.png"
+categories = ["screenshot", "low", "atmosphere"]
+tags = ["vhs", "camcorder", "1990s", "90s", "video", "jpg"]
+screenshots = ["screenshots/vhs99/1.jpg", "screenshots/vhs99/2.jpg"]
+
+[[versions]]
+version = "3.3.0"
+published = "2026-11-10"
+game = "26.3"
+file = "vhs99-3.3.0.hshader"
+sha256 = "2a22f790cc175a14a1e86255fd82283575e26766debcf0d919f349c637e195b9"
+changelog = "Adds a VHS effect to Horizon launcher"

@@ -1,0 +1,26 @@
+id = "iris_horizon"
+kind = "native-mod"
+name = "Iris-rusted"
+summary = "Iris Shaders for Horizon"
+description = "Native, high-performance pure-Rust port of Iris & OptiFine Shaders for the horizon-rust/horizon Minecraft engine, powered by modern wgpu (Vulkan, Metal, DirectX 12)."
+authors = ["Francesco Callegaro"]
+owners = ["francescokalle"]
+owner_ids = [70443911]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/francescokalle/iris-horizon"
+icon = "icons/iris_horizon.png"
+categories = ["optimization"]
+tags = ["iris", "shaders", "optimization"]
+key = "RWQLANc8W6wUhTLlBS95BUaDpOw2QL5OKPNYoe5AtA5xDr0KPAbEawIr"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "iris_horizon-0.1.0.hnmod"
+sha256 = "168baa4950a78f7f17f8191bd61a56ff51dc5cdcb8cb715fcaaf042bcbb3b57a"
+signature = """
+untrusted comment: signature from minisign secret key
+RUQLANc8W6wUhXbLwHZcAT+wNsfKYk/2n0cFtMwL5rUl8s0xhMjl77QrudB/sE2CttgZMeJZt4v9YGU2ddSsTebpExsMehmdGgI=
+trusted comment: timestamp:1794454568\tfile:iris_horizon-0.1.0.hnmod
+qJL4h0WIgGoRbLOsn3J2+HB0lAqHv1TF/3uF/L7IJGWLjBLqbYQPDAxVlW2yTVMoaNuhAtgSryKxE1L0JkNKBg=="""

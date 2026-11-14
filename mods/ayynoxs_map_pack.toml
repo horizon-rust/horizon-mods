@@ -8,7 +8,7 @@ A **minimap** and a **full-screen world map** for Horizon, written from scratch 
 ## ayynoxs minimap
 - Built on Horizon's own minimap renderer, with coordinates and facing direction below it
 - Square or round, north-up or rotating, 4 sizes, zoom with `I` / `O`
-- **Waypoints:** `B` opens a window for the name, `Backspace` removes the one you aim at. They show on the minimap, on the world map and in the world with their distance in metres.
+- **Waypoints:** `B` opens a window for the name, `Backspace` removes the one you aim at. They show on the minimap, on the world map and in the world with their distance in metres, and are kept per world and server until you remove them.
 - Automatic death point
 - Chat commands: `/wp add|del|rename|share|sync|list|clear|help`
 
@@ -27,7 +27,7 @@ Languages: English (default), Deutsch, Français, Italiano, Русский.
 
 ## What it does and doesn't
 - **Hooks:** the native hook points (frame, tick, HUD, keys, commands, minimap, settings, mods list, screen keys and characters, mod messages, player join/leave), plus the Advancements screen's draw, mouse, scroll and close (the world map is drawn in its place), `extras_connecting` (the server address, for the map's folder) and the chat HUD's `add` / `add_signed` (to hide shared-waypoint private messages).
-- **Files:** writes only under `horizon-mods/.horizon-mod-data/ayynoxs_minimap/` (settings, waypoints) and `ayynoxs_worldmap/` (map tiles).
+- **Files:** writes only under `horizon-mods/.horizon-mod-data/ayynoxs_minimap/` (settings, waypoint lists) and `ayynoxs_worldmap/` (map tiles).
 - **Network:** no internet access. It only sends Horizon mod messages on `ayynoxs_map:sync` to the server you play on (shares only after `/wp sync on`), and `/msg` commands you start yourself with `/wp share <nr> <player>`.
 - Pinned to nightly `6475f62` (2026-11-04)."""
 authors = ["DenoxyYT (Ayynox)"]
@@ -38,6 +38,17 @@ source = "https://github.com/DenoxyYT/ayynoxs-map-pack"
 icon = "icons/ayynoxs_map_pack.png"
 categories = ["utility", "adventure", "social"]
 tags = ["minimap", "world", "map", "waypoints", "multiplayer"]
+
+[[versions]]
+version = "0.4.3"
+published = "2026-11-07"
+game = "26.3"
+file = "ayynoxs_map_pack-0.4.3.hnmod"
+sha256 = "412b3508f4badd17d22fe7ff28979f83d8d8bb7d3f4b12f9ca9064969133a7e1"
+changelog = """
+Fix: waypoints are now saved for good, per world and server, until the player removes them. Before, they were never written to disk: their folder, waypoints/, had the name of the setting file waypoints in the same folder, so it could not be made and the write failed silently. They disappeared when changing dimension, leaving a world or restarting.
+Now they go to waypoint_lists/<world>.txt, written to a temporary file and moved into place, with a warning in the log if saving fails.
+Built for Horizon nightly 6475f62 (2026-11-04)."""
 
 [[versions]]
 version = "0.4.2"

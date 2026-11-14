@@ -1,0 +1,15 @@
+[package]
+name = "horizon-mod-show-me-your-skin"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Show Me Your Skin for Horizon: per-player armor visibility config, combat-aware restore, and armor-render gating. Exact 1:1 Rust port of enjarai/show-me-your-skin (MIT, (c) 2022 enjarai)."
+
+[lib]
+path = "runtime.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4"] }

@@ -1,0 +1,31 @@
+## Horizon registry entry for Show Me Your Skin (exact 1:1 port of the MIT mod).
+id = "show_me_your_skin"
+kind = "native-mod"
+name = "Show Me Your Skin"
+summary = "Per-player armor visibility config: hide or show armor pieces per player with a config screen, combat-aware auto-restore, synced server config, elytra/shield/hat overrides, and K/J keybinds."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- **Per-player armor config screen**: pick any online player (or a fake entity / mannequin), override head, chest, legs, feet, elytra, shield and hat pieces with base, glint and trim toggles, extra options and per-player titles; stored overrides survive relog and sync to other clients.
+- **Combat-aware restore**: armor reappears when combat starts (with the cooldown and fade timings from the config) and hides again after, plus a global toggle on J that flips and saves every piece.
+- **Server-synced config**: the server config (`showmeyourskin-server.json`) clamps what clients may hide and syncs to players on join; settings updates validate and re-sync through the ARMOR_CONFIG component.
+- **Render integration**: living-entity render state gating with the contraband armor component, armor layer stripping with trim carry, hat HUD and head-layer handling, shield in-hand overrides, item-stack glint stripping, and the wildfire-gender compat layer.
+
+Exact 1:1 Rust translation of [Show Me Your Skin](https://modrinth.com/mod/show-me-your-skin) by enjarai ([enjarai/show-me-your-skin](https://codeberg.org/enjarai/show-me-your-skin), read at dd4f63e): every upstream Java class maps to one Rust module with the same names, logic, defaults, and control flow, carrying the upstream license and credit in full. MIT: copyright (c) 2022 enjarai; the license text ships with the source. Ported to Rust by sparticle.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-show-me-your-skin"
+categories = ["utility", "cosmetic"]
+tags = ["armor", "equipment", "config", "sync"]
+icon = "icons/show_me_your_skin.png"
+
+[[versions]]
+published = "2026-11-14"
+version = "1.0.0"
+game = "26.3"
+file = "show_me_your_skin-1.0.0.hnmod"
+sha256 = "1ec8d9fb88fc00510434ec1d1c35541e0c9dfb10dd24568418685f1650a81051"
+changelog = "Exact 1:1 Rust translation of Show Me Your Skin (MIT) by enjarai: full config model with server sync and combat validation, per-player config screens over the braid GUI, all 13 mixins (render-state gating, armor layers, hat, shield, contraband), net packets and join sync, K/J keybinds, splice runtime; 47 tests."

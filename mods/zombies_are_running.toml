@@ -1,0 +1,28 @@
+id = "zombies_are_running"
+kind = "native-mod"
+name = "Zombies Are Running"
+summary = "Now zombies will be able to run"
+description = """
+Zombies will now be able to run properly
+
+They will do so with intermittent breaks; a "recharge" period lasts about 8 seconds, after which the zombie regains its strength and resumes running the player
+
+(during this rest phase, the zombie does not stop moving—it continues to walk, simply ceasing to run).
+
+made by - Bogdan_Tokarev"""
+authors = ["Bogdan_Tokarev"]
+owners = ["bogdan1tokarev1"]
+owner_ids = [350354354]
+license = "MIT"
+source = "https://github.com/bogdan1tokarev1/Zombies-are-running"
+icon = "icons/zombies_are_running.png"
+categories = ["mobs", "game-mechanics", "utility"]
+tags = ["mobs", "game", "mehanics"]
+screenshots = ["screenshots/zombies_are_running/1.png", "screenshots/zombies_are_running/2.png"]
+
+[[versions]]
+version = "1.1.0"
+published = "2026-11-07"
+game = "26.3"
+file = "zombies_are_running-1.1.0.hnmod"
+sha256 = "0c4ada349a4aca052fd90e23717f3f9a33fd255cf2949a1f3dbede325bd973e1"

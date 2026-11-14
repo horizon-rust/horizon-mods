@@ -1,21 +1,22 @@
 id = "astral_cruiser"
 kind = "native-mod"
 name = "Astral Cruiser"
-summary = "A huge pilotable starship with a walkable interior, lasers, dash and live portals between dimensions."
+summary = "A huge pilotable military cruiser with two walkable decks, lasers, strike weapons, dash and live portals between dimensions."
 description = """
-A huge starship you fly yourself, with a large walkable interior that moves with it.
+A huge military cruiser you fly yourself, with two walkable decks inside that move with it.
 
 - **Flight:** WASD with the ship following your view, and F5 views including the ship's own.
-- **Weapons:** turrets, nose guns and two beams.
-- **Travel:** coordinate dash and jump. Long dashes show only a small strip of far terrain around the ship.
+- **Inside:** bridge, reactor hall, weapons room, quarters, mess, medbay and hangar below; captain's cabin, arsenal, gym and a gallery above; an observation dome on top, joined by stairs.
+- **Weapons:** turrets, nose guns and beams, and a weapon wheel of strikes: Barrage, Rod, Lance, Antimatter, Solar Pillar, Tectonic, Meteors, Cluster, Cryo, Black Hole, Chain, Plasma Wall, Missiles, Drill, Grid, Erasure and Supernova, each with its own fire, smoke, sparks and shockwaves. Strikes reach at most 384 blocks from the ship.
+- **Travel:** coordinate dash, jump and orbit. Long dashes show only a small strip of far terrain around the ship.
 - **Portals:** a portal shows the real destination dimension live, and you cross it aboard or on foot.
 - **Start:** `/astral spawn`, then `/astral board`. N opens the control panel; keys are in Options > Mods > Settings.
 
-**What it does as a native mod.** It is compiled into the game with no sandbox. It changes the game's rendering, ticking and chunk loading for the ship and portals, and registers a thread-exit callback in builds made with MinGW so the allocator frees finished threads' memory.
+**What it does as a native mod.** It is compiled into the game with no sandbox. It changes the game's rendering, ticking and chunk loading for the ship, its effects and portals, and registers a thread-exit callback in builds made with MinGW so the allocator frees finished threads' memory.
 
 **What it does not do.** It adds no network access of its own beyond the game's own, and it reads no accounts or files outside the game's data. It keeps the ship in the world's own folder (`astral_cruiser/ship.json`). It holds no Minecraft code or assets.
 
-Weapons hurt the mobs they hit. With blasting turned on in the control panel (off by default), the nose guns and beams also blow up the blocks they hit. Portals can hang in the air, so a player on foot falls if there is no ground at the exit, including into the End's void.
+Weapons hurt the mobs they hit. Strikes from the weapon wheel break blocks where they land, so try them in a test world first. With blasting turned on in the control panel (off by default), the nose guns and beams also blow up the blocks they hit. Portals can hang in the air, so a player on foot falls if there is no ground at the exit, including into the End's void.
 
 Built for this Horizon commit only: `68ac6f647e7022b2c696e81863d7cface28c9416`."""
 authors = ["repositorykreml1n"]
@@ -25,7 +26,22 @@ license = "MIT"
 source = "https://github.com/repositorykreml1n/astral-cruiser"
 icon = "icons/astral_cruiser.png"
 categories = ["transportation", "adventure"]
-tags = ["starship", "vehicle", "flying", "portals", "weapons", "dimensions"]
+tags = ["starship", "vehicle", "flying", "portals", "weapons", "dimensions", "cruiser", "explosions"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-08"
+game = "26.3"
+file = "astral_cruiser-0.2.0.hnmod"
+sha256 = "160690a924250f5908f6d4461ef54002943e9a8afbf28580ff3a60dae52e07e4"
+changelog = """
+A big overhaul of the ship, its weapons and its effects.
+
+- **Military cruiser hull:** armour belts, stepped superstructure, light stripes, red, green and white beacons, engine nacelles with glowing thrust.
+- **Second deck:** captain's cabin, arsenal, gym and a gallery over the reactor hall, an observation dome on top, and stairs between the decks. Every room is newly furnished.
+- **New effects for every weapon:** fire, smoke, sparks, shockwaves and light on the hull, on a budget that drops small particles far away.
+- **Strike weapons on the wheel,** Erasure and Supernova among them; strikes reach at most 384 blocks from the ship.
+- **Faster block breaking:** strikes clear their craters in batches instead of one block at a time."""
 
 [[versions]]
 version = "0.1.0"

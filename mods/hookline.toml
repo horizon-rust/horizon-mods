@@ -1,0 +1,32 @@
+id = "hookline"
+kind = "native-mod"
+name = "Hookline"
+summary = "Autofishing with toggles and AFK"
+description = """
+- Toggle with V; open the panel with O (rebindable). The toggle shows a short action-bar message.
+- Bite detection uses your own bobber splash, with a short settle window after a cast.
+- Pace variance (on by default) waits a little before reeling and stretches recast and meal pauses with non-uniform jitter.
+- Catch list order: Enchanted Book, Fishing Rod, Bow, Salmon, Cod, Tropical Fish, Pufferfish, then the rest of the usual catch. Each row is Keep or Toss. The in-use rod is never thrown.
+- Books, rods, and bows also use per-enchant rules. Mending wins if it is present; otherwise the closest-to-max vote wins; a tie keeps the item. Unlisted enchants do not vote. The item row is the master switch.
+- Tosses go through inventory-click packets, including items in the main inventory.
+- When the bag is almost full, Hookline can deposit kept catch only into a chest or barrel it opened, then cool down.
+- Optional meals: looks in the off-hand, then the hotbar only, and eats one item at a time until hunger is full, with a pause between bites. After the last bite it waits before grabbing the rod and again before recasting. Swap and use never share a tick.
+- Optional idle rest after five minutes with no bite, reel, or recast. Meals do not reset or count as idle time.
+- Optional look-around, switch or stop on a worn rod, and leave the server below three hearts.
+- Session ledger and per-item catch chimes."""
+authors = ["Zekren"]
+owners = ["Zekrenlight"]
+owner_ids = [166447530]
+license = "ARR"
+source = "https://github.com/Zekrenlight/Hookline"
+icon = "icons/hookline.png"
+categories = ["utility"]
+tags = ["fishing", "afk", "autofish", "utility", "quality-of-life", "automation", "inventory", "gui", "rust", "horizon"]
+screenshots = ["screenshots/hookline/1.png", "screenshots/hookline/2.png", "screenshots/hookline/3.png", "screenshots/hookline/4.png"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-12"
+game = "26.3"
+file = "hookline-1.0.0.hnmod"
+sha256 = "6588d056242185e722cf57643969a4004dbc054277a8fd9ac095010d2804df44"

@@ -1,0 +1,38 @@
+id = "mcwpaths"
+kind = "mod"
+name = "Macaw's Paths and Pavings"
+summary = "315 Macaw's paths, pavings, slabs and stairs in stone, wood and soil styles."
+description = """
+A port of [Macaw's Paths and Pavings](https://github.com/sketchmacaw/Paths-Pavings) by Sketch Macaw and Peachy Macaw for Horizon: 315 path, paving, slab and stair blocks.
+
+**Implemented so far**
+
+- All 315 blocks: 130 thin path/paving blocks, 24 facing paths, 52 engraved pavings, 5 flattened soil paths, 52 slabs and 52 stairs — 4,812 block states, each with the mod's own model and texture.
+- The thin paving shape is upstream's `Block.box(0, 0.01, 0, 16, 0.99, 16)` in block units, declared normalized (0.000625–0.061875) rather than inherited from the template, and the engraved/flattened shape is 15/16; both collisions are measured in game.
+- 315 recipes (304 stonecutting, 11 shapeless), 315 loot tables, 11 tags, 25 advancements and 7 language files.
+- A creative tab listing all 315 blocks.
+
+**Not yet ported**
+
+- Engraving and flattening do not toggle: a right-click with a pickaxe or shovel does not cycle `engraved`/`flattened` (nor spend durability). The states exist and bind; the interaction is a later logic-tier slice.
+- Wooden path items do not burn (upstream's `FuelItemBlock`, 50 ticks).
+- The engraved/flattened tooltip lines are in the language files but are not drawn.
+- A facing path takes its template's `getOpposite()` placement rule; upstream uses `getClockWise()`.
+- `forceSolidOn()` has no content field: the outline and collision are upstream's, the entity-solid flag is not reproduced.
+
+A data-tier carry with hand-written 26.3 block declarations: no native code and no hooks. MIT: the original copyright and licence travel inside the archive (`data/mcwpaths/license/`), not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Sketch Macaw", "Peachy Macaw", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/mcwpaths"
+icon = "icons/mcwpaths.png"
+categories = ["decoration"]
+tags = ["port", "paths", "building", "blocks"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "mcwpaths-0.1.0.hmod"
+sha256 = "9f4800ee7ed2be45446afc477fcb83b6d8f250b991897d502314e1ed465eefa0"

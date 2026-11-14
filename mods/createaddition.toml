@@ -1,0 +1,47 @@
+id = "createaddition"
+kind = "native-mod"
+name = "createaddition"
+summary = "A Horizon port of createaddition."
+description = """
+A port of [createaddition](mrh0/createaddition) for Horizon.
+
+**Implemented so far**
+
+- `createaddition:connector`** (small) and **`createaddition:large_connector`**
+- — a block entity whose window is `min(maxIn, maxOut)` = 1,000 FE (small) or
+- ,000 FE (large), declared through `block_entity_energy` (API 142) as
+- `Capabilities.Energy.BLOCK`. Placed against a face, `facing` points at the
+- block it is mounted on (API 76).
+- Placement mode**, upstream's `ConnectorMode.test` on the first server tick:
+- the mounted block can give → **Pull**, it can only take → **Push**, else
+- None**. Stored in the compound (`mode`) and shown in the block's `mode`
+
+**Not yet ported**
+
+- The rotation half**: `electric_motor`, `alternator`, `rolling_mill`,
+- `tesla_coil`, `servo_motor`, and the `charging/` recipe type (40+ oxidisation
+- and charging recipes). Blocked by the missing mod-to-mod API: a rotation
+- consumer** could read a neighbour's published `Speed`/`Capacity`/`Stress`
+- with API 18, but nothing here needs it, and producing or joining Create's
+- network is impossible without forking its engine.
+- `small_light_connector`** (its 1 FE/t lamp consumption).
+- `creative_energy`**, the e2e's source of last resort: the harness seeds an
+
+Original copyright and licence notices are kept in this repository. Pinned to
+Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is
+welcome."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/createaddition"
+icon = "icons/createaddition.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "createaddition-0.1.0.hnmod"
+sha256 = "74935afdb0502157816c1f51e202e6160d87e55732a4432696f28cb9c821f674"

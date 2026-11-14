@@ -1,0 +1,30 @@
+id = "vastadventures"
+kind = "mod"
+name = "Vast Adventures (content)"
+summary = "The items, names and world generation of Vast Adventures: gems, materials, seals, rogue spawners and boss dungeons. Needs the native mod."
+description = """
+The content half of Vast Adventures; **the native mod `vastadventures_native` does the rest**, and both are needed.
+
+- **21 gems** (each with a sprite drawn for this mod) and Gem Dust.
+- **Materials** for salvaging and reforging: Rusted Scrap, Faded Cloth, Glow Shard, Starsand, Titan Pearl.
+- **Runed Slate** and the **Seals of Sockets, Extraction and Erasure**, with their recipes.
+- **Rogue spawners** on cave floors (nine kinds, with their chests) and **boss dungeons** (a stone brick room or a deepslate hall, with a boss spawner and dungeon chests), in new overworld chunks, as structure templates and world generation data.
+- Names in **English and Brazilian Portuguese**.
+
+Built from the MIT code and data of Apotheosis (by Shadows_of_Fire): the rogue spawners and their loot tables come from its data, with their ids renamed. Its textures, models and lang are all rights reserved and none are used: the art, rooms and words here are this mod's own. Not affiliated with or endorsed by Apotheosis' authors."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-adventures"
+icon = "icons/vastadventures.png"
+categories = ["adventure", "equipment", "worldgen"]
+tags = ["gems", "loot", "dungeons", "spawners", "rpg"]
+
+[[versions]]
+version = "0.9.0"
+published = "2026-11-11"
+game = "26.3"
+file = "vastadventures-0.9.0.hmod"
+sha256 = "f161e1506ef8784e9f89823db43dc15a89e1f34445b58af2c5a91eb146fd402e"
+changelog = "First release as Vast Adventures (0.9.0): gems, materials, seals and their recipes, rogue spawners and boss dungeons (with a deepslate hall of its own), names in English and Brazilian Portuguese. Needs the native mod. Replaces the withdrawn apotheosis 0.8.0 submission."

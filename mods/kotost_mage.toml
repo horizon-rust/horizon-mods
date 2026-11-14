@@ -1,0 +1,28 @@
+id = "kotost_mage"
+kind = "native-mod"
+name = "Kotost Mage"
+summary = "A mage: six spells that gather and go off where you look, mana, mastery, and the hat, dress and staff on your model."
+description = """
+- **Six spells** on keys R G Z X C N: Fireball, Shadow step, Meteor, Absolute zero, Chain lightning, Supernova. They gather and go off where you look.
+- **Mana and mastery**: each spell levels up as you use it.
+- **Hat, dress and staff** drawn on your player model, with a casting pose.
+- **Settings** in `config/kotost-mage.txt`.
+
+Needs the content mod **Kotost Mage Items** (kotost_mage_items: the hat, dress, staff, recipes and sound events) and **Kotost Bust** (kotost_body). Sounds are the game's own. Native source mod: the launcher compiles it after a warning; it runs with your account's permissions. No Minecraft code or assets are included."""
+authors = ["Kotost Games"]
+owners = ["Leks2000"]
+owner_ids = [107043945]
+license = "MIT"
+source = "https://github.com/Leks2000/kotost-mage"
+icon = "icons/kotost_mage.png"
+categories = ["equipment", "game-mechanics", "magic"]
+tags = ["magic", "spells", "mage", "staff", "mana", "rpg"]
+screenshots = ["screenshots/kotost_mage/1.png", "screenshots/kotost_mage/2.png", "screenshots/kotost_mage/3.png"]
+
+[[versions]]
+version = "0.6.1"
+published = "2026-11-11"
+game = "26.3"
+file = "kotost_mage-0.6.1.hnmod"
+sha256 = "23f7555f3a9cdc1fa483eb239eef91a5ec4c4020de7f2115e7cbc409b103ae33"
+changelog = "First public release (early: playable, numbers still being tuned)."

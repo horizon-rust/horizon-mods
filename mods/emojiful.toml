@@ -1,0 +1,32 @@
+id = "emojiful"
+kind = "native-mod"
+name = "Emojiful"
+summary = ":short_name: in chat shows the emoji (Twemoji), with completions as you type."
+description = """
+**This mod has two parts, and you need both.** This is the native part (the rules, as Rust code); install [the other one](https://playhorizon.dev/mods/emojiful_twemoji) too.
+
+:short_name: in chat shows the emoji (Twemoji), with completions as you type.
+
+**Differences from the original:** Emoji codes become images only in chat messages, not on signs, books, names or in the chat box while typing. The images come in a separate resource pack that has to be enabled. There is no emoji picker button, no Emojiful custom or GIF emoji, no datapack emoji and no profanity filter. A code split across text colours stays as text.
+
+A port of [Emojiful](https://github.com/InnovativeOnlineIndustries/Emojiful) 4.2.0 by HorizonStudio, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "HorizonStudio"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/emojiful"
+icon = "icons/emojiful.png"
+categories = ["social"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "emojiful-0.1.1.hnmod"
+sha256 = "b6c5019bf9285e55b76a71e33ba3ed65289240df4c53f0c7d08012b5cffdf9ce"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

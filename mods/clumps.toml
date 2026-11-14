@@ -1,0 +1,34 @@
+id = "clumps"
+kind = "native-mod"
+name = "Clumps for Horizon"
+summary = "Merges nearby XP orbs and lets players collect them in one touch."
+description = """
+Native Rust port of [Clumps](https://github.com/jaredlll08/Clumps) by Jaredlll08 (MIT), branch 26.3.
+
+**What it does**
+- Nearby XP orbs merge into fewer entities, whatever their value. The merged orb is worth exactly the sum, so no XP is lost or duplicated.
+- Players on the server side (LAN guests, dedicated servers) collect a whole clump in one touch.
+- Can be turned off in Options > Mods, and then behaves like vanilla.
+
+**Known limitations**
+- The local (host) player still collects one count per touch, because Horizon does not call the pickup hook for them.
+- Some totals cannot be stored as value × count (for example a prime above 32). Those merges are refused and the orbs stay separate.
+- Not yet tested in a live Horizon game, only against a model of its orb engine and a compile check on the pinned Nightly.
+
+Pinned to Horizon Nightly 2026-11-08 (`fdc87ae`). Original Clumps copyright and MIT licence are kept."""
+authors = ["pretinhacappucina", "Jaredlll08 (original Clumps)"]
+owners = ["pretinhacappucina"]
+owner_ids = [250532790]
+license = "MIT"
+source = "https://github.com/pretinhacappucina/clumps-horizon"
+icon = "icons/clumps.png"
+categories = ["game-mechanics", "optimization"]
+tags = ["xp", "experience", "orbs", "performance", "optimization"]
+
+[[versions]]
+version = "26.3.0"
+published = "2026-11-10"
+game = "26.3"
+file = "clumps-26.3.0.hnmod"
+sha256 = "2fcd4430e80945dad7636800f3717fcc369516dc1ad535706dc933fc3ca32fe0"
+changelog = "Initial release: native Rust port of Clumps 26.3."

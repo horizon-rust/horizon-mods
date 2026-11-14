@@ -1,0 +1,63 @@
+id = "rootsclassic"
+kind = "native-mod"
+name = "Roots Classic"
+summary = "The three Roots Classic herbs, the jar's herb-forage table, and the food, effects and recipes built on them."
+description = """
+A port of [Roots Classic](https://github.com/Lothrazar/RootsClassic) by Elucent,
+Lothrazar and Mrbysco for Horizon. This first slice is **the herbs and their
+first uses** — the foraging loop and the food, not yet the rituals.
+
+**Implemented so far**
+
+- Three herb blocks (`flare_orchid`, `midnight_bloom`, `radiant_daisy`) that
+  place on soil, refuse stone and drop themselves; sixteen carried ids in all.
+- The jar's herb-forage table as a global loot modifier (API 75 `loot_drops`)
+  at the jar's own configurable 1/N chances: broken short grass may add an old
+  root, a last-age wheat/carrots/potatoes/beetroots a verdant sprig, ripe nether
+  wart an infernal bulb, a chorus flower a dragon's eye, and leaves that dropped
+  no leaf block one of the five berries. The chances live in
+  `config/rootsclassic-common.toml`, written with the jar's keys, section and
+  defaults; `0` means never and `1` always.
+- The five berries, the four materials and the three dishes as food with the
+  jar's nutrition, saturation and eaten effects: nightshade poisons, elderberry
+  clears all effects, the dragon's eye teleports the eater, redcurrant heals 2
+  and the healing poultice 5 (always edible).
+- The jar's five recipes — the two mirrored pestle variants, rooty stew, fruit
+  salad and healing poultice — with the `c:crops/wheat` tag they need, and a
+  Roots Classic creative tab.
+
+**Not yet ported**
+
+- Mutating Powder and the three mutation recipes: the herbs have no survival
+  source in this slice (creative or `/give` only).
+- The Bark Knife and the six barks; the Mortar, Pestle spell crafting and the
+  component recipes.
+- The Altar and every ritual, the ten standing stones and their block entities,
+  the Brazier, the Imbuer.
+- Staves, the Crystal Staff, the Runic Focus/Tablet and the mana bar; the living
+  tools and the two armour sets; the Phantom Skeleton.
+- The JEI plugin, the Runic Tablet guide, item tooltips, particles and sounds.
+
+One file installs both halves: the `.hnmod` carries the content (blocks, items,
+models, textures, lang, loot, recipes and the berries tag) and writes it out at
+start, so the bundle alone gives the herbs, the items and the forage. The port
+writes nothing into the save. MIT — the original copyright and licence notices
+travel inside the distributed archive (`mixins/rootsclassic/LICENSE` and
+`NOTICE.md`) and are also in this repository.
+Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93 for game 26.3. Help with
+the remaining slices is welcome."""
+authors = ["Elucent", "Lothrazar", "Mrbysco", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/rootsclassic"
+icon = "icons/rootsclassic.png"
+categories = ["game-mechanics", "food"]
+tags = ["port", "horizon", "foraging", "herbs", "food", "root"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "rootsclassic-0.1.0.hnmod"
+sha256 = "191def4f8002b8eca40a283f7bb3122dcd4a5130fbd1629d0e22754b84adae8f"

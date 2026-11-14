@@ -1,0 +1,36 @@
+id = "glassential"
+kind = "native-mod"
+name = "glassential"
+summary = "A Horizon port of glassential."
+description = """
+A port of [Glassential Renewed](https://github.com/bigenergy/glassential-renewed) by bigenergy (Big_Energy) for Horizon — the glass set plus its two behaviours.
+
+**Implemented so far**
+
+- The 24 carried glasses as content: blockstates, block and item models, textures, recipes, loot tables, tags, the creative tab and the language files. Every item model's sprite is namespaced to `glassential:`, so the carried textures resolve.
+- **Redstone glass** reports its neighbour signal and lights while powered.
+- **Smart glass** joins its connected panel and turns `powered` on when any member is powered. A panel is capped at **1024 blocks** (upstream's limit) and one level tick rebuilds at most 32 panels, so a huge connected mass cannot stall a tick.
+- The jar's glass sounds, hardness and light levels.
+
+**Not yet ported**
+
+- Per-entity collision (ethereal, ghostly and the reversed glasses), gravity glass, the colour-able painter, the clear-fluid face occlusion, the lava-lamp step damage and the one-way glasses: they need hooks or a block-entity renderer the pin does not have.
+- The panel updates after the level tick rather than inside vanilla's neighbour update, so a comparator sees a powered change one tick later.
+- Panes, doors, trapdoors and the other non-cube shapes.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/glassential/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["bigenergy", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/glassential"
+icon = "icons/glassential.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "glassential-0.1.0.hnmod"
+sha256 = "6980d7bc499d4de5aee240870140c860a454908fbd2d4a0ab01099bcf658576b"

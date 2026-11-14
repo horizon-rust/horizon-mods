@@ -18,17 +18,25 @@ A port of [Roughly Enough Items (REI)](https://github.com/shedaniel/RoughlyEnoug
 
 It steps aside while Just Enough Items is on: both use the same place on screen.
 
-Built for Horizon Nightly 2026-11-08 (`fdc87ae`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
 
 **Credits.** Roughly Enough Items is Copyright (c) 2018-2023 shedaniel, MIT License; the GUI textures are REI's own. This port rewrites REI in Rust under the same licence and is not affiliated with shedaniel, Mojang or Microsoft."""
 authors = ["DeportedToHell"]
 owners = ["DeportedToHell"]
 owner_ids = [344119465]
 license = "MIT"
-source = "https://github.com/DeportedToHell/MCRE-Mods/tree/6060e0fba1ee4b720f43e005a4cb12b67ade4eab/roughlyenoughitems"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/roughlyenoughitems"
 icon = "icons/roughlyenoughitems.png"
 categories = ["utility"]
 tags = ["rei", "recipes", "item-list", "recipe-viewer", "search", "favorites", "port"]
+
+[[versions]]
+version = "1.1.3"
+published = "2026-11-14"
+game = "26.3"
+file = "roughlyenoughitems-1.1.3.hnmod"
+sha256 = "f98a1ad27e72ab7ad2182fdc8684358d6a1b459edaa7e8c6c35826bf61023738"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064). Replaces 1.1.2 (#703)."
 
 [[versions]]
 version = "1.1.2"

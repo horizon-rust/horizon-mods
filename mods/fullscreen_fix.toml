@@ -1,0 +1,36 @@
+id = "fullscreen_fix"
+kind = "native-mod"
+name = "Fullscreen Fix"
+summary = "Makes exclusive fullscreen fill the screen on macOS instead of leaving black bands."
+description = """
+A native mod that fixes exclusive fullscreen on macOS.
+
+**The bug.** When the game starts in exclusive fullscreen at a resolution other than the desktop's (for example 1920x1200 on a Retina display), macOS switches the display mode but the game keeps drawing for the old size. The picture covers only the top-left part of the screen, with black bands to the right and below, until fullscreen is turned off and on again by hand.
+
+**What it does.** About 1.5 s after the game first shows in exclusive fullscreen, it leaves fullscreen and enters it again 1.5 s later, as pressing F11 twice would. The screen blinks once at launch and the picture then fills it.
+
+- Once per launch, only in exclusive fullscreen.
+- Does nothing if you already left fullscreen yourself.
+- Split-screen guest windows are left alone.
+- On Windows and Linux, which don't have the bug, it does nothing.
+- Shows in Options > Mods as "Fullscreen Fix".
+
+Exclusive fullscreen at a lower resolution is worth keeping: with a shader pack it can run several times faster than borderless at the display's native size.
+
+Pinned to Horizon fdc87ae (Nightly 2026-11-08), because it reads the game's window and settings and calls its own fullscreen toggle."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/horizon-fullscreen-fix"
+icon = "icons/fullscreen_fix.png"
+categories = ["utility"]
+tags = ["fullscreen", "macos", "display", "fix"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-11"
+game = "26.3"
+file = "fullscreen_fix-0.2.1.hnmod"
+sha256 = "a70e8a9b555e3ea56d4ff922165bfe5718b9d0a1756a97700eb720e88825cf3d"
+changelog = "Only on macOS, as review asked: on Windows and Linux the mod no longer touches exclusive fullscreen (the workaround returns at once off macOS). The listing code stays portable."

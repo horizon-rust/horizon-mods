@@ -1,0 +1,66 @@
+id = "farmersdelight"
+kind = "native-mod"
+name = "Farmer's Delight"
+summary = "Farmer's Delight's 77 foods and two growable crops: nutrition, effects and remainders, 45 recipes and one creative tab."
+description = """
+A port of [Farmer's Delight](https://github.com/vectorwing/FarmersDelight) by
+vectorwing for Horizon. This slice is the food side of the mod plus two of its
+crops.
+
+**Implemented so far**
+
+- The 77 food items the mod registers with food properties: raw crops,
+  foodstuffs, sweets, handheld meals, soups and stews, plated meals, feast
+  portions, dog food and apple cider, each with its nutrition, absolute
+  saturation, stack size (16 for bowls and drinks), eating time (0.8 s, 1.6 s,
+  or 2.4 s for the kelp roll), bowl or glass-bottle remainder and its
+  always-edible flag.
+- The vanilla effects the foods apply when eaten: hunger on raw dough and the
+  chicken cuts, speed on the cake and pie slices, regeneration on the salads,
+  nausea on the nether salad, glowing on the glow berry custard, absorption on
+  apple cider.
+- Two crop blocks, `farmersdelight:cabbages` and `farmersdelight:budding_tomatoes`,
+  grown by the vanilla crop random tick (light, hydrated farmland, bone meal). A
+  seed used on the top of farmland plants its crop and spends one seed; a ripe
+  cabbage drops a cabbage and a seed, a young one a seed only.
+- 45 vanilla crafting, smelting, smoking and campfire recipes whose result is one
+  of the foods, with the `c:` item tags they need (26.3 ships none).
+- One creative tab listing all 79 items (the 77 foods and the two seeds).
+
+**Not yet ported**
+
+- The cutting board, cooking pot and skillet, and with them every
+  `farmersdelight:cutting` and `farmersdelight:cooking` recipe, so the foods whose
+  only source is a knife or a pot (bacon, cod and salmon slices, mutton chops,
+  most stews) are not survival-obtainable yet.
+- The tomato vine: upstream a mature budding bush becomes a `tomatoes` vine with
+  rope and hanging tomatoes; here `budding_tomatoes` stops at its last age.
+- The onion and rice crops, the wild crops, rich soil and farmland, the feast
+  blocks and the placeable pies, the mod's own `nourishment` effect, the
+  non-food drinks (milk bottle, hot cocoa, melon juice), dog-food feeding and
+  horse feed, compost values and tooltips.
+
+The bundle also registers one diagnostic command, `/fdcrop setage <x> <y> <z>
+<age>`, which writes an age into this mod's own crop blocks and nothing else; it
+exists for the port's in-game test.
+
+The port writes no gamerule or other world setting. As with any content mod, its
+blocks and items stay in an existing save if the mod is removed.
+
+MIT — the original copyright and licence notices are kept in the port
+repository; see LICENSE and LICENSE-NOTICE.md there."""
+authors = ["vectorwing", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/farmersdelight"
+icon = "icons/farmersdelight.png"
+categories = ["utility", "food", "game-mechanics"]
+tags = ["port", "horizon", "farming", "crops", "recipes"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "farmersdelight-0.1.0.hnmod"
+sha256 = "84dbf6c52cba00240f094efdff3aa90df7d86a6d94ce55845f29959fd4abc4a1"

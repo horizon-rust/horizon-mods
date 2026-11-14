@@ -1,0 +1,30 @@
+id = "trinkets"
+kind = "mod"
+name = "Trinkets (assets)"
+summary = "Extra equipment slots for trinkets, in a menu on G."
+description = """
+**This mod has two parts, and you need both.** This is the content part (items, blocks, textures, models, data; no code); install [the other one](https://playhorizon.dev/mods/trinkets_native) too.
+
+Extra equipment slots for trinkets, in a menu on G.
+
+**Differences from the original:** The trinket slots are in a separate menu opened with the G key, not beside the inventory. Worn trinkets aren't drawn on the player's body. Attribute bonuses stored on trinket items aren't applied, so a trinket only does what its own mod's port provides.
+
+A port of [Trinkets](https://github.com/emilyploszaj/trinkets) 3.7.2 by Emi, C4, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Emi", "C4"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/trinkets"
+icon = "icons/trinkets.png"
+categories = ["library"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "3.7.2-horizon.1"
+published = "2026-11-11"
+game = "26.3"
+file = "trinkets-3.7.2-horizon.1.hmod"
+sha256 = "c770dc45a8cbe0dc5ab5d70648150811e68902f48440be0f2ff8e3f32979ac9a"
+changelog = "First release."

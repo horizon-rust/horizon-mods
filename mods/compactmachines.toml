@@ -1,0 +1,44 @@
+id = "compactmachines"
+kind = "native-mod"
+name = "compactmachines"
+summary = "A Horizon port of compactmachines."
+description = """
+A port of [Compact Machines](https://github.com/CompactMods/CompactMachines) for Horizon.
+
+**Implemented so far**
+
+- The four blocks (`machine`, `new_machine`, `wall`, `solid_wall`), the three items (`personal_shrinking_device`, `shrinking_module`, `enlarging_module`), their recipes, loot, tags, language, models and textures, carried from the jar.
+- A room per machine: room codes, the region spiral, all eight template sizes as data, the sealed shell, entering and leaving with the PSD, the nesting depth limit (5), and a machine item that carries its room through break and place.
+- `/compactmachines info`, `list`, `enter`, `leave` and `rooms` (upstream has no commands; these are the port's harness surface, like `/powah info`).
+
+| Template | Interior | Shell |
+|---|---|---|
+| tiny | 3 × 3 × 3 | 5³ (98 blocks) |
+| small | 5 × 5 × 5 | 7³ |
+| normal | 7 × 7 × 7 | 9³ (386 blocks) |
+| large | 9 × 9 × 9 | 11³ |
+| giant | 11 × 11 × 11 | 13³ |
+| colossal | 13 × 13 × 13 | 15³ |
+
+**Not yet ported**
+
+- The compact dimension itself, its biome and dimension files: rooms live in a **reserved volume of the Overworld** instead (see below), which is a visible, persistent world change.
+- The room generator's structures and floors beyond the sealed shell; the preview screen; room upgrades; the PSD's keybinds; Jade/JEI/Curios; the villager; the gamerules; out-of-bounds damage and the teleport veto.
+- A room's shell is the unbreakable `solid_wall`, not upstream's breakable `wall` (the pin has no teleport veto, so a breakable shell would leak into the Overworld); `wall` is carried and craftable.
+- The PSD cooldown is server-side (25 ticks); the pin has no item-cooldown helper.
+- **The rooms are a permanent modification of the Overworld.** Each room occupies a 64-block region starting at (30000, 200, 30000) and is built on first entry. A site is only used when its whole volume (shell **and** interior) is empty air: an occupied site is skipped and the room moves to the next free one, so no player build is overwritten and nobody is enclosed in a solid interior. A room that has been built stays built (`built` is saved) and its shell cannot be broken by a player."""
+authors = ["Davenonymous", "RobotGryphon", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/compactmachines"
+icon = "icons/compactmachines.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "compactmachines-0.1.0.hnmod"
+sha256 = "8c85cf3995b2764da564088b3286b0d335b8b36911d1db9fc51e74db115428f7"

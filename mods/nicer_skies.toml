@@ -1,0 +1,31 @@
+# Horizon registry entry for Nicer Skies (exact 1:1 Rust port of ZtereoHYPE/nicer-skies, LGPL-3.0-only).
+id = "nicer_skies"
+kind = "native-mod"
+name = "Nicer Skies"
+summary = "Procedural twinkle stars and painted nebula skies with a full config screen, exact 1:1 port."
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launchers Mods page, then press Build there). Native mods are not sandboxed and run with your accounts rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+- **Twinkling stars 1:1**: the star field generated from the world's hashed seed (ImprovedNoise acceptance `> 0.2` over the full 3000-star count), per-star spin and sin-based resize speeds, gradient-mapped colors, alpha ramps by age, and the `renderStars` cancellable hook.
+- **Nebula skybox 1:1**: the 768px six-face cubemap painted off-thread by the PaintTask executor with a 5-second latch, Shepard-interpolated gradient keys integrated over altitude and time, domain-warped noise nebula colors with hermite seam smoothing, the Overwrite blend pipeline, and the `renderNebulas` injection after the vanilla sun/moon/star pass.
+- **Config 1:1**: config read/save in the game's config dir with warn-and-fallback parsing, and the ModMenu config screen with the twinkle/nebula toggles, transparency, amount, background strength and scale sliders (1/(1.5v+0.5) value mapping), reset/apply/back buttons and the same tooltips.
+
+Exact 1:1 Rust translation of [Nicer Skies](https://modrinth.com/mod/nicer-skies) (upstream ZtereoHYPE/nicer-skies, LGPL-3.0-only, v1.5.2 tree 22dc158). The upstream LGPL-3.0-only license and credit are carried; ported to Rust by sparticle. Known engine-stage seams (tracked in the repo README): the ClientLevel/SkyRenderer mixin carrier hooks and the ModMenu config-screen factory wire in at engine stage; no Horizon API gaps.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-only"
+source = "https://github.com/Sparticle62ops/horizon-nicer-skies"
+categories = ["utility", "adventure"]
+tags = ["sky", "stars", "nebula", "visuals"]
+
+icon = "icons/nicer_skies.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.5.2"
+game = "26.3"
+file = "nicer_skies-1.5.2.hnmod"
+sha256 = "c42aa5ed40e734715c02e58de0ccb04a52a1b23ac2b781a4156bbac58440eeb6"
+changelog = "Initial exact 1:1 Rust port of Nicer Skies (ZtereoHYPE/nicer-skies, LGPL-3.0-only, v1.5.2): procedural twinkling stars seeded from the world hash, off-thread painted nebula cubemap with altitude/time gradient integration, config file and ModMenu config screen."

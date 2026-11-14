@@ -1,0 +1,25 @@
+id = "hshade"
+kind = "shader"
+name = "HShade"
+summary = "Brazil made.  HShade delivers good visuals for low-performance devices."
+description = """
+HShade is a shader for Horizon Launcher developed by a Brazilian. It is focused on low-performance devices, delivering excellent optimization. 
+
+Aqui é Brasil !"""
+authors = ["Chainsaww19"]
+owners = ["frigocamelo10-lab"]
+owner_ids = [228380185]
+license = "ARR"
+source = "https://github.com/frigocamelo10-lab/HShade-Shaders-Horizon-Launcher"
+icon = "icons/hshade.png"
+categories = ["potato", "low", "vanilla-like"]
+tags = ["potato", "low", "shader", "shaders", "hshade", "hs", "hshader"]
+screenshots = ["screenshots/hshade/1.jpg", "screenshots/hshade/2.jpg", "screenshots/hshade/3.jpg"]
+
+[[versions]]
+version = "1.2.0"
+published = "2026-11-10"
+game = "26.3"
+file = "hshade-1.2.0.hshader"
+sha256 = "8acac82439f1af92be6ea306472de238730bbcf5c392f7cf198925f4e2bcefee"
+changelog = "New shaders for horizon launcher"

@@ -30,6 +30,14 @@ categories = ["utility", "decoration"]
 tags = ["first-person", "body", "camera", "immersion", "client-side"]
 
 [[versions]]
+version = "1.0.1"
+published = "2026-11-14"
+game = "26.3"
+file = "first_person_body-1.0.1.hnmod"
+sha256 = "019a596cfc7b565d4d68494e78fe687cc55fd2b56ccc44acacecd09f4190fe4b"
+changelog = 'Works on Horizon Nightly 2026-11-13. That nightly changed how cosmetics are drawn on your own player, so 1.0.0 was left out of builds ("made for another Horizon version"). 1.0.1 follows the change: your body shows in first person again, with no hats or wings in front of the camera.'
+
+[[versions]]
 version = "1.0.0"
 published = "2026-11-09"
 game = "26.3"

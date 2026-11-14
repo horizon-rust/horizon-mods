@@ -1,0 +1,30 @@
+id = "grindenchantments"
+kind = "native-mod"
+name = "Grind Enchantments"
+summary = "Grindstones move enchantments to books."
+description = """
+Grindstones move enchantments to books.
+
+**Differences from the original:** A book can go into the second grindstone slot even when the other slot already holds a book. Two books just give no result.
+
+A port of [Grind Enchantments](https://github.com/mschae23/grind-enchantments) 3.1.4+1.20.1 by mschae23, published under its licence, LGPL-3.0-or-later. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "mschae23"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/lavoide/horizon-ports/tree/main/grindenchantments"
+icon = "icons/grindenchantments.png"
+categories = ["magic"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "grindenchantments-0.1.1.hnmod"
+sha256 = "e17c4884253beb9bc4090293c88fbb887e4a303b180bff72df75bb9a554b85d3"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

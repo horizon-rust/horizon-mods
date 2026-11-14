@@ -1,0 +1,33 @@
+id = "vcraft"
+kind = "native-mod"
+name = "VCraft - Instant Messaging and Calling"
+summary = "Voice calls, group chats and direct messages with your friends from anywhere in Minecraft, end-to-end encrypted."
+description = """
+VCraft lets you talk to your friends from anywhere in Minecraft, whether
+you're in single player or on any server.
+
+- 1:1 and group **voice calls**, with voice activity or push to talk
+- **Direct messages** and **group chats**, plus a community lobby
+- **End-to-end encrypted**: X25519 key agreement, Ed25519 signatures and a
+  safety number for each friend
+- Built-in addons: **Proximity** (volume follows distance on the same
+  server), **Announcements** and **Group rules** (keyword filters, slow mode,
+  moderation)
+- Optional **Now listening** sharing when the Now Playing mod is on
+- Press the VCraft key or type `/vc`"""
+authors = ["Dufeaver/Annie"]
+owners = ["anniewannieyay"]
+owner_ids = [355466457]
+license = "MIT"
+source = "https://github.com/anniewannieyay/vcraft-horizon"
+icon = "icons/vcraft.png"
+categories = ["utility", "social"]
+tags = ["dm", "call", "voice-chat", "vc"]
+
+[[versions]]
+version = "2.3.0"
+published = "2026-11-11"
+game = "26.3"
+file = "vcraft-2.3.0.hnmod"
+sha256 = "371e00f740a0031fa52f39c783a20454914002f5fc7003665692d6f2cfc852ab"
+changelog = "First release on Horizon: a native port of VCraft 2.3.0 with voice calls, DMs, group chats, and the Proximity, Announcements and Group rules addons."

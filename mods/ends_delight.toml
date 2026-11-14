@@ -1,0 +1,30 @@
+id = "ends_delight"
+kind = "mod"
+name = "End's Delight"
+summary = "End foods for Farmer's Delight: shulker, dragon and chorus dishes, End Stove, knives (needs the Farmer's Delight port)."
+description = """
+End foods for Farmer's Delight: shulker, dragon and chorus dishes, End Stove, knives (needs the Farmer's Delight port).
+
+**Needs** [farmersdelight](https://playhorizon.dev/mods/farmersdelight) and [farmersdelight_native](https://playhorizon.dev/mods/farmersdelight_native) installed too.
+
+**Differences from the original:** The dragon tooth knife does no extra damage to End mobs. Enderman gristle teleports you like a chorus fruit, up to 16 blocks around, where the Java mod sends you higher with less fall damage. Teleporting foods have no cooldown afterwards. The chorus succulent gives the same light at every size.
+
+A port of [End's Delight]() refabricated-1.20.1-2.5 by FoggyHillside, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "FoggyHillside"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/ends_delight"
+icon = "icons/ends_delight.png"
+categories = ["food"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "2.5-horizon.3"
+published = "2026-11-11"
+game = "26.3"
+file = "ends_delight-2.5-horizon.3.hmod"
+sha256 = "bc3f12058a121e7b1878ee44ee81d9364dab1b214e4b9b52ab607b283ef53041"
+changelog = "First release."

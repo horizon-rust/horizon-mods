@@ -1,0 +1,46 @@
+id = "account_switcher"
+kind = "native-mod"
+name = "Account Switcher"
+summary = "Switch Microsoft & offline accounts in-game without restarting, encrypted local vault, and direct Microsoft OAuth."
+description = """
+**Account Switcher** is an native Rust mod for **Horizon ** that lets you add, manage, and switch between online and offline accounts directly inside the game without restarting.
+
+### Key Features
+- **Instant In-Game Switching**: Open the switcher from the Title screen, Multiplayer screen, Pause menu, or Options → Mods via the frosted profile pill or `Alt+A`.
+- **Launcher Session Rollback**: Keeps a pinned **Launcher Session** entry at the top of the list so you can always return to your initial Horizon Launcher session, and rolls back automatically if you remove the active or last profile.
+- **Offline Profiles**: Validated Minecraft usernames (`1–16` characters) with deterministic vanilla `UUIDv3` generation.
+- **Liquid-Glass UI & Localization**: Frosted translucent panels, search and filtering, clipboard paste (`Ctrl+V`), composited `8x8` skin avatars, and automatic English / Russian localization.
+
+### Direct Microsoft Authentication & Zero Telemetry
+- **No third-party servers**: All requests go directly from your PC to official Microsoft (`login.live.com` / `login.microsoftonline.com`), Xbox Live (`user.auth.xboxlive.com`, `xsts.auth.xboxlive.com`), and Mojang / Minecraft Services (`api.minecraftservices.com`, `sessionserver.mojang.com`, `textures.minecraft.net`).
+- **Default Device Code flow**: Works out of the box using the public Live Client ID (`00000000441cc96b`)—the mod opens Microsoft's official login page in your browser where you enter the one-time code.
+- **Optional Custom Azure Client ID**: Supports your own Azure Client ID (in settings or `HORIZON_MSA_CLIENT_ID`), enabling Browser OAuth 2.0 + PKCE (`127.0.0.1` loopback callback).
+
+### Local Encrypted Vault & Security
+- **Stored strictly locally** inside `<horizon_game_dir>/horizon-mods/.horizon-mod-data/account_switcher/TOKENS_DO_NOT_SEND_TO_ANYONE/`:
+  - `DO_NOT_SEND_TOKENS_vault.json` — accounts and encrypted tokens (`ChaCha20-Poly1305` AEAD).
+  - `DO_NOT_SEND_SECRET_KEY_device.key` — local 256-bit encryption key used in default `Device Key` mode (no password prompt needed).
+  - `WARNING_TOKENS_DO_NOT_SHARE_WITH_ANYONE.txt` — reminder **never** to share or upload this folder (both files together can decrypt your saved tokens).
+- **Optional Master Password**: Switch to `Master Password (PBKDF2)` (`120,000` PBKDF2-HMAC-SHA256 rounds + HKDF-SHA256 + ChaCha20-Poly1305) in Vault settings if you want password-locked storage.
+
+### Compatibility & Horizon Revision
+- **Target Minecraft**: `26.3+`
+- **Pinned Horizon Commit**: `fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca`
+- **Horizon Mixins**: `d9c83d7096b7ea5b83678da2efdfd6161f74997e`
+- Uses an injection on `horizon_client_render::auth::current` plus stable `native_*` hook points; newer Horizon Nightlies can also rebuild the mod via **Rebuild on Horizon** (`--ignore-pins`) / **Build anyway** while `auth::current` remains compatible."""
+authors = ["cosmo-jar"]
+owners = ["cosmo-jar"]
+owner_ids = [246506206]
+license = "GPL-3.0"
+source = "https://github.com/cosmo-jar/Horizon-Account-Switcher"
+icon = "icons/account_switcher.png"
+categories = ["utility", "management", "social"]
+tags = ["account-switcher", "accounts", "auth", "oauth", "microsoft", "offline", "vault", "encryption", "security", "ui"]
+screenshots = ["screenshots/account_switcher/1.jpg", "screenshots/account_switcher/2.jpg", "screenshots/account_switcher/3.jpg"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-14"
+game = "26.3"
+file = "account_switcher-1.0.0.hnmod"
+sha256 = "81bc3ca04ada88997f641d1e623e736ce34d12d9d36502f54349e8ec92c05e13"

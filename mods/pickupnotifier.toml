@@ -9,9 +9,10 @@ A port of [Pick Up Notifier](https://github.com/Fuzss/pickupnotifier) by Fuzs to
 - Entries combined always, never, or except named items; how long they stay, how they move out (sideways, up/down, both or not at all) and fade.
 - The item's sprite, its name in its rarity colour or a colour of your choice, the amount as a sprite count, text or both, and how many you now have in your inventory.
 - Any of nine screen positions with offsets, a maximum height and a scale; no background, the chat's or a tooltip's.
+- Also what Horizon's server takes before your game ever sees it, like the experience from a furnace or an item that drops at your feet: the mod's server half tells your game what it was (single player, and Horizon servers that run the mod).
 - Pick Up Notifier's settings: Options > Mods > Pick Up Notifier, Mod Menu's Configure, or `/pickupnotifier`. English and Russian.
 
-Built for Horizon Nightly 2026-11-08 (`fdc87ae`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
 
 **Permission.** Fuzs, Pick Up Notifier's author, agreed on Discord (2026-11-09) to this port being listed, under the MPL-2.0.
 
@@ -20,10 +21,18 @@ authors = ["DeportedToHell"]
 owners = ["DeportedToHell"]
 owner_ids = [344119465]
 license = "MPL-2.0"
-source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/pickupnotifier"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/31692be51fa6a9ea6a0cc52cf74ae2e5adedb949/pickupnotifier"
 icon = "icons/pickupnotifier.png"
 categories = ["utility"]
 tags = ["pickup", "hud", "items", "notifications", "port"]
+
+[[versions]]
+version = "1.1.2"
+published = "2026-11-14"
+game = "26.3"
+file = "pickupnotifier-1.1.2.hnmod"
+sha256 = "0f6bb5b97fba98a8ef568d4a38041e663fc105936cb9d5507c4ff8fca74248a6"
+changelog = "Fixes pickups that showed nothing: Horizon's server can announce the pickup of an entity it never sent the client (one that spawns and is taken in the same tick, like a furnace's experience or an item dropping at the player's feet). The mod's server half now tells the client what such an entity was (plugin channel `pickupnotifier:take_entity`, only to clients that register it), and the client lists each entity once. Built for Horizon Nightly 2026-11-13 (`9f42064`)."
 
 [[versions]]
 version = "1.1.0"

@@ -1,0 +1,40 @@
+id = "touchorizon"
+kind = "native-mod"
+name = "ToucHorizon"
+summary = "Your MacBook's Touch Bar, now useful"
+description = """
+**ToucHorizon** puts your hotbar and inventory on the Touch Bar of a MacBook Pro.
+
+- **Tap a hotbar item** to select it, like its number key.
+- **Tap an inventory item** to swap it into the selected hotbar slot, like pressing that slot's number key over it in the inventory. Tap an empty cell to move the selected item there.
+- **Swipe** the strip to scroll through all 27 inventory slots.
+- **⇄** swaps the selected slot with your off hand, like F.
+
+Items show their own textures and stack counts. Hotbar slots are numbered and sit on lighter tiles, and the selected one is outlined.
+
+Works in single player and on servers: a swap is the same inventory click the game sends for a number key, so servers see an ordinary click. Taps are ignored while you hold a stack on the cursor, and while a screen other than the inventory or a container is open.
+
+**Settings** (Options › Mods › ToucHorizon):
+- *Touch Bar shows*: Hotbar + inventory, or Hotbar only
+- *Off-hand button*: on or off
+
+**Needs** a Mac with a Touch Bar, and the Touch Bar set to show *App Controls* (System Settings › Keyboard › Touch Bar settings). Hold **fn** to get the F-keys back. macOS only.
+
+Source: https://github.com/szg1/ToucHorizon"""
+authors = ["szg1"]
+owners = ["szg1"]
+owner_ids = [63415246]
+license = "MIT"
+source = "https://github.com/szg1/ToucHorizon"
+icon = "icons/touchorizon.png"
+categories = ["utility"]
+tags = ["mac", "macbook", "touchbar", "inventory"]
+screenshots = ["screenshots/touchorizon/1.jpg"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-09"
+game = "26.3"
+file = "touchorizon-0.1.0.hnmod"
+sha256 = "71643b7a95c93518acc6bd177bea4a6c55985e2b69fc91276cdc0de5c3451ec7"
+changelog = "version 1"

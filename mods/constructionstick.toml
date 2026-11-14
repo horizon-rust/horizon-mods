@@ -1,0 +1,35 @@
+id = "constructionstick"
+kind = "native-mod"
+name = "constructionstick"
+summary = "A Horizon port of constructionstick."
+description = """
+A port of [Construction Sticks](https://github.com/Mrbysco/ConstructionSticks) by Mrbysco for Horizon — slice 1, the construction sticks.
+
+**Implemented so far**
+
+- Five sticks that fill a face with the clicked block, placed through the game's **vanilla placement path**, so a directional block keeps its facing and an item whose id differs from its block still places the right block.
+- The stick's reach, the number of blocks one use places and its durability cost, from the jar's config defaults.
+- The five items, their models, textures, recipes, tags, the creative tab and the English names.
+
+**Not yet ported**
+
+- Entity-obstruction and block-entity blacklists and replacing replaceable blocks (`replace` option): only air counts as placeable in this slice.
+- The options screen, undo, key binds, the angel/destruction/replacement modes, upgrade components and the battery (the pin has no key-to-server action path and no component write during use; `smithing_upgrade` recipes stay inert until native code reads them).
+- Place sounds, the place event, and durability carried by the content items.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/constructionstick/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Mrbysco", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/constructionstick"
+icon = "icons/constructionstick.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "constructionstick-0.1.0.hnmod"
+sha256 = "979a113d17626f726018442fbac68e28e6db38362e7169483fee34c91dc03a94"

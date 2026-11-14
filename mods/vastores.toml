@@ -1,0 +1,35 @@
+id = "vastores"
+kind = "mod"
+name = "Vast Ores"
+summary = "Ten metals, three gems and nine alloys with dusts, plates, gears, rods and an ore hammer, generated in the overworld."
+description = """
+A content mod: data only, nothing to build.
+
+- **Ten metals:** aluminum, lead, nickel, osmium, platinum, silver, tin, uranium, zinc and iridium. Each has a stone and a deepslate ore, raw ore, raw block, ingot, nugget, block, dust, plate, gear and rod.
+- **Three gems:** ruby, sapphire and peridot, with ore, gem, block and dust.
+- **Nine alloys:** bronze, brass, constantan, electrum, invar, steel, enderium, lumium and signalum. Mix their dusts in the crafting grid, then smelt the alloy dust.
+- Dust, plate, gear and rod for iron, gold and copper too.
+- **Ore hammer** (three iron ingots, two sticks): hammer + raw ore = two dusts, hammer + ingot = a plate. It isn't used up.
+- Ores generate in the overworld, with a second, richer layer below y 0 for players who dig deep. Only new chunks get them.
+- `c:` convention tags (`c:ingots/tin`, `c:dusts/bronze`...) so other mods' recipes can use them.
+
+Every texture is hand-drawn pixel art made in the repository. Inspired by AllTheOres by the All The Mods team; a clean-room work with no code, data or art from it, not affiliated with or endorsed by All The Mods."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-ores"
+icon = "icons/vastores.png"
+categories = ["worldgen", "technology", "equipment"]
+tags = ["ores", "metals", "alloys", "gems", "tech"]
+
+[[versions]]
+version = "0.4.1"
+published = "2026-11-11"
+game = "26.3"
+file = "vastores-0.4.1.hmod"
+sha256 = "d50a6839ce8f52d0961ba5887431e194a6f7e9756c7958562e2e6d615af36af4"
+changelog = """
+- Each .hmod carries the MIT LICENSE notice (review).
+- The description now says the ore hammer takes three iron ingots and two sticks, as its recipe is (review).
+- Since 0.2.0: hand-drawn textures for every item and block."""

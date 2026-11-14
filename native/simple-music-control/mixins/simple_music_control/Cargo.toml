@@ -1,0 +1,13 @@
+[package]
+name = "horizon-mod-simple-music-control"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+description = "Simple Music Control ported to Horizon (slice 1: config, situational music picker, jukebox tracker, keybinds, music-note color tick, sound-engine pause control). Upstream: github.com/pajicadvance/simple-music-control, MIT (c) 2026 pajic."
+
+[lib]
+path = "runtime.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

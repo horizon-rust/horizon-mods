@@ -1,0 +1,29 @@
+## Horizon registry entry for Better Recipe Book (port of mrshmllow/brb).
+id = "brb"
+kind = "native-mod"
+name = "Better Recipe Book"
+summary = "Better Recipe Book pure-logic core"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Better Recipe Book pure-logic core.
+
+Port of [Better Recipe Book](https://github.com/mrshmllow/BetterRecipeBook) by mrshmllow (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-brb"
+categories = ["utility"]
+tags = ["recipe-book", "gui", "qol"]
+
+icon = "icons/brb.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "brb-1.0.0.hnmod"
+sha256 = "2ef98ba59d340cd57f41db72b6a7896f40eba5861501fbd1326c750e534d5045"
+changelog = "Initial port: 1:1 logic core from mrshmllow/brb."

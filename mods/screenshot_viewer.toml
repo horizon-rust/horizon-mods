@@ -1,0 +1,29 @@
+## Horizon registry entry for Screenshot Viewer (port of LGatodu47/screenshot-viewer).
+id = "screenshot_viewer"
+kind = "native-mod"
+name = "Screenshot Viewer"
+summary = "Screenshot gallery: screenshots listed newest-first and paged through a fixed-size grid"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Screenshot gallery: screenshots listed newest-first and paged through a fixed-size grid.
+
+Port of [Screenshot Viewer](https://github.com/LGatodu47/ScreenshotViewer) by LGatodu47 (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-screenshot-viewer"
+categories = ["utility"]
+tags = ["screenshots", "gui"]
+
+icon = "icons/screenshot_viewer.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "screenshot_viewer-1.0.0.hnmod"
+sha256 = "3ca348ad468431b2e7d04c3b8838e293d7946752c2ee28aa13ee5e1ae7437fde"
+changelog = "Initial port: 1:1 logic core from LGatodu47/screenshot-viewer."

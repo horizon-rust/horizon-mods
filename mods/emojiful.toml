@@ -1,0 +1,29 @@
+## Horizon registry entry for Emojiful (port of InnovativeOnlineIndustries/emojiful).
+id = "emojiful"
+kind = "native-mod"
+name = "Emojiful"
+summary = "Emojiful chat emoji core"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Emojiful chat emoji core.
+
+Port of [Emojiful](https://github.com/InnovativeOnlineIndustries/Emojiful) by InnovativeOnlineIndustries (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-emojiful"
+categories = ["utility"]
+tags = ["chat", "emoji", "fun"]
+
+icon = "icons/emojiful.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "emojiful-1.0.0.hnmod"
+sha256 = "7d09fc515c3f7ecd20d8fb97550a393fb1eaf79f3fd0e7eb7f7f60018bb813b8"
+changelog = "Initial port: 1:1 logic core from InnovativeOnlineIndustries/emojiful."

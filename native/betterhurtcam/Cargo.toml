@@ -1,0 +1,12 @@
+[package]
+name = "horizon-mod-betterhurtcam"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Slice 1 of a Horizon port of BetterHurtcam: the damage camera-shake model."
+
+[lib]
+path = "src/lib.rs"
+
+[workspace]

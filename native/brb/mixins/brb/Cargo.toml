@@ -1,0 +1,13 @@
+[package]
+name = "horizon-mod-brb"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+description = "Better Recipe Book ported to Horizon (slice 1: config model, instant craft manager, pinned recipe manager). Upstream: github.com/mrshmllow/BetterRecipeBook, MIT (c) 2021 marshamallow."
+
+[lib]
+path = "runtime.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

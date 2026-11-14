@@ -1,0 +1,29 @@
+## Horizon registry entry for Show Me Your Skin! (port of enjarai/show-me-your-skin).
+id = "show_me_your_skin"
+kind = "native-mod"
+name = "Show Me Your Skin!"
+summary = "Config model, hideable-equipment mapping and the combat logger"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Config model, hideable-equipment mapping and the combat logger.
+
+Port of [Show Me Your Skin!](https://codeberg.org/enjarai/show-me-your-skin) by enjarai (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-show-me-your-skin"
+categories = ["utility"]
+tags = ["skins", "utility"]
+
+icon = "icons/show_me_your_skin.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "show_me_your_skin-1.0.0.hnmod"
+sha256 = "233c44a043099e77d4facb439978ff2d4201144b699c8523b760eee045469132"
+changelog = "Initial port: 1:1 logic core from enjarai/show-me-your-skin."

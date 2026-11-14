@@ -1,0 +1,29 @@
+## Horizon registry entry for Sound Physics Remastered (port of henkelmax/sound-physics-remastered).
+id = "sound_physics_remastered"
+kind = "native-mod"
+name = "Sound Physics Remastered"
+summary = "Behavioral clean-room port: the pure sound physics, per-block materials, direct-path occlusion raymarching and raytraced reverb estimation"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Behavioral clean-room port: the pure sound physics, per-block materials, direct-path occlusion raymarching and raytraced reverb estimation.
+
+A behavioral port: written from the mod's documented behavior, without upstream code; upstream retains all rights.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-sound-physics-remastered"
+categories = ["utility"]
+tags = ["audio", "realism"]
+
+icon = "icons/sound_physics_remastered.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "sound_physics_remastered-1.0.0.hnmod"
+sha256 = "c5207b79cafcd97eed210e50eed9e9df70b0e964b72060d80ed585e0c13583a8"
+changelog = "Initial port: 1:1 logic core from henkelmax/sound-physics-remastered."

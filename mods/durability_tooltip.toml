@@ -1,0 +1,29 @@
+## Horizon registry entry for Durability Tooltip (port of SuperMartijn642/durability-tooltip).
+id = "durability_tooltip"
+kind = "native-mod"
+name = "Durability Tooltip"
+summary = "Behavioral clean-room port of the durability tooltip rendering model; no upstream code is included"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Behavioral clean-room port of the durability tooltip rendering model; no upstream code is included.
+
+A behavioral port: written from the mod's documented behavior, without upstream code; upstream retains all rights.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-durability-tooltip"
+categories = ["utility"]
+tags = ["hud", "tooltip"]
+
+icon = "icons/durability_tooltip.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "durability_tooltip-1.0.0.hnmod"
+sha256 = "56483fe831b6da8a1600b07247ae5bc86c428dec618e41a96caf56c4d8afc0af"
+changelog = "Initial port: 1:1 logic core from SuperMartijn642/durability-tooltip."

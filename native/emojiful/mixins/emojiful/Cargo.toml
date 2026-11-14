@@ -1,0 +1,13 @@
+[package]
+name = "horizon-mod-emojiful"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+description = "Emojiful ported to Horizon (slice 1: config, emoji model, regex/binding logic, twemoji + custom loading, profanity filter, indexing, datapack flow). Upstream: github.com/InnovativeOnlineIndustries/Emojiful, MIT (c) 2022 Innovative Online Industries."
+
+[lib]
+path = "runtime.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

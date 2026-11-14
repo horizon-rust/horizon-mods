@@ -1,0 +1,29 @@
+## Horizon registry entry for ClearDespawn (port of StrikerRockers-Mods/cleardespawn).
+id = "cleardespawn"
+kind = "native-mod"
+name = "ClearDespawn"
+summary = "When an item entity despawns, its poof particles are suppressed, except for entity ids on the ignore list"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+When an item entity despawns, its poof particles are suppressed, except for entity ids on the ignore list.
+
+Port of [ClearDespawn](https://github.com/StrikerRockers-Mods/ClearDespawn/) by StrikerRockers-Mods (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-cleardespawn"
+categories = ["utility"]
+tags = ["items", "particles"]
+
+icon = "icons/cleardespawn.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "cleardespawn-1.0.0.hnmod"
+sha256 = "770fe7c5496062e58aebcc58b9b5ece7dfbc7fec379626862089d13c55a172a6"
+changelog = "Initial port: 1:1 logic core from StrikerRockers-Mods/cleardespawn."

@@ -1,0 +1,29 @@
+## Horizon registry entry for Better Ping Display (port of vladmarica/better-ping-display).
+id = "better_ping_display"
+kind = "native-mod"
+name = "Better Ping Display"
+summary = "A smoothed ping value per player, colored by thresholds, rendered next to the vanilla connection bar"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+A smoothed ping value per player, colored by thresholds, rendered next to the vanilla connection bar.
+
+Port of [Better Ping Display](https://github.com/vladmarica/better-ping-display) by vladmarica (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-better-ping-display-fabric"
+categories = ["utility"]
+tags = ["hud", "ping"]
+
+icon = "icons/better_ping_display.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "better_ping_display-1.0.0.hnmod"
+sha256 = "92e0ae0aedaa9593241fb21ae5037ef57e8121828976605a6773d39ef58d1925"
+changelog = "Initial port: 1:1 logic core from vladmarica/better-ping-display."

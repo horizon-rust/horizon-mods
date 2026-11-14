@@ -1,0 +1,13 @@
+[package]
+name = "horizon-mod-better-f1-reborn"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+description = "Better F1 Reborn ported to Horizon (slice 1: HUD state machine core). Upstream: github.com/MovTery/Better-F1-Reborn, MIT (c) 2024 MovTery."
+
+[lib]
+path = "runtime.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

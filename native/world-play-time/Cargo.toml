@@ -1,0 +1,12 @@
+[package]
+name = "horizon-mod-world-play-time"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Slice 1 of a Horizon port of World Play Time: the per-world playtime tracker, storage model and formatter."
+
+[lib]
+path = "src/lib.rs"
+
+[workspace]

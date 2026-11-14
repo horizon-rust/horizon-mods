@@ -1,0 +1,12 @@
+[package]
+name = "horizon-mod-show-me-what-you-got"
+version = "1.0.0"
+edition = "2024"
+license = "MIT"
+description = "show-me-what-you-got ported to Horizon (slice 1: item-share packet model, message item list, SNBT extraction/decoration, shared text-field insertion state machine, chat send flow, client share gate). Upstream: github.com/apace100/show-me-what-you-got, MIT (c) 2022 apace100."
+
+[lib]
+path = "runtime.rs"
+
+[dependencies]
+serde_json = "1"

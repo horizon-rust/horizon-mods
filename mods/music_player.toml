@@ -1,0 +1,29 @@
+## Horizon registry entry for Music Player (port of MC-U-Team/music-player).
+id = "music_player"
+kind = "native-mod"
+name = "Music Player"
+summary = "Playlists and a playing queue state machine over a stand-in audio player: client config, settings and managers, the track manager and the skip utility"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Playlists and a playing queue state machine over a stand-in audio player: client config, settings and managers, the track manager and the skip utility. Audio decode/streaming (lavaplayer, youtube/soundcloud sources) and the GUI are later slices.
+
+Port of [Music Player](https://github.com/MC-U-Team/Music-Player) by MC-U-Team (Apache-2.0); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "Apache-2.0"
+source = "https://github.com/Sparticle62ops/horizon-music-player"
+categories = ["utility"]
+tags = ["music", "audio", "player"]
+
+icon = "icons/music_player.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "music_player-1.0.0.hnmod"
+sha256 = "27349368655b9de36dff98a6550fe0c84a8330bcedd79e165658aca3b2a10d4e"
+changelog = "Initial port: 1:1 logic core from MC-U-Team/music-player."

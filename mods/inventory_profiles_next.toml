@@ -1,0 +1,29 @@
+## Horizon registry entry for Inventory Profiles Next (port of ToCrafter/inventory-profiles-next).
+id = "inventory_profiles_next"
+kind = "native-mod"
+name = "Inventory Profiles Next"
+summary = "Behavioral clean-room port: the inventory grid model, sorting comparators, layouts and the minimal move plan the client glue turns into slot clicks"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Behavioral clean-room port: the inventory grid model, sorting comparators, layouts and the minimal move plan the client glue turns into slot clicks.
+
+A behavioral port: written from the mod's documented behavior, without upstream code; upstream retains all rights.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-inventory-profiles-next"
+categories = ["utility"]
+tags = ["inventory", "sorting"]
+
+icon = "icons/inventory_profiles_next.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "inventory_profiles_next-1.0.0.hnmod"
+sha256 = "8c9d59b49be037828acbc9d08d9431db17d896d7bf1181d964fd7c99db5afeda"
+changelog = "Initial port: 1:1 logic core from ToCrafter/inventory-profiles-next."

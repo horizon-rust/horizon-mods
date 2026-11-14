@@ -1,0 +1,29 @@
+## Horizon registry entry for Simple Music Control (port of pajicadvance/simple-music-control).
+id = "simple_music_control"
+kind = "native-mod"
+name = "Simple Music Control"
+summary = "Config, situational music picker, jukebox tracker, keybinds, the music-note color tick and the sound-engine pause control"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Config, situational music picker, jukebox tracker, keybinds, the music-note color tick and the sound-engine pause control.
+
+Port of [Simple Music Control](https://github.com/pajicadvance/simple-music-control) by pajicadvance (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-simple-music-control"
+categories = ["utility"]
+tags = ["music", "audio"]
+
+icon = "icons/simple_music_control.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "simple_music_control-1.0.0.hnmod"
+sha256 = "af9214d20e814f379703417d788457cbe192b2101283de27d74c74a11beea4fd"
+changelog = "Initial port: 1:1 logic core from pajicadvance/simple-music-control."

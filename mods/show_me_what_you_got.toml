@@ -1,0 +1,29 @@
+## Horizon registry entry for Show Me What You Got (port of apace100/show-me-what-you-got).
+id = "show_me_what_you_got"
+kind = "native-mod"
+name = "Show Me What You Got"
+summary = "Show Me What You Got core"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Show Me What You Got core.
+
+Port of [Show Me What You Got](https://github.com/apace100/show-me-what-you-got) by apace100 (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-show-me-what-you-got"
+categories = ["utility"]
+tags = ["screenshots", "utility"]
+
+icon = "icons/show_me_what_you_got.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "show_me_what_you_got-1.0.0.hnmod"
+sha256 = "745c3716389d473ba9f6cfa14852f8fd5bd3df0b8198e5da240c6493099d3b78"
+changelog = "Initial port: 1:1 logic core from apace100/show-me-what-you-got."

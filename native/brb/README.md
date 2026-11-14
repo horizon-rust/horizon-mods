@@ -1,0 +1,5 @@
+# Better Recipe Book
+
+Better Recipe Book -> Horizon native mod, slice 1: pure-logic core. Upstream: https://github.com/mrshmllow/BetterRecipeBook (Modrinth slug 'brb'), commit ea7c787 (2024-07-07), MIT (c) 2021 marshamallow. LICENSE carried verbatim in this mod's repo. Ported 1:1 from common/src/main/java/marsh/town/brb: config/{Config,NewRecipes,InstantCraft,AlternativeRecipes,Scrolling}.java, InstantCraftingManager.java, PinnedRecipeManager.java.  Seam notes (game-side, not modeled here): - Config load/save goes through the game's config holder; upstream registers load/save listeners that re-sync the instant-craft toggle button (GUI seam). - ItemStack identity (isSameItemSameComponents) is modeled as a comparable CraftResult { item, components } where components is the serialized component map ("" = none). Minecraft registry types stay out of the core. - onResultSlotUpdated's click is sent by the game glue as QUICK_MOVE, slot 0,
+
+Port by sparticle. Upstream: https://github.com/mrshmllow/BetterRecipeBook (MIT).

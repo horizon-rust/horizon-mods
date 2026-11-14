@@ -1,0 +1,29 @@
+## Horizon registry entry for Very Many Players (Fabric) (port of ishland/vmp-fabric).
+id = "vmp_fabric"
+kind = "native-mod"
+name = "Very Many Players (Fabric)"
+summary = "Very Many Players core: the area map, chunk watching, config and object pooling that cut per-player network work"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Very Many Players core: the area map, chunk watching, config and object pooling that cut per-player network work.
+
+Port of [Very Many Players (Fabric)](https://github.com/RelativityMC/VMP-fabric) by ishland (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-vmp-fabric"
+categories = ["utility"]
+tags = ["performance", "server"]
+
+icon = "icons/vmp_fabric.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "vmp_fabric-1.0.0.hnmod"
+sha256 = "ec5c6c77c5e7fa150e8ccca69b91a5512f0ecf01d9db7a7ecff3a95ca6f3320a"
+changelog = "Initial port: 1:1 logic core from ishland/vmp-fabric."

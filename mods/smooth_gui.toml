@@ -1,0 +1,29 @@
+## Horizon registry entry for Smooth Gui (port of Ezzenix/smooth-gui).
+id = "smooth_gui"
+kind = "native-mod"
+name = "Smooth Gui"
+summary = "Screens ease in over a configurable duration with configurable slide and fade amounts"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Screens ease in over a configurable duration with configurable slide and fade amounts.
+
+Port of [Smooth Gui](https://github.com/Ezzenix/SmoothGui) by Ezzenix (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-smooth-gui"
+categories = ["utility"]
+tags = ["gui", "animation"]
+
+icon = "icons/smooth_gui.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "smooth_gui-1.0.0.hnmod"
+sha256 = "21c09b16491207e01571d179d571eafdccf8bda9206e23a1a9b4a017c62bf1b1"
+changelog = "Initial port: 1:1 logic core from Ezzenix/smooth-gui."

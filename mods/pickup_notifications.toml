@@ -1,0 +1,29 @@
+## Horizon registry entry for Pickup Notifications (port of Roundaround/pickup-notifications).
+id = "pickup_notifications"
+kind = "native-mod"
+name = "Pickup Notifications"
+summary = "Pickup notifications: config (trove semantics and the v1-to-v2 offset migration), icon and GUI alignment values, pickup event buses, S2C packet models with the server send gate, th"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Pickup notifications: config (trove semantics and the v1-to-v2 offset migration), icon and GUI alignment values, pickup event buses, S2C packet models with the server send gate, the HUD queue state machine (shown list plus backlog with merge/extend rules) and the notification base state machine (durations, pop, expiry, slide-in/out math).
+
+Port of [Pickup Notifications](https://github.com/Roundaround/mc-fabric-pickup-notifications) by Roundaround (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-pickup-notifications"
+categories = ["utility"]
+tags = ["hud", "items", "qol"]
+
+icon = "icons/pickup_notifications.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "pickup_notifications-1.0.0.hnmod"
+sha256 = "b6d1dbb391ad1fe84b277df7f2c3050e932f46bfd12228331972440ad3d6be12"
+changelog = "Initial port: 1:1 logic core from Roundaround/pickup-notifications."

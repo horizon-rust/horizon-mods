@@ -1,0 +1,13 @@
+[package]
+name = "centered_crosshair"
+version = "1.0.0"
+edition = "2021"
+
+# Pure-Rust core of the centered-crosshair port. The upstream mod is entirely
+# render-side: it re-draws the HUD crosshair sprite at a subpixel-centered
+# float position instead of vanilla's integer `(w - 15) / 2`, which rounds the
+# crosshair half a pixel off the true window centre whenever the gui-scaled
+# size loses its fraction. This crate models the math 1:1; the draw itself is
+# a client-side seam (see the module docs).
+[lib]
+path = "runtime.rs"

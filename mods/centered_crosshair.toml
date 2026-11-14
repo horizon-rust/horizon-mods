@@ -1,0 +1,29 @@
+## Horizon registry entry for Centered Crosshair (port of JustAlittleWolf/centered-crosshair).
+id = "centered_crosshair"
+kind = "native-mod"
+name = "Centered Crosshair"
+summary = "Draws the HUD crosshair sprite at a subpixel-centered float position instead of vanilla's integer rounding"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Draws the HUD crosshair sprite at a subpixel-centered float position instead of vanilla's integer rounding.
+
+Port of [Centered Crosshair](https://github.com/JustAlittleWolf/centered-crosshair) by JustAlittleWolf (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-centered-crosshair"
+categories = ["utility"]
+tags = ["hud", "crosshair"]
+
+icon = "icons/centered_crosshair.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "centered_crosshair-1.0.0.hnmod"
+sha256 = "d30457697e71ebd9d1b18dd17d174c3fb99b1c4b4c6848bad9c253b114420905"
+changelog = "Initial port: 1:1 logic core from JustAlittleWolf/centered-crosshair."

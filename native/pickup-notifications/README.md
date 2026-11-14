@@ -1,0 +1,5 @@
+# Pickup Notifications
+
+Pickup Notifications ported to Horizon as a native mod (slice 1). Upstream: github.com/Roundaround/mc-fabric-pickup-notifications, commit aa29c0d, MIT (c) 2021 Evan Steinkerchner (Roundaround). Port policy: 1:1 behavior port, no optimizations or behavior changes. Slice 1 covers the core non-GUI logic: config (trove ModConfigImpl semantics + the v1->v2 offset migration), IconAlignment and GuiAlignment values, the pickup event buses, the S2C packet models + server send gate, the HUD queue state machine (shown list + backlog queue, merge/extend rules), and the notification base state machine (durations, pop, expiry, slide-in/out math) plus the item and experience notifications' merge and display logic. The drawing itself (strata, text, icons) is a seam: render() is modeled as draw specs, the server->client transport and the server Touch hooks (ItemEntityMixin.playerTouch at awardStat, ExperienceOrbMixin.playerTouch at take) are game-side seams.
+
+Port by sparticle. Upstream: https://github.com/Roundaround/mc-fabric-pickup-notifications (MIT).

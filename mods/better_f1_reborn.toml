@@ -1,0 +1,29 @@
+## Horizon registry entry for Better F1 Reborn (port of MovTery/better-f1-reborn).
+id = "better_f1_reborn"
+kind = "native-mod"
+name = "Better F1 Reborn"
+summary = "Better F1 Reborn's HUD state machine core"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+Better F1 Reborn's HUD state machine core.
+
+Port of [Better F1 Reborn](https://github.com/MovTery/Better-F1-Reborn) by MovTery (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-better-f1-reborn"
+categories = ["utility"]
+tags = ["hud", "utility"]
+
+icon = "icons/better_f1_reborn.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "better_f1_reborn-1.0.0.hnmod"
+sha256 = "b8dc7597aa417519b75b004f8d6a4bb4e4068f0d6222bf443e7c2e9471bbd101"
+changelog = "Initial port: 1:1 logic core from MovTery/better-f1-reborn."

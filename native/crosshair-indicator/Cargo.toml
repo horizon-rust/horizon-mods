@@ -1,0 +1,12 @@
+[package]
+name = "horizon-mod-crosshair-indicator"
+version = "0.1.0"
+edition = "2024"
+license = "CC0-1.0"
+publish = false
+description = "Slice 1 of a Horizon port of Crosshair Indicator: the attack/break progress model and crosshair variant selection."
+
+[lib]
+path = "src/lib.rs"
+
+[workspace]

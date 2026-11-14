@@ -1,0 +1,12 @@
+[package]
+name = "horizon-mod-better-ping-display"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "Slice 1 of a Horizon port of Better Ping Display: ping sampling, smoothing, coloring and the player-list entry model."
+
+[lib]
+path = "src/lib.rs"
+
+[workspace]

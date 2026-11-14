@@ -1,0 +1,29 @@
+## Horizon registry entry for Enhanced Attack Indicator (port of Minenash/enhanced-attack-indicator).
+id = "enhanced_attack_indicator"
+kind = "native-mod"
+name = "Enhanced Attack Indicator"
+summary = "The vanilla attack indicator replaced by selectable variants, such as the horizontal bar under the crosshair"
+description = """
+**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+The vanilla attack indicator replaced by selectable variants, such as the horizontal bar under the crosshair.
+
+Port of [Enhanced Attack Indicator](https://github.com/Minenash/Enhanced-Attack-Indicator) by Minenash (MIT); credited upstream, original license carried.
+"""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-enhanced-attack-indicator"
+categories = ["utility"]
+tags = ["hud", "combat"]
+
+icon = "icons/enhanced_attack_indicator.png"
+
+[[versions]]
+published = "2026-11-12"
+version = "1.0.0"
+game = "26.3"
+file = "enhanced_attack_indicator-1.0.0.hnmod"
+sha256 = "5942501fc45fddc20ccd7792bac1749233183a8806ec7e79dc0de863b84e3e84"
+changelog = "Initial port: 1:1 logic core from Minenash/enhanced-attack-indicator."

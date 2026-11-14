@@ -1,0 +1,36 @@
+id = "mekanism"
+kind = "native-mod"
+name = "Mekanism"
+summary = "The Energized Smelter, Enrichment Chamber, Basic Energy Cube and Universal Cable, ported."
+description = """
+A port of [Mekanism](https://github.com/mekanism/Mekanism) by Aidan C. Brady and the Mekanism contributors for Horizon. These first slices bring four pieces of the ore-processing chain:
+
+- **Energized Smelter** — 50 FE/t, 200 ticks per smelt, a 20,000 FE buffer.
+- **Enrichment Chamber** — the jar's recipes: one ore becomes two dusts, raw ore 3 becomes 4, a raw block 1 becomes 12.
+- **Basic Energy Cube** — a 4,000,000 FE buffer.
+- **Basic Universal Cable** — moves 8,000 FE/t between them.
+
+Feed items and FE through their sides and right-click a machine to open its menu.
+
+**Not yet ported**
+
+- **The Energy Cube has no menu and no side configuration.** The container hook returns for the cube and all six of its faces are both inputs and outputs; the side configuration the mod is known for is not implemented.
+- **The four block recipes are this slice's own**, using vanilla stand-ins (iron, redstone, glass, copper) for the steel casing, the basic alloy, the circuits and the energy tablet that this slice does not register; upstream's recipes depend on the steel chain, which is a later slice.
+- The rest of Mekanism — the other machines, the multiblocks, the tools and the deep-tier content — is a planned gap list.
+
+MIT: the original copyright (`Copyright (c) 2017-2025 Aidan C. Brady`) and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Aidancbrady", "Thommy101", "Thiakil", "pupnewfster", "dizzyd", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/mekanism"
+icon = "icons/mekanism.png"
+categories = ["technology"]
+tags = ["port", "machines", "energy", "ore-processing"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-11"
+game = "26.3"
+file = "mekanism-0.1.0.hnmod"
+sha256 = "399f923cf3779217e541cc58cc8c34e9b694d43fe19a58aa62b3fd29cb36b110"

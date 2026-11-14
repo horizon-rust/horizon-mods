@@ -1,11 +1,14 @@
 id = "strangely_charming"
 kind = "native-mod"
 name = "Strangely Charming"
-summary = "An exploration and quality-of-life mod"
+summary = "An exploration, adventure, and fast-travel mod."
 description = """
-A collection of crafting, exploration and village features for Horizon. Each feature defaults to enabled and can be turned off in config/strangely_charming.json. Modpack makers are encouraged to prune features they feel are overpowered or conflict with other mods.
+Strangely Charming is a vanilla+ mod that offering a progression system that let you work up to making your own fast travel portals through exploration and experimentation. It also has several quality-of-life changes. 
 
-See github for full description and features list: https://github.com/rewenx/strangely-charming/blob/main/README.md""""
+Unofficial fork and successor of Charm and Strange by Sven Hjól, with prunes and additions curated by EvanderFox. 
+
+Feature page: https://evander.wtf/sc/
+Github: https://github.com/rewenx/strangely-charming/blob/main/README.md"""
 authors = ["Evander"]
 owners = ["rewenx"]
 owner_ids = [28968821]
@@ -14,7 +17,21 @@ source = "https://github.com/rewenx/strangely-charming"
 icon = "icons/strangely_charming.png"
 categories = ["adventure", "game-mechanics", "magic"]
 tags = ["travel", "exploration", "magic"]
+screenshots = ["screenshots/strangely_charming/1.png", "screenshots/strangely_charming/2.png", "screenshots/strangely_charming/3.png", "screenshots/strangely_charming/4.png", "screenshots/strangely_charming/5.png", "screenshots/strangely_charming/6.png"]
 key = "RWSkBUzm8z4gS6fdcLKUGMqX1Ec5Bm6rPL36Tr/RCnBIwgu6eEavthaF"
+
+[[versions]]
+version = "0.2.42"
+published = "2026-11-10"
+game = "26.3"
+file = "strangely_charming-0.2.42.hnmod"
+sha256 = "33ef3b5018bc5ce6ee3efca905553d4417afa87dc99451194069c843723fe10b"
+signature = """
+untrusted comment: signature from minisign secret key
+RUSkBUzm8z4gS5nLKqlG+b9HHUhkbdD1a//78CjBoiVJjgnWAOufEY3yVdJuptlqwu7HGvZUdQkxRvkww/6rNpcQrAIXZTDZMgo=
+trusted comment: Strangely Charming v0.2.42; SHA-256 33ef3b5018bc5ce6ee3efca905553d4417afa87dc99451194069c843723fe10b
+i/stIIqhLsr92qloLdgsjN7SGgWYHgHcmPNeVI++pCGddiKuqwh2Tsy21jCSYo+4ItfSBVWlFg0Yr2+1q+AQBg=="""
+changelog = "New art assets, completed rune portal system, fixed bugs. Tested against nightly fdc87ae."
 
 [[versions]]
 version = "0.2.11"

@@ -1,0 +1,30 @@
+id = "toocheap"
+kind = "native-mod"
+name = "Too Cheap!"
+summary = "Anvil repairs never become Too Expensive."
+description = """
+Anvil repairs never become Too Expensive.
+
+**Differences from the original:** Only Homestead's setting is ported. The 40-level "Too Expensive!" cap is gone, and the Java mod's other cost options aren't available. Costs of 40 levels and more show in red even when the player can afford them.
+
+A port of [Too Cheap!](https://github.com/the-sh4d0w/too-cheap) 1.4.0+mc1.20 by Sh4d0w, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Sh4d0w"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/toocheap"
+icon = "icons/toocheap.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "toocheap-0.1.1.hnmod"
+sha256 = "72d98275b38f0001b496387f08d6a798a95434613826c29755fc9efe6db0297e"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

@@ -1,0 +1,39 @@
+id = "offline_pt_lite"
+kind = "native-mod"
+name = "SeyrlaunPT Lite"
+summary = "A lightweight, open-source offline path tracer for Horizon screenshots, with PBR materials and optional Intel Open Image Denoise integration."
+description = """
+SeyrlaunPT Lite is a lightweight, open-source offline path tracer for taking screenshots in Horizon. Hold the camera still and let the image get cleaner as samples accumulate. It is designed for still images, not real-time gameplay.
+
+Features:
+- PBR materials and connected textures from compatible resource packs.
+- Adjustable render resolution, light bounces, exposure and lighting freeze.
+- Automatic F2 screenshot denoising with optional Intel Open Image Denoise.
+- Main, raw, albedo and normal PNG outputs.
+
+Controls: F6 toggles path tracing, F8 opens settings, and F2 captures a screenshot.
+
+Install it as a native mod through the original Horizon launcher, enable it, review the native-code warning, build and launch.
+
+The .hnmod does not include OIDN binaries. For automatic denoising, install the separate Windows x64 native-tools runtime provided in the GitHub release into your instance's game-data folder.
+
+This experimental alpha targets Horizon v0.2.97 (a3acb5f), with Minecraft 26.3. Other Horizon revisions are unverified. Lite uses a local 128-block scene and has limited entity support.
+
+The Pro weather controller and expanded camera tools are not included."""
+authors = ["Seyrlaun"]
+owners = ["Seyrlaun"]
+owner_ids = [59336655]
+license = "Apache-2.0"
+source = "https://github.com/Seyrlaun/SeyrlaunPT-Lite"
+icon = "icons/offline_pt_lite.png"
+categories = ["decoration", "utility", "optimization"]
+tags = ["path-tracing", "rendering", "screenshots", "pbr", "lighting", "denoising", "offline", "realistic"]
+screenshots = ["screenshots/offline_pt_lite/1.png", "screenshots/offline_pt_lite/2.png", "screenshots/offline_pt_lite/3.png", "screenshots/offline_pt_lite/4.png", "screenshots/offline_pt_lite/5.png", "screenshots/offline_pt_lite/6.png", "screenshots/offline_pt_lite/7.png", "screenshots/offline_pt_lite/8.png"]
+
+[[versions]]
+version = "0.1.0-alpha.3"
+published = "2026-11-09"
+game = "26.3"
+file = "offline_pt_lite-0.1.0-alpha.3.hnmod"
+sha256 = "f7b6a397a49ed319f2a55fbc02448cf9abaaaf9790da4c07d3f257ba42e0a6e6"
+changelog = "Compatibility fix"

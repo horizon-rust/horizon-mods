@@ -1,0 +1,36 @@
+id = "create_hypertube"
+kind = "native-mod"
+name = "Create: Hypertube"
+summary = "Ride a hypertube from an entrance to its far mouth, at the jar's own travel speed."
+description = """
+A port of [Create: Hypertube](https://github.com/PedroRok/CreateHypertubes) by Rok for Horizon. Ride a tube run from an entrance to its far mouth at the jar's own travel speed.
+
+**Implemented so far**
+
+- **Hypertube and Hyper Entrance** — placed with their facing and axis from the look, tube neighbours update `connected`/`east_west`/`north_south`/`up_down` on place and break.
+- **The travel rule with the jar's numbers** — a run needs the cell behind the mouth and the 3-point minimum, moves at **0.5 blocks/tick** at the minimum powered speed, exits **1.5 blocks past the far entrance**, and a 40-tick re-entry guard stops instant re-entry.
+- **Controls that hold** — an entrance facing air moves nobody, a lone tube moves nobody, and a wall ends the ride at the far entrance without damage.
+
+**Not yet ported**
+
+- **Kinetic power and accelerators.** Create's rotation cannot be linked from a separate mod, so the speed is the jar's minimum; `travel_speed(rpm)` is already implemented and tested at 8/16/32/256 rpm for the slice that adds it.
+- Curves, junctions, splitters, the funnel and smart-tube attachments.
+- The client half: detached camera, swim pose, particles and sound, the bezier renderer and the escape keybind.
+- Non-player travellers and the entity-list config; tube collision (content collision cannot depend on the entity, so tubes are walk-through).
+
+Original copyright and licence notices are kept in this repository (Apache-2.0, Rok). Pinned to Horizon `1d63e0a` and horizon-mixins `5a64af93` for game 26.3."""
+authors = ["Rok", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "Apache-2.0"
+source = "https://github.com/AdLf0208/create_hypertube"
+icon = "icons/create_hypertube.png"
+categories = ["transportation", "technology"]
+tags = ["port", "travel", "tubes"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-11"
+game = "26.3"
+file = "create_hypertube-0.1.0.hnmod"
+sha256 = "f015aac32729c28c5bffdcade5026d6bc24dc3be23ce19eb2ed3eb90d3f7a4bc"

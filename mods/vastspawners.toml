@@ -1,0 +1,24 @@
+id = "vastspawners"
+kind = "mod"
+name = "Vast Spawners (content)"
+summary = "The words of Vast Spawners in English and Brazilian Portuguese. Needs the native mod."
+description = """
+The content half of Vast Spawners: the names of what a spawner can be changed to (Shortest Wait, Batch Size, Unwatched, Lightproof, Wired, Dazed, Echoes, Vigour and the rest) and its messages, in English and Brazilian Portuguese. **The native mod `vastspawners_native` does the work**, and both are needed.
+
+The words are this mod's own; Apothic Spawners' lang is all rights reserved and none of it is used."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-spawners"
+icon = "icons/vastspawners.png"
+categories = ["game-mechanics", "utility"]
+tags = ["spawners", "translation"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-11"
+game = "26.3"
+file = "vastspawners-0.1.0.hmod"
+sha256 = "345801fbd5fa53d3445a3d69ec283070c001f673da10740220f5addb76ff8877"
+changelog = "First release (0.1.0): Vast Spawners' words in English and Brazilian Portuguese. Needs the native mod."

@@ -6,7 +6,7 @@ description = """
 A lighter version of the Wisdom Shaders V3 port (`wisdom_horizon`) for more FPS: the same lighting, atmosphere, fog and AgX tonemap, with a smaller shadow map, no bloom or FXAA, and soft shadows, cloud shadows and water reflections off by default (each can be turned back on in the settings).
 
 Unofficial port of bobcao3's Wisdom Shaders V3 by tomasmendes01 (in-game name: iLoong)."""
-authors = ["bobcao3", "tomasmendes01"]
+authors = ["iLoong"]
 owners = ["tomasmendes01"]
 owner_ids = [68385376]
 license = "Apache-2.0"

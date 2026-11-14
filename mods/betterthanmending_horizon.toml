@@ -1,0 +1,31 @@
+id = "betterthanmending_horizon"
+kind = "native-mod"
+name = "Better Than Mending (Horizon)"
+summary = "Sneak-right-click a damaged Mending item to repair it with experience you already have. Unofficial native port of Better Than Mending."
+description = """
+An unofficial native port of [Better Than Mending](https://github.com/legobmw99/BetterThanMending) 2.3.0 by legobmw99 (GPL-3.0), reimplemented in Rust for Horizon.
+
+- **Sneak + right-click** a damaged item with `minecraft:repair_with_xp` (vanilla Mending, or a data pack's equivalent) to repair it immediately.
+- **The original formula**: a normal repair spends **2 XP** and repairs up to 4 durability; with **30+ levels and 40+ damage**, the fast track spends **20 XP** and repairs up to 40.
+- **The normal item use is cancelled** when a repair happens: a shield stays down, food is not eaten, a bow is not drawn.
+- **Server-authoritative**: works in single player and on a LAN host; joining someone else's server does nothing, because the server is not running the mod.
+- Works on tools, weapons, armour, shields, elytra and data-pack items. Items without Mending, undamaged items and unbreakable items are left alone.
+- No configuration; turn it off any time in Options > Mods.
+
+**Original mod:** [Better Than Mending](https://github.com/legobmw99/BetterThanMending) by legobmw99, GPL-3.0. This is an independent, unofficial port; it is not endorsed by the original author or the Horizon project. Source: [chase0023/better-than-mending-horizon](https://github.com/chase0023/better-than-mending-horizon)."""
+authors = ["chase0023"]
+owners = ["chase0023"]
+owner_ids = [193886252]
+license = "GPL-3.0-only"
+source = "https://github.com/chase0023/better-than-mending-horizon"
+icon = "icons/betterthanmending_horizon.png"
+categories = ["equipment", "utility"]
+tags = ["mending", "repair", "experience", "durability", "port"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-14"
+game = "26.3"
+file = "betterthanmending_horizon-1.0.0.hnmod"
+sha256 = "26e8808fbf05f4afedf4c110d6984301957887882a46122f52c22d1e520a60a9"
+changelog = "First release for Horizon 26.3, built and tested on Nightly c9d474d."

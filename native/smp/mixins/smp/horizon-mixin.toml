@@ -524,3 +524,34 @@ bindings = [
   { name = "player", ty = "u128", value = "player" },
   { name = "name", ty = "&str", value = "name" },
 ]
+
+[[injection]]
+id = "player_logged_in"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_player_logged_in"
+helper = "player_logged_in.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "u128", value = "player" },
+]
+
+[[injection]]
+id = "player_respawned"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_player_respawned"
+helper = "player_respawned.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "u128", value = "player" },
+]
+
+[[injection]]
+id = "player_spawn_point_set"
+kind = "HEAD"
+target = "horizon_client::game::native_hooks::Game<'_>::native_player_spawn_point_set"
+helper = "player_spawn_point_set.rs"
+bindings = [
+  { name = "game", ty = "&mut crate::game::Game<'_>", value = "&mut *self" },
+  { name = "player", ty = "u128", value = "player" },
+  { name = "cause", ty = "&str", value = "cause" },
+]

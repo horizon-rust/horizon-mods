@@ -64,7 +64,7 @@ impl Default for Config {
             spawn_radius: 250,
             rtp_min_distance: 500,
             rtp_max_distance: 10_000,
-            rtp_cooldown_seconds: 300,
+            rtp_cooldown_seconds: 10,
             rtp_attempts: 6,
             rtp_search_seconds: 30,
         }
@@ -102,6 +102,12 @@ struct Data {
     played: BTreeMap<String, i64>,
     /// The last `/rtp` (ms), by player UUID.
     rtp: BTreeMap<String, i64>,
+    /// Players with a spawn point of their own (a bed, a respawn anchor or a
+    /// command set it): they never start at a random spot.
+    spawn_set: BTreeSet<String>,
+    /// Players the SMP gave a random start (a first join), who get one again
+    /// at each respawn without a spawn point.
+    wild_start: BTreeSet<String>,
     /// The Overworld chunks an older SMP's `/rtp` held with `forceload add`
     /// and hadn't let go of when the server stopped: let go once at the next
     /// start. `/rtp` holds its chunks with tickets now, never saved.
@@ -179,6 +185,8 @@ pub struct Pending {
     from: Place,
     health: f32,
     due: i64,
+    /// A random start for a newcomer: no warmup, and no moving or damage calls it off.
+    welcome: bool,
 }
 
 /// A `/tpa` request: `from` asks to go to `to`.
@@ -242,6 +250,8 @@ pub struct Places {
     data: Data,
     /// Homes, warps or the spawn changed: written at the next save.
     changed: bool,
+    /// Players placed at the world spawn who are to start at a random spot, once they are on.
+    welcome_queue: Vec<u128>,
     /// Time played changed: written once a minute.
     played_at: Option<i64>,
     pub pending: Vec<Pending>,
@@ -374,6 +384,7 @@ impl Places {
             path,
             data,
             changed: false,
+            welcome_queue: Vec::new(),
             played_at: None,
             pending: Vec::new(),
             requests: Vec::new(),
@@ -498,6 +509,7 @@ impl Places {
             from: me.at.clone(),
             health: me.health,
             due: now + self.config.warmup_seconds.max(0) * 1000,
+            welcome: false,
         });
         if self.config.warmup_seconds > 0 {
             vec![Out::Reply(format!(
@@ -526,6 +538,12 @@ impl Places {
                 ))];
             }
         }
+        self.rtp_start(me, now, false)
+    }
+
+    /// Draws the chunks to try and starts `/rtp`'s search; `welcome` makes it a newcomer's start (no warmup, no
+    /// cooldown, nothing calls it off).
+    fn rtp_start(&mut self, me: &Body, now: i64, welcome: bool) -> Vec<Out> {
         let centre = match &self.data.spawn {
             Some(s) if s.dimension == OVERWORLD => (s.x, s.z),
             _ => (0.0, 0.0),
@@ -537,18 +555,58 @@ impl Places {
             )];
         }
         let border = self.border;
-        self.start(
-            me,
-            To::Random(Rtp {
-                centre,
-                border,
-                candidates,
-                chunks: Vec::new(),
-                spot: None,
-                told: false,
-            }),
-            now,
-        )
+        let to = To::Random(Rtp {
+            centre,
+            border,
+            candidates,
+            chunks: Vec::new(),
+            spot: None,
+            told: false,
+        });
+        if !welcome {
+            return self.start(me, to, now);
+        }
+        self.pending.retain(|p| p.uuid != me.uuid);
+        self.pending.push(Pending {
+            uuid: me.uuid,
+            to,
+            from: me.at.clone(),
+            health: me.health,
+            due: now,
+            welcome: true,
+        });
+        Vec::new()
+    }
+
+    /// A player joined: a newcomer (never played here, no spawn point) is to start at a random spot.
+    pub fn arrived(&mut self, uuid: u128) {
+        let key = smp_store::uuid_string(uuid);
+        let new = !self.data.played.contains_key(&key)
+            && !self.data.spawn_set.contains(&key)
+            && !self.data.wild_start.contains(&key);
+        if new && self.data.wild_start.insert(key) {
+            self.changed = true;
+            self.welcome_queue.push(uuid);
+        }
+    }
+
+    /// A player respawned: at a random spot again if the SMP started them there and they have set no spawn point.
+    pub fn respawned(&mut self, uuid: u128) {
+        let key = smp_store::uuid_string(uuid);
+        if self.data.wild_start.contains(&key) && !self.data.spawn_set.contains(&key) {
+            self.welcome_queue.push(uuid);
+        }
+    }
+
+    /// A player's spawn point was set (a bed, an anchor, a command) or reset by a death (`cause`).
+    pub fn spawn_point(&mut self, uuid: u128, cause: &str) {
+        let key = smp_store::uuid_string(uuid);
+        let changed = if cause == "death_reset" {
+            self.data.spawn_set.remove(&key)
+        } else {
+            self.data.spawn_set.insert(key)
+        };
+        self.changed |= changed;
     }
 
     /// Up to `RTP_CANDIDATES` distinct columns drawn on the ring, inside the border (none when the border leaves no
@@ -993,13 +1051,27 @@ impl Places {
                 self.dead.remove(&b.uuid);
             }
         }
+        // Newcomers and respawned players on a random start: once they are on.
+        let queued = std::mem::take(&mut self.welcome_queue);
+        for uuid in queued {
+            match bodies.iter().find(|b| b.uuid == uuid) {
+                Some(me) if me.at.dimension == OVERWORLD && me.health > 0.0 => {
+                    self.rtp_start(me, now, true);
+                }
+                Some(_) => {}
+                None => self.welcome_queue.push(uuid),
+            }
+        }
         for p in std::mem::take(&mut self.pending) {
             let Some(me) = bodies.iter().find(|b| b.uuid == p.uuid) else {
                 continue;
             };
-            if moved(&p.from, &me.at) {
+            if p.welcome && me.health <= 0.0 {
+                continue;
+            }
+            if !p.welcome && moved(&p.from, &me.at) {
                 out.push(Out::Tell(p.uuid, "Teleport called off: you moved.".into()));
-            } else if me.health < p.health || me.health <= 0.0 {
+            } else if !p.welcome && (me.health < p.health || me.health <= 0.0) {
                 out.push(Out::Tell(
                     p.uuid,
                     "Teleport called off: you were hurt.".into(),
@@ -1546,16 +1618,12 @@ mod tests {
             "{out:?}"
         );
         p.tick(&[body(A, 1.0)], 20_500);
-        let out = p
-            .command(&player(A, 0), &here, 3 * 60_000 + 3_000, "rtp")
-            .unwrap();
+        let out = p.command(&player(A, 0), &here, 4_000, "rtp").unwrap();
         assert_eq!(
             out,
-            vec![Out::Error("Wait 2 min before your next /rtp.".into())]
+            vec![Out::Error("Wait 9 s before your next /rtp.".into())]
         );
-        let out = p
-            .command(&player(A, 0), &here, 300_000 + 2_500, "wild")
-            .unwrap();
+        let out = p.command(&player(A, 0), &here, 12_500, "wild").unwrap();
         assert_eq!(
             out,
             vec![Out::Error("Wait 1 s before your next /rtp.".into())]
@@ -1564,21 +1632,60 @@ mod tests {
         p.save(0).unwrap();
         let mut again = Places::open(&d, Config::default()).unwrap();
         again.rng = 43;
-        let out = again.command(&player(A, 0), &here, 60_000, "rtp").unwrap();
+        let out = again.command(&player(A, 0), &here, 5_000, "rtp").unwrap();
         assert_eq!(
             out,
-            vec![Out::Error("Wait 5 min before your next /rtp.".into())]
+            vec![Out::Error("Wait 8 s before your next /rtp.".into())]
         );
-        let out = again.command(&player(A, 0), &here, 303_000, "rtp").unwrap();
+        let out = again.command(&player(A, 0), &here, 13_000, "rtp").unwrap();
         assert!(
             matches!(&out[0], Out::Reply(_)),
             "allowed after it: {out:?}"
         );
         // Someone else isn't held up by it.
         let out = again
-            .command(&player(B, 0), &[body(B, 0.0)], 60_000, "rtp")
+            .command(&player(B, 0), &[body(B, 0.0)], 3_000, "rtp")
             .unwrap();
         assert!(matches!(&out[0], Out::Reply(_)), "{out:?}");
+        let _ = std::fs::remove_dir_all(d);
+    }
+
+    #[test]
+    fn a_newcomer_starts_at_a_random_spot_once_a_player_with_a_spawn_point_never() {
+        let d = dir();
+        let mut p = Places::open(&d, Config::default()).unwrap();
+        p.rng = 7;
+        let here = [body(A, 0.0), body(B, 0.0)];
+        p.arrived(A);
+        // B set a bed before: no random start, at the join or after a death.
+        p.spawn_point(B, "bed");
+        p.arrived(B);
+        p.respawned(B);
+        // Not on yet: A waits for their body.
+        assert!(p.tick(&[], 0).1.is_empty());
+        let (_, go) = p.tick(&here, 1_000);
+        assert!(go.is_empty(), "the land is not read yet");
+        p.rtp_screen(&mut |_| None);
+        for _ in 0..8 {
+            p.rtp_look(&mut |_, c| grass(c));
+        }
+        // A moves on meanwhile: a newcomer's start is not called off.
+        let (_, go) = p.tick(&[body(A, 5.0), body(B, 0.0)], 1_050);
+        assert_eq!(go.len(), 1);
+        assert_eq!(go[0].uuid, A);
+        // A has played: a second join does not draw another random start.
+        p.played(&[A], 2_000);
+        p.arrived(A);
+        assert!(p.tick(&here, 5_000).1.is_empty());
+        // After a death without a bed, A gets one again.
+        p.respawned(A);
+        p.tick(&here, 6_000);
+        assert!(p.pending.iter().any(|x| x.uuid == A));
+        // B was never started at random, so a lost bed does not start them there.
+        p.spawn_point(B, "death_reset");
+        p.respawned(B);
+        p.tick(&here, 7_000);
+        assert!(!p.pending.iter().any(|x| x.uuid == B));
         let _ = std::fs::remove_dir_all(d);
     }
 

@@ -1,0 +1,30 @@
+id = "pickup_villagers"
+kind = "native-mod"
+name = "Pickup Villagers"
+summary = "Sneak and right click a villager to carry it as a head; right click a block to place it back, trades and all."
+description = """
+**A native Horizon mod**: the launcher builds it into the game. Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon commit it was tested on.
+
+- **Pick up:** sneak and right click a villager or a zombie villager with your main hand. It becomes a head named after it, its trades listed in the tooltip.
+- **Place:** right click a block with the head. The villager comes back on that face as it was: profession, level, trades, experience, name.
+- The heads are ClickVillagers' own (`custom_data` with `EntityType` and `CVDataVersion`), so they carry over to and from a Java world running ClickVillagers.
+- Single player and LAN worlds you host; players who joined you see the heads' names, lore and skins.
+
+Port of the pickup feature of [ClickVillagers](https://github.com/Clickism/ClickVillagers) by Clickism (GPL-3.0); credited, and this port keeps the GPL-3.0. Not made or endorsed by Clickism.
+"""
+authors = ["apeirs", "Clickism"]
+owners = ["apeirs"]
+owner_ids = [306537108]
+license = "GPL-3.0-only"
+source = "https://github.com/apeirs/horizon-pickup-villagers"
+icon = "icons/pickup_villagers.png"
+categories = ["utility", "mobs"]
+tags = ["villagers", "clickvillagers", "pickup", "qol"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-14"
+game = "26.3"
+file = "https://github.com/apeirs/horizon-pickup-villagers/releases/download/v1.0.0/pickup_villagers-1.0.0.hnmod"
+sha256 = "f6620df091518ad49d1768c2a3eec245eb9e69a6b83a2e58056b688aae39b424"
+changelog = "First release, built and tested on Horizon Nightly 9f42064."

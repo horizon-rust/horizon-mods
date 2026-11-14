@@ -1,0 +1,29 @@
+id = "reroll_trades"
+kind = "native-mod"
+name = "Reroll Trades"
+summary = "A button on a villager's trading screen gives it new trades, as long as nobody has traded with it yet."
+description = """
+**A native Horizon mod**: the launcher builds it into the game. Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon commit it was tested on.
+
+- Open a villager's trading screen: while it has no experience and no trade has been used, a circular-arrow button sits above its offers. Click it, or press **C** (rebindable in Options > Mods), and the villager's offers are rolled again from the game's own trade tables, as vanilla rolls them for a new villager.
+- A villager that has traded keeps its trades, as does one without a workstation.
+- Single player and LAN worlds you host: the world's server does the reroll. On a Java server running Trade Cycling the button sends that mod's packet.
+
+Written for Horizon by apeirs. The idea is the one of [Trade Cycling](https://github.com/henkelmax/trade-cycling) by henkelmax; no code or assets come from it.
+"""
+authors = ["apeirs"]
+owners = ["apeirs"]
+owner_ids = [306537108]
+license = "MIT"
+source = "https://github.com/apeirs/horizon-reroll-trades"
+icon = "icons/reroll_trades.png"
+categories = ["utility", "game-mechanics"]
+tags = ["villagers", "trading", "qol"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-14"
+game = "26.3"
+file = "https://github.com/apeirs/horizon-reroll-trades/releases/download/v1.0.0/reroll_trades-1.0.0.hnmod"
+sha256 = "27af028e55d376fcc2c34bbb81bf2bc8bb7fed44b0ec9cef175c24586c302c6a"
+changelog = "First release, built and tested on Horizon Nightly 9f42064."

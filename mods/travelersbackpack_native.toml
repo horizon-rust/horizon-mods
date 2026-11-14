@@ -1,0 +1,40 @@
+id = "travelersbackpack_native"
+kind = "native-mod"
+name = "Traveler's Backpack (native)"
+summary = "The code of Traveler's Backpack. Needs Traveler's Backpack (content) too."
+description = """
+The native code of an independent port of [Traveler's Backpack](https://github.com/Tiviacz1337/Travelers-Backpack) by Tiviacz1337.
+
+**Both projects are required:** install this one (`travelersbackpack_native`) and **Traveler's Backpack** (`travelersbackpack`)
+
+Native source mod: the launcher builds it into a separate game with Horizon Mixins. It is not sandboxed and runs with your account's permissions.
+
+Built for Horizon Nightly `fdc87ae` and Horizon Mixins `5a64af9`; other revisions are not tested.
+
+Keybinds: **B** opens the worn backpack. Commands: `/tb`. Config files are the original's, in `config/`.
+
+Source, changelog and details: https://github.com/DeportedToHell/MCRE-Mods/tree/main/travelersbackpack
+
+LGPL-3.0, same as the original. Not affiliated with or endorsed by Tiviacz1337."""
+authors = ["DispatchedToHeaven"]
+owners = ["DispatchedToHeaven"]
+owner_ids = [211231405]
+license = "LGPL-3.0"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/travelersbackpack-1.0.0/travelersbackpack"
+icon = "icons/travelersbackpack_native.png"
+categories = ["storage", "equipment", "utility"]
+tags = ["backpack", "storage", "tanks", "upgrades", "port"]
+key = "RWRKE9PraqtKIBNLiCXXKIdqfZ6tUGUVxdzMWkSmPfMz3PcTDxnyAEbv"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-14"
+game = "26.3"
+file = "travelersbackpack_native-1.0.0.hnmod"
+sha256 = "fbb9d99cbf55844cf21dce5d92036bf8bca759edde2f283d50a918f7e71b40b7"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURKE9PraqtKIKAZAJpYp+b1tn4AFclgU1hiKaMEE9DTzdB/dQpzt0X6vcjKKTVuh+oqwAb80SF8WjvGO0DiKRICYWQUruGN/QQ=\r
+trusted comment: timestamp:1794623849\tfile:travelersbackpack_native-1.0.0.hnmod\thashed\r
+uIPge4NcS4AAfCIdyFZfbX5MJHQsemOmUNFh816VjZIko6LLlfpl5xX6EjQZElklME4CzEg763XUgGrH6H61Cw=="""
+changelog = "First registry release. Pinned to Horizon Nightly fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca and Horizon Mixins 5a64af938ec86b00d53d16a408aabc0038fb3e57."

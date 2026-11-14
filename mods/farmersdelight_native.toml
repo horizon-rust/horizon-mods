@@ -1,0 +1,32 @@
+id = "farmersdelight_native"
+kind = "native-mod"
+name = "Farmer's Delight"
+summary = "Farmer's Delight: stove, cooking pot, skillet, cutting board, crops, rich soil and 170 foods."
+description = """
+**This mod has two parts, and you need both.** This is the native part (the rules, as Rust code); install [the other one](https://playhorizon.dev/mods/farmersdelight) too.
+
+Farmer's Delight: stove, cooking pot, skillet, cutting board, crops, rich soil and 170 foods.
+
+**Differences from the original:** Cooking pot meals give no experience, and the cutting board ignores Fortune. Eating a pie slice straight from the placed pie gives its food but not the slice's effects. There are no steam, bubble or smoke particles and no boiling or crackling sounds. Without Nether's Delight installed, hoglins drop nothing, because this port always uses Nether's Delight's hoglin loot.
+
+A port of [Farmer's Delight](https://github.com/MehVahdJukaar/FarmersDelight) 1.20.1-2.4.1+refabricated by MehVahdJukaar, MerchantPug, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "MehVahdJukaar", "MerchantPug"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/farmersdelight"
+icon = "icons/farmersdelight_native.png"
+categories = ["food"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.3.1"
+published = "2026-11-11"
+game = "26.3"
+file = "farmersdelight_native-0.3.1.hnmod"
+sha256 = "38e792e148190bd0436fc832ae44cca956ee5261fe4b2853b64bc605c17eeaa9"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

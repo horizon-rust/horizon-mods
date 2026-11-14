@@ -1,0 +1,33 @@
+id = "fallingleaves"
+kind = "native-mod"
+name = "Falling Leaves"
+summary = "A port of Falling Leaves: leaves fall from trees, spin, drift with the wind, float on water; snow falls from snowy trees."
+description = """
+A port of [Falling Leaves](https://github.com/RandomMcSomethin/fallingleaves) by RandomMcSomethin (Fourmisain, BrekiTomasson, RandomMcSomethin) to Horizon, as a native mod. A neat little particle effect for leaf blocks.
+
+- **Falling leaves** below leaf blocks, with Falling Leaves' own textures, in the colour of the tree's leaves, spinning as they fall and fading out.
+- **Wind**: calm, windy or stormy, changing with time and the weather; none in the Nether and the End.
+- Leaves **float on water** and drift with its current, rain weighs them down, and they stay where they land.
+- **Snowflakes** fall from snowy trees; **hitting** a leaf block drops a few leaves; **decaying** leaves burst into leaves (single player).
+- Per tree defaults as in the original: conifers and jungle leaves drop none by default, cherry and pale oak keep their own petals and leaves.
+- **Falling Leaves' own config screen** (Cloth Config, as in Java), from Mod Menu's Configure or Options > Mods > Falling Leaves: General, Leaf Block Settings (each leaf block's implementation, spawn rate and drops) and Experimental. Kept in `config/fallingleaves2.json`, as in Java. English and Russian.
+
+Built for Horizon Nightly 2026-11-13 (`9f42064`). Native mods are compiled into the game and are not sandboxed: build only code you trust.
+
+**Credits.** Falling Leaves is Copyright (c) 2020 RandomMcSomethin, MIT License; the particle textures and the icon are its own. The config screen follows Cloth Config by shedaniel (LGPL-3.0). This port rewrites Falling Leaves in Rust under the MIT licence and is not affiliated with its authors, Mojang or Microsoft. The Cloth Config parts (cloth.rs, cloth_sprites.rs) are under the GNU LGPL-3.0; the rest of the port is MIT."""
+authors = ["DeportedToHell"]
+owners = ["DeportedToHell"]
+owner_ids = [344119465]
+license = "MIT AND LGPL-3.0-only"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/7b21651d6957d1ada09e0a7a38867503a613b39f/fallingleaves"
+icon = "icons/fallingleaves.png"
+categories = ["decoration"]
+tags = ["leaves", "particles", "ambience", "wind", "port"]
+
+[[versions]]
+version = "1.0.2"
+published = "2026-11-14"
+game = "26.3"
+file = "fallingleaves-1.0.2.hnmod"
+sha256 = "1910fb59c0a5fc25aa151f789ec8a8ac93d0076b7376912976d9dc76e6c80c00"
+changelog = "Built for Horizon Nightly 2026-11-13 (9f42064). Replaces 1.0.1 (#695)."

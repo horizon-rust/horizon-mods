@@ -1,0 +1,19 @@
+id = "keystrokes_custom"
+kind = "mod"
+name = "Keystrokes hmod(android support)"
+summary = "This a keysrtokes port"
+description = "The legendary Keystrokes mod has been ported, allowing you to play with it in Minecraft Rust Edition through Harizon."
+authors = []
+owners = ["bighoyx"]
+owner_ids = [217541897]
+license = "MIT"
+source = "https://github.com/bighoyx/Horizon-keystokes-android_port"
+icon = "icons/keystrokes_custom.png"
+categories = ["game-mechanics"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "keystrokes_custom-0.1.0.hmod"
+sha256 = "3ab55bf2f16123b8cee1af994cdd06c1d17fe40026f112d9f3af523027808a66"

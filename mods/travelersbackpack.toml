@@ -1,0 +1,41 @@
+id = "travelersbackpack"
+kind = "mod"
+name = "Traveler's Backpack"
+summary = "Backpacks with tanks, upgrades and abilities. Requires the native mod Traveler's Backpack (native)."
+description = """
+An independent port of [Traveler's Backpack](https://github.com/Tiviacz1337/Travelers-Backpack) by Tiviacz1337.
+
+**Both projects are required:** install this one (`travelersbackpack`) and **Traveler's Backpack (native)** (`travelersbackpack_native`)
+
+- 44 backpack designs and five tiers, from leather to netherite. Open one from your hand, place it as a block or wear it on your back.
+- Upgrades: crafting, furnaces, pickup, magnet, void, feeding, refill, tanks, jukebox and lantern, with filters.
+- Tanks for water, lava, milk and potions, a hose, and an ability for each design.
+- Sleeping bags, dyeing, chest loot and mobs wearing backpacks.
+- With Accessories installed, the backpack goes in its Back slot.
+
+Source, changelog and details: https://github.com/DeportedToHell/MCRE-Mods/tree/main/travelersbackpack
+
+LGPL-3.0, same as the original. Not affiliated with or endorsed by Tiviacz1337."""
+authors = ["DispatchedToHeaven"]
+owners = ["DispatchedToHeaven"]
+owner_ids = [211231405]
+license = "LGPL-3.0"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/travelersbackpack-1.0.1/travelersbackpack"
+icon = "icons/travelersbackpack.png"
+categories = ["storage", "equipment", "utility"]
+tags = ["backpack", "storage", "tanks", "upgrades", "port"]
+screenshots = ["screenshots/travelersbackpack/1.jpg"]
+key = "RWRKE9PraqtKIBNLiCXXKIdqfZ6tUGUVxdzMWkSmPfMz3PcTDxnyAEbv"
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-14"
+game = "26.3"
+file = "travelersbackpack-1.0.1.hmod"
+sha256 = "140d41bedc1141149288fd5b3b87f16edd0671800be2df6e4ea0363154c39eaa"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURKE9PraqtKIJy8N+OdLaPvw9DRQEjVHcj8CyOF9hCFWgUcJ9oPGZeBYOzRDaLfPxEL21Vl+5zGB4LAoml1QGPYxmivzYLhZwk=\r
+trusted comment: timestamp:1794626297\tfile:travelersbackpack-1.0.1.hmod\thashed\r
+bucho8IamXkirSKgiGmuX8HkeeRjsN8LWgY1O6ptUTjfCP0q6ZTiGaNHJxdGQe0pMO5EFNvhBWuhXoJuX7TpDA=="""
+changelog = "Same content as 1.0.0. The version follows Traveler's Backpack (native) 1.0.1, which works on Horizon Nightly 2026-11-13."

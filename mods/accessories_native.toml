@@ -1,0 +1,41 @@
+id = "accessories_native"
+kind = "native-mod"
+name = "Accessories (native)"
+summary = "The native code of Accessories. Requires the mod Accessories."
+description = """
+The native code of an independent port of [Accessories](https://github.com/wisp-forest/accessories) by Wisp Forest (blodhgarm, chyzman, Dr.Zeal).
+
+**Both projects are required:** install this one (`accessories_native`) and **Accessories** (`accessories`)
+
+Native source mod: the launcher builds it into a separate game with Horizon Mixins. It is not sandboxed and runs with your account's permissions.
+
+Built for Horizon Nightly `9f42064` and Horizon Mixins `5a64af9`; other revisions are not tested.
+
+Keybinds: **H** opens the accessories screen. Commands: `/accessories`. The config file is the original's, `config/accessories.json5`, with its config screen in Mod Menu and Options > Mods.
+
+Source, changelog and details: https://github.com/DeportedToHell/MCRE-Mods/tree/main/accessories
+
+MIT, same as the original. Not affiliated with or endorsed by Wisp Forest."""
+authors = ["DispatchedToHeaven"]
+owners = ["DispatchedToHeaven"]
+owner_ids = [211231405]
+license = "MIT"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/e55715ffca555eb2f700dd3257034cc7f87ad2ef/accessories"
+icon = "icons/accessories_native.png"
+categories = ["library", "equipment", "utility"]
+tags = ["accessories", "slots", "trinkets", "curios", "cosmetics", "port"]
+screenshots = ["screenshots/accessories_native/1.png"]
+key = "RWRKE9PraqtKIBNLiCXXKIdqfZ6tUGUVxdzMWkSmPfMz3PcTDxnyAEbv"
+
+[[versions]]
+version = "0.3.0"
+published = "2026-11-14"
+game = "26.3"
+file = "accessories_native-0.3.0.hnmod"
+sha256 = "ee1cb0dcb87b94e0ecfacdf4e4d3458439e3996e0e7a0627fe4536d688846b20"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURKE9PraqtKIKTSO8ia5tlWHbp0WuW29QqaSaXs5CT6QpbMKKJT7Z6Y7C0xP4uzKXe3ZH3hSEYy/ZaVf4iv82m9LGpgNwk82ww=\r
+trusted comment: timestamp:1794676102\tfile:accessories_native-0.3.0.hnmod\thashed\r
+vnTbt2Ky7lzuNkXqBKmWNJGCfQY6iS21SgMlFQS4nvBZIsIp66A+GGKH9WvL5StubVzx0vi64emNo9UIPlSXDw=="""
+changelog = "First version in the registry. Built for Horizon Nightly 2026-11-13: pinned to Horizon Nightly 9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0 and Horizon Mixins 5a64af938ec86b00d53d16a408aabc0038fb3e57."

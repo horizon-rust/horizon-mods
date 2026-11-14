@@ -1,0 +1,22 @@
+id = "boreal"
+kind = "shader"
+name = "Boreal Shader | First shader with boreal aurors"
+summary = "First Horizon Shader with boreal aurors, best Shader for horizon."
+description = "First Horizon Shader with boreal aurors, best Shader for horizon. Best Shader with god rays, yrors, water movement and much more!"
+authors = ["ACD Studios"]
+owners = ["TH-Adriel"]
+owner_ids = [356254114]
+license = "MI%"
+source = "https://github.com/TH-Adriel/Boreal-Shaders"
+icon = "icons/boreal.png"
+categories = ["realistic", "reflections", "pbr"]
+tags = ["shader", "best", "boreal", "aurors", "complementary", "reimagined", "bsl", "low", "end", "pc"]
+screenshots = ["screenshots/boreal/1.png", "screenshots/boreal/2.png", "screenshots/boreal/3.jpg", "screenshots/boreal/4.png", "screenshots/boreal/5.png"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-14"
+game = "26.3"
+file = "boreal-1.0.0.hshader"
+sha256 = "1523e3962697fe0e78ee9983f2c5dfeedaefae390386e88f308ba738195050ac"
+changelog = "First Horizon Shader with boreal aurors, best Shader for horizon."

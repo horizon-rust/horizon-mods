@@ -1,0 +1,15 @@
+[package]
+name = "horizon-mod-auth-me"
+version = "1.0.0"
+edition = "2021"
+
+# Exact 1:1 Rust translation of Auth Me (upstream Java, MIT, (c) axieum).
+# Ported for the Horizon client by sparticle; upstream by axieum.
+license = "MIT"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

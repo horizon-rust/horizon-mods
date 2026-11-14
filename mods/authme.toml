@@ -1,0 +1,39 @@
+## Horizon registry entry for Auth Me (exact 1:1 Rust translation of the MIT mod).
+id = "authme"
+kind = "native-mod"
+name = "Auth Me"
+summary = "Authenticate yourself and re-validate your session: the offline/Microsoft login screens, session re-wiring and the multiplayer auth button."
+description = """**A native Horizon mod**: the launcher builds it into the game (install it on the launcher's Mods page, then press Build there). Native mods are not sandboxed and run with your account's rights, so read the source before you build it. Pinned to the Horizon tree this was built against.
+
+An exact 1:1 Rust translation of [Auth Me](https://modrinth.com/mod/auth-me): the upstream Java by axieum ([axieum/authme](https://github.com/axieum/authme), MIT, v9.3.0+26.3, main @78db0f5) translated code-for-code, carrying the upstream licence and credit in full.
+
+All upstream modules are carried 1:1:
+
+- **AuthMe**: the shared mod bootstrap and the API surface (initialised-check, statuses).
+- **SessionUtils**: the offline session builder, the per-host session provider (client/comms/mojang) and the live status cache that re-validates on join.
+- **MicrosoftUtils**: the full OAuth2 device/browser login flow - state generation, the local callback server, the Microsoft -> Xbox Live -> XSTS -> Minecraft token chain, profile fetch and session creation, with the exact endpoint constants and error-message shapes.
+- **Config**: the auth-button position (draggable), Microsoft login URLs, the prompt enum and offline-username defaults.
+- **GUI**: the five auth screens (AuthScreen base, OfflineAuthScreen, AuthMethodScreen, MicrosoftAuthScreen) and the draggable AuthButtonWidget on the multiplayer screen.
+- **Mixins**: the accessors (JoinMultiplayerScreen lastScreen, ReportingContext environment, SplashManager setUser, RealmsAvailability setFuture, RealmsClient init/setInstance, Minecraft offline-developer-mode), the relogin buttons on the Realms generic-error and disconnected screens (upstream's user-related key classifiers verbatim) and the multiplayer-screen auth button.
+- **AuthMeFabric**: the Fabric entrypoint (old `config/authme.json5` -> `authme.jsonc` migration, then init), mapped to the carrier's client-init hook.
+
+The Mojang/Fabric APIs that do not exist on Horizon are host seams with the same shapes and semantics. The ModMenu/resourcefulconfig config screen joins the config-screen batch later.
+
+Port of [axieum/authme](https://github.com/axieum/authme), copyright (c) Axieum, MIT: the licence text ships with the source. 25 unit tests on the translated logic. Rust port by sparticle, upstream by axieum."""
+authors = ["sparticle62ops"]
+owners = ["sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-auth-me"
+categories = ["utility"]
+tags = ["authentication", "account", "offline", "microsoft", "ui"]
+
+icon = "icons/authme.png"
+
+[[versions]]
+published = "2026-11-13"
+version = "1.0.0"
+game = "26.3"
+file = "authme-1.0.0.hnmod"
+sha256 = "5b7066d75e4ae2ec68e6bb2294d332e45b1650e9cd475b662344a06a3378c891"
+changelog = "Exact 1:1 Rust translation of Auth Me (MIT) by axieum, licence and upstream credit carried: the Microsoft OAuth2 login chain, offline sessions, the five auth screens, the draggable auth button and all upstream mixins."

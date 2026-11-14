@@ -1,0 +1,28 @@
+id = "better_ping_display"
+kind = "native-mod"
+name = "Better Ping Display"
+summary = "Better Ping Display displays  numbers instead of stupid lines in tab list and server list"
+description = """
+Better Ping Display displays  numbers instead of stupid lines in tab list and server list
+experimental server menu ping display feature too """
+authors = ["Demerobit"]
+owners = ["Demerobit"]
+owner_ids = [193929759]
+license = "MIT"
+source = "https://github.com/Demerobit/Better-Ping-Display"
+icon = "icons/better_ping_display.png"
+categories = ["game-mechanics", "utility", "optimization"]
+tags = ["ping", "tablist"]
+key = "RWSFMcL2Aq41gyFqJXfhKLk4v4oB8YMy+FTg3CakQUMEu+ZeuQcwkSgv"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-08"
+game = "26.3"
+file = "better_ping_display-0.1.0.hnmod"
+sha256 = "82b7997fde91fb527ccaf9b2f6e58898c7434c2dde3b5dff6f462bb5b4235d4f"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUSFMcL2Aq41g58OzT/vnAIf+7qvrIWf6R0gfVRqTZJ34NVz+DMF7pX6kpWH7IUWbtlnJQ5ktqMs8qODgcqDaLD6Vs0ag6tA7w8=\r
+trusted comment: timestamp:1794143588\tfile:better_ping_display-0.1.0.hnmod\thashed\r
+5OUsyX8ZG9ovEzmTy8tONotOnAvsF8G3JU2KTaYD5ByGgg78+pUJE/m6PPmScLHSYpITFGVbv4cC97CR4w/GDQ=="""

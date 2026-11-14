@@ -1,0 +1,37 @@
+id = "evilcraft"
+kind = "native-mod"
+name = "evilcraft"
+summary = "A Horizon port of evilcraft."
+description = """
+A port of [EvilCraft](https://github.com/CyclopsMC/EvilCraft) for Horizon.
+
+**Implemented so far**
+
+- `evilcraft:blood_extractor`: a container for 5,000 mB of blood that fills when the player kills a mob (jar item plus `ItemBloodExtractor`, `ItemBloodExtractorConfig`).
+- `evilcraft:blood_chest_menu`: 11 slots and 2 data slots (tank, capacity), upstream's `ContainerBloodChest` (2×5 + 1).
+- Every number is upstream's; `FINDINGS.md` names the file each came from. The one that reads wrong at first glance: `AnvilRepairAction` returns **25F**, which `RepairItemTickAction` *multiplies* by `mBPerDamage` (5), so an anvil step costs **125 mB** — pinned by `a_chipped_anvil_becomes_an_anvil_for_one_hundred_twenty_five_mb`.
+- Blood arithmetic, the kill and inventory hooks, chest persistence and repair, the commands, the screen and tooltip, and the embedded content loader.
+
+**Not yet ported**
+
+- **Recipes are not carried.** `blood_chest` needs `evilcraft:blood_infusion_core` (a Blood Infuser product) and `blood_extractor` needs `dark_spike` + `dark_gem`; none of those are in this slice, so both items are creative-only for now.
+- **The curse roll is not applied.** `randomBadEnchants = true` with `randomBadEnchantsChance = 10000` is recorded in `runtime.rs` (`BAD_ENCHANT_CHANCE`), but adding an enchantment component is not implemented.
+- **The BER chest model is not carried.** `RenderBlockEntityBloodChest` draws a chest model with `textures/model/blood_chest.png`; a content model cannot do a block-entity renderer, so the chest is a static block model.
+- The rest of the mod's blocks and items, the Blood Infuser, the Spirit Furnace, the broom and the werewolf/vampire systems are later slices.
+
+MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["rubensworks (aka kroeser)", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/evilcraft"
+icon = "icons/evilcraft.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "evilcraft-0.1.0.hnmod"
+sha256 = "5e0c1d08d267c146cde2eba63a107e8b4fce1a9aa2c2f0910946edda9f891b51"

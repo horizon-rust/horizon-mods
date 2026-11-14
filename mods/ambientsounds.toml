@@ -1,0 +1,38 @@
+id = "ambientsounds"
+kind = "native-mod"
+name = "ambientsounds"
+summary = "The environment engine with cave and wind ambient beds that fade in and out."
+description = """
+A Horizon port of [AmbientSounds](https://github.com/CreativeMD/AmbientSounds) (LGPL-3.0-only, by **CreativeMD** and **AriaFreeze**) for Horizon. This first slice is **the environment engine** and two ambient beds, `cave` and `wind`.
+
+**Implemented so far**
+
+- **The environment scan** runs on the mod's own cadence from its engine file (`environment-tick-time` 40, `sound-tick-time` 4, `block-scan-distance` 40, `biome-scan-distance` 5) and classifies the player by sky access, depth below the surface, rain/thunder and the surrounding biome.
+- **Two ambient beds** play through Horizon's music layers with a real fade: in a sealed cave the `cave` bed rises to full gain over 20 ticks, on an open platform it aims to zero and fades out, and **during a thunderstorm the `wind` bed takes over**.
+- **Vanilla music is held** while a bed plays and is released when it fades; an "engine off" setting makes the mod silent.
+- **Two of the mod's 120 sound files are carried** (about 2 MB of 85 MB), and the build checks that every carried byte is the jar's own.
+
+**Not yet ported**
+
+- the other 118 sound files and their beds (animals, water, weather, suspense);
+- the air-pocket block scan and its block groups (so the cave bed currently follows depth and sky, not every cave shape);
+- the cross-fade between takes, the pitch curves, the config GUI and the other regions.
+
+**Licence.** LGPL-3.0-only. The port ships the LGPL-3.0 and GPL-3.0 texts and a notice naming **CreativeMD** and **AriaFreeze**, the upstream URL and the exact jar with its sha256; it is a derivative under the same licence and its complete source is published, with no further restriction added.
+
+Original copyright and licence notices are kept in this repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. Help with the remaining slices is welcome."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/ambientsounds"
+icon = "icons/ambientsounds.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-13"
+game = "26.3"
+file = "ambientsounds-0.1.0.hnmod"
+sha256 = "f53345f4f0d5994b29dd0d4d313765a2e7542d54e3704db706011a565f012593"

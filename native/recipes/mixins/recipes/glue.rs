@@ -186,9 +186,7 @@ fn apply(game: &mut Game<'_>, out: m::Out) {
             let _ = game.native_give(&item, count);
         }
         m::Out::Place(book) => {
-            if let Err(e) = game.native_place_recipe(book, false) {
-                game.native_chat(&e);
-            }
+            game.native_transfer_recipe(book);
         }
     }
 }

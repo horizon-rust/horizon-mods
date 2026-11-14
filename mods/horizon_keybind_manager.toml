@@ -1,0 +1,44 @@
+id = "horizon_keybind_manager"
+kind = "native-mod"
+name = "Horizon Keybind Manager"
+summary = "Find, manage, and fix conflicting key bindings for Minecraft and Horizon native mods."
+description = """
+Horizon Keybind Manager makes finding and managing key bindings easier in Minecraft. Search controls, identify conflicting shortcuts, and manage key bindings from native Horizon mods alongside vanilla controls.
+
+**Features:**
+- **Fast Search:** Find key bindings by action name, mod name, keyboard key, or mouse button.
+- **Exact Key Search:** Type `key:M` to find actions assigned to a specific key.
+- **Conflict Detection:** Filter overlapping key bindings and quickly jump between conflicting actions.
+- **Native Mod Support:** View, rebind, and reset key bindings from Horizon native mods alongside regular Minecraft controls.
+- **Simple Integration:** Works directly inside Options → Controls → Key Binds.
+- **Bilingual Interface:** English and Russian labels.
+- **Client-Side:** No server-side installation required.
+
+Designed to make key binding management faster and more convenient, especially when playing with multiple Horizon mods.
+
+**Compatibility:** Horizon Minecraft 26.3."""
+authors = ["Xariami"]
+owners = ["maliferen"]
+owner_ids = [234505373]
+license = "MIT"
+source = "https://github.com/maliferen/horizon-keybind-manager"
+icon = "icons/horizon_keybind_manager.png"
+categories = ["game-mechanics", "utility"]
+tags = ["keybinds", "controls", "shortcuts", "search", "conflicts", "keyboard", "mouse", "utility"]
+screenshots = ["screenshots/horizon_keybind_manager/1.png"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-11"
+game = "26.3"
+file = "horizon_keybind_manager-0.1.0.hnmod"
+sha256 = "3657e8301e40adbe1b0a578ef6951cc242a7e9cd024b92da4ae1f1007e95cadc"
+changelog = """
+Initial release of Horizon Keybind Manager.
+
+- Added searchable key bindings for Minecraft and native Horizon mods.
+- Added keyboard and mouse button search.
+- Added conflict filtering and navigation between conflicting actions.
+- Added support for rebinding and resetting native mod controls.
+- Added English and Russian interface labels.
+- Verified compatibility with Horizon Minecraft 26.3."""

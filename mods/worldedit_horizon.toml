@@ -1,0 +1,72 @@
+id = "worldedit_horizon"
+kind = "native-mod"
+name = "WorldEdit for Horizon"
+summary = "WorldEdit-style building commands for Horizon: selections, fills, shapes, clipboard, undo and redo, brushes and terrain tools."
+description = """
+A native mod for Horizon that adds the WorldEdit-style building commands.
+
+**What it does**
+
+- **Selection** — the wooden axe wand, `pos1` and `pos2`, and the shapes `cube`, `sphere`, `cylinder` and `ellipsoid`.
+- **Edits** — `set`, `replace`, `overlay`, `naturalize`, `walls`, `faces`, `hollow`, `line`, `count`, `fill`, `removeabove`, `removebelow`, `drain`, `fixwater`, `fixlava`, `smooth`.
+- **Shapes** — `sphere`, `hsphere`, `cyl`, `hcyl`, `pyramid`, `hpyramid`.
+- **Clipboard** — `copy`, `cut`, `paste`, `rot`, `flip`, `stack`, `move`, and `schematic save|load|list|delete` for builds kept in your own folder.
+- **Brushes** — sphere, cylinder and ellipsoid brushes, a smoothing brush and a distance brush.
+- **Undo and redo** with a configurable history; an edit keeps the dimension it was made in.
+
+**How to use it**
+
+Everything starts with `/we`: `/we set stone`, `/we copy`, `/we undo`. The wand picks the two corners of the selection. The commands work in creative mode only and need operator level 2 or more; `/we limit` and `/we regen` need level 4.
+
+**What it needs**
+
+Horizon 26.3 and native hooks 58. The mod is a source mixin bundle: the launcher compiles it into the game, so it runs without a sandbox.
+
+**An independent implementation**
+
+This is not the original WorldEdit and it is not affiliated with EngineHub. The smoothing brush and the terrain regeneration follow the behaviour of WorldEdit 7.4.6."""
+authors = ["Kowge"]
+owners = ["Kowge"]
+owner_ids = [100377856]
+license = "MIT"
+source = "https://github.com/Kowge/WorldEdit_Horizon"
+icon = "icons/worldedit_horizon.png"
+categories = ["game-mechanics", "utility"]
+tags = ["worldedit", "building", "editing", "selection", "terrain", "creative", "tools"]
+screenshots = ["screenshots/worldedit_horizon/1.png"]
+
+[[versions]]
+version = "1.5.2"
+published = "2026-11-11"
+game = "26.3"
+file = "worldedit_horizon-1.5.2.hnmod"
+sha256 = "8dce16a1a7751eab50508b3de3eaee9b5e668213877597248fcbaac306f34553"
+changelog = """
+## 1.5.2
+
+**A patch: the client keeps its own files to what the player asked for.**
+
+The schematics are the player's own files, and the client used to hand them to any server that asked. Now the client does only what the player asked for:
+
+- the command the player types in the chat box allows the one operation it names: `/we schematic save house` lets the server write `house`, `/we schematic load house` lets it read that file once, `/we schematic list` lets it tell the files once, `/we schematic delete house` lets it remove that file once;
+- a new level allows nothing at all: another server, another dimension or leaving the server clears every allowance and every unfinished transfer;
+- a part of a file is refused before anything is allocated for it when its index, its count or its size is out of bounds — at most 4096 parts and 32 MiB per file.
+
+The finding came from a review of the 1.5.1 sources and was reported as a real security issue, not a matter of style. Seven new tests cover the hostile headers, the size limit and the rules of the allowances. The tests are 93.
+
+## 1.5.1
+
+- `/we regen` now needs operator level 4, like `/we limit`: it takes the ground of whole chunks away.
+
+## 1.5.0
+
+- `/we regen [radius]` — the ground of the chunks around you comes back as the level's own generator made it.
+
+## 1.4.0
+
+- `/we brush smooth [radius] [iterations]` — the smoothing brush of WorldEdit 7.4.6.
+
+## 1.3.0 and earlier
+
+- Selection (box, sphere, cylinder, ellipsoid), fills, shapes, the clipboard, undo and redo, schematics and the terrain tools.
+"""

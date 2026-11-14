@@ -1,0 +1,37 @@
+id = "showmeyourskin"
+kind = "native-mod"
+name = "Show me your skin!"
+summary = "Show me your skin disables ur armor based on the opacity u set."
+description = """
+Hide or fade the things that cover your skin, so your skin shows through. This is a Horizon native port of enjarai's **Show Me Your Skin!**
+
+**What it can hide or fade**
+- **Armour**: your own (third person and the inventory preview) and other players', set separately
+- **Elytra**: hide it, or keep it and remove the enchantment glint
+- **Hats**: skulls, pumpkins and blocks worn on the head
+- **Shields**: hide them, or remove the glint
+- **Name tags**
+- **Pumpkin overlay**: no carved-pumpkin blur on screen while your hat is hidden
+
+**How to use it**
+Open the mod's settings from the native mods menu and drag the sliders. 100% draws a piece as normal, 0% hides it, and anything in between fades it. There's also a key to toggle it on and off quickly.
+
+**What it needs**
+Horizon Nightly 2026-11-13 (`9f42064`). The bundle is pinned to this build, because armour, elytra, hats and shields are drawn by game code the general hook list doesn't cover. Each new nightly needs an updated bundle.
+
+**Credits**
+Original mod © enjarai, MIT. Port source: github.com/bartekchomik26-dotcom/showmeurskin-horizon"""
+authors = ["bart"]
+owners = ["bartekchomik26-dotcom"]
+owner_ids = [333072545]
+license = "MIT"
+source = "https://github.com/bartekchomik26-dotcom/showmeurskin-horizon"
+icon = "icons/showmeyourskin.png"
+categories = ["decoration", "game-mechanics", "technology"]
+
+[[versions]]
+version = "2.0.4"
+published = "2026-11-14"
+game = "26.3"
+file = "showmeyourskin-2.0.4.hnmod"
+sha256 = "860fcb68de98ac7b5cbec51e142e741880afa7b844d5622360e1f52615174ddb"

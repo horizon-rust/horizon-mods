@@ -1,0 +1,26 @@
+id = "bundles_beyond"
+kind = "native-mod"
+name = "Bundles Beyond"
+summary = "Bundle tooltips as a grid you can walk with the arrow keys and scroll wheel, a port of Bundles Beyond's navigation."
+description = """
+A port of O7410's [Bundles Beyond](https://github.com/O7410/Bundles-Beyond) to Horizon: the bundle tooltip becomes a grid at least as wide as its items, and the mouse wheel selects any item in it, and over a bundle the arrow keys and movement keys walk the grid (Bundles Beyond's `offsetVertical/offsetHorizontal`). Not ported yet: the Space click, slot size +/-, scroll-axis modes, reverse view, container-style slots and the on/off key.
+
+**Licence.** A port of Bundles Beyond's behaviour, so it keeps that mod's licence, [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/); credit to the Bundles Beyond authors. The two drawing helpers copy Horizon's own code (MIT, Horizon contributors). The repository's LICENSE.md also has a review grant that lets the Horizon reviewers read and list it.
+
+Pinned to Horizon `9f42064`: two hooks stand in for whole function bodies (`draw_stack_tooltip_with`, `draw_bundle_tooltip`)."""
+authors = ["BnCatt"]
+owners = ["BnCatt"]
+owner_ids = [262346062]
+license = "CC-BY-NC-SA-4.0"
+source = "https://github.com/BnCatt/horizon-bundles-beyond"
+icon = "icons/bundles_beyond.png"
+categories = ["storage", "utility"]
+tags = ["bundle", "inventory", "tooltip"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-14"
+game = "26.3"
+file = "bundles_beyond-0.1.1.hnmod"
+sha256 = "d7c705a39ca37b58bf07f87b1ff489e2ee8163cfe2096ff6eedaad1fd2af7a99"
+changelog = "First listing (the earlier repo-backed PR #344 was closed for the form). Pinned to Horizon 9f42064 (Nightly 2026-11-13)."

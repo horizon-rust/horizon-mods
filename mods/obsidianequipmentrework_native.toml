@@ -1,0 +1,32 @@
+id = "obsidianequipmentrework_native"
+kind = "native-mod"
+name = "Obsidian Equipment Reworked"
+summary = "Obsidian tools and armour."
+description = """
+**This mod has two parts, and you need both.** This is the native part (the rules, as Rust code); install [the other one](https://playhorizon.dev/mods/obsidianequipmentrework) too.
+
+Obsidian tools and armour.
+
+**Differences from the original:** Obsidian horse armour isn't drawn on the horse.
+
+A port of [Obsidian Equipment Reworked](https://github.com/CozyCord/Obsidian-Equipment-Reworked) 1.0 by Tokimi, CozyStudios, published under its licence, CC0-1.0. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Tokimi", "CozyStudios"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "CC0-1.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/obsidianequipmentrework"
+icon = "icons/obsidianequipmentrework_native.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "obsidianequipmentrework_native-0.1.1.hnmod"
+sha256 = "9b9fbee1183544e369b708af7b3b171f64d65fb36231b5a39b10a5382e5d4a43"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

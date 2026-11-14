@@ -1,0 +1,30 @@
+id = "fallingtrees"
+kind = "native-mod"
+name = "Panda's Falling Tree's"
+summary = "Trees fall when their base is cut."
+description = """
+Trees fall when their base is cut.
+
+**Differences from the original:** Trees don't fall with an animation or sound. The drops appear at the stump at once instead of after a delay. Big trees don't take longer to chop and felling costs no extra hunger. Unbreaking doesn't reduce the extra axe wear, and that wear stops at zero durability instead of breaking the axe.
+
+A port of [Panda's Falling Tree's](https://github.com/PandaMods-Dev/Pandas-Falling-Trees) 0.13.2 by The Panda Oliver, published under its licence, GPL-3.0-only. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "The Panda Oliver"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "GPL-3.0-only"
+source = "https://github.com/lavoide/horizon-ports/tree/main/fallingtrees"
+icon = "icons/fallingtrees.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-12"
+game = "26.3"
+file = "fallingtrees-0.1.2.hnmod"
+sha256 = "61a9d13fd8c8389625e35e9e3b8a98a13ef4d694f4a2327cc624be188f9f016b"
+changelog = "A block whose drops fail to spawn is left standing instead of removed, and the axe wears only for logs actually felled. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

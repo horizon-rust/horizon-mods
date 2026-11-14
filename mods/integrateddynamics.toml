@@ -1,0 +1,42 @@
+id = "integrateddynamics"
+kind = "native-mod"
+name = "integrateddynamics"
+summary = "A Horizon port of integrateddynamics."
+description = """
+A port of [Integrated Dynamics](https://github.com/CyclopsMC/IntegratedDynamics) (MIT, by rubensworks / kroeser) for Horizon. This first slice is the **logic cable** with a redstone reader and a redstone writer part — upstream's `redstone_transmission` without the variable-card layer.
+
+**Implemented so far**
+
+- `integrateddynamics:cable`, a non-occluding 4 px core (`CableModel.MIN..MAX`, hardness 3.0) with six `part_<face>` enum properties (`none|reader|writer`), a `status` property (`inactive|active`), a block entity holding the network channel, and the carried model, texture, language and recipe inside the one `.hnmod`.
+- The **redstone reader** part and the **redstone writer** part: right-click a cable face with the part item to place one (a face already holding a part refuses), and `/integrateddynamics part <pos> <face> none` removes it. Every writer on a connected cable network emits the network's channel value on its own face; the network's channel is the strongest reading any reader on it produced.
+- The network walk: a bounded flood fill over connected cables (the safety cap counts **cables**, as it should — a long sparse line keeps its whole 1024-cable budget), recomputed after the level tick for the cables whose block entity ticked.
+- Placement rotation for the parts, the carried `part_redstone_reader`/`part_redstone_writer` items, and `/integrateddynamics` readout commands for the harness.
+
+**Known limitation (an API gap, disclosed rather than faked)**
+
+- The reader samples the **strongest redstone signal around the cable**, not the block on the reader's own face: `native_neighbor_signal(dimension, pos)` is the only signal reader at this pin (API 96), and nothing returns "the signal block X gives on face F". A reader next to a lever and a wire therefore reads the strongest of the six neighbours rather than its own face. Directional sampling needs a per-face signal helper; it is recorded in `ARCHITECTURE.md` §3 as a gap, and the entry claimed face-specific behaviour before this slice was corrected.
+
+**Not yet ported**
+
+- The **variable system**: variable store, logic programmer, materializer, proxy, delay, variable cards and transformers — the whole typed value layer.
+- Every other part (inventory, fluid, energy, entity, machine, world, audio, network, effect, panel, connector), the facade and fake-cable placement, and the display panel.
+- The screens (part settings, writer aspect card slot, display panel).
+- Energy consumption of parts and the network's power (upstream's `getConsumptionRate`).
+- The menril resource chain (log, wood, chunk smelting, squeezer, basin) beyond the carried blocks.
+
+MIT; the original copyright and permission notices travel inside the archive at `mixins/integrateddynamics/LICENSE`."""
+authors = ["rubensworks (aka kroeser)", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/integrateddynamics"
+icon = "icons/integrateddynamics.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "integrateddynamics-0.1.0.hnmod"
+sha256 = "b9fb347e8a3ca2e8aa738b5d03548688c96bc06fd6a98f6b38fd02a76dfc430a"

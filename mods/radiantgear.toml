@@ -1,0 +1,32 @@
+id = "radiantgear"
+kind = "native-mod"
+name = "Radiant Gear"
+summary = "Worn trinkets that glow give dynamic light."
+description = """
+Worn trinkets that glow give dynamic light.
+
+**Needs** [trinkets](https://playhorizon.dev/mods/trinkets) and [trinkets_native](https://playhorizon.dev/mods/trinkets_native) installed too.
+
+**Differences from the original:** Worn trinkets give light through Horizon's own dynamic lights, which showed no light in the Horizon build this was tested on, so the effect hasn't been seen in game yet. Only your own worn light is handled, not other players'.
+
+A port of [Radiant Gear](https://github.com/illusivesoulworks/radiantgear) 2.1.6+1.20.1 by Illusive Soulworks, published under its licence, LGPL-3.0-or-later. Original copyright and licence notices are kept in the file.
+
+Native source mod: install it on the launcher's Mods page, press Build there, and confirm the native-code warning. It runs with your account's permissions. It is pinned to Horizon Nightly fdc87ae and Horizon Mixins e8cd0aa.
+
+No Minecraft code is included."""
+authors = ["lavoide", "Illusive Soulworks"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/lavoide/horizon-ports/tree/main/radiantgear"
+icon = "icons/radiantgear.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "radiantgear-0.1.1.hnmod"
+sha256 = "10eaeaa79f2fe01b227450cb6446468e97648a38dd2865a1080a2090c571c205"
+changelog = "First release. Pinned to Horizon fdc87ae and Horizon Mixins e8cd0aa."

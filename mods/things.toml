@@ -1,0 +1,30 @@
+id = "things"
+kind = "mod"
+name = "Things (assets)"
+summary = "Trinkets and gadgets from Things (subset)."
+description = """
+**This mod has two parts, and you need both.** This is the content part (items, blocks, textures, models, data; no code); install [the other one](https://playhorizon.dev/mods/things_native) too.
+
+Trinkets and gadgets from Things (subset).
+
+**Differences from the original:** The Agglomeration, Displacement Tome, Broken Watch, Ender Pouch, Radiant Gem and the Things almanac are left out. Mining Gloves give Haste II instead of the Momentum effect, and the Infernal Scepter fires on use with a cooldown instead of charging. The Enchanted Wax Gland doesn't help with floating or lava, the Hades Crystal doesn't put out fire, and mobs can trigger the diamond pressure plate. Players joining over LAN can open a locked container with any Container Key.
+
+A port of [Things](https://github.com/glisco03/things) 0.3.3+1.20 by glisco, published under its licence, MIT. Original copyright and licence notices are kept in the file.
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "glisco"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/things"
+icon = "icons/things.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.3.3-horizon.1"
+published = "2026-11-11"
+game = "26.3"
+file = "things-0.3.3-horizon.1.hmod"
+sha256 = "2fe18c215629b2653074108595c16cc885775e358b63aae123751a7f60435fb4"
+changelog = "First release."

@@ -1,0 +1,41 @@
+id = "theurgy"
+kind = "mod"
+name = "Theurgy (Assets)"
+summary = "Assets and data for Theurgy, the classical alchemy mod. Needs the Theurgy native mod."
+description = """
+# Theurgy (Assets)
+
+The **assets and data** half of [Theurgy for Horizon](https://github.com/ReenkyPig-Studio/theurgy-horizon), a Rust port of [Theurgy](https://github.com/klikli-dev/theurgy) by klikli-dev. Theurgy is a mod about classical alchemy: refine raw materials, replicate matter and transmute it into something else.
+
+## What this file is
+
+`theurgy-26.3-1.120.1-content.hmod` holds only resources: `horizon-mod.toml`, `assets/` (textures, models, sounds, translations) and `data/` (recipes, tags, loot tables, world generation, the Hermetica guide book). It contains no code.
+
+## What it needs
+
+On its own this file does nothing in the game. The machines, items and logistics run in the separate **Theurgy native mod** (`theurgy-26.3-1.120.1-native.hnmod`, published as its own project), and **both are required**. Install the two together, or use the Theurgy modpack that bundles them.
+
+Ported from Theurgy `release/v26.3-1.120.1` (Minecraft 26.3). JEI/EMI, Jade and KubeJS integrations are not included: those mods do not exist on Horizon.
+
+## Credits and licence
+
+Original mod: [Theurgy](https://github.com/klikli-dev/theurgy) © klikli-dev. The assets and data are the original's, under CC-BY-4.0; the manifest is MIT. Third-party notices (Modonomicon, NeoForge) are in the source repository.
+
+This port is not affiliated with or endorsed by klikli-dev. Please do not report issues with this port upstream; use the [port's issue tracker](https://github.com/ReenkyPig-Studio/theurgy-horizon/issues)."""
+authors = ["klikli-dev (original)", "Theurgy Horizon contributors"]
+owners = ["Mininaut"]
+owner_ids = [87039532]
+license = "MIT AND CC-BY-4.0"
+source = "https://github.com/ReenkyPig-Studio/theurgy-horizon"
+icon = "icons/theurgy.png"
+categories = ["magic", "technology"]
+tags = ["alchemy", "assets", "resources", "transmutation", "replication", "port"]
+screenshots = ["screenshots/theurgy/1.jpg", "screenshots/theurgy/2.png", "screenshots/theurgy/3.png", "screenshots/theurgy/4.png", "screenshots/theurgy/5.png"]
+
+[[versions]]
+version = "1.120.1"
+published = "2026-11-11"
+game = "26.3"
+file = "theurgy-1.120.1.hmod"
+sha256 = "311045849882abd8b8f86850446bb59d40978ed032943aa59e81687f8805802d"
+changelog = "Initial release: the assets and data of the Horizon port of Theurgy 1.120.1 for Minecraft 26.3. Needs the Theurgy native mod."

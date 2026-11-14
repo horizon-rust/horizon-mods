@@ -1,0 +1,33 @@
+id = "ai_chat"
+kind = "native-mod"
+name = "AI Chat"
+summary = "Chat with AI using the in-game chat!"
+description = """
+Chat with AI using the in-game chat!
+
+# Setup
+In the mod settings, add your openrouter API Key
+
+# Usage
+Use ".ask" and the prompt after it (Example: ".ask Hello!")"""
+authors = ["Wolf5930"]
+owners = ["mateusz763tl"]
+owner_ids = [94700656]
+license = "MIT"
+source = "https://github.com/mateusz763tl/horizon-ai-chat"
+icon = "icons/ai_chat.png"
+categories = ["utility"]
+key = "RWQ+Yc4q90vyV+xqhI+8d+Vclb/nrjjEPK2LE0p5gmogf+71RGFtFof5"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-08"
+game = "26.3"
+file = "ai_chat-1.0.0.hnmod"
+sha256 = "04ca59d6c156939a9b544399451004655d5c0dbf32bd149cee8d96f7ebf01ca4"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUQ+Yc4q90vyVx0opOAmK1ciHn6/Jcfj3+mWrjbgmd1J3ITHq/OaPtH8mLjP7ezNa0Jm5rPtaeUupK6801m1u2Surse5qt+HLAY=\r
+trusted comment: timestamp:1794078950\tfile:native/target/ai_chat-1.0.0.hnmod\thashed\r
+E7tfIFhtwOlc6MuHahRL1AEoIA5x1VBXzThHkWpAKex/JQbsdwgfnDEC6VoFLvIDfrQ6NPVun2lVUU86+OMiBw=="""
+changelog = "First release"

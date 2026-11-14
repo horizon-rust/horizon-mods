@@ -1,0 +1,37 @@
+id = "artifacts"
+kind = "native-mod"
+name = "artifacts"
+summary = "A Horizon port of artifacts."
+description = """
+A port of [Artifacts](https://github.com/ochotonida/artifacts) for Horizon.
+
+**Implemented so far**
+
+- Three artifacts, each with the upstream effect rules in a pure runtime: `artifacts:bunny_hoppers` (jump strength +0.40 multiplied-base, safe fall distance +10, fall damage multiplier unchanged), `artifacts:feral_claws` (attack speed +0.30 multiplied-base) and `artifacts:shock_pendant` (cancels a hit whose damage type is in the lightning tag).
+- Upstream equips artifacts in its own equipment slots (Curios on 1.21.1). This slice **defers the slot system**: the main inventory and off hand stand in for the worn slots, and each artifact counts at most once, like one slot.
+- The attributes are re-applied every player tick, so dropping or disabling an artifact removes its modifiers.
+- A right click moves a main-hand artifact into an **empty off hand** (refused when the off hand is occupied).
+- The items' models, textures, language entries and creative tab.
+
+**Not yet ported**
+
+- **Inventory instead of slots.** A player can carry all three at once, and a second copy of one artifact adds nothing (one slot per kind).
+- **Upstream's own equipment slots** (and Curios) are not carried; the off-hand equip is the stand-in.
+- The other artifacts of the mod, their configs and the durability/repair behaviour are later slices.
+
+MIT: the original copyright (`Copyright (c) Wouter Pauwels`) and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["ochotonida", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/artifacts"
+icon = "icons/artifacts.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "artifacts-0.1.0.hnmod"
+sha256 = "99c2f00f2359d3460ec9a812288635270cf227e720112182bf44372c8646920b"

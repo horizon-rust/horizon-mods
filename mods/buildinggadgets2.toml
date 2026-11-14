@@ -1,0 +1,36 @@
+id = "buildinggadgets2"
+kind = "native-mod"
+name = "buildinggadgets2"
+summary = "A Horizon port of buildinggadgets2."
+description = """
+A port of [Building Gadgets 2](https://github.com/Direwolf20-MC/BuildingGadgets2) (MIT, by Direwolf20 and the Building Gadgets contributors) for Horizon. This first slice is the **building gadget** and its horizontal-row mode.
+
+**Implemented so far**
+
+- `buildinggadgets2:gadget_building` (stack size 1) right-clicked on a block. **Sneak + right click** selects the clicked block's state (upstream's `onShiftAction`); air, unbreakable blocks and non-source fluids are refused. **Plain right click** builds the selected block's **horizontal row**: `side = face.axis == Y ? player facing : -face`, cells `clicked + side*i` for `i in 0..range`, skipping cells that are not replaceable, outside the build height, or where the state cannot survive.
+- Each placed cell consumes one item of the block's kind; creative pays nothing. A gadget with no selection, no items or no room places nothing and says why.
+- The selection/range state is stored **as an item component** (`buildinggadgets2:gadget_state`), so it travels with the gadget and survives a relog, and the mouse wheel changes the range through the `mouse_scrolling` client hook (`scroll.rs`).
+- `/buildinggadgets2` readout commands for the harness, with the carried model, texture, language and recipe inside the one `.hnmod`.
+
+**Not yet ported**
+
+- Mode fixed to `horizontal_row`. Upstream's default is `build_to_me`; the other modes (vertical wall and column, surface, horizontal wall, stairs, grid, build-to-me) and mode switching are deferred — the mode wheel is client-only.
+- The selection stores the raw state id, so transient properties (age, lit, waterlogged, open, …) are not cleaned the way upstream's `cleanBlockState` does.
+- The undo stack, the anchor, the paste/rotate gadget, the cut/paste gadget, the destruction gadget, the exchange gadget and their screens are later slices.
+
+MIT; the original copyright and permission notices travel inside the archive at `mixins/buildinggadgets2/LICENSE`."""
+authors = ["Direwolf20-MC", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/buildinggadgets2"
+icon = "icons/buildinggadgets2.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "buildinggadgets2-0.1.0.hnmod"
+sha256 = "9ac67e640ffb0e169e22e2771cc827ea080c397bfb6e6579a2f43d645a2a883f"

@@ -1,0 +1,40 @@
+id = "portage_better_ping_display"
+kind = "native-mod"
+name = "portage-better-ping-display"
+summary = "Colored ping in milliseconds in Tab: an unofficial Rust port of Better Ping Display for Horizon."
+description = """
+An unofficial community Rust port of **Better Ping Display — Fabric Edition**, originally created by **Vlad Marica**.
+
+Hold **Tab** to display colored latency in milliseconds after player names. Connection bars and name formatting are preserved. Enable or disable the display in **Options → Mods**.
+
+The value comes from the server. The mod sends no additional ping requests. Updates depend on the server, generally every 30 seconds on vanilla at its normal tick rate.
+
+This native mod must be built into Horizon through your native-mod integration. It targets Minecraft 26.3 and Horizon revision `fdc87aecdbd116bf1e08adcd062fcbaea8c2e2ca`. Other Nightly revisions require compatibility checks.
+
+The original YACL settings screen and JSON configuration are not included.
+
+**Credits:** Vlad Marica — original mod and color logic, MIT license. Name-formatting code adapted from Horizon — Ludovic Marie and the Horizon contributors, MIT license. Complete license notices are included.
+
+Original project: https://github.com/vladmarica/better-ping-display-fabric"""
+authors = ["Vlad Marica", "fanthomas"]
+owners = ["fanthomas-creator"]
+owner_ids = [251568636]
+license = "MIT"
+source = "https://github.com/fanthomas-creator/portage-better-ping-display"
+icon = "icons/portage_better_ping_display.png"
+categories = ["utility"]
+tags = ["ping", "latency", "tab-list", "client-side", "quality-of-life"]
+key = "RWRau4lakVV3M+l+S07QhsxXTFj25ohW+TNQWv609tmh1D7PNLDrxLHd"
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "portage_better_ping_display-0.1.1.hnmod"
+sha256 = "a02747a7dc5668482c7f1b9b41b0cdef0edb50cfcfdb1797d6c1398e5d1e8b16"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURau4lakVV3MyNreUF3Pt3W7GZtf1QE81ab2jwfM8HveqA4fmebO8mikwL8FwYeJeUAxgQZc/fp0+zewcPrL2XI3HYrKraw3Ao=\r
+trusted comment: portage-better-ping-display-0.1.1.hnmod\r
+SmvtqfloNH3t3LiofP20GCLBsYwAYpZiTM1lRUeyMzpkiyfE1RhUWYp5OP0p3eb5evhwnzu/yFuccZG47hyPDg=="""
+changelog = "Renamed the project and native ID. Added English documentation, original-author credits, a user guide and images. Display behavior is unchanged."

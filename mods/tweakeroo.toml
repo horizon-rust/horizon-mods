@@ -1,0 +1,20 @@
+id = "tweakeroo"
+kind = "native-mod"
+name = "Tweakeroo"
+summary = "A Rust port of the popular Tweakeroo mod!"
+description = "You know it, you love it, it's what you know and love. This is a port of the Tweakeroo mod, not my original work!"
+authors = ["DUzzL"]
+owners = ["DUzzL"]
+owner_ids = [98381970]
+license = "GPL-3.0"
+source = "https://github.com/DUzzL/tweakeroo-horizon"
+icon = "icons/tweakeroo.png"
+categories = ["utility"]
+
+[[versions]]
+version = "0.30.2-horizon.1"
+published = "2026-11-08"
+game = "26.3"
+file = "tweakeroo-0.30.2-horizon.1.hnmod"
+sha256 = "554c15c2da0ad025297a00ceabd1f8161d394a7aecfeaa57211c26cd763b906d"
+changelog = "Original release"

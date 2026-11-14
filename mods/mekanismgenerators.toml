@@ -1,0 +1,39 @@
+id = "mekanismgenerators"
+kind = "native-mod"
+name = "Mekanism: Generators"
+summary = "Heat generator and the graphite/lava energy chain from Mekanism: Generators, with the jar's burn times and FE rates."
+description = """
+A port of [Mekanism: Generators](https://github.com/mekanism/Mekanism) (MIT, by Aidan C. Brady and the Mekanism contributors) for Horizon. This first slice is the **heat generator** and the graphite/lava energy chain behind it.
+
+**Implemented so far**
+
+- `mekanismgenerators:heat_generator`, a fuel slot (container slot 0) that takes any item with a furnace burn time and turns one item a tick into `burnTime / 20` mB of lava: coal 80 mB, a lava bucket 1,000 mB, and a crafting remainder replaces the stack.
+- A 24,000 mB lava tank (this port's saved int `lava`; upstream's fluid capability is not declared in this slice, so only the fuel slot fills it).
+- A heat capacitor of 10 units, fed by 200 heat/t while lava burns, 30 per lava side and 100 in the Nether, cooled by the 0.5 thermal-efficiency factor, so the capacitor settles at its stable temperature and the generator reports 100 % efficiency.
+- The generator's FE buffer (160,000 FE, output only at up to 1,020 FE/t) declared as the block's energy capability, so another mod's cable can read and drain it.
+- `/mekanismgenerators info|energy` readout, plus the carried block model, texture and language entries, shipped inside the one `.hnmod`.
+
+**Not yet ported**
+
+- No FE *output* into a neighbour: the generator fills its buffer and declares the capability, but nothing pushes it outward. The API-142 transfer helpers exist at this pin, so a cable slice can add it.
+- No fluid capability: the tank is a saved int, so a pipe cannot fill it and nothing reads it as lava.
+- No GUI: fuel goes in through the container, and state is read with the command.
+- No `active` block state, so the `heat_generator_active` model, the sound that goes with it and the block's animation are not carried.
+- The other generators (gas-burning, bio, solar, wind, advanced solar, laser, fusion, turbine), the generator upgrades and the boiler are later slices.
+
+MIT; the upstream copyright line (2017-2025 Aidan C. Brady) and the full permission notice travel inside the archive at `mixins/mekanismgenerators/LICENSE`."""
+authors = ["Aidancbrady", "Thommy101", "Thiakil", "pupnewfster", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/mekanismgenerators"
+icon = "icons/mekanismgenerators.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "mekanismgenerators-0.1.0.hnmod"
+sha256 = "7e87140c455d4853cb7abe6e1e89bfcee413231b5f596a2068bd10ce0d6a7905"

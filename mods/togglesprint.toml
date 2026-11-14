@@ -1,0 +1,19 @@
+id = "togglesprint"
+kind = "native-mod"
+name = "ToggleSprint"
+summary = "Horizon ToggleSprint mod."
+description = "ToggleSprint shows a small HUD indicator while sprint is toggled on."
+authors = ["oblivion37"]
+owners = ["oblivion37"]
+owner_ids = [237868339]
+license = "MIT"
+source = "https://github.com/oblivion37/ToggleSprint"
+icon = "icons/togglesprint.png"
+categories = ["utility"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-13"
+game = "26.3"
+file = "togglesprint-1.0.0.hnmod"
+sha256 = "e0291e80a0817b19831f7e2629d2b872f3e766a8ad42377ff8b4b7a97d1ae287"

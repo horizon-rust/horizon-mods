@@ -1,0 +1,43 @@
+id = "occultism"
+kind = "native-mod"
+name = "occultism"
+summary = "A Horizon port of occultism."
+description = """
+A port of [Occultism](https://github.com/klikli-dev/occultism) (MIT, by klikli-dev) for Horizon. This first slice is **spirit fire**: the block, its ignition, and the chalk colours it takes.
+
+**Implemented so far**
+
+- `occultism:spirit_fire` on the `minecraft:torch` template (vanilla's only fire-like class with no fire damage and a sturdy-face survival rule): no collision, instant break, light 12, wool sound, purple map colour, empty drops, and a declinable `color` state with the jar's 18 values (default `white`), with the jar's animated model and blockstate.
+- Ignition: flint and steel or a fire charge struck on a block with a `#occultism:start_spiritfire` item entity (datura) inside upstream's `AABB(-1,-1,-1,1,1,1)` around the clicked block's centre lights one spirit fire on the target and consumes **every** datura in that box, as upstream does. With no datura in range nothing happens and the lighter's own use runs.
+- Chalk: right-clicking a spirit fire with any of the jar's chalks (16 colours, pure and impure) sets the block's `color` property.
+- The datura item, the 33 chalk items, the spirit fire's own recipe, loot and language, carried inside the one `.hnmod`.
+- `/occultism` readout commands for the harness.
+
+**Not yet ported**
+
+| Declared upstream library | What it would have provided | What this slice does |
+|---|---|---|
+| Modonomicon (required) | the guide book and its 260 pages, ritual and recipe pages | nothing: there is no guide-book reader at this pin |
+| Curios (required) | accessory slots (familiar ring, spirit lamp) | nothing: there is no accessory-slot API |
+| GeckoLib | the 21 animated spirit models | nothing: no spirits in this slice |
+| SmartBrainLib | the spirits' job AI | nothing: no spirits in this slice |
+
+- The remaining machines (crusher, smelter, sacrificial bowl, pentacles and rituals), every spirit and their jobs, the storage system and the dimensional mineshaft are later slices.
+- The ritual and chalk recipes beyond the ones carried, and the sapling models the carried sapling item references.
+
+MIT; the original copyright and permission notices (klikli-dev, 2020) travel inside the archive at `mixins/occultism/LICENSE`."""
+authors = ["Kli Kli", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/occultism"
+icon = "icons/occultism.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "occultism-0.1.0.hnmod"
+sha256 = "d59cfd5dbfa5babd754572330e6983f89f3fbbcd891dfdbb5d4fcd9474e3e25b"

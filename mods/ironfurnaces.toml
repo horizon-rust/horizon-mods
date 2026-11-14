@@ -1,0 +1,58 @@
+id = "ironfurnaces"
+kind = "native-mod"
+name = "Iron Furnaces"
+summary = "Thirteen faster furnaces with upgrades, augments, factories, generators and side config."
+description = """
+An unofficial port of Iron Furnaces 4.4.2 (NeoForge, by Qelifern, XenoMustache and Astryxion) to Horizon, as one native mod. Rewritten in Rust for Horizon's hooks, so no original code runs; the textures, models, recipes and language files are the original mod's. Not made or endorsed by its authors: please report problems to this project, not to them.
+
+### What's there
+
+- **Furnaces:** thirteen tiers with their cook times, and in-place upgrades (sneak and right-click; the contents stay).
+- **Augments:** blasting, smoking, speed, fuel, factory and generator, added by right-click or on the augment page.
+- **Factories:** two to six rows by tier, with Auto Split.
+- **Generators:** run on fuel, on food or on the blasting recipes, and make FE. Power goes out of any side set to output.
+- **Automation:** side config, auto input and output, and redstone modes. Hoppers and pipes follow the sides.
+- **Extras:** the Wireless Heat Transmitter and Receiver, the Settings Linker, the spooky and wrapping looks, Rainbow Coal, and the Rainbow Furnace with its core.
+- **Config:** `ironfurnaces.toml` in the config folder holds the Java mod's speeds, tiers, energy and generation.
+
+### With other mods
+
+- **JEI:** furnaces show as catalysts for smelting, and the generator's recipes are listed. W opens a guide written for this port, with a 3D scene of the furnaces.
+- **Jade:** shows a furnace's contents and a factory's or generator's energy.
+- **AE2:** a pattern provider fills a furnace through the face it touches. Set that face to Input/Output with Auto Output on, or put an import bus on an output face, so the result comes back. The crafting status knows each furnace's time.
+
+- **Recipes:** furnaces smelt the world's recipes, data packs included, and never stack a result past its limit.
+
+### Missing or not the same
+
+- **Experience** goes straight to the player instead of dropping orbs.
+- **Unlocking recipes** by taking a result doesn't happen.
+- **Left out:** PMMO's hook and the update checker.
+- **Allthemodium, Vibranium and Unobtainium furnaces** are there, but need those metals from another mod.
+
+### Licence
+
+Apache License 2.0, as the original's jar.
+"""
+authors = ["Qelifern", "XenoMustache", "Astryxion", "Joeypc6"]
+owners = ["Joeypc6"]
+owner_ids = [35495484]
+license = "Apache-2.0"
+source = "https://github.com/Joeypc6/IronFurnaces-Horizon"
+icon = "icons/ironfurnaces.png"
+categories = ["technology", "utility"]
+tags = ["furnace", "smelting", "factory", "generator", "automation"]
+
+[[versions]]
+version = "4.4.5"
+published = "2026-11-11"
+game = "26.3"
+file = "ironfurnaces-4.4.5.hnmod"
+sha256 = "2f27f22ecf748c167a9b2fd2098d04d38e9f0edbcf5157d1fc5eed39a8c58ce5"
+changelog = """
+First Horizon release, a port of Iron Furnaces 4.4.2 (NeoForge). 4.4.5 is this port's own version number. Built on Horizon commit fdc87ae (Nightly 2026-11-08).
+
+Since the 4.4.4 submission: builds with the new Horizon ports of Tinkers' Construct, Ender IO, Powah and Apothic Spawners (all ten together); with JEI, recipe cards draw fluids as their textures (mod kit 14); the W guide's 3D scene finds its structure from any page and its buttons are translated. The block and item models were compared with the 4.4.2 jar's: all 135 the same, none missing.
+
+From the 4.4.3 review: multiplied smelting stops at the result's own stack limit, into an empty output slot as into a partly filled one, with tests for both. Smelting, blasting and smoking recipes come from the world, data packs included, as a vanilla furnace finds them.
+"""

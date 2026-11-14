@@ -1,0 +1,34 @@
+id = "repeatable_trial_vaults"
+kind = "native-mod"
+name = "repeatable_trial_vaults"
+summary = "A Horizon port of repeatable_trial_vaults."
+description = """
+A port of [Repeatable Trial Vaults](https://github.com/Buuz135/Repeatable-Trial-Vaults) by Buuz135 for Horizon — the key-reset slice.
+
+**Implemented so far**
+
+- Right-clicking a `minecraft:vault` with `minecraft:trial_key` or `minecraft:ominous_trial_key` resets it **iff** the acting player's UUID is in `rewarded_players`: the click is cancelled (the block never sees it), the held stack loses the vault config's key count (normally 1; a keyless vault consumes 0; creative is skipped as `ItemStack.consume` does), the `used` stat is awarded once and the hand swings.
+- The reset is allowed whatever the vault's `vault_state` is (upstream checks no state). The vault's own tick then sees the player as unrewarded and rolls loot again, so a vault is repeatable without a restart.
+- The trial-key item tags and the English names in a valid content archive.
+
+**Not yet ported**
+
+- Reading and writing a **vanilla** block entity has no native API here: the port reaches the game's own block-entity map and the vault's `rewarded_players` directly, a pin-internal dependency recorded as an issue-shaped gap (a native read/write hook for a vanilla block entity's saved NBT).
+- The item tag cannot be read where the port runs (`native_item_in_tag` returns `NotServer` on a client execution), so the key check reads the item id.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/repeatable_trial_vaults/LICENSE` and `NOTICE.md`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93."""
+authors = ["Buuz135", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/repeatable_trial_vaults"
+icon = "icons/repeatable_trial_vaults.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-12"
+game = "26.3"
+file = "repeatable_trial_vaults-0.1.0.hnmod"
+sha256 = "74d7ccb032f81b75b2e96503efe1a584a8acbf4889e3f8953e05f0974cc15c3c"

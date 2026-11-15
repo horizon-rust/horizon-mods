@@ -29,6 +29,7 @@ source = "https://github.com/DeportedToHell/MCRE-Mods/tree/6060e0fba1ee4b720f43e
 icon = "icons/roughlyenoughitems.png"
 categories = ["utility"]
 tags = ["rei", "recipes", "item-list", "recipe-viewer", "search", "favorites", "port"]
+screenshots = ["screenshots/roughlyenoughitems/1.jpg", "screenshots/roughlyenoughitems/2.jpg", "screenshots/roughlyenoughitems/3.jpg", "screenshots/roughlyenoughitems/4.jpg"]
 
 [[versions]]
 version = "1.1.2"

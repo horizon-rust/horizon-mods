@@ -20,6 +20,7 @@ source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/zoomify"
 icon = "icons/zoomify.png"
 categories = ["utility"]
 tags = ["zoom", "camera", "spyglass", "port"]
+screenshots = ["screenshots/zoomify/1.jpg", "screenshots/zoomify/2.jpg", "screenshots/zoomify/3.jpg"]
 
 [[versions]]
 version = "1.1.1"

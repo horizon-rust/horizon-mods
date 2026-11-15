@@ -1,0 +1,31 @@
+id = "gravestone"
+kind = "mod"
+name = "Gravestone (assets)"
+summary = "Gravestone block, 3D model, obituary item, textures, and EN/RU localizations for Gravestone. Requires the Gravestone native mod."
+description = """
+The content module (`gravestone.hmod`) for **Gravestone**, providing the `gravestone:gravestone` block, 3D gravestone model, `gravestone:obituary` item, GUI assets, and English/Russian localizations.
+
+> **Important:** This is the asset/content pack only. For grave spawning on death, inventory restoration, and the readable obituary book screen to work, you must also install the **`gravestone_core`** native mod (`.hnmod`).
+
+### Credits & License
+- **wareal-nah** — Horizon implementation & obituary textures (MIT)
+- **PneumonoIsNotAvailable** — Gravestone 3D model and block/item textures from [Gravestones](https://github.com/PneumonoIsNotAvailable/Gravestones) (MIT)"""
+authors = ["wareal-nah", "PneumonoIsNotAvailable"]
+owners = ["wareal-nah"]
+owner_ids = [327950154]
+license = "MIT"
+source = "https://github.com/wareal-nah/gravestone-horizon#english"
+icon = "icons/gravestone.png"
+categories = ["game-mechanics", "storage", "utility"]
+tags = ["gravestone", "grave", "death", "inventory", "obituary", "qol"]
+screenshots = ["screenshots/gravestone/1.png", "screenshots/gravestone/2.png"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-15"
+game = "26.3"
+file = "gravestone-1.0.0.hmod"
+sha256 = "2695c4885fedfe252271229cc33e771720c44b3c9b5f9230cb10b0b20e9da78f"
+changelog = """
+Initial release (v1.0.0).
+- Gravestone block, 3D model, obituary item, textures, and EN/RU localizations (requires `gravestone_core` native mod)."""

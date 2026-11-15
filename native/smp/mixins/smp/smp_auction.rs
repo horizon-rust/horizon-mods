@@ -326,6 +326,11 @@ pub struct AuctionHouse {
     dirty: bool,
     /// The open menus: window and page.
     pub views: HashMap<u128, (Option<i32>, Page)>,
+    /// The cells each open menu was last drawn with (`draw`): a click means
+    /// what the player saw in that slot, not what is there now. Listings
+    /// come and go, and a listing ends, while a menu stays open without
+    /// being drawn again.
+    shown: HashMap<u128, Vec<Cell>>,
     /// The players on (the glue sets it once a second): a line to one who
     /// isn't waits as a note.
     pub online: HashSet<u128>,
@@ -414,6 +419,7 @@ impl AuctionHouse {
             data,
             dirty: false,
             views: HashMap::new(),
+            shown: HashMap::new(),
             online: HashSet::new(),
             problems: Vec::new(),
         }
@@ -1176,9 +1182,28 @@ impl AuctionHouse {
         cells
     }
 
-    /// What a click on `slot` of `uuid`'s menu means; a new page is kept.
-    pub fn click(&mut self, uuid: u128, cats: &[Category], slot: usize, now: i64) -> Click {
+    /// The page `uuid` sees, as cells, kept as what their menu now shows:
+    /// the glue draws every page with it.
+    pub fn draw(&mut self, uuid: u128, cats: &[Category], now: i64) -> Vec<Cell> {
         let cells = self.layout(uuid, cats, now);
+        self.shown.insert(uuid, cells.clone());
+        cells
+    }
+
+    /// `uuid`'s menu closed.
+    pub fn close(&mut self, uuid: u128) {
+        self.views.remove(&uuid);
+        self.shown.remove(&uuid);
+    }
+
+    /// What a click on `slot` of `uuid`'s menu means; a new page is kept.
+    /// The slot is read as it was last drawn: a listing that moved since
+    /// (one sold, ended or was listed before it) is still the one clicked.
+    pub fn click(&mut self, uuid: u128, cats: &[Category], slot: usize, now: i64) -> Click {
+        let cells = match self.shown.get(&uuid) {
+            Some(c) => c.clone(),
+            None => self.layout(uuid, cats, now),
+        };
         let Some(view) = self.views.get_mut(&uuid) else {
             return Click::Nothing;
         };
@@ -1901,6 +1926,58 @@ mod tests {
             ah.label(l, T0, &money)
                 .starts_with("#4 32 Oak Log · 16 coins (0.50 each) · Alex · 2d 0h left")
         );
+    }
+
+    #[test]
+    fn a_click_buys_the_listing_drawn_in_its_slot_after_the_list_moved() {
+        let (mut e, mut ah, _dir) = setup("moved");
+        let alex = p(ALEX, "Alex");
+        let cats = super::super::smp_shop::Config::default().categories;
+        let sell = |ah: &mut AuctionHouse, e: &mut Economy, item: &str, n: u32, price: &str| {
+            run(
+                ah,
+                e,
+                &alex,
+                &mut holding(item, n),
+                T0,
+                &format!("ah sell {price}"),
+            );
+        };
+        sell(&mut ah, &mut e, "diamond", 1, "100");
+        sell(&mut ah, &mut e, "wheat", 64, "640");
+        // Steve's menu shows the wheat (#2, 10 each), then the diamond (#1).
+        ah.views
+            .insert(STEVE, (Some(1), Page::List(Filter::All, 0)));
+        let drawn = ah.draw(STEVE, &cats, T0);
+        assert_eq!(drawn[..2], [Cell::Listing(2), Cell::Listing(1)]);
+        // Before he clicks, Alex lists cheaper oak logs (#3): they sort
+        // first, and the wheat and the diamond move one slot along.
+        sell(&mut ah, &mut e, "oak_log", 64, "1");
+        assert_eq!(ah.layout(STEVE, &cats, T0)[0], Cell::Listing(3));
+        // Steve clicks the wheat he sees in slot 0: the wheat is what he buys.
+        assert_eq!(ah.click(STEVE, &cats, 0, T0), Click::Redraw);
+        assert!(matches!(ah.views[&STEVE].1, Page::Confirm(2, _)));
+        ah.draw(STEVE, &cats, T0);
+        assert_eq!(ah.click(STEVE, &cats, CONFIRM, T0), Click::Buy(2));
+        // Back on the list; a listing sold meanwhile no longer shifts the
+        // diamond under his cursor onto something else.
+        ah.views
+            .insert(STEVE, (Some(1), Page::List(Filter::All, 0)));
+        assert_eq!(
+            ah.draw(STEVE, &cats, T0)[..3],
+            [Cell::Listing(3), Cell::Listing(2), Cell::Listing(1)]
+        );
+        ah.withdraw(&alex, 2);
+        assert_eq!(ah.click(STEVE, &cats, 2, T0), Click::Redraw);
+        assert!(matches!(ah.views[&STEVE].1, Page::Confirm(1, _)));
+        // A listing that went before the click: no purchase, nothing else.
+        ah.views
+            .insert(STEVE, (Some(1), Page::List(Filter::All, 0)));
+        ah.draw(STEVE, &cats, T0);
+        ah.withdraw(&alex, 3);
+        assert_eq!(ah.click(STEVE, &cats, 0, T0), Click::Redraw);
+        ah.draw(STEVE, &cats, T0);
+        assert_eq!(ah.click(STEVE, &cats, CONFIRM, T0), Click::Nothing);
     }
 
     #[test]

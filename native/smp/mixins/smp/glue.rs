@@ -1667,7 +1667,7 @@ pub(in crate::game) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32)
     if let Some(a) = &mut smp.auction
         && a.views.get(&uuid).is_some_and(|v| v.0 == Some(window))
     {
-        a.views.remove(&uuid);
+        a.close(uuid);
         return;
     }
     // A round under way carries on and is paid all the same.
@@ -2336,7 +2336,7 @@ fn open_ah(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, page: smp_auction::Pa
             Vec::new()
         }
         None => {
-            a.views.remove(&uuid);
+            a.close(uuid);
             vec![Out::Error("The auction house couldn't open.".into())]
         }
     }
@@ -2349,16 +2349,18 @@ fn named_stack(item: &str, count: u32, name: &str, color: &str) -> ItemStack {
     stack
 }
 
-/// The auction house menu's cells as items.
-fn ah_items(smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
-    let Some(a) = &smp.auction else {
+/// The auction house menu's cells as items; the cells are kept as what the
+/// player sees, so a click means the listing drawn in its slot.
+fn ah_items(smp: &mut Smp, uuid: u128) -> Vec<Option<ItemStack>> {
+    let now = chrono::Utc::now().timestamp_millis();
+    let Some(a) = &mut smp.auction else {
         return Vec::new();
     };
+    let cells = a.draw(uuid, &smp.shop_config.categories, now);
+    let a = &*a;
     let economy = smp.economy.as_ref().ok();
     let money = |n: i64| economy.map_or_else(|| n.to_string(), |e| e.money(n));
-    let now = chrono::Utc::now().timestamp_millis();
-    let cats = &smp.shop_config.categories;
-    a.layout(uuid, cats, now)
+    cells
         .into_iter()
         .map(|cell| {
             use smp_auction::Cell as C;
@@ -2450,7 +2452,7 @@ fn ah_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32) {
     let out = match click {
         Click::Nothing => return,
         Click::Close => {
-            a.views.remove(&uuid);
+            a.close(uuid);
             game.native_close_menu(uuid);
             return;
         }

@@ -24,6 +24,7 @@ source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/modmenu"
 icon = "icons/modmenu.png"
 categories = ["management", "utility"]
 tags = ["modmenu", "mods-list", "ui", "settings", "port"]
+screenshots = ["screenshots/modmenu/1.jpg", "screenshots/modmenu/2.jpg", "screenshots/modmenu/3.jpg", "screenshots/modmenu/4.jpg"]
 
 [[versions]]
 version = "1.1.2"

@@ -1,0 +1,20 @@
+id = "vanilla_horizon"
+kind = "shader"
+name = "Vanilla Horizon"
+summary = "Vanilla Minecraft's light, plus real sunrises and sunsets, water and rain."
+description = "Vanilla's own light is the base: the sun and the moon cast shadows on top of it, the blocks the low sun reaches turn warm, rays spill across the horizon, and the air near the ground takes the hour's colour. The water, the rain and the glowing blocks are the pack's own."
+authors = ["PureEvilValera"]
+owners = ["PureEvilValera"]
+owner_ids = [130057984]
+license = "MIT"
+source = "https://github.com/PureEvilValera/vanilla-horizon-shader"
+icon = "icons/vanilla_horizon.png"
+categories = ["vanilla-like", "atmosphere", "shadows"]
+screenshots = ["screenshots/vanilla_horizon/1.jpg", "screenshots/vanilla_horizon/2.jpg", "screenshots/vanilla_horizon/3.png", "screenshots/vanilla_horizon/4.jpg", "screenshots/vanilla_horizon/5.jpg", "screenshots/vanilla_horizon/6.jpg", "screenshots/vanilla_horizon/7.jpg"]
+
+[[versions]]
+version = "2.10.2"
+published = "2026-11-15"
+game = "26.3"
+file = "vanilla_horizon-2.10.2.hshader"
+sha256 = "4faf2ac501b9862bff4ed27d4d60abed5bab1e20a397506981c3957d09dd7068"

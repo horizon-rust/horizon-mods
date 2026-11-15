@@ -21,6 +21,7 @@ source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/shulkerboxtoolti
 icon = "icons/shulkerboxtooltip.png"
 categories = ["storage", "utility"]
 tags = ["shulker", "tooltip", "inventory", "preview", "port"]
+screenshots = ["screenshots/shulkerboxtooltip/1.jpg", "screenshots/shulkerboxtooltip/2.jpg", "screenshots/shulkerboxtooltip/3.jpg", "screenshots/shulkerboxtooltip/4.jpg"]
 
 [[versions]]
 version = "1.0.1"

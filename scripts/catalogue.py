@@ -43,8 +43,8 @@ def review_base(base, head, out):
     for id, (historic, data) in frozen.items():
         versions = historic.get("versions", [])
         kind = historic["kind"]
-        extension = {"native-mod": ".hnmod", "modpack": ".hpack"}.get(kind)
-        if not extension or not versions or any(not v["file"].endswith(extension) for v in versions):
+        extensions = {"native-mod": (".hnmod", ".hmod"), "modpack": (".hpack",)}.get(kind, ())
+        if not versions or not extensions or any(not v["file"].endswith(extensions) for v in versions):
             raise ValueError(f"{id}: native-v1 history is only legacy natives and their modpacks")
         if id not in before:
             if id not in old or old[id][1] != data or id in live:

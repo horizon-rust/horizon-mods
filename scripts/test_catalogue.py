@@ -52,6 +52,19 @@ class CatalogueTests(unittest.TestCase):
         self.assertFalse((self.root / "review-base/mods/sample.toml").exists())
         self.assertEqual((self.head / catalogue.ARCHIVE / "sample.toml").read_text(), NATIVE)
 
+    def test_mixed_extension_history_is_frozen_verbatim(self):
+        historic = NATIVE + '''
+[[versions]]
+version = "0.1.0"
+file = "sample-0.1.0.hmod"
+sha256 = "{}"
+'''.format("b" * 64)
+        self.write(self.base, "mods", historic)
+        self.write(self.head, catalogue.ARCHIVE, historic)
+        self.review()
+        self.assertEqual((self.head / catalogue.ARCHIVE / "sample.toml").read_text(), historic)
+        self.assertFalse((self.root / "review-base/mods/sample.toml").exists())
+
     def test_edited_entry_cannot_be_archived(self):
         self.freeze()
         self.write(self.head, catalogue.ARCHIVE, NATIVE.replace("original signature", "other signature"))

@@ -14,7 +14,7 @@ Daybreak is a shader pack in Horizon's own format. It runs inside Horizon's rend
 - A deeper sky with warm sunsets, sun rays, sun glare and haze
 - Mobs take the sun's shadow; the Nether and the End get their own light
 
-Every effect can be changed or turned off in the game: Options > Horizon Settings > Shader Packs > Shader Options. The quality is yours to pick there too: turn shadows off for the least GPU time, or choose the shadow map's detail (1024 to 4096) and distance (64 to 160 blocks). The defaults are soft shadows over 96 blocks with water reflections.
+Every effect can be changed or turned off in the game: Options > Horizon Settings > Shader Packs > Shader Options. The quality is yours to pick there too: turn shadows off for the least GPU time, or choose the shadow map's detail (1024 to 4096) and distance (48 to 160 blocks). The defaults are soft shadows over 64 blocks with screen-space water reflections; the full water mirror is one switch away.
 
 Original code, no Minecraft assets. Source: https://github.com/hildlabs/horizon-shaders"""
 authors = ["hildlabs"]
@@ -25,6 +25,21 @@ icon = "icons/daybreak.png"
 categories = ["semi-realistic", "shadows", "medium"]
 tags = ["shadows", "water", "reflections", "waving-plants", "sun-rays", "bloom", "lightweight"]
 screenshots = ["screenshots/daybreak/1.jpg", "screenshots/daybreak/2.jpg", "screenshots/daybreak/3.jpg"]
+
+[[versions]]
+version = "0.3.0"
+published = "2026-11-16"
+game = "26.3"
+file = "daybreak-0.3.0.hshader"
+sha256 = "a24c755e4f3432bce4b08abd4249927f17aa6e3f03ddaed4bdad7b4ba2010ed1"
+changelog = """
+Faster: about 11 % more frame rate than 0.2.0 in a scripted benchmark flight (town, mob parade, fireworks, redstone factory, storm), mostly CPU time Horizon spent on the pack.
+
+- **Coloured light only where it is coloured.** Torches, lanterns, fire, glowstone, lava and redstone lamps use block light's warm tint instead of a `[[lights]]` entry, so Horizon rebuilds its colour grid far less often: no more stutters by lamp walls and lava lakes. Soul fire, redstone torches, sea lanterns, amethyst, copper, froglights and end rods keep their colours.
+- **Screen-space water reflections** by default, with no extra pass. The full water mirror is still there as **Full mirror** on the Water page.
+- **Sharper, cheaper shadows:** 1536 texels over 64 blocks by default (was 2048 over 96). Shadow detail and distance are new options, so everyone starts on High; other settings are kept.
+
+Shader API 0.1 (the Nightly of 2026-11-13). Release notes: https://github.com/hildlabs/horizon-shaders/releases/tag/v0.3.0"""
 
 [[versions]]
 version = "0.2.0"

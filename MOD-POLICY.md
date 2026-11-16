@@ -15,8 +15,9 @@ who makes them, who is responsible for them, and how to have one removed. By sub
   hashes, that it builds or loads against the Horizon version it names, and that nothing obviously harmful is in it.
   That review is not a legal review, a security audit or a guarantee. Mods are provided as they are, without
   warranty, by their authors.
-- **Native mods** (built into the game with [horizon-mixins](https://github.com/horizon-rust/horizon-mixins)) run
+- **Native mods** (source `.hmod` packages built locally against their exact signed Horizon SDK) run
   with the same access to your computer as the game. Install them only from authors you trust.
+  The frozen native-v1 catalogue retains old `.hnmod` metadata and assets for history, not installation on the SDK runtime.
 
 ## What authors promise when they submit
 

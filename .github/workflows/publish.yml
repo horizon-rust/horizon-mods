@@ -4,6 +4,8 @@
 # playhorizon.dev/mods read. Nothing is published if any entry fails its checks.
 # Every hour it runs again to refresh each project's `downloads` (GitHub's download
 # counts of its release assets) and `stars` (its source repository's GitHub stars).
+# Never compile submitted Rust or restore Actions caches with publishing credentials.
+# Native packages are source-only .hmod; the launcher uses the exact signed SDK.
 name: publish
 on:
   push:
@@ -28,23 +30,12 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      HORIZON_REV: ${{ vars.HORIZON_REV || 'main' }}
+      HORIZON_REV: ${{ vars.HORIZON_REV }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/cache@v4
         with:
-          path: |
-            ~/.cargo/bin
-            ~/.cargo/horizon-rev
-          key: cargo-horizon-mod-${{ env.HORIZON_REV }}
+          persist-credentials: false
       - run: scripts/install-tool.sh
-      # Files kept from the last run: GitHub counts every download of a release
-      # asset, so fetching them all again each hour would count as players.
-      - uses: actions/cache@v4
-        with:
-          path: files
-          key: files-${{ hashFiles('mods/*.toml') }}
-          restore-keys: files-
       - run: scripts/fetch.sh .
       - name: Build the index
         run: |
@@ -59,6 +50,17 @@ jobs:
             cp "files/$sha" "$dir/$file"
             gh release create "$tag" "$dir/$file" --title "$id $version" --latest=false \
               --notes "Reviewed in the registry: mods/$id.toml. SHA-256 $sha."
+          done
+      - name: Keep content-addressed download copies
+        run: |
+          gh release view registry-files >/dev/null 2>&1 \
+            || gh release create registry-files --prerelease --latest=false --title "Registry files" \
+                 --notes "Reviewed packages named by SHA-256; downloads are verified before indexing."
+          gh release view registry-files --json assets --jq '.assets[].name' > stored.txt
+          cargo horizon-mod registry list . | while read -r sha id version file; do
+            grep -Fxq "$sha" stored.txt && continue
+            gh release upload registry-files "files/$sha"
+            printf '%s\n' "$sha" >> stored.txt
           done
       - name: Download counts
         run: |
@@ -94,31 +96,17 @@ jobs:
               | if $n > 0 then .stars = $n else . end)' site/index.json > index.starred.json
           mv index.starred.json site/index.json
           jq -r '.projects[] | "\(.id) \(.stars // 0)"' site/index.json
-      - name: Native mods that don't apply on the newest Nightly
-        run: |
-          # native-compat.yml's daily health: the version each names gets `broken_on`, the Horizon
-          # commit horizon-mixins refused it on and its code, so the launcher warns before an install.
-          if gh release download native-health --pattern native-health.json --dir health 2>/dev/null; then
-            jq --slurpfile h health/native-health.json '
-              $h[0] as $health
-              | .projects |= map(. as $p | .versions |= map(
-                  ($health.broken[$p.id] // null) as $b
-                  | if $b != null and $b.version == .version
-                    then .broken_on = [{horizon: $health.horizon, code: $b.code}] else . end))' \
-              site/index.json > index.health.json
-            mv index.health.json site/index.json
-            jq -r '.projects[] | select(.versions[0].broken_on) | "\(.id) \(.versions[0].version): \(.versions[0].broken_on[0].code)"' site/index.json
-          fi
       - name: The site
         run: |
           cp -R icons site/icons
           # Screenshots are served beside the icons: the index lists them at
           # <site>screenshots/<id>/<name>.
           if [ -d screenshots ]; then cp -R screenshots site/screenshots; fi
+          python3 scripts/catalogue.py history . site/archive/native-v1
           cat > site/index.html <<'HTML'
           <!doctype html><meta charset="utf-8"><title>Horizon mods</title>
           <meta http-equiv="refresh" content="0; url=https://playhorizon.dev/mods">
-          <p><a href="https://playhorizon.dev/mods">playhorizon.dev/mods</a> · <a href="index.json">index.json</a></p>
+          <p><a href="https://playhorizon.dev/mods">playhorizon.dev/mods</a> · <a href="index.json">index.json</a> · <a href="archive/native-v1/">Incompatible native-v1 history</a></p>
           HTML
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

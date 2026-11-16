@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# Installs cargo-horizon-mod from Horizon at $HORIZON_REV (a commit; the repository
-# variable HORIZON_REV, else main). The registry's checks are that tool's.
+# HORIZON_REV must be the reviewed cutover engine commit, never a floating branch.
+# Trusted jobs never restore executable or Cargo caches from mod-building jobs.
 set -euo pipefail
-rev="${HORIZON_REV:-main}"
-if command -v cargo-horizon-mod >/dev/null && [ "$(cat ~/.cargo/horizon-rev 2>/dev/null)" = "$rev" ]; then
-  exit 0
+rev="${HORIZON_REV:?Set HORIZON_REV to the reviewed .hmod SDK checker commit}"
+if [[ ! "$rev" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "::error::HORIZON_REV must be an exact 40-character lowercase commit"
+  exit 1
 fi
-cargo install --locked --git https://github.com/horizon-rust/horizon --rev "$rev" cargo-horizon-mod 2>/dev/null \
-  || cargo install --locked --git https://github.com/horizon-rust/horizon --branch "$rev" cargo-horizon-mod
-echo "$rev" > ~/.cargo/horizon-rev
+cargo install --locked --force --git https://github.com/horizon-rust/horizon --rev "$rev" cargo-horizon-mod

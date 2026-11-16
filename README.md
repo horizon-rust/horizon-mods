@@ -4,18 +4,20 @@ The registry of what is made for [Horizon](https://github.com/horizon-rust/horiz
 and resource packs, each one reviewed before it is published. Browse them at
 [playhorizon.dev/mods](https://playhorizon.dev/mods) or in the launcher (Mods, then Horizon beside Modrinth).
 
-Players install from here through the launcher, which checks every file's SHA-256 and, when the author signs, its
-signature before the game sees it. Sandboxed `.hmod` mods run in Horizon's sandbox,
-with no file, network or clock access, and can only do what their page lists.
+Players install through the launcher, which verifies each reviewed package's SHA-256 and, when the project has a
+minisign key, its signature. `kind = "mod"` includes content and sandboxed wasm `.hmod` packages. Wasm is not a
+separate catalogue kind.
 
-Native source mods (`.hnmod`, kind `native-mod`) are built into an isolated game by
-a launcher with native-mod support. They run with the player’s account permissions.
-Their bundles pin the exact Horizon and Horizon Mixins revisions used for the build.
-Other revisions have not been validated. Registry checks inspect the source bundle and compile it
-on the newest Nightly with the most downloaded native mods (in a job whose token
-can only read) without running it; reviewers must also examine the source and
-pinned-build validation. Publishing these requires the native-mod changes to `cargo-horizon-mod`
-and the launcher to have shipped first.
+Native source packages are also `.hmod`, with `kind = "native-mod"`. They contain `horizon-mod.toml`, the root Cargo
+project and sources, and any resources. The launcher builds against the **signed SDK for the exact pinned game
+build**, host target, side and Rust toolchain; it does not rebuild a game per mod or choose a nearby build. Native
+code runs with the player's permissions. Registry checks inspect packages without compiling or executing submitted
+Rust, build scripts, proc macros or wasm. Reviewers must examine sources and the author's exact-SDK build proof.
+Registry-built native binaries and combined-game sets are not needed by this launcher.
+
+**Cutover activation gate:** do not merge/activate this catalogue removal, change `HORIZON_REV`, or deploy the new
+submission service for public use until the matching signed game, SDK and launcher are published and real native
+and wasm staging/index/install canaries pass. The current published Nightly is not proof of that gate.
 
 **Who is responsible.** Except the projects marked Official (made by the Horizon project), everything here is made and
 owned by its own authors, not by the Horizon project or its maintainers. A listing is not an endorsement. See the
@@ -27,18 +29,18 @@ it accepts, and how to have a project taken down.
 Use the form at [playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit): sign in with GitHub, pick the file
 and fill in the page. The form checks the file, uploads it here and opens a pull request for you. Then:
 
-1. This repository's checks run on it: the file's own checks, a trial run of a mod in the sandbox, the index it would
-   publish. Their report is in the pull request's checks.
+1. Checks compare the entry with main, verify package structure, hashes and signatures, and build the candidate
+   index. They never compile or execute submitted code. Their report and candidate index are in the pull request.
 2. A reviewer (see [`.github/CODEOWNERS`](.github/CODEOWNERS)) reads the entry, the source and the report, and asks
    for changes in the pull request if needed.
 3. Merging publishes it: the file becomes a release, the project appears on the site and in the launcher within
    minutes.
 
-What the registry takes now: mods, modpacks of registry mods, and resource packs. Shader packs open when Horizon's own
-shader pack format is out (Iris and OptiFine packs are on Modrinth). Before you submit a mod, run what the checks run:
+Accepted kinds include content/wasm mods, native source mods, modpacks of current registry mods, resource/data packs
+and shader packs supported by the checker. Before submitting, use the checker for the reviewed engine revision:
 
 ```sh
-cargo install --git https://github.com/horizon-rust/horizon cargo-horizon-mod
+cargo install --locked --git https://github.com/horizon-rust/horizon --rev "$HORIZON_REV" cargo-horizon-mod
 cargo horizon-mod check target/horizon-mod/my_mod.hmod
 ```
 
@@ -66,33 +68,54 @@ why.
 | `.github/workflows/check.yml` | A pull request's checks |
 | `.github/workflows/publish.yml` | On merge: releases, then `index.json` on Pages |
 | `.github/workflows/cleanup.yml` | Weekly: staging files nobody needs any more |
-| `.github/workflows/native-compat.yml` | Native mods on the newest Nightly, as the launcher builds them: a pull request's new version applied and compiled with the most downloaded native mods, its module names against every mod's; daily, every mod's newest version, the ones that don't apply marked `broken_on` in the index (`scripts/native_compat.py`) |
-| `.github/workflows/native.yml` | Horizon's native mods: each changed one's tests, `.hnmod` and game check, all of them together, and weekly on the newest Nightly |
-| `native/<name>/` | Horizon's own native mods (Zoom, FPS Counter, Keystrokes, Minimap, Recipes, Coordinates HUD): the source of their `.hnmod` files |
-| `native/tools/` | Shared by them: apply on Horizon, check, build, package, prove (`native/tools/native.py`) |
+| `archive/native-v1/mods/` | Frozen original native-project histories, including earlier `.hmod` releases, and their dependent modpack; never installed or validated as current packages |
+| `native/<name>/` | Frozen pre-SDK official-mod source history; not migrated mods or current build automation |
+| `scripts/catalogue.py` | Byte-preserving archival review and the explicitly incompatible historical catalogue page |
 | `scripts/` | What the workflows share |
 
-The format of the entries and of `index.json` is
-[docs/api/mod-index.md](https://github.com/horizon-rust/horizon/blob/main/docs/api/mod-index.md) in Horizon's repository;
-the checks are `cargo horizon-mod check` and `cargo horizon-mod registry`, from Horizon at the commit in the
-repository variable `HORIZON_REV` (else `main`).
+The entry and index format is
+[the registry reference](https://github.com/horizon-rust/horizon/blob/main/docs/modding/src/reference/registry-index.md).
+Checks and publishing use `cargo horizon-mod` from **the exact reviewed 40-character engine commit** in repository
+variable `HORIZON_REV`. Missing, abbreviated or floating revisions fail closed; there is no `main` fallback.
+Deploy `horizon-mod-registry` from that coordinated engine release too: an old deployed service does not understand
+the new package contract. First land `scripts/catalogue.py` and its unit tests alone as inert, reviewed tooling,
+without changing workflows or the catalogue. The cutover PR can then use that trusted base script normally;
+never execute the pull request's copy or bypass required checks to bootstrap the change.
 
 The index: `https://horizon-rust.github.io/horizon-mods/index.json`.
 
-## Horizon's native mods
+## Frozen native-v1 history
 
-`native/<name>/` holds the source of Horizon's official mods, as
-[horizon-mixins](https://github.com/horizon-rust/horizon-mixins) bundles on Horizon's native hook points
-([docs/native-mods.md](https://github.com/horizon-rust/horizon/blob/main/docs/native-mods.md)). Each folder keeps the
-history of the repository it came from. A mod builds on any Horizon whose hook points are at least the version its
-`compatibility.json` names; `horizon_revision` is the commit it was last tested on. `smp` and `voicechat-server`
-are server mods, built into the official server's engine (see their READMEs).
+The pre-SDK catalogue is preserved byte-for-byte in `archive/native-v1/mods/`, including original owners, signing
+keys, hashes, signatures, source links and mixed `.hmod`/`.hnmod` version histories. All 137 old native projects and Atomic Industry (both published modpack
+versions require old native bundles) are outside the live index. The 12 content/wasm projects, 13 shaders and two
+resource packs remain live. This is an explicit clean-break incompatibility, **not completed ports**. No `.hnmod`
+validation/runtime path or transparent legacy fallback remains. Published releases and Git history are not deleted
+or rewritten; cleanup also preserves archived staging copies.
 
-```sh
-python3 native/tools/native.py check zoom          # apply on the tested Horizon and cargo check the game
-python3 native/tools/native.py check all           # every native mod together
-python3 native/tools/native.py package all         # native/target/<id>-<version>.hnmod, for a registry entry
-python3 native/tools/native.py proof zoom --resources /path/to/.local/horizon-client/26.3
-```
+Publishing generates [the historical catalogue](https://horizon-rust.github.io/horizon-mods/archive/native-v1/),
+with original metadata and direct release links. Its `catalogue.json` is labelled non-installable, not a runtime
+index. Modpack dependencies in the current index must all refer to current packages; a dependent historical pack
+is archived rather than offered with missing dependencies.
 
-To make your own, start from [horizon-native-mod-template](https://github.com/horizon-rust/horizon-native-mod-template).
+Archived IDs are reserved. The submission service refuses new listings for them; their owners can reactivate a
+project through a manually reviewed `mods/<id>.toml` with a genuinely new `.hmod` version, preserving kind, owners,
+numeric owner IDs and signing key. The frozen entry stays unchanged. That review checks the port, its source and
+exact-SDK proof, and the normal package/index checks still run. Consumer-mod ports are not part of this cutover.
+
+## Build and publication trust
+
+The old `native.yml` and `native-compat.yml`, their source-application/check/trace/package tools and mutable
+`native-health` index overlay are retired. There is no scheduled third-party Rust build, shared trusted Actions
+cache, combined-game publisher or signing step in this repository. This replaces the unsafe context in #390;
+the old combined-game proposal #381 is not revived.
+
+Trusted validation and publication jobs build the pinned checker fresh and restore no Actions cache. Files come
+from content-addressed `registry-files` copies, original version releases or staging, and every byte is rehashed,
+including files already on disk. The ordinary index builder then checks package structure, metadata and author
+signatures before anything is published. Existing SDK release signature/provenance authority stays in the engine's
+protected release workflow; registry packages do not acquire invented signing keys.
+
+Any future third-party build must run without write/signing credentials and outside any cache scope trusted
+publishers restore; only bounded, digest-checked data may cross into a separate publisher. It must never execute
+uploaded artifacts or scripts in that publisher. There is no such build job to enable in this cutover.

@@ -1,8 +1,7 @@
-# A pull request's checks: what it changes compared with main, each new file's
-# own check (its kind's, its signature, a trial run of a mod in the sandbox), and
-# the index it would publish. Runs with a read-only token and no secrets; the tool
-# comes from Horizon, never from the pull request, and a submission's code only
-# runs inside Horizon's mod sandbox.
+# Non-executing package validation, review and candidate index generation.
+# Native Rust is never compiled here; wasm remains kind `mod`.
+# Only the trusted base's scripts and exact reviewed engine checker run.
+# No job restores a cache: third-party build jobs must not influence reviewers.
 name: check
 on:
   pull_request:
@@ -19,32 +18,17 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      HORIZON_REV: ${{ vars.HORIZON_REV || 'main' }}
+      HORIZON_REV: ${{ vars.HORIZON_REV }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           path: base
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           path: head
           persist-credentials: false
-      # A fork's run gets no repository variables, so HORIZON_REV is a branch name: pin it to its commit, or the
-      # cache below keeps serving the tool built the first time (#136 failed on 2026-11-07 with an 11-03 tool).
-      - name: Pin the tool's revision
-        run: |
-          case "$HORIZON_REV" in
-            *[!0-9a-f]*|'')
-              sha=$(git ls-remote https://github.com/horizon-rust/horizon "refs/heads/$HORIZON_REV" | cut -f1)
-              test -n "$sha"
-              echo "HORIZON_REV=$sha" >> "$GITHUB_ENV" ;;
-          esac
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin
-            ~/.cargo/horizon-rev
-          key: cargo-horizon-mod-${{ env.HORIZON_REV }}
       # main's scripts, not the pull request's.
       - run: base/scripts/install-tool.sh
       - name: Who submitted it
@@ -66,17 +50,11 @@ jobs:
           set -o pipefail
           { echo "## Changes"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
           status=0
-          cargo horizon-mod registry review base head --author "${{ steps.author.outputs.login }}" 2>&1 \
+          python3 base/scripts/catalogue.py review-base base head review-base
+          cargo horizon-mod registry review review-base head --author "${{ steps.author.outputs.login }}" 2>&1 \
             | tee -a "$GITHUB_STEP_SUMMARY" || status=1
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           exit $status
-      # main's files, kept by publish: each download from a release counts as a
-      # player's.
-      - uses: actions/cache/restore@v4
-        with:
-          path: files
-          key: files-${{ hashFiles('head/mods/*.toml') }}
-          restore-keys: files-
       - name: Download its files
         run: base/scripts/fetch.sh head
       - name: Check each new file
@@ -90,6 +68,7 @@ jobs:
       - name: The index it would publish
         run: |
           cargo horizon-mod registry build head --files files --out index.json --generated "$(date -u +%FT%TZ)"
+          python3 base/scripts/catalogue.py history head history
           python3 - >> "$GITHUB_STEP_SUMMARY" <<'PY'
           import json
           index = json.load(open("index.json"))
@@ -97,3 +76,10 @@ jobs:
           for p in index["projects"]:
               print(f"- {p['kind']} `{p['id']}` {p['versions'][0]['version']}")
           PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registry-candidate
+          path: |
+            index.json
+            history/
+          if-no-files-found: error

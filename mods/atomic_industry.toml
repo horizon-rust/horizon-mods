@@ -23,6 +23,14 @@ tags = ["tech", "nuclear", "automation", "quarry", "factory", "kitchen-sink"]
 screenshots = ["screenshots/atomic_industry/1.jpg", "screenshots/atomic_industry/2.jpg", "screenshots/atomic_industry/3.jpg", "screenshots/atomic_industry/4.jpg", "screenshots/atomic_industry/5.jpg", "screenshots/atomic_industry/6.jpg", "screenshots/atomic_industry/7.jpg"]
 
 [[versions]]
+version = "1.2.0"
+published = "2026-11-16"
+game = "26.3"
+file = "atomic_industry-1.2.0.hpack"
+sha256 = "3605f5ef4dc1963b56a2dc2678b50452d1e0b3efe33b6736cab8a6da5a570a5c"
+changelog = "Updates Applied Energistics 2 to 15.4.18 and RightClickHarvest to 0.2.1, and adds Salvage 1.2.0 (recycle gear, wood and stone back into materials) and Enchantment Hints 0.1.0 (what each enchantment does): 32 mods, built together on Nightly 2026-11-08 (fdc87ae)."
+
+[[versions]]
 version = "1.1.0"
 published = "2026-11-12"
 game = "26.3"

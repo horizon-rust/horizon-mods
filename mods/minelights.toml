@@ -7,14 +7,14 @@ MineLights is a Minecraft Fabric, Quilt, Forge, NeoForge and Horizon mod that br
 
 Configure MineLights through Horizon's Mods menu. OpenRGB devices and Yeelight bulbs can connect directly. Other supported RGB devices use [MineLights Server](https://github.com/megabytesme/MineLights-Server).
 
-MineLights connects to local RGB services and may discover Yeelight bulbs on the local network. MineLights Server uses encrypted, authenticated connections and supports optional pairing with servers on other computers. On Windows, Horizon's server option is off by default. If you opt in and confirm, it can download and launch the reviewed MineLights Server v2.4.0 after verifying its pinned SHA-256. Current clients use authenticated V2; older clients may use loopback-only V1 after explicit approval. You can also install and start the server yourself. Configurable chat notices report a missing server, download start, in-progress status when you join a world during an existing download, and whether the server started or needs a restart when the download finishes; update checks read release metadata without downloading an update.
+MineLights connects to local RGB services and may discover Yeelight bulbs on the local network. MineLights Server uses encrypted, authenticated connections and supports optional pairing with servers on other computers. On Windows, Horizon's server option is off by default. If you opt in and confirm, it can download and launch the reviewed MineLights Server v2.4.1 after verifying its pinned SHA-256. Current clients use authenticated V2; older clients may use loopback-only V1 after explicit approval. You can also install and start the server yourself. Configurable chat notices report a missing server, download start, in-progress status when you join a world during an existing download, and whether the server started or needs a restart when the download finishes; update checks read release metadata without downloading an update.
 
 This is the Horizon port of [MineLights](https://github.com/megabytesme/MineLights), by MegaBytesMe. As a native mod, it is built into the game and runs with the player's account permissions.
 """
 authors = ["MegaBytesMe"]
 owners = ["megabytesme"]
 license = "CC-BY-NC-SA-4.0"
-source = "https://github.com/megabytesme/MineLights/tree/246c37d4c0c29832fb66236a366265e20a0c70f2/horizon"
+source = "https://github.com/megabytesme/MineLights/tree/be4ea332f7aa97c44ee8cea3f715873f39bfe2f2/horizon"
 icon = "icons/minelights.png"
 categories = ["utility", "technology"]
 key = "RWQXM9P921f9AnO4kAKnVMu+2UdAr6BeAdM70P6PjbT7xxxmJbVb/qlN"
@@ -32,3 +32,17 @@ trusted comment: MineLights Horizon native mod 2.4.0
 eJMjw30In2YnoOLLAh3vJTJ8ianrENm3766GtwRD89beMA05QSlDSfdwBVcjgeoaJTDiT9WwNvn3rKi/NncqCg==
 """
 changelog = "Use authenticated V2 connections in Horizon and Java, preserve opt-in V1 support for older clients, add shared-provider priorities and safe shutdown, restore Horizon OpenRGB device state safely, add configurable server download notices, pin the reviewed MineLights Server 2.4.0 release, and fix Windows server-operation locking."
+
+[[versions]]
+version = "2.4.1"
+published = "2026-11-16"
+game = "26.3"
+file = "minelights-2.4.1.hnmod"
+sha256 = "90153309c99b93fd114fccd466ef23bd0b2ec94e9970bc2bf46148b14c1c2259"
+signature = """
+untrusted comment: signature from minisign secret key
+RUQXM9P921f9AlxwoHq4mM+qqEYojgg34d7A3eiJ/afmCrIqSTFirFOlFccjFnkuIPJdNEdccjWiS+foUvWABIC1/jHAq5CkFQY=
+trusted comment: MineLights Horizon native mod 2.4.1
+o2KKPRKm1fxVcBVmf9LSac/Ul30gO+RdZZ4yr0YvO/5A1vS6LvtbSWtVC3xhuxwwEOoxLSWx8O47lgj0/yF7Bg==
+"""
+changelog = "Choose a compass fallback target, ignore carried compasses, and control compass wobble and lodestone shimmer in the settings and commands. Player-spawn targets fall back to world spawn on Horizon. Pin the optional server download to MineLights Server 2.4.1."

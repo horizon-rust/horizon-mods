@@ -10,31 +10,60 @@ Bright, colorful shader pack for Horizon. Horizon had no shaders on the registry
 - **Soft shadows.** Sun and moon cast them. Water and stained glass tint the light that goes through.
 - **Sky and fog match.** Blue day, orange sunsets, dark blue night. Far terrain fades into the sky, no hard line at the horizon.
 - **Colored light.** Torches are warm, soul fire is blue, redstone is red, sea lanterns are cyan, amethyst is purple.
-- **Water that looks like water.** Waves, depth color, reflections, sun glitter and foam on the shore.
+- **Water that looks like water.** Waves, depth color, reflections, sun glitter, foam on the shore and light patterns on the seabed.
+- **Weather.** Rain and snow lit by the scene, puddles with raindrop rings, optional sunbeams.
 - **Wind.** Grass, flowers, crops and leaves move. Rain makes it stronger.
 - **Nether and End look different.** Nether is hot and hazy, with heat shimmer. End is cold and purple.
-- **29 options.** Everything can be tuned or turned off in game.
+- **29+ options.** Everything can be tuned or turned off in game.
+
+## Which version do I take?
+
+- **1.7.0** is for Horizon builds that serve shader API 0.2 (newer than Nightly 2026-11-13).
+- **1.6.1** is for builds that still serve shader API 0.1.
+
+The launcher offers the one your game can run.
 
 ## Slow? Try this
 
 - Shadow quality: Low
+- Shadow map size: 1024 or 512
+- Shadow distance: 64
 - Water reflections: off
 - Bloom: off
 - Shadows: off. Biggest gain.
 
 ## Known problems
 
-- Horizon shader API is 0.1, experimental. It can change.
-- Entities, block entities and particles are not shaded yet. There is no stage for them.
+- Horizon's shader API is experimental and can change.
+- Entities, block entities and particles are not shaded by Montarc yet.
 - Nether and End sky is vanilla. The sky stage only draws in the Overworld.
-- Shadow bias may need tuning on some GPUs. If you see stripes on surfaces, change `Shadow bias`."""
+- Shadow bias may need tuning on some GPUs. If you see stripes on surfaces, change `Shadow bias`.
+"""
 authors = ["Muurrcc"]
 owners = ["Muurrcc"]
 license = "MIT"
 source = "https://github.com/Muurrcc/montarc"
 icon = "icons/montarc.png"
 categories = ["semi-realistic", "colored-lighting", "shadows"]
-tags = ["colorful", "shadows", "water", "wind", "bloom", "fxaa"]
+tags = ["colorful", "shadows", "water", "wind", "bloom", "fxaa", "rain", "puddles", "caustics", "sunbeams"]
+screenshots = ["screenshots/montarc/1.jpg", "screenshots/montarc/2.jpg", "screenshots/montarc/3.jpg", "screenshots/montarc/4.jpg", "screenshots/montarc/5.jpg", "screenshots/montarc/6.jpg"]
+
+[[versions]]
+version = "1.6.1"
+published = "2026-11-17"
+game = "26.3"
+file = "montarc-1.6.1.hshader"
+sha256 = "ce992ef3f4b2aa202c57d5aae47c37c934b4e5f0e00685b2b7a13fe7f5db6de5"
+changelog = """
+- For Horizon builds that serve shader API 0.1. Build 1.7.0 is the same pack for API 0.2.
+- Portals: the Nether portal glows violet and the End portal and gateway glow cyan-green.
+- Shadows: new "Shadow map size" (512 to 2048) and "Shadow distance" (64 to 160) options.
+- Weather: rain and snow have their own look, lit by the sky, the moon, torches and lightning.
+- Rain puddles that mirror the sky, with raindrop rings ("Rain puddles", needs "Wet surfaces").
+- Sunbeams: optional light rays toward the sun ("Sunbeams", off by default).
+- Underwater: sunlight patterns dance on the seabed ("Underwater light"), and the water fog is a clear blue-teal instead of almost black.
+- Screenshots added. Release v1.6.1 of the repository.
+"""
 
 [[versions]]
 version = "1.1.1"

@@ -25,6 +25,7 @@ source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/mousetweaks"
 icon = "icons/mousetweaks.png"
 categories = ["storage", "utility"]
 tags = ["inventory", "mouse", "drag", "scroll", "port"]
+screenshots = ["screenshots/mousetweaks/1.jpg", "screenshots/mousetweaks/2.jpg", "screenshots/mousetweaks/3.jpg", "screenshots/mousetweaks/4.jpg"]
 
 [[versions]]
 version = "1.1.0"

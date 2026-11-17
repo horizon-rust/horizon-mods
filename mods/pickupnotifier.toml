@@ -24,6 +24,7 @@ source = "https://github.com/DeportedToHell/MCRE-Mods/tree/main/pickupnotifier"
 icon = "icons/pickupnotifier.png"
 categories = ["utility"]
 tags = ["pickup", "hud", "items", "notifications", "port"]
+screenshots = ["screenshots/pickupnotifier/1.jpg", "screenshots/pickupnotifier/2.jpg", "screenshots/pickupnotifier/3.jpg", "screenshots/pickupnotifier/4.jpg"]
 
 [[versions]]
 version = "1.1.0"

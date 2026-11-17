@@ -21,6 +21,7 @@ source = "https://github.com/DeportedToHell/MCRE-Mods/tree/6060e0fba1ee4b720f43e
 icon = "icons/smoothswapping.png"
 categories = ["utility"]
 tags = ["inventory", "animation", "ui", "port"]
+screenshots = ["screenshots/smoothswapping/1.jpg", "screenshots/smoothswapping/2.jpg", "screenshots/smoothswapping/3.jpg", "screenshots/smoothswapping/4.jpg"]
 
 [[versions]]
 version = "1.1.2"

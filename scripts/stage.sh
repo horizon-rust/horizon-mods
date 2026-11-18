@@ -82,8 +82,18 @@ def versions(commit, path):
     return [v for v in entry.get("versions", []) if isinstance(v, dict)]
 
 
-def record(v):
-    return tuple(v.get(k) for k in ("version", "file", "sha256"))
+def records(commit, path):
+    """(version, file, sha256) of each [[versions]] record; a record whose fields aren't strings
+    stops the run, named."""
+    out = []
+    for n, v in enumerate(versions(commit, path) or [], 1):
+        fields = tuple(v.get(k) for k in ("version", "file", "sha256"))
+        bad = [k for k, x in zip(("version", "file", "sha256"), fields) if not isinstance(x, str)]
+        if bad:
+            sys.exit(f"{path} at {commit[:12]}: [[versions]] record {n} (version {shown(v.get('version'))}): "
+                     f"{', '.join(bad)} must be a string")
+        out.append(fields)
+    return out
 
 
 changed = subprocess.run([*git, "diff", "--name-only", "--no-renames", "-z", base, head, "--", "mods/"],
@@ -92,11 +102,10 @@ added = []
 for path in filter(None, changed):
     if not re.fullmatch(r"mods/[a-z0-9_]{1,64}\.toml", path):
         continue
-    new = versions(head, path)
-    if new is None:
+    if versions(head, path) is None:
         continue  # removed in head
-    old = {record(v) for v in versions(base, path) or []}
-    added += [(path, *record(v)) for v in new if record(v) not in old and all(isinstance(x, str) for x in record(v))]
+    old = set(records(base, path))
+    added += [(path, *r) for r in records(head, path) if r not in old]
 if not added:
     sys.exit("the pull request adds no [[versions]] record with a version, a file and a sha256 to mods/")
 

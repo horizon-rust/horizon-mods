@@ -2,7 +2,7 @@
 import tomllib
 import unittest
 
-from native_compat import has_mixins_content, newest_unrevoked, strip_launcher_tables
+from native_compat import has_mixins_content, mixins_rev, newest_unrevoked, strip_launcher_tables
 
 MANIFEST = """[mod]
 id = "example"
@@ -85,6 +85,16 @@ class NewestUnrevoked(unittest.TestCase):
         projects = [project("few", "f", downloads=1), project("content", "c", kind="content-mod", downloads=99),
                     project("many", "m", downloads=50)]
         self.assertEqual(self.listed(projects, []), [("many", "m"), ("few", "f")])
+
+
+class MixinsRev(unittest.TestCase):
+    def test_reads_the_pin_from_mixins_tool_rs(self):
+        source = '//! The pinned tool.\npub const REV: &str = "e59da9094f0c2fdda6c627fe9eff22dec6a906f0";\n'
+        self.assertEqual(mixins_rev(source), "e59da9094f0c2fdda6c627fe9eff22dec6a906f0")
+
+    def test_a_missing_pin_names_the_file_to_look_at(self):
+        with self.assertRaisesRegex(SystemExit, "mixins_tool.rs"):
+            mixins_rev("pub const MIXINS_REV: &str = horizon_platform::mod_package::mixins_tool::REV;")
 
 
 if __name__ == "__main__":

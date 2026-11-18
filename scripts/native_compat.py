@@ -143,11 +143,23 @@ def published():
             for _, v in newest_unrevoked(index["projects"], index.get("revoked", []))]
 
 
+# Where Horizon pins its horizon-mixins (the launcher's MIXINS_REV re-exports it).
+MIXINS_PIN = "crates/horizon-mod-package/src/mixins_tool.rs"
+
+
+def mixins_rev(source):
+    """The horizon-mixins commit Horizon pins, from MIXINS_PIN's source."""
+    found = re.search(r'pub const REV: &str = "([0-9a-f]{40})"', source)
+    if not found:
+        sys.exit(f"No `pub const REV` in Horizon main's {MIXINS_PIN}: has the pin moved?")
+    return found.group(1)
+
+
 def mixins_tool(bundles):
     """horizon-mixins as the launcher picks it: the newest of its own (Horizon main's MIXINS_REV) and the
     mods' pins, by commit date."""
-    text = native.get(f"https://raw.githubusercontent.com/{native.REPO}/main/launcher/src/native_mods.rs").decode()
-    revs = {re.search(r'pub const MIXINS_REV: &str = "([0-9a-f]{40})"', text).group(1)}
+    text = native.get(f"https://raw.githubusercontent.com/{native.REPO}/main/{MIXINS_PIN}").decode()
+    revs = {mixins_rev(text)}
     revs |= {b.mixins for b in bundles if b.mixins}
     def date(rev):
         commit = json.loads(native.get(f"https://api.github.com/repos/horizon-rust/horizon-mixins/commits/{rev}"))

@@ -1,0 +1,48 @@
+id = "petalveil"
+kind = "shader"
+name = "Petalveil"
+summary = "Vanilla's light kept whole: shadows only shade the sky's, so caves, torches and night stay vanilla. Pastel sky, waves, caustics, wind in the leaves, glow."
+description = """
+Petalveil is a shader pack in Horizon's own format, and its rule is that vanilla's light stays whole: a surface is lit by `albedo * tint * lightmap` first, and the pack only adds to it. The sun and the moon add light, and the shadow map takes back a bounded share of what comes from the sky, so a cave, a cellar, torchlight and the night keep the brightness and the colours vanilla gives them.
+
+What it adds:
+- Sun and moon shadows, soft to very soft, 1024 to 4096 texels over 64 to 160 blocks.
+- A pastel sky veil that fades into vanilla's fog colour at the horizon, a rainbow while the rain dries, and a cooler night with its brightness kept.
+- Broad cloud shadows drifting over the land, on their own pattern.
+- Water of its own: a swell and a fine chop on the surface, rain rings, the world mirrored by fresnel, its own refraction so the bed bends with the wave, sun glitter, and caustics on the blocks under the water.
+- Leaves, grass and flowers waving in a gust, the same in the shadow pass so their shadows move with them.
+- Sun rays and moon rays, a soft glow, cloud edge softening, and a gentle colour grade.
+
+Every effect can be turned off or brought to a neutral value: 59 options on five pages (Lighting, Water, Nature, Sky, Camera) in Options > Horizon Settings > Shader Packs > Shader Options. Shadows off is the cheapest setting; the water's own surface detail has a switch for each part.
+
+The pack costs about 3.8 ms of GPU time at 2560x1440 with the default settings (budget 3.0 ms). No Minecraft assets, original code.
+
+Source: https://github.com/Givemegitpls/Petalveil — built for shader API 0.2, so it needs a Horizon Nightly from 2026-11-16 or newer."""
+authors = ["BarmaleyVIP"]
+owners = ["Givemegitpls"]
+owner_ids = [70638175]
+license = "MIT"
+source = "https://github.com/Givemegitpls/Petalveil"
+icon = "icons/petalveil.png"
+categories = ["vanilla-like", "atmosphere", "medium"]
+tags = ["pastel", "shadows", "water", "reflections", "caustics", "waving-plants", "sun-rays", "bloom"]
+screenshots = [
+  "screenshots/petalveil/1.jpg",
+  "screenshots/petalveil/2.jpg",
+  "screenshots/petalveil/3.jpg",
+  "screenshots/petalveil/4.jpg",
+]
+
+[[versions]]
+version = "2.0.0"
+published = "2026-11-18"
+game = "26.3"
+file = "petalveil-2.0.0.hshader"
+sha256 = "ce89265f785143b87498963e31f6a5be736734c10ab1eed086df4b388ab637e0"
+changelog = """
+Ported to shader API 0.2. The look is the same as 1.29.0: every stage converts at its doors (the engine's own `horizon_encode`/`horizon_decode` powers), so the values the pack's maths was tuned at are untouched, and the options keep their meaning and their defaults.
+
+- Needs a Horizon Nightly from 2026-11-16 or newer (it reads `MaterialInput.shaded_tint`, which arrived that day).
+- Nothing moved on the options pages; all 59 options keep their ids, so saved settings carry over.
+- Full-bright blocks follow the new `emission`: the block's light level over 15 rather than a brightness class, so lamps in the dark are a touch dimmer than in 1.x.
+- No change to the pack's cost on the GPU."""

@@ -1,0 +1,47 @@
+id = "rftoolsbuilder"
+kind = "mod"
+name = "RFTools Builder"
+summary = """RFTools Builder for Horizon: the Builder block and its shape cards. A card carries a shape (box, sphere, cylinder, capped cylinder, prism, cone, top and…"""
+description = """RFTools Builder for Horizon: the Builder block and its shape cards. A card carries a
+shape (box, sphere, cylinder, capped cylinder, prism, cone, top and bottom dome, torus, heart),
+its size, its offset and whether it is solid or hollow; the Builder walks that shape from the top
+and places a block into each replaceable cell, at the jar's eight cells a tick, taking the block
+from a container above or below it. /rftoolsbuilder status reads a Builder's shape and progress
+back. The quarry, movers, shields, space chamber, composer, projector and scanner are not
+carried.
+
+**Implemented so far**
+
+- **The quarry**: ShapeCardType.CARD_QUARRY* (quarryBlock,
+- **No "frame" shape either**: the jar has solid and hollow only
+- **The movers** (modules/mover/*: MoverTileEntity, MoverControllerTileEntity,
+- **The shields** (modules/shield/*: ShieldProjectorTileEntity,
+- **The space chamber** (SpaceChamberControllerBlock,
+- **Composer, projector and scanner** (modules/scanner/*: ShapeHandler,
+
+**Not yet ported**
+
+- **No in-game run.** There is no horizon-launcher on this machine
+- **The quarry**, its resource scan, silk/fortune drops, the void list and the
+- **The movers**, their controls and the vehicle builder (modules/mover).
+- **The shields** and their renderer (modules/shield).
+- **The space chamber**, copy/move/swap modes, support blocks and the entity
+- **Composer, projector and scanner**, hence SHAPE_COMPOSITION and
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact."""
+authors = ["McJty", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT License https://github.com/McJtyMods/RFToolsBuilder/blob/1.21_neo/LICENCE"
+source = "https://github.com/AdLf0208/rftoolsbuilder"
+icon = "icons/rftoolsbuilder.png"
+categories = ["technology"]
+tags = ["port", "building", "automation"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "rftoolsbuilder.hmod"
+sha256 = "231e5d00d134f8a622d0568b2096ff7306cb18e82ee5ce984a78f296505777be"
+changelog = "First publication in the SDK format."

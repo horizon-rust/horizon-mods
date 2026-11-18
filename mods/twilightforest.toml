@@ -1,0 +1,38 @@
+id = "twilightforest"
+kind = "mod"
+name = "The Twilight Forest"
+summary = """The Twilight Forest's portal and its dimension for Horizon: a water pool that a diamond lights into twilightforest:twilight_portal, and…"""
+description = """The Twilight Forest's portal and its dimension for Horizon: a water pool that a diamond
+lights into twilightforest:twilight_portal, and twilightforest:twilight_forest registered with the jar's
+own dimension type and a BiomeSource that reproduces twilightforest:twilight_biomes over the jar's
+biome grid for 14 of its 22 biomes, with the blocks its surface rule places. The terrain, the mod's
+structures, mobs, progression and client effects are not ported (notes.md).
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- Registrar::register_dimension(name, DimensionSettings) — “every world then has the level
+- register_chunk_generator::<T>(name, generator) and
+- EntityRef::teleport_to_level(host, dimension, pos, rotation) — the portal's travel, which
+- RuntimeLevels::open/unload/delete — mod-owned levels at run time (cap 64), not what a static
+- **blocked(density-function type: twilightforest:biome_driven_terrain)** and
+- **blocked(terrain)** — because of the two types above: the level has no noise terrain. The
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact."""
+authors = ["Benimatic (Ben Mazur) and the Twilight Forest contributors", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/twilightforest"
+icon = "icons/twilightforest.png"
+categories = ["adventure"]
+tags = ["port", "worldgen", "dimension"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "twilightforest.hmod"
+sha256 = "87cae848f944892453c4261c8309bdf4f88d2836b008cd1dd134a43b582a4c0f"
+changelog = "First publication in the SDK format."

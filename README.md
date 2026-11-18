@@ -125,7 +125,8 @@ That failure comes last: every other check still runs, and the final step says "
 passed" (or that other checks failed too). A maintainer may then admin-merge a reactivation only after verifying the
 owner by hand, and only when every step except that final owner step is green on the exact head they reviewed.
 The form service itself still checks only live ids. Owners reactivate a project through a manually reviewed `mods/<id>.toml` with a genuinely new `.hmod`
-version, preserving kind, owners, numeric owner IDs and signing key. The frozen entry stays unchanged. That review checks the port, its source and
+version, preserving kind, owners, numeric owner IDs and signing key. The one kind change allowed is a legacy
+`native-mod` coming back as a `mod` (content or sandboxed wasm), which can do less than native code. The frozen entry stays unchanged. That review checks the port, its source and
 exact-SDK proof, and the normal package/index checks still run. Consumer-mod ports are not part of this cutover.
 
 ## Build and publication trust

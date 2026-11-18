@@ -195,6 +195,39 @@ sha256 = "{}"
         with self.assertRaisesRegex(ValueError, "preserve archived owners"):
             self.review(author_id=7)
 
+    def test_native_can_come_back_as_a_sandboxed_mod(self):
+        self.frozen()
+        self.write(self.head, "mods", PORT.replace('"native-mod"', '"mod"'))
+        self.review(author_id=7)
+        self.assertEqual(self.unconfirmed, [])
+
+    def test_sandboxed_port_still_needs_its_owner(self):
+        self.frozen()
+        self.write(self.head, "mods", PORT.replace('"native-mod"', '"mod"'))
+        self.assert_owner_unconfirmed(99)
+
+    def test_sandboxed_port_cannot_take_over_an_archived_id(self):
+        self.frozen()
+        self.write(self.head, "mods", PORT.replace('"native-mod"', '"mod"').replace('["Author"]', '["attacker"]'))
+        with self.assertRaisesRegex(ValueError, "preserve archived owners"):
+            self.review(author_id=7)
+
+    def assert_kind_change_refused(self, text, archive, old, new):
+        self.frozen(text, archive)
+        port = text.replace(f'"{old}"', f'"{new}"').replace("1.0.0", "2.0.0").replace("a" * 64, "b" * 64)
+        self.write(self.head, "mods", port)
+        with self.assertRaisesRegex(ValueError, "preserve archived kind"):
+            self.review(author_id=7)
+
+    def test_native_cannot_come_back_as_another_kind(self):
+        self.assert_kind_change_refused(NATIVE, NATIVE_V1, "native-mod", "modpack")
+
+    def test_archived_modpack_cannot_come_back_as_a_mod(self):
+        self.assert_kind_change_refused(PACK, NATIVE_V1, "modpack", "mod")
+
+    def test_archived_shader_cannot_come_back_as_a_mod(self):
+        self.assert_kind_change_refused(SHADER, API_01, "shader", "mod")
+
     def test_reactivation_cannot_rename_historic_bytes(self):
         self.frozen()
         self.write(self.head, "mods", NATIVE.replace(".hnmod", ".hmod"))

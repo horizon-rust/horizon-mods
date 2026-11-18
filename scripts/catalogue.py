@@ -24,6 +24,9 @@ ARCHIVES = {
                 "Shader packs for shader API 0.1 and content mods with pre-SDK manifests are incompatible with "
                 "the shader API 0.2 and .hmod SDK runtime"),
 }
+# The only kind a reactivation may change: a legacy native may come back as a sandboxed content or wasm mod, which
+# can do less than the native could. Every other archived kind comes back as itself.
+PORTED_KINDS = {("native-mod", "mod")}
 # The reviewed live-to-archive moves, one `<archive> <id>` per line, read from the trusted base only: no other
 # pull request can take a live project out of the index by moving it.
 MOVES = ".github/archive-moves.txt"
@@ -125,8 +128,11 @@ def review_archive(name, kinds, holds, old, live, before, frozen, moves, author_
                 unconfirmed.append(f"{id}: this id is archived, and the pull request's author is not in its owner_ids; "
                                    "a maintainer must confirm the owner by hand")
             for field in ("kind", "owners", "owner_ids", "key"):
-                if current.get(field) != historic.get(field):
-                    raise ValueError(f"{id}: reactivation must preserve archived {field}")
+                if current.get(field) == historic.get(field):
+                    continue
+                if field == "kind" and (historic.get("kind"), current.get("kind")) in PORTED_KINDS:
+                    continue
+                raise ValueError(f"{id}: reactivation must preserve archived {field}")
             for v in current.get("versions", []):
                 if any(v["version"] == h["version"] or v["sha256"] == h["sha256"] for h in versions):
                     raise ValueError(f"{id}: reactivation needs a new version and package, not a renamed historic bundle")

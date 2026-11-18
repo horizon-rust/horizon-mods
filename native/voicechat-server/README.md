@@ -2,7 +2,6 @@
 
 > [!WARNING]
 > **Legacy.** This is the old `.hnmod` source. Launchers from 0.2.70 on can't load it. A port to the new mod SDK is tracked in [#1214](https://github.com/horizon-rust/horizon-mods/issues/1214).
-> The install steps below no longer work.
 
 The server half of proximity voice chat on a Horizon dedicated server. Players who have a voice chat client mod
 (azetech's Complex Voice Chat, any client that speaks Simple Voice Chat 2.6.x's protocol over Horizon's mod

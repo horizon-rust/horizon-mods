@@ -2,7 +2,6 @@
 
 > [!WARNING]
 > **Legacy.** This is the old `.hnmod` source. Launchers from 0.2.70 on can't load it. A port to the new mod SDK is tracked in [#1214](https://github.com/horizon-rust/horizon-mods/issues/1214).
-> The install steps below no longer work.
 
 The official Horizon server's survival layer ([design](https://github.com/horizon-rust/horizon/blob/main/docs/smp.md)).
 It is **not** part of Horizon's own server: only a server that builds this mod into its engine has it. It isn't listed

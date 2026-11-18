@@ -1,6 +1,8 @@
 # Every change needs a review from one of these before it merges (branch protection:
 # "Require review from Code Owners"). The reviewers are the Horizon Team, GitHub team horizon-rust/horizon-team
-# (Ludovic decides who is in it). /.github/ and takedowns stay Ludovic's.
+# (an organisation owner adds who the council chose). /.github/ stays Ludovic's. Takedowns (revoked.toml) are also the
+# Team's: GOVERNANCE.md 4.6 lets two council members take a mod down at once, so one Team member opens the pull request
+# and another approves it, without waiting for Ludovic.
 *            @ludovic111 @horizon-rust/horizon-team
 /.github/    @ludovic111
-/revoked.toml @ludovic111
+/revoked.toml @ludovic111 @horizon-rust/horizon-team

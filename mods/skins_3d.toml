@@ -1,0 +1,26 @@
+id = "skins_3d"
+kind = "native-mod"
+name = "3D Skins"
+summary = "The outer layer of every player's skin drawn as real 3D pixels."
+description = "The outer layer of every player’s skin drawn as real 3D pixels: hat, jacket, sleeves and pants follow the head, arms and legs exactly as the game moves them. Lighter and cleaner than Horizon’s built-in option: about 4x fewer polygons, closed corners, nothing poking through armor, and 3D sleeves in first person. Works for everyone you can see, respects Skin Customization, and switches to the flat layer further away. Client side only."
+authors = ["_idom_"]
+owners = ["umbx-dot"]
+license = "MIT"
+source = "https://github.com/umbx-dot/horizon-3d-skins"
+icon = "icons/skins_3d.png"
+categories = ["decoration"]
+tags = ["skins", "3d-skins", "players", "cosmetic"]
+key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
+
+[[versions]]
+version = "2.0.0"
+published = "2026-11-18"
+game = "26.3"
+file = "skins_3d-2.0.0.hmod"
+sha256 = "02c7daaab772cd9e3d6a6d247b65afba379ccf0b3dc7f36f11fbe18984426a91"
+signature = """
+untrusted comment: signature from minisign secret key
+RUT9Ujo/oCprPBDrD/PO88c2B6MEMg+PDr1EmpPkSgJIUksHFMlU7cMJx5fb6942JBIQdHIZQLfFcKy7DWrh5JZ3tGV0bchjBQM=
+trusted comment: timestamp:1795017007	file:skins_3d-2.0.0.hmod	hashed
+s7u09CIKaPDBVf7lGsX0REH7wLGFwtARnWfwgNJmVYenJnLbTxEZukxosElUYdvrXnx//YIriZ53DmcNoA4sCw=="""
+changelog = "Works with the new mod system and Horizon Nightly 2026-11-18 (0b14f8a). The reach (8, 16, 32 or 64 blocks) is a setting in Options, Mods."

@@ -67,25 +67,47 @@ pub struct State {
     held: Option<(f32, Settings)>,
 }
 
+/// The key as the game reads it now.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Key {
+    pub down: bool,
+    /// The settings a hold starts with, when one may start now (playing, no screen open, the mod
+    /// on); none otherwise.
+    pub start: Option<Settings>,
+}
+
 impl State {
-    /// The key is `down` or up now. A hold starts only while `playing` (no screen open), at the
-    /// starting zoom `read` gives; letting go ends it.
-    pub fn key(&mut self, down: bool, playing: bool, read: impl FnOnce() -> Settings) {
-        if !down {
+    /// Whether a press would start a hold now: the key is up in this state.
+    pub fn idle(&self) -> bool {
+        self.held.is_none()
+    }
+
+    /// Follows the key: a hold starts at `key.start`'s starting zoom; letting go ends it.
+    pub fn key(&mut self, key: Key) {
+        if !key.down {
             self.held = None;
-        } else if self.held.is_none() && playing {
-            let settings = read();
+        } else if self.held.is_none()
+            && let Some(settings) = key.start
+        {
             self.held = Some((settings.level.clamp(MIN, MAX), settings));
         }
     }
 
-    /// Whole wheel steps (up is positive): true when the key is held and they zoom.
-    pub fn wheel(&mut self, steps: i32) -> bool {
+    /// Scaled wheel steps (up is positive, fractions from a touchpad included): true when the
+    /// key is held and they zoom.
+    pub fn wheel(&mut self, steps: f32) -> bool {
         let Some((zoom, _)) = &mut self.held else {
             return false;
         };
-        *zoom = (*zoom * STEP.powi(steps)).clamp(MIN, MAX);
+        *zoom = (*zoom * STEP.powf(steps)).clamp(MIN, MAX);
         true
+    }
+
+    /// A wheel event: the key as it is at this event first, so a press or release since the last
+    /// tick counts, then the wheel. True when it zooms instead of moving the hotbar.
+    pub fn scroll(&mut self, key: Key, steps: f32) -> bool {
+        self.key(key);
+        self.wheel(steps)
     }
 
     /// The zoom in effect, none when the key is up.
@@ -110,23 +132,22 @@ impl Zoom {
         self.state.lock().unwrap_or_else(|e| e.into_inner())
     }
 
-    /// Reads the key, and the settings when a hold starts.
-    fn follow_key(&self, host: &dyn ClientHost) {
+    /// Reads the key, and the settings only when a hold may start.
+    fn read_key(&self, host: &dyn ClientHost) -> Key {
         let down = host.is_down(ID, KEY);
-        let held = self.state().held.is_some();
-        if down && !held {
-            if !(host.playing() && host.on(ID)) {
-                return;
-            }
-            let settings = Settings {
-                level: host.setting_f64("level").unwrap_or(LEVEL_DEFAULT) as f32,
-                smooth: host.setting_bool("smooth").unwrap_or(true),
-                sensitivity: host.setting_bool("sensitivity").unwrap_or(true),
-            };
-            self.state().key(true, true, || settings);
-        } else if !down && held {
-            self.state().key(false, false, Settings::default);
-        }
+        // Its own statement: the lock is let go before the host calls below.
+        let idle = self.state().idle();
+        let start = (down && idle && host.playing() && host.on(ID)).then(|| Settings {
+            level: host.setting_f64("level").unwrap_or(LEVEL_DEFAULT) as f32,
+            smooth: host.setting_bool("smooth").unwrap_or(true),
+            sensitivity: host.setting_bool("sensitivity").unwrap_or(true),
+        });
+        Key { down, start }
+    }
+
+    fn follow_key(&self, host: &dyn ClientHost) {
+        let key = self.read_key(host);
+        self.state().key(key);
     }
 }
 
@@ -155,8 +176,9 @@ impl Hooks for Zoom {
     }
 
     /// While the key is held, the wheel zooms instead of moving the hotbar.
-    fn mouse_scrolling(&self, _: &mut dyn ClientHost, event: &mut MouseScrollingEvent) -> Flow {
-        if self.state().wheel(event.accumulated[1]) {
+    fn mouse_scrolling(&self, host: &mut dyn ClientHost, event: &mut MouseScrollingEvent) -> Flow {
+        let key = self.read_key(host);
+        if self.state().scroll(key, event.scroll[1] as f32) {
             Flow::Cancel
         } else {
             Flow::Continue
@@ -168,11 +190,28 @@ impl Hooks for Zoom {
 mod tests {
     use super::*;
 
-    fn at(level: f32) -> impl FnOnce() -> Settings {
-        move || Settings {
-            level,
-            ..Settings::default()
+    /// The key down while playing, a hold starting at `level`.
+    fn press(level: f32) -> Key {
+        Key {
+            down: true,
+            start: Some(Settings {
+                level,
+                ..Settings::default()
+            }),
         }
+    }
+    /// The key down where no hold may start (a screen open).
+    const BEHIND_SCREEN: Key = Key {
+        down: true,
+        start: None,
+    };
+    const UP: Key = Key {
+        down: false,
+        start: None,
+    };
+
+    fn factor(s: &State) -> Option<f32> {
+        s.view().map(|z| z.factor)
     }
 
     #[test]
@@ -201,10 +240,10 @@ mod tests {
     #[test]
     fn holds_zooms_with_the_wheel_and_lets_go() {
         let mut s = State::default();
-        s.key(true, false, at(4.0));
+        s.key(BEHIND_SCREEN);
         assert_eq!(s.view(), None, "not while a screen is open");
-        assert!(!s.wheel(1));
-        s.key(true, true, at(4.0));
+        assert!(!s.wheel(1.0));
+        s.key(press(4.0));
         assert_eq!(
             s.view(),
             Some(mod_api::Zoom {
@@ -213,28 +252,56 @@ mod tests {
                 turn: 0.25
             })
         );
-        assert!(s.wheel(1));
-        assert_eq!(s.view().map(|z| z.factor), Some(5.0));
-        assert!(s.wheel(0), "a part step is still the zoom's");
-        assert!(s.wheel(40));
-        assert_eq!(s.view().map(|z| z.factor), Some(10.0));
-        assert!(s.wheel(-40));
-        assert_eq!(s.view().map(|z| z.factor), Some(1.25));
+        assert!(s.wheel(1.0));
+        assert_eq!(factor(&s), Some(5.0));
+        assert!(s.wheel(40.0));
+        assert_eq!(factor(&s), Some(10.0));
+        assert!(s.wheel(-40.0));
+        assert_eq!(factor(&s), Some(1.25));
         // Held on: the hold keeps its zoom, not the starting one.
-        s.key(true, true, at(8.0));
-        assert_eq!(s.view().map(|z| z.factor), Some(1.25));
-        s.key(false, false, at(4.0));
+        s.key(press(8.0));
+        assert_eq!(factor(&s), Some(1.25));
+        s.key(UP);
         assert_eq!(s.view(), None);
-        assert!(!s.wheel(1));
+        assert!(!s.wheel(1.0));
+    }
+
+    #[test]
+    fn a_touchpad_fraction_zooms_by_its_share_of_a_step() {
+        let mut s = State::default();
+        s.key(press(4.0));
+        assert!(s.wheel(0.5));
+        let half = factor(&s).unwrap();
+        assert!((half - 4.0 * STEP.sqrt()).abs() < 1e-5, "{half}");
+        assert!(s.wheel(0.5));
+        assert!((factor(&s).unwrap() - 5.0).abs() < 1e-5, "two halves make one step");
+        assert!(s.wheel(-0.25));
+        assert!(factor(&s).unwrap() < 5.0);
+    }
+
+    #[test]
+    fn a_wheel_event_reads_the_key_as_it_is_then() {
+        // Pressed since the last tick: the first wheel event already zooms, the hotbar stays.
+        let mut s = State::default();
+        assert!(s.scroll(press(4.0), 1.0));
+        assert_eq!(factor(&s), Some(5.0));
+        // Let go since the last tick: the wheel goes back to the hotbar at once.
+        assert!(!s.scroll(UP, 1.0));
+        assert_eq!(s.view(), None);
+        // Down behind a screen starts nothing, so the event isn't taken.
+        assert!(!s.scroll(BEHIND_SCREEN, 1.0));
     }
 
     #[test]
     fn slower_turning_off_turns_at_full_speed() {
         let mut s = State::default();
-        s.key(true, true, || Settings {
-            level: 8.0,
-            smooth: false,
-            sensitivity: false,
+        s.key(Key {
+            down: true,
+            start: Some(Settings {
+                level: 8.0,
+                smooth: false,
+                sensitivity: false,
+            }),
         });
         assert_eq!(
             s.view(),

@@ -1,0 +1,42 @@
+id = "gateways"
+kind = "mod"
+name = "Gateways to Eternity"
+summary = """A port of Gateways to Eternity for Horizon: a gate pearl opens a gateway, the gateway runs its wave list, and each wave pays out when its mobs die. The…"""
+description = """A port of Gateways to Eternity for Horizon: a gate pearl opens a gateway, the gateway runs
+its wave list, and each wave pays out when its mobs die. The slice carries one gateway,
+gateways:emerald_grove, with the jar's full four-wave list, its wave and completion rewards, the
+200-tick no-player grace period, out-of-leash re-placement, reward stacks split into fours that drop
+from the gateway, and the pearl's placement lift; /gateways open and /gateways list stand in for
+upstream's /open_gateway. There is no gateway entity yet, so no portal, boss bar, particles or
+sound; an open gateway does not survive a world reload; wave attribute modifiers, gear sets,
+entity_loot rewards, failure explosions, lives and the other seven gateway definitions are not
+carried.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- The other seven gateway definitions (basic blaze/slime/enderman,
+- Attribute/effect/gear modifiers on wave mobs (attribute API), entity_loot
+- The gateway entity itself: renderer, particles, boss bar, sounds, and a
+- The pearl's tooltip (the wave/reward/summary lines of NormalGateClient) and
+- JEI/Jade compat, the gates_defeated statistic and the advancement trigger.
+- **No in-game run for 0.2.0** (trap 15): the behaviour's evidence is the 0.1.0 e2e
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact."""
+authors = ["Shadows_of_Fire", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = ""
+source = "https://github.com/AdLf0208/gateways"
+icon = "icons/gateways.png"
+categories = ["technology"]
+tags = ["port", "combat"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "gateways.hmod"
+sha256 = "9478db99cc91ba875cab4e878fd2115f251bd67239151f8c1755816547067199"
+changelog = "First publication in the SDK format."

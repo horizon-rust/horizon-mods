@@ -1,5 +1,10 @@
 # Coordinates HUD (Horizon native mod)
 
+> [!WARNING]
+> **Legacy.** This is the old `.hnmod` source. Launchers from 0.2.70 on can't load it, and the registry archived it on
+> 2026-11-18. A port to the new mod SDK is tracked in [#1214](https://github.com/horizon-rust/horizon-mods/issues/1214).
+> The install steps below no longer work.
+
 Your block position and the direction you face in a box in the top-left corner of the screen.
 
 - `/where` puts your coordinates and dimension in chat.

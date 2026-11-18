@@ -1,5 +1,10 @@
 # Recipes (Horizon native mod)
 
+> [!WARNING]
+> **Legacy.** This is the old `.hnmod` source. Launchers from 0.2.70 on can't load it, and the registry archived it on
+> 2026-11-18. A port to the new mod SDK is tracked in [#1214](https://github.com/horizon-rust/horizon-mods/issues/1214).
+> The install steps below no longer work.
+
 Horizon's official recipe viewer: every item beside your inventory, with a search box (`#tag` searches a tag). R over an
 item shows its recipes, one tab per station; U shows its uses. The + under a crafting recipe you know fills the
 crafting grid, as the recipe book does. In creative mode, turn on "Click gives items" (Options > Mods > Recipes >

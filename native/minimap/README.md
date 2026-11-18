@@ -1,5 +1,10 @@
 # Minimap (Horizon native mod)
 
+> [!WARNING]
+> **Legacy.** This is the old `.hnmod` source. Launchers from 0.2.70 on can't load it, and the registry archived it on
+> 2026-11-18. A port to the new mod SDK is tracked in [#1214](https://github.com/horizon-rust/horizon-mods/issues/1214).
+> The install steps below no longer work.
+
 Horizon's official Minimap: a map of the terrain around you in a corner, in map colours, square or round, north up or turning with you, drawn by Horizon's own minimap. Its settings page (Options > Mods > Minimap > Settings) picks the corner, size, shape, zoom, turning, coordinates and outline style.
 
 It is a [horizon-mixins](https://github.com/horizon-rust/horizon-mixins) bundle (`mixins/minimap/`) that the Horizon

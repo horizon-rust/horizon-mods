@@ -1,5 +1,10 @@
 # Keystrokes (Horizon native mod)
 
+> [!WARNING]
+> **Legacy.** This is the old `.hnmod` source. Launchers from 0.2.70 on can't load it, and the registry archived it on
+> 2026-11-18. A port to the new mod SDK is tracked in [#1214](https://github.com/horizon-rust/horizon-mods/issues/1214).
+> The install steps below no longer work.
+
 Horizon's official Keystrokes: your movement keys, mouse buttons and space bar in a corner, lit while held, with clicks per second. Its settings page (Options > Mods > Keystrokes > Settings) picks the corner and the clicks per second.
 
 It is a [horizon-mixins](https://github.com/horizon-rust/horizon-mixins) bundle (`mixins/keystrokes/`) that the Horizon

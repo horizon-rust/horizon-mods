@@ -1,5 +1,10 @@
 # Zoom (Horizon native mod)
 
+> [!WARNING]
+> **Legacy.** This is the old `.hnmod` source. Launchers from 0.2.70 on can't load it, and the registry archived it on
+> 2026-11-18. A port to the new mod SDK is tracked in [#1214](https://github.com/horizon-rust/horizon-mods/issues/1214).
+> The install steps below no longer work.
+
 Horizon's official Zoom: hold a key (Z by default) to zoom in, and turn the mouse wheel while you hold it to zoom
 further in or out. Its settings page (Options > Mods > Zoom > Settings) has the key and three options: the
 starting zoom (2x to 10x), smooth zoom (eased like the spyglass) and slower turning while zoomed.

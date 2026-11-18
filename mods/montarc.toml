@@ -39,6 +39,7 @@ The launcher offers the one your game can run.
 """
 authors = ["Muurrcc"]
 owners = ["Muurrcc"]
+owner_ids = [74472711]
 license = "MIT"
 source = "https://github.com/Muurrcc/montarc"
 icon = "icons/montarc.png"

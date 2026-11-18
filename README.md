@@ -51,22 +51,15 @@ entry, and every later version must be signed with it, so nobody else can publis
 
 ## Publishing without the form
 
-The form is down. Two ways in meanwhile:
+While the form is down, a hand-made pull request does the same:
 
-- **Your releases as versions.** Open a pull request adding `mods/<id>.toml` with `repo = "owner/name"` and no
-  `[[versions]]`, the icon and page fields as the form writes them (or `horizon-registry.toml` at your repository's
-  root for `name`, `summary`, `description`, `authors` and `license`). Once it is merged,
-  [`sync.yml`](.github/workflows/sync.yml) reads your repository's releases every hour: each published release
-  (not a draft or prerelease) with exactly one file of the kind's extension, plus `<file>.minisig` if the entry has
-  a key, gets the same checks as a submission and is listed as a version, its file downloaded from your release.
-  A release that fails is left out and named in the run's summary. Whoever can publish releases in that repository
-  publishes updates, without a review here: a reviewer reads the repository before merging the entry. Not for
-  native mods, each of whose versions is reviewed. The check of such a pull request still reports "the registry
-  doesn't follow repositories any more" until Horizon's tool drops that rule: a maintainer merges it past that.
-- **A hand-made pull request.** Write the entry and its `[[versions]]` by hand, the file's `sha256` included, and
-  attach the file to a GitHub release of your own. A maintainer then runs
-  `scripts/stage.sh <pull request> <https://github.com/.../releases/download/...>`, which puts the file where the
-  check looks for it once its SHA-256 matches one the pull request adds, and re-runs the check.
+1. Attach the file to a GitHub release of your own repository.
+2. Open a pull request that adds or updates `mods/<id>.toml` with a new `[[versions]]` record: its `file` name and
+   the file's `sha256` (`sha256sum <file>`). Link the release's file in the pull request's description.
+3. A maintainer reviews the entry and runs
+   `scripts/stage.sh <pull request> <base sha> <head sha> <link>`, which stages the file once its SHA-256 matches a
+   version the pull request adds. Then they re-run the check and merge. A native mod's source also gets a security
+   review before it is merged.
 
 ## Report
 
@@ -84,7 +77,6 @@ why.
 | `revoked.toml` | Files taken down |
 | `.github/workflows/check.yml` | A pull request's checks |
 | `.github/workflows/publish.yml` | On merge: releases, then `index.json` on Pages |
-| `.github/workflows/sync.yml` | Hourly: new releases of projects listed by their repository, kept as `versions/<id>.json` on the `versions` branch |
 | `.github/workflows/cleanup.yml` | Weekly: staging files nobody needs any more |
 | `.github/workflows/native-compat.yml` | Native mods on the newest Nightly, as the launcher builds them: a pull request's new version applied and compiled with the most downloaded native mods, its module names against every mod's; daily, every mod's newest version, the ones that don't apply marked `broken_on` in the index (`scripts/native_compat.py`) |
 | `.github/workflows/native.yml` | Horizon's native mods: each changed one's tests, `.hnmod` and game check, all of them together, and weekly on the newest Nightly |

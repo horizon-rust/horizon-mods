@@ -1,0 +1,34 @@
+id = "subsense"
+kind = "native-mod"
+name = "SubSens"
+summary = "Allows even lower mouse sensitivity than vanilla, down to true zero."
+description = """
+A port of [SubSens](https://github.com/chikaradude/SubSens) by Maciej "ChikaraDude" Panocha to Horizon.
+
+- Adds a separate sensitivity setting from `-1/3` (true zero) to `1`.
+- The vanilla sensitivity slider is ignored while SubSens is enabled.
+- Settings live on **Options → Mods → SubSens**.
+- Built for the Horizon mod API as a native `.hmod`.
+"""
+authors = ["cakePhone", "ChikaraDude"]
+owners = ["cakePhone"]
+owner_ids = [82392894]
+license = "MIT"
+source = "https://github.com/cakePhone/SubSensHorizon"
+icon = "icons/subsense.png"
+categories = ["game-mechanics", "utility"]
+tags = ["sensitivity", "mouse", "dpi", "accessibility", "port"]
+key = "RWT0MtEkvup51zcIJyiEsI7EOBwbDXt3zeboV10TRGsX3Nz+kdhcusdk"
+
+[[versions]]
+version = "2.0.0"
+published = "2026-11-17"
+game = "26.3"
+file = "subsense-2.0.0.hmod"
+sha256 = "144df2daef29d142c6d220b2e58741d50ff6930dfe4ffd77217d5b287ccb45c0"
+signature = """
+untrusted comment: signature from minisign secret key
+RUT0MtEkvup516NpKzRTsVIdfxBI0GW6HCX6B/6ZopkvWtzKfWXnq1gAg3cDb3WggkTGk/Mv9yyguu5eWlt3lXJqUgKOre+ZNgw=
+trusted comment: timestamp:1794934906	file:subsense-2.0.0.hmod	hashed
+thoo4CDAzYSYdAVooqt7lRzZRlVqiKGI5GO2SRJZwNVF4C2+giiraXcTgjlo+B7UBd0Y3juKzICpZKWlYtJHBA=="""
+changelog = "Horizon mod API port: native .hmod, separate sensitivity setting from -1/3 to 1, settings on Options > Mods > SubSens."

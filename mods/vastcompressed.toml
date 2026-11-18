@@ -28,3 +28,11 @@ game = "26.3"
 file = "vastcompressed-0.1.0.hmod"
 sha256 = "6adfe7efd3aa8aaacae918ac014030b15cee51945df8fbd70b320382a3a4712d"
 changelog = "First release (0.1.0): 828 compressed blocks (92 of the game's blocks in nine tiers), compress and decompress recipes, hand-drawn tier overlays, English and Brazilian Portuguese."
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-18"
+game = "26.3"
+file = "vastcompressed-0.1.1.hmod"
+sha256 = "827bacfddf297e32480eb5fce18904dc1724b4470debf5f667f0b6ad67c15cdf"
+changelog = "Fix: compressed blocks drop themselves again. In 0.1.0 every block's loot table used the old condition shape, which the game's 26.3 loot reads as a failed condition, so breaking a compressed block dropped nothing; the tables now use the 26.3 form."

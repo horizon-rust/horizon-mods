@@ -1,16 +1,34 @@
 id = "vastpacks"
-kind = "mod"
-name = "Vast Packs (content)"
-summary = "The backpacks of Vast Packs: their items, art, recipes and names. Needs the native mod."
-description = "The content half of Vast Packs: the backpacks (Leather, Iron, Gold, Diamond, Netherite, and Stellarite, Infernium and Voidium whose recipes need Vast Depths) as items, their sprites drawn for this mod, the recipes (and the upgrades, which keep what a backpack holds) and the names in English and Brazilian Portuguese. **The native mod `vastpacks_native` opens them and keeps what they hold**; install both."
+kind = "native-mod"
+name = "Vast Packs"
+summary = "Backpacks: right-click to open like a chest, from 18 to 54 slots (and up to 180 in pages with Vast Depths); what they hold travels with them."
+description = """
+Backpacks on Horizon's mod API: hold one in your main hand, right-click, and it opens like a chest. One package: the code, the items, their sprites, recipes and names in English and Brazilian Portuguese.
+
+| Backpack | Slots |
+| --- | --- |
+| Leather | 18 |
+| Iron | 27 |
+| Gold | 36 |
+| Diamond | 45 |
+| Netherite | 54 |
+| Stellarite, Infernium, Voidium (need Vast Depths) | 90, 135, 180, in pages of 45 |
+
+- **Upgrades** in the crafting grid (the backpack and a block of the next material) keep everything it holds.
+- **What it holds is in the backpack itself** (its container, as a shulker box's): drop it, trade it, keep it in a chest, it travels with its contents.
+- **Safe by design**: the menu's slots are the backpack's own storage, so every move goes through it in one transaction; the backpack in your hand can't go into itself, and the menu closes once it leaves your hand.
+
+**What it changes in the game**: through the mod API (an item container on each backpack, a chest menu backed by the held backpack, the `use_item`, `menu_clicked` and `menu_closed` hooks; no mixins). Backpacks of 0.1.0 (which kept their contents in `<world>/vastpacks/`) get them back the first time they're opened; that file is then renamed, never deleted. No network of its own.
+
+0.2.0 replaces 0.1.0's two files (`vastpacks_native` .hnmod and the `vastpacks` content mod). Pinned to Horizon 0b14f8a."""
 authors = ["voltzz900"]
 owners = ["voltzz900"]
 owner_ids = [354832816]
 license = "MIT"
 source = "https://github.com/voltzz900/vast-packs"
 icon = "icons/vastpacks.png"
-categories = ["storage", "equipment"]
-tags = ["backpacks", "storage"]
+categories = ["storage", "equipment", "utility"]
+tags = ["backpacks", "storage", "inventory", "translation"]
 
 [[versions]]
 version = "0.1.0"
@@ -19,3 +37,11 @@ game = "26.3"
 file = "vastpacks-0.1.0.hmod"
 sha256 = "13e5a6fe5eaf6ed9c1f971b8f4665bdbf561fe257c59149ea9fd818b6a9dd595"
 changelog = "First release (0.1.0)."
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "vastpacks-0.2.1.hmod"
+sha256 = "b5382e94e3ebac6700fe6704de57bbd7bfc4d9292616c2b6d73a9e879ebf7c6e"
+changelog = "Vast Packs becomes one native package on Horizon's mod API (0.1.0 was the content half, whose native half was never published): backpacks open and hold their contents themselves. Pinned to Nightly 2026-11-18 (0b14f8a)."

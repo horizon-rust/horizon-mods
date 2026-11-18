@@ -53,13 +53,15 @@ entry, and every later version must be signed with it, so nobody else can publis
 
 While the form is down, a hand-made pull request does the same:
 
-1. Attach the file to a GitHub release of your own repository.
-2. Open a pull request that adds or updates `mods/<id>.toml` with a new `[[versions]]` record: its `file` name and
-   the file's `sha256` (`sha256sum <file>`). Link the release's file in the pull request's description.
-3. A maintainer reviews the entry and runs
-   `scripts/stage.sh <pull request> <base sha> <head sha> <link>`, which stages the file once its SHA-256 matches a
-   version the pull request adds. Then they re-run the check and merge. A native mod's source also gets a security
-   review before it is merged.
+1. Attach the file to a GitHub release of your own repository, under the name the entry gives it.
+2. Open a pull request that adds or updates `mods/<id>.toml` with a new `[[versions]]` record: its `version`, `file`
+   name and the file's `sha256` (`sha256sum <file>`). Link the release's file in the pull request's description.
+3. A maintainer reviews the entry (a native mod's source also gets a security review). From a checkout of main they
+   trust, signed in to `gh` as a maintainer, they run
+   `scripts/stage.sh <pull request> <base sha> <head sha> <link>` with the head they reviewed and
+   `git merge-base origin/main <head sha>`. The script reads the pull request as data and runs none of its code; it
+   stages the file once its name and SHA-256 match a version the pull request adds. Then they re-run the check, and
+   merge that reviewed head once its required checks pass.
 
 ## Report
 

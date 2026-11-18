@@ -1,0 +1,14 @@
+id = "zoom"
+name = "Zoom"
+version = "3.0.0"
+description = "Hold a key (Z by default) to zoom in; the mouse wheel changes the zoom while you hold it."
+authors = ["Horizon"]
+license = "MIT"
+homepage = "https://github.com/horizon-rust/horizon-mods/tree/main/native/zoom"
+api = "0.2"
+side = "client"
+capabilities = ["registries"]
+
+[wasm]
+sha512 = "9fb15475958300d4c9412346a70ba492085ca060ab9f7de065769b1cc796a0b116b9c1b71d0831268d6a37208c5ae86c088c1a7d39d8005762aaff391466b165"
+toolchain = "1.99.1 58cf8f9c35b355199727627d07ae34a4e2846d67"

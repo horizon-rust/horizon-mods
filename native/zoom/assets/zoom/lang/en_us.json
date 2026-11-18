@@ -1,0 +1,9 @@
+{
+  "key.zoom.zoom": "Zoom",
+  "zoom.setting.level": "Starting zoom",
+  "zoom.setting.level.tooltip": "How far the key zooms in before you turn the mouse wheel (2x to 10x).",
+  "zoom.setting.smooth": "Smooth zoom",
+  "zoom.setting.smooth.tooltip": "Ease in and out like the spyglass.",
+  "zoom.setting.sensitivity": "Slower turning",
+  "zoom.setting.sensitivity.tooltip": "Turn slower the further you zoom in, to keep aim steady."
+}

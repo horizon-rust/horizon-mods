@@ -1,6 +1,6 @@
 id = "zoom"
 name = "Zoom"
-version = "3.0.1"
+version = "3.0.2"
 description = "Hold a key (Z by default) to zoom in; the mouse wheel changes the zoom while you hold it."
 authors = ["Horizon"]
 license = "MIT"
@@ -10,5 +10,5 @@ side = "client"
 capabilities = ["registries"]
 
 [wasm]
-sha512 = "68452931c0e30644aadbd32ecaf77156191531a4e764dc2de15e91397942016498c9861a525fe2c7633127e9ea07fc8585dedb82d91dbc201f446063cd3eebc1"
+sha512 = "389db910f2eacf27126605de7508d420bff4505e07846650adbb6d703ec167d862c579c7cd0e06c506984770094db1e9f9d907df5593fb6ef03d4412245554a8"
 toolchain = "1.99.1 58cf8f9c35b355199727627d07ae34a4e2846d67"

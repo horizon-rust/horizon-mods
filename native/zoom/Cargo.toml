@@ -1,6 +1,6 @@
 [package]
 name = "mod-zoom"
-version = "3.0.1"
+version = "3.0.2"
 edition = "2024"
 license = "MIT"
 publish = false
@@ -11,4 +11,4 @@ horizon-mod-api = { path = ".horizon/sdk/api/crates/horizon-mod-api" }
 
 # The SDK build this mod is made for: `cargo horizon-mod update` moves it.
 [package.metadata.horizon]
-sdk = "6d765e0ea3207d5dddeee87b0c64e09222767993"
+sdk = "dd67b76ff23e28c6d8e21859df600d31572f81a0"

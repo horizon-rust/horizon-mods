@@ -1,0 +1,28 @@
+id = "safespawn"
+kind = "native-mod"
+name = "SafeSpawn"
+summary = "New players spawn somewhere safe."
+description = """
+New players spawn somewhere safe.
+
+**Differences from the original:** The search for a safe spot only covers chunks that are already loaded, where the Java mod loads chunks to search. Players who were already in a world before the mod was added are never moved.
+
+A port of [SafeSpawn](https://github.com/CozyCord/SafeSpawn) 1.0.0 by Tokimi, CozyStudios, published under its licence, CC0-1.0. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Tokimi", "CozyStudios"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "CC0-1.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/safespawn"
+icon = "icons/safespawn.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-19"
+game = "26.3"
+file = "safespawn.hmod"
+sha256 = "b0a28016abf5053ae65d9b5159e1951d7480bd980665ef3af35de610eccffc58"
+changelog = "Built with the exact-build SDK dd67b76 on the mod API only, with LICENSE and NOTICE in the package. Replaces the retired .hnmod."

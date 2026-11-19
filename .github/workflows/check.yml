@@ -6,6 +6,8 @@ name: check
 on:
   pull_request:
     branches: [main]
+    # ready_for_review too: owner-update.yml passes over a draft, and marking it ready pushes no commit.
+    types: [opened, synchronize, reopened, ready_for_review]
 permissions:
   contents: read
   # The last successful publish run and its verified-files artifact.

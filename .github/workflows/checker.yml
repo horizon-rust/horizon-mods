@@ -21,6 +21,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
+    # Attestations name the ref they were built from, and install-tool.sh takes only main's: a dispatch on another
+    # branch would only build a file nothing uses.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -36,25 +39,26 @@ jobs:
           rev="$(tr -d '[:space:]' < .github/horizon-rev)"
           [[ "$rev" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::.github/horizon-rev must hold one 40-character commit"; exit 1; }
           echo "rev=$rev" >> "$GITHUB_OUTPUT"
-          if gh release view "checker@$rev" --json assets --jq '.assets[].name' 2>/dev/null \
-            | grep -Fxq "cargo-horizon-mod-$rev"; then
-            echo "checker@$rev is already published"
-            echo "built=yes" >> "$GITHUB_OUTPUT"
-          fi
-      - if: steps.pin.outputs.built != 'yes'
+      # Only a published file the installer would accept counts: a broken upload, or one that fails its attestation,
+      # is built again and replaced.
+      - name: Already built
+        id: have
+        run: |
+          if scripts/install-tool.sh --prebuilt-only; then echo "built=yes" >> "$GITHUB_OUTPUT"; fi
+      - if: steps.have.outputs.built != 'yes'
         run: scripts/install-tool.sh --from-source
-      - if: steps.pin.outputs.built != 'yes'
+      - if: steps.have.outputs.built != 'yes'
         name: Name it for the pin
         env:
           REV: ${{ steps.pin.outputs.rev }}
         run: |
           mkdir -p out
           cp "$HOME/.cargo/bin/cargo-horizon-mod" "out/cargo-horizon-mod-$REV"
-      - if: steps.pin.outputs.built != 'yes'
+      - if: steps.have.outputs.built != 'yes'
         uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-path: out/cargo-horizon-mod-${{ steps.pin.outputs.rev }}
-      - if: steps.pin.outputs.built != 'yes'
+      - if: steps.have.outputs.built != 'yes'
         name: Publish it
         env:
           REV: ${{ steps.pin.outputs.rev }}
@@ -63,4 +67,4 @@ jobs:
             || gh release create "checker@$REV" --target "$GITHUB_SHA" --prerelease --latest=false \
                  --title "Checker ${REV:0:12}" \
                  --notes "cargo-horizon-mod built by checker.yml at horizon-rust/horizon@$REV, for the registry's own checks. Not a mod."
-          gh release upload "checker@$REV" "out/cargo-horizon-mod-$REV"
+          gh release upload --clobber "checker@$REV" "out/cargo-horizon-mod-$REV"

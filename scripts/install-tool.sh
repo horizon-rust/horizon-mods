@@ -7,7 +7,7 @@
 # checker.yml builds each pin once on main and publishes it as release checker@<rev>. That file is used only when
 # GitHub's build attestation shows checker.yml on main built a file named for this exact pin (an older pin's binary
 # re-uploaded under a new name fails); without one (a pin checker.yml hasn't finished, `--from-source`), this builds
-# from source as before.
+# from source as before. `--prebuilt-only` fails instead of building: checker.yml's test for a usable build.
 set -euo pipefail
 pin="$(dirname "$0")/../.github/horizon-rev"
 rev="$(tr -d '[:space:]' < "$pin")"
@@ -17,7 +17,8 @@ if [[ ! "$rev" =~ ^[0-9a-f]{40}$ ]]; then
 fi
 repo="${GH_REPO:-horizon-rust/horizon-mods}"
 name="cargo-horizon-mod-$rev"
-if [ "${1:-}" != --from-source ]; then
+mode="${1:-}"
+if [ "$mode" != --from-source ]; then
   dir="$(mktemp -d)"
   if gh release download "checker@$rev" --repo "$repo" --pattern "$name" --dir "$dir" 2>/dev/null \
     && gh attestation verify "$dir/$name" --repo "$repo" --signer-workflow "$repo/.github/workflows/checker.yml" \
@@ -31,6 +32,10 @@ if [ "${1:-}" != --from-source ]; then
     exit 0
   fi
   rm -rf "$dir"
+  if [ "$mode" = --prebuilt-only ]; then
+    echo "no attested build of $rev from checker.yml"
+    exit 1
+  fi
   echo "no attested build of $rev from checker.yml: building it from source"
 fi
 cargo install --locked --force --git https://github.com/horizon-rust/horizon --rev "$rev" cargo-horizon-mod

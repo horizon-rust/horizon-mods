@@ -26,6 +26,14 @@ categories = ["utility"]
 tags = ["zoom", "camera", "spyglass"]
 
 [[versions]]
+version = "3.0.3"
+published = "2026-11-19"
+game = "26.3"
+file = "zoom-3.0.3.hmod"
+sha256 = "53935d0af3307bbe8fa5057103a62b13a8cb6a69431b3058f3981b9c1313d348"
+changelog = "Built for Nightly 2026-11-19 · f00125f, where wasm calls are linked by name. No other changes; 3.0.2 stays for Nightly dd67b76."
+
+[[versions]]
 version = "3.0.2"
 published = "2026-11-19"
 game = "26.3"

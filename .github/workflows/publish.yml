@@ -77,9 +77,13 @@ jobs:
           cargo horizon-mod registry build . --files files --out site/index.json --site https://horizon-rust.github.io/horizon-mods/ --generated "$(date -u +%FT%TZ)"
       - name: Publish new files as releases
         run: |
+          # One listing of the releases (the download counts read it too), not a request per version: every
+          # request counts against the repository's hourly API budget, which every check and staging run shares.
+          gh api --paginate "repos/$GH_REPO/releases?per_page=100" > releases.json
+          jq -r '.[].tag_name' releases.json > tags.txt
           cargo horizon-mod registry list . | while read -r sha id version file; do
             tag="$id-$version"
-            gh release view "$tag" >/dev/null 2>&1 && continue
+            grep -Fxq "$tag" tags.txt && continue
             dir="$(mktemp -d)"
             cp "files/$sha" "$dir/$file"
             gh release create "$tag" "$dir/$file" --title "$id $version" --latest=false \
@@ -88,9 +92,9 @@ jobs:
       - name: Download counts
         run: |
           # Each version's file is the asset at its URL: a project's downloads
-          # are its files' counts, every version together.
-          gh api --paginate "repos/$GH_REPO/releases?per_page=100" \
-            --jq '.[].assets[] | {key: .browser_download_url, value: .download_count}' \
+          # are its files' counts, every version together. A release made by
+          # this run isn't in the listing and has no downloads yet.
+          jq '.[].assets[] | {key: .browser_download_url, value: .download_count}' releases.json \
             | jq -s from_entries > counts.json
           jq --slurpfile counts counts.json '
             .projects |= map(
@@ -103,6 +107,18 @@ jobs:
           # A project's stars are its source repository's (owner/repo of a
           # https://github.com/ source, a folder of it or .git included), asked
           # once per repository. One that can't be read is left out, not zero.
+          # That is a request per repository, so only the hourly run asks; a
+          # merge keeps the stars the published index has.
+          if [ "$GITHUB_EVENT_NAME" != schedule ]; then
+            curl -fsS https://horizon-rust.github.io/horizon-mods/index.json \
+              | jq '[.projects[] | select(.stars) | {key: .id, value: .stars}] | from_entries' > stars.json \
+              || echo '{}' > stars.json
+            jq --slurpfile stars stars.json '
+              .projects |= map(($stars[0][.id] // 0) as $n | if $n > 0 then .stars = $n else . end)' \
+              site/index.json > index.starred.json
+            mv index.starred.json site/index.json
+            exit 0
+          fi
           jq -r '.projects[].source // empty' site/index.json \
             | sed -nE 's#^https://github\.com/([A-Za-z0-9-]+)/([A-Za-z0-9._-]+).*#\1/\2#p' \
             | sed -E 's/\.git$//' | tr 'A-Z' 'a-z' | sort -u \

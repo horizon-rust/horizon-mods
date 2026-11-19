@@ -96,7 +96,8 @@ def eligible(changes, base_text, head_text, main_text, revoked_text, author_id):
     for v in new:
         day = v.get("published") if isinstance(v, dict) else None
         if isinstance(day, str) and day in days and any(v is a for a in added):
-            raise Refused(f"version {v.get('version')!r} is below a version of the same day {day}: put it above")
+            raise Refused(f"version {v.get('version')!r} is below a version of the same day {day}: put it above that"
+                          " one (two new versions of one day always wait for a reviewer)")
         days.append(day)
     for v in added:
         if not (isinstance(v.get("file"), str) and v["file"].endswith(EXTENSIONS[kind])):

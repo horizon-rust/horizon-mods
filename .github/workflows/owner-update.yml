@@ -3,8 +3,9 @@
 #
 # workflow_run runs main's copy of this file. `decide` reads the pull request through the API and as git objects,
 # never checks it out or runs it, and holds no secret. `merge` holds the GitHub App's token, which may merge past the
-# review rule; a merge by GITHUB_TOKEN would not start publish.yml. Without the App (vars.REGISTRY_APP_ID and
-# secrets.REGISTRY_APP_KEY) it only says the pull request was eligible.
+# review rule; a merge by GITHUB_TOKEN would not start publish.yml. Without the App (vars.REGISTRY_APP_ID, and
+# REGISTRY_APP_KEY in the `registry-merge` environment, which only main may use) it only says the pull request was
+# eligible.
 name: owner-update
 on:
   workflow_run:
@@ -49,6 +50,8 @@ jobs:
 
   merge:
     needs: decide
+    # Holds the App's key: deployments limited to main, so a workflow on another branch can't make its token.
+    environment: registry-merge
     if: needs.decide.outputs.pr != ''
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -82,7 +85,6 @@ jobs:
           client-id: ${{ vars.REGISTRY_APP_ID }}
           private-key: ${{ secrets.REGISTRY_APP_KEY }}
           permission-contents: write
-          permission-pull-requests: write
       - name: Merge
         id: merge
         if: steps.identity.outputs.ok == 'true'

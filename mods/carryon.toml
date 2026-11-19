@@ -1,0 +1,28 @@
+id = "carryon"
+kind = "native-mod"
+name = "Carry On"
+summary = "Sneak and right-click with empty hands to pick up chests and other block entities, or small mobs, and carry them."
+description = """
+Sneak and right-click a chest, barrel, furnace or any other block entity with both hands empty to pick it up with everything inside, then right-click a block to set it down elsewhere. Mobs work the same way (no hostile mobs in survival, at most 1.5 blocks wide and 2.5 high), and a carried mob can be stacked onto another. While carrying you are slowed by the weight, can't switch hotbar slots, mine or attack, and the carried thing is drawn in your hands and in front of other players. On death it is set down where you died. Uses Homestead's configuration.
+
+**Differences from the original:** Players can't be carried. The arms aren't raised while carrying. A carried mob shows in third person as its spawn egg, and in first person over the hotbar. There are no custom pickup scripts or conditions, no model overrides, and the config's tag-based blacklist entries are left out (the named blocks and mobs are in).
+
+A port of [Carry On](https://github.com/Tschipp/CarryOn) 2.1.2.7 (Fabric 1.20.1) by Tschipp, Purplicious_Cow, cy4n, published under its licence, LGPL-3.0. The original copyright and licence notices are kept in the file (LICENSE, COPYING, NOTICE).
+
+Its lang files and tags come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Tschipp", "Purplicious_Cow", "cy4n"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-only"
+source = "https://github.com/lavoide/horizon-ports/tree/main/carryon"
+icon = "icons/carryon.png"
+categories = ["utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.3.0"
+published = "2026-11-19"
+game = "26.3"
+file = "carryon.hmod"
+sha256 = "88bf321c3f88e46df8a2d8b93227ef572140a9a0744360c1078a0e9ae0de3013"
+changelog = "First registry release. Built with the exact-build SDK dd67b76 on the mod API only, with LICENSE, COPYING and NOTICE in the package."

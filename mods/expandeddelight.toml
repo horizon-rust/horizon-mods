@@ -1,0 +1,30 @@
+id = "expandeddelight"
+kind = "native-mod"
+name = "Expanded Delight"
+summary = "Asparagus, sweet potatoes, chili peppers, peanuts, cinnamon, salt, juices, the juicer and the mortar (needs the Farmer's Delight port)."
+description = """
+Asparagus, sweet potatoes, chili peppers, peanuts, cinnamon, salt, juices, the juicer and the mortar (needs the Farmer's Delight port).
+
+**Needs** [farmersdelight](https://playhorizon.dev/mods/farmersdelight) 0.5 or later installed too (declared as a dependency, so the game names it if it's missing).
+
+**Differences from the original:** Villagers don't trade Expanded Delight's items. Farmer's Delight keeps its own melon juice recipe instead of Expanded Delight's replacement.
+
+A port of [Expanded Delight](https://github.com/ianm1647/expandeddelight) 0.3.2 by ianm1647, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "ianm1647"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/expandeddelight"
+icon = "icons/expandeddelight.png"
+categories = ["food", "worldgen"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.6.0"
+published = "2026-11-19"
+game = "26.3"
+file = "expandeddelight.hmod"
+sha256 = "9a324c07502f9b09a6de100ee7decdf2d596231f6cda205ebc4cfce093348206"
+changelog = "One native package with the code and the content, built with the exact-build SDK dd67b76 on the mod API only; declares its dependency on farmersdelight ^0.5. Replaces the content-only entry."

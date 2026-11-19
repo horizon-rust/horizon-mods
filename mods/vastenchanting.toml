@@ -20,13 +20,13 @@ owner_ids = [354832816]
 license = "MIT"
 source = "https://github.com/voltzz900/vast-enchanting"
 icon = "icons/vastenchanting.png"
-categories = ["game mechanics", "magic", "storage"]
+categories = ["game-mechanics", "magic", "storage"]
 tags = ["enchanting", "enchantments", "anvil", "books", "translation"]
 
 [[versions]]
-version = "0.2.1"
-published = "2026-11-18"
+version = "0.2.2"
+published = "2026-11-19"
 game = "26.3"
-file = "vastenchanting-0.2.1.hmod"
-sha256 = "aeaef5af973cccba656495bfe7b988d8c517462e852d39fdba99b633e7294fcb"
-changelog = "First release on Horizon's mod API: one native package (code and content). Blocks placed with 0.1 keep what they hold. Pinned to Nightly 2026-11-18 (0b14f8a)."
+file = "vastenchanting-0.2.2.hmod"
+sha256 = "dc3849e0645917e6819c010e8e2d62a052070f6f3f97d35c4a15c8d5530f0601"
+changelog = "First release on Horizon's mod API: one native package (code and content). Pinned to Nightly 2026-11-18 (0b14f8a). Blocks placed with 0.1 keep what they hold. Archive levels are bounded by the archive's cap, so a malformed archive can't stall the server; tables keep no global state."

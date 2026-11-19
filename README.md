@@ -59,11 +59,11 @@ cargo horizon-mod check target/horizon-mod/my_mod.hmod
 ```
 
 **Updates** come the same way: a pull request adds a version to your entry, and a reviewer reads it before it is
-published. Only an entry's `owners` can add versions, and every version of a mod, native or not, is reviewed, owner
-or not: a native mod's code runs with the player's account permissions.
+published, except an owner's update of a pack (below). Only an entry's `owners` can add versions, and every version
+of a mod, native or not, is reviewed, owner or not: a native mod's code runs with the player's account permissions.
 
-An owner's update of a resource pack, shader pack or data pack publishes without a reviewer once its checks pass
-(`owner-update.yml`): the pull request is opened by an account in the entry's `owner_ids` and only adds
+An owner's update of a `kind = "resourcepack"`, `"shader"` (`.hshader`) or `"datapack"` entry publishes without a
+reviewer once its checks pass (`owner-update.yml`); a `"shaderpack"` (a zip) is reviewed. The pull request is opened by an account in the entry's `owner_ids` and only adds
 `[[versions]]` records to that one live entry, every other field unchanged, and the project is not taken down. New
 projects, page changes and every mod version still get a person. A published file never changes: publish a new
 version.

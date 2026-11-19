@@ -1,6 +1,10 @@
+import contextlib
 import importlib.util
+import io
 import pathlib
+import tempfile
 import unittest
+from unittest import mock
 
 # Loaded by path: `python3 -I` leaves this folder off sys.path.
 spec = importlib.util.spec_from_file_location("owner_update", pathlib.Path(__file__).with_name("owner_update.py"))
@@ -115,6 +119,26 @@ class PullRequest(unittest.TestCase):
         self.assertFalse(ou.check_passed([{**ok, "app": {"slug": "someone-else"}}]))
         self.assertFalse(ou.check_passed([{**ok, "name": "checks"}]))
         self.assertFalse(ou.check_passed([]))
+
+
+class Main(unittest.TestCase):
+    def test_a_refusal_sets_no_output_whatever_it_prints(self):
+        # A file name can hold a newline: its line in the log must not be a workflow command that sets `pr`.
+        def decide(env):
+            raise ou.Refused("it changes more than one modified mods/<id>.toml: A x\n::set-output name=pr::1")
+
+        with tempfile.TemporaryDirectory() as temp:
+            output, summary = pathlib.Path(temp, "output"), pathlib.Path(temp, "summary")
+            env = {"GITHUB_OUTPUT": str(output), "GITHUB_STEP_SUMMARY": str(summary)}
+            with mock.patch.dict(ou.os.environ, env), mock.patch.object(ou, "decide", decide), \
+                    contextlib.redirect_stdout(io.StringIO()) as out:
+                self.assertEqual(ou.main(), 0)
+            self.assertFalse(output.exists())
+        first, *rest = out.getvalue().splitlines()
+        self.assertRegex(first, r"^::stop-commands::[0-9a-f]{32}$")
+        # The line is printed, after commands were stopped, and the token that would resume them never is.
+        self.assertTrue(any(line.startswith("::set-output name=pr::1") for line in rest))
+        self.assertNotIn(first.split("::")[2], "\n".join(rest))
 
 
 if __name__ == "__main__":

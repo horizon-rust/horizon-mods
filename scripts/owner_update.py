@@ -14,8 +14,10 @@ It is one when all of these hold:
   e. GitHub's numeric id of whoever opened it is in the entry's owner_ids (never a login or the description);
   f. the id is not in revoked.toml. When the entry has a key, each new version has a signature (the check verified
      it).
-Then it writes `pr`, `sha` and `kind` to $GITHUB_OUTPUT. Anything else: the reason, and the pull request waits for a
-reviewer as before.
+Then it writes `pr`, `sha`, `kind`, `id` and the blobs it read on main (`entry`: mods/<id>.toml, `revoked`:
+revoked.toml) to $GITHUB_OUTPUT, so the merge can make sure main still has them. Anything else: the reason, and the
+pull request waits for a reviewer as before. Its output holds the pull request's text, so the runner reads no
+workflow command from it.
 
 Environment: GH_TOKEN (read), GH_REPO, and the check's workflow run: HEAD_SHA, HEAD_REPO, HEAD_BRANCH, RUN_EVENT,
 RUN_PATH. Needs git and python3 3.11+.
@@ -23,6 +25,7 @@ RUN_PATH. Needs git and python3 3.11+.
 import json
 import os
 import re
+import secrets
 import subprocess
 import sys
 import tomllib
@@ -173,13 +176,17 @@ def decide(env):
     texts = [blob(c, path) for c in (base, sha, main)] if len(changes) == 1 and ENTRY.fullmatch(path) else [b""] * 3
     id_, kind, versions = eligible(changes, *texts, blob(main, "revoked.toml"), pr["user"]["id"])
     print(f"#{n}: {id_} {', '.join(versions)}, an owner's update of {KINDS[kind]} (opened by id {pr['user']['id']})")
-    return n, kind
+    blobs = [git("rev-parse", f"{main}:{p}").decode().strip() for p in (path, "revoked.toml")]
+    return n, kind, id_, *blobs
 
 
 def main():
+    # File names, TOML keys and versions are the pull request's: a line of them must not be a workflow command
+    # (::set-output:: would set `pr`). The token is never printed, so commands stay off for the whole step.
+    print(f"::stop-commands::{secrets.token_hex(16)}", flush=True)
     summary = os.environ.get("GITHUB_STEP_SUMMARY", os.devnull)
     try:
-        n, kind = decide(os.environ)
+        n, kind, id_, entry, revoked = decide(os.environ)
     except Refused as e:
         message = f"Not an owner update that merges by itself: {e}. It waits for a reviewer."
         print(message)
@@ -187,7 +194,8 @@ def main():
             f.write(message + "\n")
         return 0
     with open(os.environ.get("GITHUB_OUTPUT", os.devnull), "a") as f:
-        f.write(f"pr={n}\nsha={os.environ['HEAD_SHA']}\nkind={KINDS[kind]}\n")
+        f.write(f"pr={n}\nsha={os.environ['HEAD_SHA']}\nkind={KINDS[kind]}\nid={id_}\nentry={entry}\n"
+                f"revoked={revoked}\n")
     with open(summary, "a") as f:
         f.write(f"#{n}: an owner's update of {KINDS[kind]}; every rule holds.\n")
     return 0

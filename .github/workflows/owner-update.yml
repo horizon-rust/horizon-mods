@@ -27,6 +27,9 @@ jobs:
       pr: ${{ steps.decide.outputs.pr }}
       sha: ${{ steps.decide.outputs.sha }}
       kind: ${{ steps.decide.outputs.kind }}
+      id: ${{ steps.decide.outputs.id }}
+      entry: ${{ steps.decide.outputs.entry }}
+      revoked: ${{ steps.decide.outputs.revoked }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -56,6 +59,9 @@ jobs:
       PR: ${{ needs.decide.outputs.pr }}
       SHA: ${{ needs.decide.outputs.sha }}
       KIND: ${{ needs.decide.outputs.kind }}
+      ID: ${{ needs.decide.outputs.id }}
+      ENTRY: ${{ needs.decide.outputs.entry }}
+      REVOKED: ${{ needs.decide.outputs.revoked }}
     steps:
       - name: Merge identity
         id: identity
@@ -78,15 +84,27 @@ jobs:
           permission-contents: write
           permission-pull-requests: write
       - name: Merge
+        id: merge
         if: steps.identity.outputs.ok == 'true'
         env:
           GH_TOKEN: ${{ steps.app.outputs.token }}
         # The REST call, not `gh pr merge`: gh refuses a pull request whose review is still required before asking
-        # GitHub, which lets the App past that rule. `sha` merges only the head that was checked.
+        # GitHub, which lets the App past that rule. `sha` merges only the head that was checked. This job may wait
+        # in the queue after `decide`: the entry and revoked.toml must still be what it read on main (other files
+        # may change).
         run: |
+          set -euo pipefail
+          for pair in "mods/$ID.toml $ENTRY" "revoked.toml $REVOKED"; do
+            read -r path blob <<< "$pair"
+            if [ "$(gh api "repos/$GH_REPO/contents/$path?ref=main" --jq .sha)" != "$blob" ]; then
+              echo "main changed $path since the decision; waits for a reviewer" | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+          done
           gh api --silent -X PUT "repos/$GH_REPO/pulls/$PR/merge" -f merge_method=squash -f sha="$SHA"
+          echo "merged=true" >> "$GITHUB_OUTPUT"
           echo "merged #$PR at $SHA" | tee -a "$GITHUB_STEP_SUMMARY"
-      - if: steps.identity.outputs.ok == 'true'
+      - if: steps.merge.outputs.merged == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

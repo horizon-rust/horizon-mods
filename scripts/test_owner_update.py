@@ -29,6 +29,14 @@ class Eligible(unittest.TestCase):
         # Newest first or last: the entries on main do both.
         self.assertEqual(run(head=TOP + OLD + NEW)[2], ["1.1.0"])
         self.assertEqual(run(head=TOP + NEW + NEW.replace("1.1.0", "1.2.0") + OLD)[2], ["1.1.0", "1.2.0"])
+
+    def test_a_new_version_below_one_of_the_same_day_waits_for_a_reviewer(self):
+        day = lambda v, d: v.replace("\nfile", f'\npublished = "{d}"\nfile')  # noqa: E731
+        old, new = day(OLD, "2026-11-19"), day(NEW, "2026-11-19")
+        self.assertEqual(run(base=TOP + old, head=TOP + new + old)[2], ["1.1.0"])
+        self.assertEqual(run(base=TOP + old, head=TOP + old + day(NEW, "2026-11-20"))[2], ["1.1.0"])
+        with self.assertRaisesRegex(ou.Refused, "below a version of the same day 2026-11-19"):
+            run(base=TOP + old, head=TOP + old + new)
         for kind, ext in (("shader", ".hshader"), ("datapack", ".zip")):
             with self.subTest(kind=kind):
                 top = TOP.replace("resourcepack", kind)

@@ -8,7 +8,8 @@ It is one when all of these hold:
      success;
   b. it changes exactly one file from where it leaves main: a modified mods/<id>.toml (live, a regular file), and
      that entry is the same on main now;
-  c. the head's entry is that entry with one or more [[versions]] records added, every other value unchanged;
+  c. the head's entry is that entry with one or more [[versions]] records added, every other value unchanged, and
+     no new record is below one with the same `published` day;
   d. its kind is resourcepack, shader or datapack, and each new file has its kind's extension: extra files in them
      are accepted but never loaded (README, "Updates"), and every mod, native or not, keeps a reviewer;
   e. GitHub's numeric id of whoever opened it is in the entry's owner_ids (never a login or the description);
@@ -89,6 +90,14 @@ def eligible(changes, base_text, head_text, main_text, revoked_text, author_id):
         raise Refused("it doesn't only add versions: every earlier record stays as it was, in its order")
     if any(not isinstance(v, dict) for v in added):
         raise Refused("a new version is not a record")
+    # The index lists versions by `published` day, newest first, keeping a same-day tie in this order, and the
+    # launcher takes the first as the newest: a new record below one of the same day would list that one as newest.
+    days = []
+    for v in new:
+        day = v.get("published") if isinstance(v, dict) else None
+        if isinstance(day, str) and day in days and any(v is a for a in added):
+            raise Refused(f"version {v.get('version')!r} is below a version of the same day {day}: put it above")
+        days.append(day)
     for v in added:
         if not (isinstance(v.get("file"), str) and v["file"].endswith(EXTENSIONS[kind])):
             raise Refused(f"version {v.get('version')!r}'s file is not a {EXTENSIONS[kind]}")

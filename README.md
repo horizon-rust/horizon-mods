@@ -63,8 +63,10 @@ published, except an owner's update of a pack (below). Only an entry's `owners` 
 of a mod, native or not, is reviewed, owner or not: a native mod's code runs with the player's account permissions.
 
 An owner's update of a `kind = "resourcepack"`, `"shader"` (`.hshader`) or `"datapack"` entry publishes without a
-reviewer once its checks pass (`owner-update.yml`); a `"shaderpack"` (a zip) is reviewed. The pull request is opened by an account in the entry's `owner_ids` and only adds
-`[[versions]]` records to that one live entry, every other field unchanged, and the project is not taken down. New
+reviewer once its checks pass (`owner-update.yml`); a `"shaderpack"` (a zip) is reviewed. The pull request is opened
+by an account in the entry's `owner_ids` and only adds `[[versions]]` records to that one live entry, every other
+field unchanged, and the project is not taken down. A new record goes above any record with the same `published`
+day: the index keeps a same-day tie in the entry's order, and the launcher takes the first as the newest. New
 projects, page changes and every mod version still get a person. A published file never changes: publish a new
 version.
 

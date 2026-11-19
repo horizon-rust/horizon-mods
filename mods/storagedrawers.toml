@@ -1,0 +1,29 @@
+id = "storagedrawers"
+kind = "native-mod"
+name = "Storage Drawers"
+summary = "Drawer-based storage with compacting drawers, upgrades, controllers and a framing table."
+description = """
+An unofficial Horizon port of [Storage Drawers](https://github.com/jaquadro/StorageDrawers) by Justin Aquadro, based on the Java 1.21 source.
+
+Store items in standard and compacting drawers, change their behavior with upgrades and keys, and connect them to controllers and automation. The framing table lets you customize drawer appearances with block materials. The creative inventory and interfaces include Simplified Chinese and English translations.
+
+This release targets Horizon 26.3 on the November 18 Nightly (`0b14f8a`). The Horizon launcher builds the native source package for that exact SDK. The port is still being refined against Java 1.21.
+
+The original MIT copyright and license notices are included in the source and mod package.
+"""
+authors = ["Justin Aquadro", "zhijiandd"]
+owners = ["zhijiandd"]
+owner_ids = [136557803]
+license = "MIT"
+source = "https://github.com/zhijiandd/horizon-storage-drawers"
+icon = "icons/storagedrawers.png"
+categories = ["storage", "utility"]
+tags = ["port", "drawers", "automation"]
+
+[[versions]]
+version = "0.3.7"
+published = "2026-11-19"
+game = "26.3"
+file = "storagedrawers-horizon-0.3.7.hmod"
+sha256 = "28d03da36f69431133470f7cf26cd3602b2e09808853f8c09af2efa48c266a52"
+changelog = "Migrates to the Horizon 26.3 native SDK and fixes compacting drawer drops, remote network traversal, and hopper and magnet scheduling."

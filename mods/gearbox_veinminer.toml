@@ -1,0 +1,42 @@
+id = "gearbox_veinminer"
+kind = "mod"
+name = "Vein Miner"
+summary = "Hold a key to mine a whole ore vein or tree at once, or dig in shapes: 3x3, 5x5, tunnels, staircases."
+description = """
+Hold the vein key (` by default) while breaking a block: every connected block of the same kind breaks with it.
+
+- Shapes: shapeless vein, small tunnel (1x2), 3x3 tunnel, mining tunnel, staircase up, staircase down, 3x3 and 5x5 squares.
+  Cycle them with the mouse wheel while holding the key, or Ctrl + `. Every shape only takes blocks of the kind you aimed at.
+- Each block is a real survival break: Fortune, Silk Touch and Unbreaking apply per block, the tool wears per block,
+  and drops and experience are gathered where you started.
+- Each extra block costs hunger (configurable); a vein stops when you are too hungry.
+- Ores group by tag (`c:ores/*`, `minecraft:*_ores`), so deepslate and stone variants mine together. Logs fell whole trees.
+- A HUD line shows the shape and how many blocks will break.
+- Settings in `config/gearbox_veinminer-common.toml`: max blocks (64), leaves, hunger cost, minimum food level, tag groups.
+- English and Simplified Chinese.
+
+Inspired by FTB Ultimine; an independent reimplementation for Horizon, sharing no code or assets with it, and not affiliated with FTB.
+"""
+authors = ["HerculeWu"]
+owners = ["HerculeWu"]
+owner_ids = [44841149]
+license = "CC-BY-NC-SA-4.0"
+source = "https://github.com/GearBox-MC/veinminer"
+icon = "icons/gearbox_veinminer.png"
+categories = ["utility", "game-mechanics"]
+tags = ["veinminer", "ultimine", "mining", "tree-felling", "qol"]
+key = "RWRapkqQEYDU3Qu5u/gQXFBsuwySma44Vdip3KBIRhpd1ne9+VLbDEmO"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-19"
+game = "26.3"
+file = "gearbox_veinminer-0.1.0.hmod"
+sha256 = "d8b29a237162bd5e94e948a47a2662b6d4a71a1cd01f065afef351d279ffc70b"
+signature = """
+untrusted comment: signature from rsign secret key
+RURapkqQEYDU3S4vg9B7OehY+3wAKdR+ggDFlg8ol3PEnWTXi99CA0kKe3IhIb2w7GlNepGvSqORzGrAXAq03zJS/6FejmZ6Hwo=
+trusted comment: timestamp:1795083263	file:gearbox_veinminer-0.1.0.hmod	prehashed
+NGBKOpU3yQi4vuskCA8TXKlmfQYuFfduAyA2gqBh0WjJh7s5xjZG+QpEW1zcPbxTO2DYvRcNu1siHNuYhwbUBw==
+"""
+changelog = "First release. Built for Nightly 2026-11-18 · dd67b76."

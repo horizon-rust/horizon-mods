@@ -19,13 +19,13 @@ owner_ids = [354832816]
 license = "MIT"
 source = "https://github.com/voltzz900/vast-rifts"
 icon = "icons/vastrifts.png"
-categories = ["adventure", "mobs", "game mechanics"]
+categories = ["adventure", "mobs", "game-mechanics"]
 tags = ["waves", "mob-farms", "combat", "loot", "translation"]
 
 [[versions]]
-version = "0.2.1"
-published = "2026-11-18"
+version = "0.2.2"
+published = "2026-11-19"
 game = "26.3"
-file = "vastrifts-0.2.1.hmod"
-sha256 = "1c0bea686b0987d14baf70ec53ce55259118c22e8d0428b97d10696b498c6031"
-changelog = "First release on Horizon's mod API: one native package (code and content). Pinned to Nightly 2026-11-18 (0b14f8a). Replaces 0.1.0's two files (`vastrifts_native` .hnmod and the `vastrifts` content mod, never published)."
+file = "vastrifts-0.2.2.hmod"
+sha256 = "b3de59437afec3665d1ac31ad5f0e3e1acf18ffa0c94fcd8dc792221533aa7d0"
+changelog = "First release on Horizon's mod API: one native package (code and content). Pinned to Nightly 2026-11-18 (0b14f8a). Replaces 0.1.0's two files (`vastrifts_native` .hnmod and the `vastrifts` content mod, never published). Reward tables are the mod's own; a rift's cleanup only touches its own dimension; an out-of-range saved wave no longer stops the rift's tick."

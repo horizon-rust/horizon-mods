@@ -50,17 +50,17 @@ sha256 = "8048b26c223bc3508fd8fe0cf56aaa1496b79dcddbdd9bfa33f516229cf83ef7"
 changelog = "First release on Horizon's mod API: the native mod as a `.hmod` (1.1.0's `.hnmod` was never published; launchers from 0.2.70 no longer load it). Same scripts and language. Pinned to Nightly 2026-11-18 (0b14f8a)."
 
 [[versions]]
-version = "1.2.2"
-published = "2026-11-19"
-game = "26.3"
-file = "vasttweaks-1.2.2.hmod"
-sha256 = "701002a23bf9e44d2b875e6044e741a731c72756320ef28a26bc3065c854652a"
-changelog = "A shapeless recipe whose repeat would pass nine ingredients is refused before it is expanded, so a short script can no longer exhaust memory or stall world load and /reload."
-
-[[versions]]
 version = "1.2.3"
 published = "2026-11-19"
 game = "26.3"
 file = "vasttweaks-1.2.3.hmod"
 sha256 = "dcc1c4e4106032c2465d40f6bbd9c11cf89c2da0585a3f3e1c0cf36c7563d457"
 changelog = "Opening a world no longer crashes: 1.2.1 and 1.2.2 asked the game for its folder while the server loads its data, which Horizon refuses with a panic. The folder is now taken once at registration; scripts load on every world open and `/reload`. Tested in game."
+
+[[versions]]
+version = "1.2.2"
+published = "2026-11-19"
+game = "26.3"
+file = "vasttweaks-1.2.2.hmod"
+sha256 = "701002a23bf9e44d2b875e6044e741a731c72756320ef28a26bc3065c854652a"
+changelog = "A shapeless recipe whose repeat would pass nine ingredients is refused before it is expanded, so a short script can no longer exhaust memory or stall world load and /reload."

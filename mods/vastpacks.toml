@@ -39,9 +39,9 @@ sha256 = "13e5a6fe5eaf6ed9c1f971b8f4665bdbf561fe257c59149ea9fd818b6a9dd595"
 changelog = "First release (0.1.0)."
 
 [[versions]]
-version = "0.2.2"
+version = "0.2.3"
 published = "2026-11-19"
 game = "26.3"
-file = "vastpacks-0.2.2.hmod"
-sha256 = "38b9bffd1d47ee240eb8f2aeb81a408f723770398b25ba006808e2bdfaaecd6c"
+file = "vastpacks-0.2.3.hmod"
+sha256 = "c7fd5c76305abaeb1970d437c0cf4263fa20d0ddbd4318ab44eda520f23c6934"
 changelog = "Vast Packs becomes one native package on Horizon's mod API (0.1.0 was the content half, whose native half was never published): backpacks open and hold their contents themselves. A 0.1 backpack's contents move into it once, while an operator holds it. Pinned to Nightly 2026-11-18 (0b14f8a)."

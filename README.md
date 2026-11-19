@@ -83,6 +83,7 @@ why.
 | `.github/workflows/check.yml` | A pull request's checks |
 | `.github/workflows/publish.yml` | On merge: releases, then `index.json` on Pages |
 | `.github/workflows/cleanup.yml` | Weekly: staging files nobody needs any more |
+| `.github/workflows/checker.yml` | When the pin changes: builds the checker once, attested, as release `checker@<rev>` |
 | `archive/native-v1/mods/` | Frozen original native-project histories, including earlier `.hmod` releases, and their dependent modpack; never installed or validated as current packages |
 | `archive/api-0.1/mods/` | Frozen shader API 0.1 packs and content mods with pre-SDK manifests, whole projects with no version the current tool reads; same rules as native-v1 |
 | `native/<name>/` | Frozen pre-SDK official-mod source history; not migrated mods or current build automation |
@@ -136,7 +137,9 @@ The old `native.yml` and `native-compat.yml`, their source-application/check/tra
 cache, combined-game publisher or signing step in this repository. This replaces the unsafe context in #390;
 the old combined-game proposal #381 is not revived.
 
-Trusted validation and publication jobs build the pinned checker fresh and restore no Actions cache. So that hourly
+Trusted validation and publication jobs restore no Actions cache. They take the pinned checker from release
+`checker@<rev>` only when GitHub's build attestation shows `checker.yml` on main built that file for that exact pin,
+and otherwise build it from source. So that hourly
 runs don't count as players' downloads, each publish uploads the files it verified as a short-lived artifact, and
 the next one takes them from the last successful publish run, outside the checkout; every byte is rehashed against
 its entry, kept or downloaded, and anything missing or mismatched is downloaded again from the original version

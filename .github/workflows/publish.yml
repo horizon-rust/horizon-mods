@@ -36,7 +36,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      # Built fresh at the pin: no tool cache.
+      # The pin's checker: checker.yml's attested build, else built from source. No tool cache.
       - run: scripts/install-tool.sh
       # Files the last successful publish verified: GitHub counts every download of a release asset, so
       # fetching them all again each hour would count as players. Not an Actions cache (any job in main's

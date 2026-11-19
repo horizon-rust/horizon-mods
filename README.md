@@ -36,8 +36,9 @@ Submit with a pull request:
 Then:
 
 1. The `stage` workflow downloads each linked file, makes sure its name and SHA-256 are a new record's, runs the
-   checker on it, puts it in the `staging` prerelease as `<sha256>.<extension>` and re-runs the check. It reads the
-   pull request only as data and runs none of it. At most 3 files a run, 64 MiB each.
+   checker on it and puts it in the `staging` prerelease as `<sha256>.<extension>`. If the check failed because the
+   file was missing, it re-runs the check once. It reads the pull request only as data and runs none of it. At most
+   3 files a run, 64 MiB each.
 2. Checks compare the entry with main, verify package structure, hashes and signatures, and build the candidate
    index. They never compile or execute submitted code. Their report and candidate index are in the pull request.
 3. A reviewer (see [`.github/CODEOWNERS`](.github/CODEOWNERS)) reads the entry, the source and the report (a native
@@ -66,7 +67,7 @@ entry, and every later version must be signed with it, so nobody else can publis
 ## Staging by hand
 
 A file linked somewhere `stage` doesn't take (not a GitHub release download, or more than 3 files) is staged by a
-maintainer. From a checkout of main they trust, signed in to `gh` as a maintainer, they run
+maintainer, as is any file once `staging` holds 900 (a release takes 1000; `cleanup.yml` makes room). From a checkout of main they trust, signed in to `gh` as a maintainer, they run
 `scripts/stage.sh <pull request> <base sha> <head sha> <link>` with the head they reviewed and
 `git merge-base origin/main <head sha>`. To have both commits without checking the pull request out, first run
 `git fetch origin main refs/pull/<pull request>/head`. The script reads the pull request as data and runs none of its

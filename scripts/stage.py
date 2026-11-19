@@ -12,11 +12,15 @@ is new in head names its file name and SHA-256. It is downloaded from GitHub (64
                                                    each new record's file, from its link in the text file <body>;
                                                    records whose <sha256>.<ext> is a line of <staged> are skipped
   stage.py check <dir>                             `cargo horizon-mod check` of each file `links` wrote
-  stage.py verify <base> <head> <dir>              every file in <dir> is a new record's, rehashed
+  stage.py verify <base> <head> <dir> <staged>     every file in <dir> is a new record's, rehashed, and every new
+                                                   record's file is in <dir> or a line of <staged>
+  stage.py ready <base> <head> <staged> <failures> whether a failed check is worth re-running: <failures> (its
+                                                   failure annotations, a JSON string a line) name new records'
+                                                   files as missing, and every new record's file is in <staged>
 
 `download` and `links` write <dir>/<sha256>.<ext> and <dir>/../<dir name>.json (each new record: its entry's
-path, id, kind and key, the record, and whether staging already had its file). `verify` prints the names it checked.
-Needs git and python3 3.11+.
+path, id, kind and key, the record, and whether staging already had its file). `verify` prints the names in <dir>
+that <staged> doesn't list. `ready` exits 1 when it isn't. Needs git and python3 3.11+.
 """
 import hashlib
 import http.client
@@ -39,6 +43,10 @@ RELEASE = re.compile(r"https://github\.com/[A-Za-z0-9-]+/[A-Za-z0-9._-]+/release
 URL = re.compile(r"https?://[^\s<>()\[\]\"'`]+", re.I)
 ENTRY = re.compile(r"mods/[a-z0-9_]{1,64}\.toml")
 EXT = re.compile(r"[a-z0-9]{1,16}")
+# A minisign public key: "Ed" and 40 bytes, base64.
+KEY = re.compile(r"RW[A-Za-z0-9+/]{54}")
+# What scripts/fetch.sh reports when the check finds a file in neither its release nor staging.
+ABSENT = ": reviewed package is absent from its release and staging"
 
 
 class Refused(Exception):
@@ -96,12 +104,15 @@ def added(base, head):
         if new is None:
             continue  # removed in head
         old = {r[:3] for r in records(path, entry(base, path), base)}
+        key = new.get("key")
+        if key is not None and not (isinstance(key, str) and KEY.fullmatch(key)):
+            raise Refused(f"{path} at {head[:12]}: key {shown(key)} is not a minisign public key")
         for version, file, sha, record in records(path, new, head):
             if (version, file, sha) in old:
                 continue
-            key, signature = new.get("key"), record.get("signature")
-            out.append({"path": path, "id": path[5:-5], "kind": new.get("kind"),
-                        "key": key if isinstance(key, str) else None, "version": version, "file": file,
+            signature = record.get("signature")
+            out.append({"path": path, "id": path[5:-5], "kind": new.get("kind"), "key": key, "version": version,
+                        "file": file,
                         "sha256": sha, "signature": signature if isinstance(signature, str) else None,
                         "name": staged_name(sha, file)})
     return out
@@ -189,7 +200,7 @@ def check(out):
         if r["staged"]:
             continue
         args = ["cargo", "horizon-mod", "check", str(out / r["name"]), "--kind", str(r["kind"])]
-        if r["key"]:
+        if r["key"] is not None:
             if not r["signature"]:
                 print(f"{r['path']}: version {shown(r['version'])} needs a signature: the entry has a key")
                 failed = 1
@@ -208,7 +219,7 @@ def plan(out, staged):
 
 def main(argv):
     mode, rest = (argv[0], argv[1:]) if argv else ("", [])
-    sizes = {"download": (4,), "links": (4, 5), "check": (1,), "verify": (3,)}
+    sizes = {"download": (4,), "links": (4, 5), "check": (1,), "verify": (4,), "ready": (4,)}
     if len(rest) not in sizes.get(mode, ()):
         print(__doc__.split("\n\n")[2], file=sys.stderr)
         return 2
@@ -216,7 +227,7 @@ def main(argv):
         return check(pathlib.Path(rest[0]))
     base, head = rest[0], rest[1]
     new = added(base, head)
-    if not new and mode != "verify":
+    if not new and mode not in ("verify", "ready"):
         if mode == "links":
             print("no new [[versions]] record: nothing to stage")
             plan(pathlib.Path(rest[3]), [])
@@ -256,7 +267,9 @@ def main(argv):
             fetch(r, link(body, r["file"]), out)
         plan(out, new)
         return 0
-    out = pathlib.Path(rest[2])
+    if mode == "ready":
+        return ready(new, lines(rest[2]), pathlib.Path(rest[3]).read_text().splitlines())
+    out, have = pathlib.Path(rest[2]), lines(rest[3])
     names = {r["name"]: r for r in new if r["name"]}
     files = sorted(out.iterdir())
     if len(files) > MAX_FILES:
@@ -267,7 +280,38 @@ def main(argv):
             raise Refused(f"{shown(f.name)} is not a new version's <sha256>.<ext>")
         if f.stat().st_size > MAX or hashlib.sha256(f.read_bytes()).hexdigest() != r["sha256"]:
             raise Refused(f"{f.name}: its SHA-256 is not {r['path']}'s version {shown(r['version'])}")
-        print(f.name)
+    missing = [r for r in new if r["name"] not in have and not (out / str(r["name"])).is_file()]
+    if missing:
+        raise Refused("neither staged nor downloaded: " + ", ".join(
+            f"{r['path']} version {shown(r['version'])}" for r in missing))
+    for f in files:
+        if f.name not in have:
+            print(f.name)
+    return 0
+
+
+def lines(path):
+    return set(pathlib.Path(path).read_text().split())
+
+
+def ready(new, have, failures):
+    """0 when the check failed because new records' files were missing, and staging has all of them now."""
+    absent = {json.loads(line) for line in failures if line.strip()}
+    absent = {m.removesuffix(ABSENT) for m in absent if isinstance(m, str) and m.endswith(ABSENT)}
+    if not absent:
+        print("the check didn't fail on a missing file: not re-run")
+        return 1
+    ours = {f"{r['id']} {r['version']}" for r in new}
+    if not absent <= ours:
+        print(f"the check also misses files this pull request doesn't add ({shown(', '.join(sorted(absent - ours)))}): "
+              "not re-run")
+        return 1
+    missing = [r for r in new if r["name"] not in have]
+    if missing:
+        print("staging doesn't have every new file yet (" + ", ".join(
+            f"{r['path']} version {shown(r['version'])}" for r in missing) + "): not re-run")
+        return 1
+    print(f"the check missed {shown(', '.join(sorted(absent)))}, staged now")
     return 0
 
 

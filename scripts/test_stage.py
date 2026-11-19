@@ -19,6 +19,7 @@ ENTRY = 'id = "pack"\nkind = "resourcepack"\nowner_ids = [1]\n'
 OLD = '[[versions]]\nversion = "1.0.0"\nfile = "pack-1.0.0.zip"\nsha256 = "' + "0" * 64 + '"\n'
 NEW = f'[[versions]]\nversion = "1.1.0"\nfile = "pack-1.1.0.zip"\nsha256 = "{SHA}"\n'
 LINK = "https://github.com/someone/pack/releases/download/v1.1.0/pack-1.1.0.zip"
+KEY = "RW" + "Q" * 54
 
 
 class Links(unittest.TestCase):
@@ -112,19 +113,67 @@ class Records(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             return stage.main([*args])
 
+    def file(self, name, text):
+        path = self.root / name
+        path.write_text(text)
+        return str(path)
+
     def test_verify_takes_only_new_records_files(self):
         head = self.commit({"mods/pack.toml": ENTRY + NEW + OLD})
         files = self.root / "files"
         files.mkdir()
+        none = self.file("none", "")
         (files / f"{SHA}.zip").write_bytes(BYTES)
-        self.assertEqual(self.run_main("verify", self.base, head, str(files)), 0)
+        self.assertEqual(self.run_main("verify", self.base, head, str(files), none), 0)
         (files / f"{SHA}.zip").write_bytes(b"other bytes")
         with self.assertRaisesRegex(stage.Refused, "SHA-256 is not"):
-            self.run_main("verify", self.base, head, str(files))
+            self.run_main("verify", self.base, head, str(files), none)
         (files / f"{SHA}.zip").unlink()
         (files / f"{'0' * 64}.zip").write_bytes(BYTES)
         with self.assertRaisesRegex(stage.Refused, "not a new version's"):
-            self.run_main("verify", self.base, head, str(files))
+            self.run_main("verify", self.base, head, str(files), none)
+
+    def test_verify_needs_every_new_file_staged_or_downloaded(self):
+        # A failed artifact download leaves the folder empty: that is not "nothing to upload".
+        head = self.commit({"mods/pack.toml": ENTRY + NEW + OLD})
+        files = self.root / "files"
+        files.mkdir()
+        with self.assertRaisesRegex(stage.Refused, "neither staged nor downloaded: mods/pack.toml version 1.1.0"):
+            self.run_main("verify", self.base, head, str(files), self.file("none", ""))
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(stage.main(["verify", self.base, head, str(files), self.file("staged", f"{SHA}.zip\n")]),
+                             0)
+        self.assertEqual(out.getvalue(), "")
+
+    def test_a_key_must_be_a_minisign_key_and_needs_signatures(self):
+        for key in ('""', '"RWQ"', "1", f'"{KEY}x"'):
+            head = self.commit({"mods/pack.toml": ENTRY + f"key = {key}\n" + NEW + OLD})
+            with self.subTest(key=key), self.assertRaisesRegex(stage.Refused, "not a minisign public key"):
+                stage.added(self.base, head)
+        head = self.commit({"mods/pack.toml": ENTRY + f'key = "{KEY}"\n' + NEW + OLD})
+        files = self.root / "files"
+        files.mkdir()
+        stage.plan(files, [{**r, "staged": False} for r in stage.added(self.base, head)])
+        with contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(stage.check(files), 1)
+        self.assertIn("needs a signature", out.getvalue())
+
+    def test_ready_only_when_the_check_missed_files_that_are_staged_now(self):
+        head = self.commit({"mods/pack.toml": ENTRY + NEW + OLD})
+        missed = '"pack 1.1.0: reviewed package is absent from its release and staging"\n'
+        exit1 = '"Process completed with exit code 1."\n'
+        staged, none = self.file("staged", f"{SHA}.zip\n"), self.file("none", "")
+        cases = [
+            (missed + exit1, staged, 0),
+            (exit1, staged, 1),  # failed on something else
+            (missed, none, 1),  # not staged yet
+            (missed.replace("pack 1.1.0", "other 1.0.0"), staged, 1),  # another entry's file
+            (missed + missed.replace("pack 1.1.0", "other 1.0.0"), staged, 1),
+            ('"pack 1.1.0: reviewed package is absent"\n', staged, 1),
+        ]
+        for failures, have, want in cases:
+            with self.subTest(failures=failures, have=have):
+                self.assertEqual(self.run_main("ready", self.base, head, have, self.file("failures", failures)), want)
 
     def test_links_stages_at_most_a_few_and_skips_staged(self):
         many = "".join(NEW.replace("1.1.0", f"1.1.{n}") for n in range(stage.MAX_FILES + 1))

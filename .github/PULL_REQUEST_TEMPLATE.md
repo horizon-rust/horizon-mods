@@ -1,6 +1,6 @@
-<!-- Changing mods/<id>.toml by hand? The form at https://playhorizon.dev/mods/submit does this for you. -->
-
 **Project:** <!-- id, and new project or update -->
+
+**File:** <!-- the link to each new version's file: https://github.com/<owner>/<repo>/releases/download/<tag>/<file> -->
 
 - [ ] I made it, or I am allowed to publish it, under the licence the entry names.
 - [ ] If it ports or translates another mod, the original's licence allows it (or its authors agreed), and my page
@@ -11,4 +11,5 @@
 - [ ] The `source` link has the code this file was built from.
 - [ ] I ran `cargo horizon-mod check <file>` and it passed.
 
-The file goes in the `staging` release as `<sha256>.<extension>` (the form uploads it; by hand, ask a reviewer).
+The `stage` check puts each linked file in the `staging` release as `<sha256>.<extension>` and re-runs the check. A file
+linked anywhere else: ask a reviewer to stage it.

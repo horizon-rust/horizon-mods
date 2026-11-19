@@ -26,15 +26,27 @@ it accepts, and how to have a project taken down.
 
 ## Submit
 
-Use the form at [playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit): sign in with GitHub, pick the file
-and fill in the page. The form checks the file, uploads it here and opens a pull request for you. Then:
+Submit with a pull request:
 
-1. Checks compare the entry with main, verify package structure, hashes and signatures, and build the candidate
+1. Attach the file to a GitHub release of your own repository, under the name the entry gives it.
+2. Open a pull request that adds or updates `mods/<id>.toml` with a new `[[versions]]` record: its `version`, `file`
+   name and the file's `sha256` (`sha256sum <file>`). Link the release's file in the pull request's description:
+   `https://github.com/<owner>/<repo>/releases/download/<tag>/<file>`.
+
+Then:
+
+1. The `stage` workflow downloads each linked file, makes sure its name and SHA-256 are a new record's, runs the
+   checker on it, puts it in the `staging` prerelease as `<sha256>.<extension>` and re-runs the check. It reads the
+   pull request only as data and runs none of it. At most 3 files a run, 64 MiB each.
+2. Checks compare the entry with main, verify package structure, hashes and signatures, and build the candidate
    index. They never compile or execute submitted code. Their report and candidate index are in the pull request.
-2. A reviewer (see [`.github/CODEOWNERS`](.github/CODEOWNERS)) reads the entry, the source and the report, and asks
-   for changes in the pull request if needed.
-3. Merging publishes it: the file becomes a release, the project appears on the site and in the launcher within
+3. A reviewer (see [`.github/CODEOWNERS`](.github/CODEOWNERS)) reads the entry, the source and the report (a native
+   mod's source also gets a security review), and asks for changes in the pull request if needed.
+4. Merging publishes it: the file becomes a release, the project appears on the site and in the launcher within
    minutes.
+
+The form at [playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit) is legacy: it can't take current
+packages ([#1289](../../issues/1289)).
 
 Accepted kinds include content/wasm mods, native source mods, modpacks of current registry mods, resource/data packs
 and shader packs supported by the checker. Before submitting, use the checker for the reviewed engine revision:
@@ -44,27 +56,22 @@ cargo install --locked --git https://github.com/horizon-rust/horizon --rev "$(ca
 cargo horizon-mod check target/horizon-mod/my_mod.hmod
 ```
 
-**Updates** come the same way: the form adds a version to your entry, and a reviewer reads it before it is
+**Updates** come the same way: a pull request adds a version to your entry, and a reviewer reads it before it is
 published. Only an entry's `owners` can add versions, and every version of a native mod is reviewed, owner or
 not: its code runs with the player's account permissions. A published file never changes: publish a new version.
 
 **Signing** is optional and recommended: put your [minisign](https://jedisct1.github.io/minisign/) public key in your
 entry, and every later version must be signed with it, so nobody else can publish an update in your name.
 
-## Publishing without the form
+## Staging by hand
 
-While the form is down, a hand-made pull request does the same:
-
-1. Attach the file to a GitHub release of your own repository, under the name the entry gives it.
-2. Open a pull request that adds or updates `mods/<id>.toml` with a new `[[versions]]` record: its `version`, `file`
-   name and the file's `sha256` (`sha256sum <file>`). Link the release's file in the pull request's description.
-3. A maintainer reviews the entry (a native mod's source also gets a security review). From a checkout of main they
-   trust, signed in to `gh` as a maintainer, they run
-   `scripts/stage.sh <pull request> <base sha> <head sha> <link>` with the head they reviewed and
-   `git merge-base origin/main <head sha>`. To have both commits without checking the pull request out, first run
-   `git fetch origin main refs/pull/<pull request>/head`. The script reads the pull request as data and runs none of its code; it
-   stages the file once its name and SHA-256 match a version the pull request adds. Then they re-run the check, and
-   merge that reviewed head once its required checks pass.
+A file linked somewhere `stage` doesn't take (not a GitHub release download, or more than 3 files) is staged by a
+maintainer. From a checkout of main they trust, signed in to `gh` as a maintainer, they run
+`scripts/stage.sh <pull request> <base sha> <head sha> <link>` with the head they reviewed and
+`git merge-base origin/main <head sha>`. To have both commits without checking the pull request out, first run
+`git fetch origin main refs/pull/<pull request>/head`. The script reads the pull request as data and runs none of its
+code; it stages the file once its name and SHA-256 match a version the pull request adds. Then they re-run the
+check, and merge that reviewed head once its required checks pass.
 
 ## Report
 
@@ -80,6 +87,7 @@ why.
 | `mods/<id>.toml` | One project: its page and its versions, each pinned by SHA-256 |
 | `icons/<id>.png` | Its icon, at most 256 KiB |
 | `revoked.toml` | Files taken down |
+| `.github/workflows/stage.yml` | A pull request's new files, into `staging` |
 | `.github/workflows/check.yml` | A pull request's checks |
 | `.github/workflows/publish.yml` | On merge: releases, then `index.json` on Pages |
 | `.github/workflows/cleanup.yml` | Weekly: staging files nobody needs any more |

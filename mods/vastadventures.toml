@@ -25,9 +25,9 @@ categories = ["adventure", "equipment", "mobs"]
 tags = ["loot", "affixes", "gems", "bosses", "rpg", "dungeons", "translation"]
 
 [[versions]]
-version = "0.10.1"
-published = "2026-11-18"
+version = "0.10.2"
+published = "2026-11-19"
 game = "26.3"
-file = "vastadventures-0.10.1.hmod"
-sha256 = "e8b7a1970063dd7efce44737d994f59b639e649885612338a90224540e2f02f0"
-changelog = "First release on Horizon's mod API: one native package (code and content). Gear, gems and sockets made with 0.9 keep working; combat stats are now attributes of the mod's own. Pinned to Nightly 2026-11-18 (0b14f8a)."
+file = "vastadventures-0.10.2.hmod"
+sha256 = "22456fe50109fdaed3cc38ca07b5036876cb89758b4df04e02326f5492ac24a2"
+changelog = "First release on Horizon's mod API: one native package (code and content). Pinned to Nightly 2026-11-18 (0b14f8a). Gear, gems and sockets made with 0.9 keep working; combat stats are now attributes of the mod's own. Setting the world tier needs an operator; socket counts and malformed item data are bounded; projectile effects only follow a permitted hit; cooldowns are cleared."

@@ -1,0 +1,61 @@
+id = "dynamiccrosshair"
+kind = "native-mod"
+name = "Dynamic Crosshair"
+summary = "Hides or changes the crosshair depending on what the player looks at and holds."
+description = """
+A Horizon port of [Crendgrim's Dynamic Crosshair](https://github.com/Crendgrim/DynamicCrosshair)
+for Fabric, Forge and NeoForge. The original is built from 84 mixins over Java Edition
+classes; Horizon does not run Java mods, so this port reimplements the same decisions as a
+native Rust mod.
+
+**What it does**
+
+- Hides the crosshair when there is nothing to do, such as aiming at the sky with an empty hand.
+- Shows a contextual style for blocks, entities, tools, melee and ranged weapons, throwables,
+  shields and placeable blocks.
+- Marks the correct tool with a dot and the wrong tool with a small cross.
+- Keeps all 18 builtin crosshair sprites, the separately coloured style slots, blend and
+  coalesce switches, and the Always / If Targeting / If Interactable / Disabled policies.
+- Supports third-person crosshair, hiding with an open screen or a held map, and exact
+  centering.
+- Keeps the original datapack tags: `dynamiccrosshair:always_interactable`,
+  `interactable`, `tools`, `melee_weapons`, `ranged_weapons`, `throwables`, `usable` and
+  the rest.
+- Adds custom PNG crosshairs from `config/dynamiccrosshair/crosshairs/` and the original
+  free-form extra item/block lists in `config/dynamiccrosshair.json`.
+
+Everything is configured in **Options > Mods > Dynamic Crosshair**.
+
+**Known differences**
+
+- Horizon's mod-facing GUI drawing has no invert blend for mod-namespaced sprites, so
+  styles with blending enabled are drawn with normal alpha instead of inverting the
+  background. The plain vanilla crosshair keeps vanilla's inverting pipeline.
+- The original's pixel style editor is not ported; custom PNGs are used instead.
+- Private mob state the client does not expose for remote entities (tamed, saddled,
+  collar colour, item-frame contents) is approximated from the entity type and held item.
+- The F3 debug crosshair is drawn outside the HUD-layer hooks and is not replaced.
+
+Pinned to Horizon `0b14f8acfd97fa2c750e42795249dcc981178ca4` and horizon-mixins
+`e59da9094f0c2fdda6c627fe9eff22dec6a906f0` (Minecraft 26.3).
+
+The original is licensed under the GNU Lesser General Public License v3.0; this port keeps
+that licence and credits Crendgrim as the original author. It is an independent project,
+not an official Horizon mod.
+"""
+authors = ["Crendgrim", "ZuzeTt"]
+owners = ["ZuzeTt"]
+owner_ids = [151448107]
+license = "LGPL-3.0-only"
+source = "https://github.com/ZuzeTt/dynamic-crosshair-horizon"
+icon = "icons/dynamiccrosshair.png"
+categories = ["utility"]
+tags = ["crosshair", "hud", "port"]
+
+[[versions]]
+version = "9.15.0"
+published = "2026-11-19"
+game = "26.3"
+file = "dynamiccrosshair-9.15.0.hmod"
+sha256 = "a29f11ee04545a8c98ae6f8ac603feee9ac8f6fc8c74d68da5ac6fc43a58d7e4"
+changelog = "First Horizon release: full interaction pipeline and styles, settings, datapack tags, custom PNG crosshairs and third-person support."

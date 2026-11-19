@@ -145,8 +145,8 @@ class Records(unittest.TestCase):
                              0)
         self.assertEqual(out.getvalue(), "")
 
-    def test_a_key_must_be_a_minisign_key_and_needs_signatures(self):
-        for key in ('""', '"RWQ"', "1", f'"{KEY}x"'):
+    def test_a_key_must_be_a_string_and_any_key_needs_signatures(self):
+        for key in ('""', '"  "', "1", "[]"):
             head = self.commit({"mods/pack.toml": ENTRY + f"key = {key}\n" + NEW + OLD})
             with self.subTest(key=key), self.assertRaisesRegex(stage.Refused, "not a minisign public key"):
                 stage.added(self.base, head)

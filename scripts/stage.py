@@ -43,8 +43,6 @@ RELEASE = re.compile(r"https://github\.com/[A-Za-z0-9-]+/[A-Za-z0-9._-]+/release
 URL = re.compile(r"https?://[^\s<>()\[\]\"'`]+", re.I)
 ENTRY = re.compile(r"mods/[a-z0-9_]{1,64}\.toml")
 EXT = re.compile(r"[a-z0-9]{1,16}")
-# A minisign public key: "Ed" and 40 bytes, base64.
-KEY = re.compile(r"RW[A-Za-z0-9+/]{54}")
 # What scripts/fetch.sh reports when the check finds a file in neither its release nor staging.
 ABSENT = ": reviewed package is absent from its release and staging"
 
@@ -105,7 +103,8 @@ def added(base, head):
             continue  # removed in head
         old = {r[:3] for r in records(path, entry(base, path), base)}
         key = new.get("key")
-        if key is not None and not (isinstance(key, str) and KEY.fullmatch(key)):
+        # Its format is the pinned checker's to judge (`check` passes it this key); any key needs signatures.
+        if key is not None and not (isinstance(key, str) and key.strip()):
             raise Refused(f"{path} at {head[:12]}: key {shown(key)} is not a minisign public key")
         for version, file, sha, record in records(path, new, head):
             if (version, file, sha) in old:

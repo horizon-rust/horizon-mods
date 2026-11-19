@@ -1,0 +1,34 @@
+id = "minelights"
+kind = "native-mod"
+name = "MineLights"
+summary = "MineLights brings RGB lighting integrations to Horizon."
+description = """
+MineLights brings RGB lighting integrations to Horizon.
+
+Lighting reacts to your biome, weather, player status and compass. Configure keys, colors and individual devices from Horizon's Mods menu or with `/minelights`. OpenRGB and Yeelight connect directly. Other supported RGB devices use [MineLights Server](https://github.com/megabytesme/MineLights-Server).
+
+This package uses the Horizon native mod SDK for Minecraft 26.3 and Horizon commit `0a875da91dbb0fdcb7ba8c42c11341aa229af51a`. Horizon Launcher compiles it for that build. Native code runs with your account permissions and requires enabling native-code trust in the launcher.
+
+MineLights Server uses authenticated V2 and pinned TLS for remote pairing. On Windows, the optional reviewed MineLights Server 2.4.1 download and launch stays off until you confirm it. MineLights verifies the executable's pinned SHA-256 before running it. By default on Windows, entering a world checks GitHub release metadata for newer MineLights Server versions, including when automatic server start is off. This check only shows a notice about newer versions. Turn off **Check for MineLights Server updates** in MineLights settings to disable the automatic check.
+"""
+authors = ["MegaBytesMe"]
+owners = ["megabytesme"]
+license = "CC-BY-NC-SA-4.0"
+source = "https://github.com/megabytesme/MineLights/tree/a603d1c6c90b78f12df71fce566caaea1bea60c4/horizon"
+icon = "icons/minelights.png"
+categories = ["utility", "technology"]
+key = "RWQXM9P921f9AnO4kAKnVMu+2UdAr6BeAdM70P6PjbT7xxxmJbVb/qlN"
+
+[[versions]]
+version = "2.4.1"
+published = "2026-11-20"
+game = "26.3"
+file = "minelights-2.4.1.hmod"
+sha256 = "969a7d97b7fba90a74e5e0e0cd1e21f985bd35af9cbee8e9831955cb969204f8"
+signature = """
+untrusted comment: signature from minisign secret key
+RUQXM9P921f9AlfaC9lRTx3g7UJTc2PV8r5fQ76yEeK2iWKOaubG5LIpgOMmiHz9U+hYLL3T87zCk14xhcAhp+rLV/BTnPVFKgs=
+trusted comment: MineLights 2.4.1 for Horizon 0a875da, source a603d1c
+iBsbVlsZkoxGxyQ1p4QGPw9D9vHlpMkpbBPxRvb/X4jm+k6Gq2rYafOusuhKiaxoJDm2ctbuX1xXrMrY1kHSBQ==
+"""
+changelog = "Rebuild MineLights for Nightly 0a875da with bounded waypoint angle handling and stricter Yeelight discovery and replies."

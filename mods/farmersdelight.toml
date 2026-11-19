@@ -26,3 +26,11 @@ game = "26.3"
 file = "farmersdelight.hmod"
 sha256 = "eff653899ec28e7cdd1c4642c145438b5bc86e58df5e7d7472cf9bb8af25fc30"
 changelog = "One native package with code and content, built with the exact-build SDK dd67b76 on the mod API only. Replaces the content-only entry and the retired .hnmod."
+
+[[versions]]
+version = "0.5.1"
+published = "2026-11-19"
+game = "26.3"
+file = "farmersdelight.hmod"
+sha256 = "74142ecf6c41cf682990ae81ce47e86efdbed8b40be339a87751a8cae3750ef8"
+changelog = "Installed alone, 0.5.0 lost the stove, cooking pot, skillet and iron knife recipes and a few foods: they name c item tags that only other mods define. 0.5.1 defines them, and its biome tags' c references are optional."

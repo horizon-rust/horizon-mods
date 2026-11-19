@@ -141,8 +141,9 @@ Trusted validation and publication jobs restore no Actions cache. They take the 
 `checker@<rev>` only when GitHub's build attestation shows `checker.yml` on main built that file for that exact pin,
 and otherwise build it from source. So that hourly
 runs don't count as players' downloads, each publish uploads the files it verified as a short-lived artifact, and
-the next one, and every pull request's check, takes them from the last successful publish run, outside the checkout
-(a check then downloads only the pull request's new files); every byte is rehashed against
+the next one, and every pull request's check, takes the matching ones from the last successful publish run this
+repository started itself (a push, the schedule or a dispatch on main, never a pull request's run), outside the
+checkout, and downloads the rest; every byte is rehashed against
 its entry, kept or downloaded, and anything missing or mismatched is downloaded again from the original version
 release or staging. The ordinary index builder then checks package structure, metadata and author
 signatures before anything is published. Existing SDK release signature/provenance authority stays in the engine's

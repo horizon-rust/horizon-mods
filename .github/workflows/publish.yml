@@ -41,13 +41,13 @@ jobs:
       # Files the last successful publish verified: GitHub counts every download of a release asset, so
       # fetching them all again each hour would count as players. Not an Actions cache (any job in main's
       # cache scope could write that, and it is unpacked before anything is hashed): an artifact only this
-      # workflow uploads, unpacked outside the checkout, and fetch.sh rehashes each file before use. Anything
+      # workflow uploads, taken only from a run this repository started on main (scripts/last-publish.sh; never a
+      # pull request's), unpacked outside the checkout, and fetch.sh rehashes each file before use. Anything
       # missing (no earlier run, an expired artifact, a failed download) is the cold path: download it all.
       - name: The last successful publish
         id: last
         run: |
-          run=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow publish.yml --branch main --status success \
-            --limit 1 --json databaseId --jq '.[0].databaseId // empty' 2>/dev/null) || run=
+          run=$(scripts/last-publish.sh 2>/dev/null) || run=
           echo "run=$run" >> "$GITHUB_OUTPUT"
           [ -n "$run" ] || echo "no earlier successful publish: every file is downloaded"
       - if: steps.last.outputs.run != ''

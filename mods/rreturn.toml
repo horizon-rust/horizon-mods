@@ -1,0 +1,34 @@
+id = "rreturn"
+kind = "native-mod"
+name = "RReturn"
+summary = "Rewinds the world and player state to the last checkpoint on death."
+description = """
+Rewinds the world and player state to the last checkpoint when the player dies. Blocks, containers, entities, weather, time, dimensions, and inventory are restored to their state at the checkpoint.
+
+### How it works
+- **Return by Death:** On fatal damage, the world rolls back to the last checkpoint instead of showing the death screen.
+- **Checkpoints:** An initial checkpoint is created when entering a world. New checkpoints are saved automatically during safe periods, after combat, and after defeating a boss, or on a fixed timer.
+- **Multiplayer modes:** On a LAN or server world, a key player's death rewinds the world for everyone on it. Supports single key player, multiple key players, all players, or rotating key player, with an optional rollback cooldown.
+- **Manual control:** With cheats enabled, `F6` (`/rreturn set`) creates a checkpoint, `F7` (`/rreturn load`) rolls back, and `F8` switches the key player mode.
+- **World data:** Checkpoints and logs are stored inside the world save folder (`rreturn/`) and mod settings are saved in the client configuration.
+
+Settings and keybinds are in **Options > Mods**."""
+authors = ["Reset171"]
+owners = ["Reset171"]
+owner_ids = [266536455]
+license = "GPL-3.0-only"
+source = "https://github.com/Reset171/RReturn"
+icon = "icons/rreturn.png"
+categories = ["utility", "adventure", "game-mechanics"]
+tags = ["rewind", "checkpoint", "return-by-death", "timeline", "survival", "save-states", "death", "multiplayer"]
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-19"
+game = "26.3"
+file = "rreturn-0.1.2.hmod"
+sha256 = "388ae2c2fd31f244b8d628e07f0114bb092b4379ff8a5913b752d0855770a7d6"
+changelog = """
+- Migrated mod package to flat .hmod format (horizon-mod.toml) required by Horizon 0.2.70+.
+- Updated native hooks, mixins, and engine extensions for Horizon 0b14f8acfd97fa2c750e42795249dcc981178ca4 (Minecraft 26.3).
+- Fixed entity residency caching and LAN death handling after rewind."""

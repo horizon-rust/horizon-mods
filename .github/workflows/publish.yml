@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 30
     environment:
       name: github-pages
-      url: ${{ steps.pages.outputs.page_url }}
+      url: ${{ steps.pages.outputs.page_url || steps.pages-again.outputs.page_url }}
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
@@ -162,5 +162,14 @@ jobs:
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: site
+      # GitHub sometimes doesn't list the artifact just uploaded yet ("No artifacts named github-pages") or answers
+      # with a 5xx. Re-running the job can't recover, since it uploads a second github-pages artifact, so wait and
+      # deploy once more here.
       - id: pages
+        continue-on-error: true
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+      - if: steps.pages.outcome == 'failure'
+        run: sleep 60
+      - id: pages-again
+        if: steps.pages.outcome == 'failure'
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

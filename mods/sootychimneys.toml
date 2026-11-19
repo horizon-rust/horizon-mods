@@ -1,0 +1,28 @@
+id = "sootychimneys"
+kind = "native-mod"
+name = "Sooty Chimneys (assets)"
+summary = "Chimneys that smoke, with wind, soot and scraping."
+description = """
+Chimneys that smoke, with wind, soot and scraping.
+
+**Differences from the original:** Wind doesn't bend campfire smoke. Chimney smoke is sent by the server, so every player sees the same wind. Blocking or unblocking a chimney doesn't puff soot, and there is no statistic for scraped soot. Create's sandpaper doesn't work as a soot scraper.
+
+A port of [Sooty Chimneys](https://github.com/mortuusars/sootychimneys) 1.3.4 by mortuusars, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "mortuusars"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/sootychimneys"
+icon = "icons/sootychimneys.png"
+categories = ["decoration"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.5.0"
+published = "2026-11-19"
+game = "26.3"
+file = "sootychimneys.hmod"
+sha256 = "783075f85592d3e1f25c154b4f1e87d83127c1d815d6dfe6c7f2a1b295b73832"
+changelog = "One native package with the code and the content, built with the exact-build SDK dd67b76 on the mod API only. Replaces the content-only entry and the retired .hnmod."

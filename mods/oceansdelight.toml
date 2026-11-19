@@ -1,0 +1,30 @@
+id = "oceansdelight"
+kind = "mod"
+name = "Ocean's Delight"
+summary = "Squid, guardian and pufferfish dishes for Farmer's Delight, and the guardian soup feast (needs Farmer's Delight 0.5 or later)."
+description = """
+Squid, guardian, elder guardian and pufferfish dishes for Farmer's Delight: cooking pot and cutting board recipes, tentacles and guardian meat from knife kills, and the guardian soup feast.
+
+**Needs** [farmersdelight](https://playhorizon.dev/mods/farmersdelight) 0.5 or later installed too (declared as a dependency, so the game names it if it's missing). Its cooking pot and cutting board recipes, the feast and the knife drops run on that package's code.
+
+**Differences from the original:** No food-group tags for the Diet mod, which Horizon doesn't have. Otherwise none known.
+
+A port of [Ocean's Delight](https://github.com/Scouter456/Oceans_Delight) fdrf-fabric-1.0.2-1.20 by Scouter, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Scouter"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/oceansdelight"
+icon = "icons/oceansdelight.png"
+categories = ["food"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "1.0.2-horizon.3"
+published = "2026-11-19"
+game = "26.3"
+file = "oceansdelight.hmod"
+sha256 = "6be176a2666a0fdda1bf9cdd69136f83c263240faadb28d13914e0679d9e4df2"
+changelog = "A content package for the unified farmersdelight 0.5: the dependency is declared (`farmersdelight = \"^0.5\"`) in place of the retired farmersdelight_native, LICENSE and NOTICE are inside the package, and it was tested with farmersdelight 0.5.1. Supersedes #699."

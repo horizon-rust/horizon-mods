@@ -1,7 +1,7 @@
 # Horizon mods
 
 The registry of what is made for [Horizon](https://github.com/horizon-rust/horizon): mods (`.hmod`), modpacks (`.hpack`)
-and resource packs, each one reviewed before it is published. Browse them at
+and resource packs. Every new project and every mod version is reviewed before it is published. Browse them at
 [playhorizon.dev/mods](https://playhorizon.dev/mods) or in the launcher (Mods, then Horizon beside Modrinth).
 
 Players install through the launcher, which verifies each reviewed package's SHA-256 and, when the project has a
@@ -42,7 +42,8 @@ Then:
 2. Checks compare the entry with main, verify package structure, hashes and signatures, and build the candidate
    index. They never compile or execute submitted code. Their report and candidate index are in the pull request.
 3. A reviewer (see [`.github/CODEOWNERS`](.github/CODEOWNERS)) reads the entry, the source and the report (a native
-   mod's source also gets a security review), and asks for changes in the pull request if needed.
+   mod's source also gets a security review), and asks for changes in the pull request if needed. An owner's update
+   of a pack skips this step (see Updates below).
 4. Merging publishes it: the file becomes a release, the project appears on the site and in the launcher within
    minutes.
 
@@ -58,8 +59,26 @@ cargo horizon-mod check target/horizon-mod/my_mod.hmod
 ```
 
 **Updates** come the same way: a pull request adds a version to your entry, and a reviewer reads it before it is
-published. Only an entry's `owners` can add versions, and every version of a native mod is reviewed, owner or
-not: its code runs with the player's account permissions. A published file never changes: publish a new version.
+published. Only an entry's `owners` can add versions, and every version of a mod, native or not, is reviewed, owner
+or not: a native mod's code runs with the player's account permissions.
+
+An owner's update of a resource pack, shader pack or data pack publishes without a reviewer once its checks pass
+(`owner-update.yml`): the pull request is opened by an account in the entry's `owner_ids` and only adds
+`[[versions]]` records to that one live entry, every other field unchanged, and the project is not taken down. New
+projects, page changes and every mod version still get a person. A published file never changes: publish a new
+version.
+
+The checker reads a resource or data pack's `pack.mcmeta` and paths, so other files in it, `.wasm` or Rust sources
+included, are accepted but never loaded (a shader pack holding them is refused). In
+[horizon](https://github.com/horizon-rust/horizon) at `.github/horizon-rev`:
+
+- the kind decides where the launcher installs the file: `resourcepacks/`, `shaderpacks/`, or the zip copied into a
+  world's `datapacks/` (`launcher/src/browser/horizon.rs:830-837`, `launcher/src/datapacks.rs:92-106`);
+- the game loads mods, and so code, only from `horizon-mods/` and `horizon-native-mods/`
+  (`crates/horizon-mod-package/src/mod_list.rs:16-19`, `crates/horizon-client/src/game/modding/mods/mod.rs:1557-1558`);
+- the file must have its kind's extension, `.zip` or `.hshader`, or the index build refuses it
+  (`crates/horizon-mod-package/src/index.rs:113-120`, `623-627`);
+- an owner update can't change the kind (`scripts/owner_update.py`).
 
 **Signing** is optional and recommended: put your [minisign](https://jedisct1.github.io/minisign/) public key in your
 entry, and every later version must be signed with it, so nobody else can publish an update in your name.
@@ -90,6 +109,7 @@ why.
 | `revoked.toml` | Files taken down |
 | `.github/workflows/stage.yml` | A pull request's new files, into `staging` |
 | `.github/workflows/check.yml` | A pull request's checks |
+| `.github/workflows/owner-update.yml` | After the check: merges an owner's update of a resource, shader or data pack |
 | `.github/workflows/publish.yml` | On merge: releases, then `index.json` on Pages |
 | `.github/workflows/cleanup.yml` | Weekly: staging files nobody needs any more |
 | `.github/workflows/checker.yml` | When the pin changes: builds the checker once, attested, as release `checker@<rev>` |

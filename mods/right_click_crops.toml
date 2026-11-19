@@ -39,14 +39,14 @@ screenshots = ["screenshots/right_click_crops/1.jpg", "screenshots/right_click_c
 key = "RWRwbuaByP5mM4VUm4kZEQVPiuw+3IEVJ7CZcEHIjY5fPKf9lhQKUZRy"
 
 [[versions]]
-version = "2.0.0"
+version = "2.0.1"
 published = "2026-11-19"
 game = "26.3"
-file = "right_click_crops-2.0.0.hmod"
-sha256 = "c7cb17b53d017fb12f5bfa951e78a17ba574d911ddb10676388978a0618dc16e"
+file = "right_click_crops-2.0.1.hmod"
+sha256 = "e6b741f6d45f0d498eaf8fddbef5a517955befbedacca0093a4a5b3e64d8b1a1"
 signature = """
 untrusted comment: signature from minisign secret key\r
-RURwbuaByP5mM7ACIdZN8Zi5amcrv2s0K9losMt4+V+0BnM7GjYhFd94DOTgx9d9uEvUYcHS8Xw8q9uvoeacjRZ/4yH8aDoYSw0=\r
-trusted comment: timestamp:1795075366\tfile:right_click_crops-2.0.0.hmod\thashed\r
-zF2NOcLX8I8azy3aRBT/o5PekNVMvOwKc8WhSdUCixt+19PwTzLwIxKtpPJ69OwgqmqXGQ+OulMb/yeTaYE/DA=="""
+RURwbuaByP5mM7xtQdBJT4a0vrR0W9yvbGUZqlzFo19VPyeKp5DHxkv4M56+srvCtnUnAf7V5YCYUPvj53TizfWnTkZLczEX6QA=\r
+trusted comment: timestamp:1795109643\tfile:right_click_crops-2.0.1.hmod\thashed\r
+kVXL+WCCAkXkY4Hg5TCVRPFHFZTNephWxCW+a7UNN7JjFQdAU3iXxRq0vL0dfMA1/B8cD4oM1n7JFTpa6CtFDg=="""
 changelog = "WebAssembly mod on the new mod SDK: no build needed. Same harvesting for all 16 plant families; settings are on the mod's Config page and start ON. Validated in single-player and for LAN host and guest."

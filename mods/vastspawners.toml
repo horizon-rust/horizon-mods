@@ -20,13 +20,13 @@ owner_ids = [354832816]
 license = "MIT"
 source = "https://github.com/voltzz900/vast-spawners"
 icon = "icons/vastspawners.png"
-categories = ["game mechanics", "mobs", "utility"]
+categories = ["game-mechanics", "mobs", "utility"]
 tags = ["spawners", "mob-farms", "silk-touch", "redstone", "translation"]
 
 [[versions]]
-version = "0.3.1"
-published = "2026-11-18"
+version = "0.3.2"
+published = "2026-11-19"
 game = "26.3"
-file = "vastspawners-0.3.1.hmod"
-sha256 = "5083aac3a6e3afff1ac5693dd8daa1fea82290881f845c8c0e6fa946ce391f7a"
-changelog = "First release on Horizon's mod API: one native package (code and content). Spawners changed with 0.2 keep their changes; the Jade and JEI lines are left out for now. Pinned to Nightly 2026-11-18 (0b14f8a)."
+file = "vastspawners-0.3.2.hmod"
+sha256 = "0d22e98211b81effd2829feb576487a52f682d84d9cc7aa6c4483b7559dc8391"
+changelog = "First release on Horizon's mod API: one native package (code and content). Pinned to Nightly 2026-11-18 (0b14f8a). Spawners changed with 0.2 keep their changes; the Jade and JEI lines are left out for now. A placed spawner only takes the mod's own, validated settings from its item; arbitrary spawner data still needs an operator."

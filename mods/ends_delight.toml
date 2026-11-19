@@ -1,0 +1,30 @@
+id = "ends_delight"
+kind = "mod"
+name = "End's Delight"
+summary = "End foods for Farmer's Delight: shulker, dragon and chorus dishes, the End Stove, knives (needs Farmer's Delight 0.5 or later)."
+description = """
+End foods for Farmer's Delight: shulker, dragon, endermite and chorus dishes, the End Stove, three feasts, the dragon leg, the chorus fruit pie, the chorus succulent and four knives.
+
+**Needs** [farmersdelight](https://playhorizon.dev/mods/farmersdelight) 0.5 or later installed too (declared as a dependency, so the game names it if it's missing). Its End Stove, feasts, sneak-teleporting foods, recipes and mob drops run on that package's code.
+
+**Differences from the original:** The dragon tooth knife does no extra damage to End mobs. Enderman gristle teleports you like a chorus fruit, up to 16 blocks around, where the Java mod sends you higher with less fall damage. Teleporting foods have no cooldown afterwards. The chorus succulent gives the same light at every size.
+
+A port of [End's Delight](https://github.com/FoggyHillside/End-s-Delight) refabricated-1.20.1-2.5 by FoggyHillside, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "FoggyHillside"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/ends_delight"
+icon = "icons/ends_delight.png"
+categories = ["food"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "2.5-horizon.4"
+published = "2026-11-19"
+game = "26.3"
+file = "ends_delight.hmod"
+sha256 = "f5b2d292107a6c161d6d49ebe2cb3942b99275b882d3917915a269b01e505c25"
+changelog = "A content package for the unified farmersdelight 0.5: the dependency is declared (`farmersdelight = \"^0.5\"`) in place of the retired farmersdelight_native, the upstream link is filled in, LICENSE (the original repository's) and NOTICE are inside the package, and it was tested with farmersdelight 0.5.1. Supersedes #700."

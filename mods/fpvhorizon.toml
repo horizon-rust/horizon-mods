@@ -22,7 +22,7 @@ Client-side only. While a drone is out, the mod reads the gamepad and the player
 
 **Credits**
 
-The flight physics, drone builds, rates and controller logic started as a Rust port of [Minecraft FPV](https://github.com/minecraft-fpv/mfpv-client) (GPL-3.0) by its authors.
+The flight physics, drone build model, rates and controller logic are based on code from [Minecraft FPV](https://github.com/minecraft-fpv/mfpv-client) by its authors, used under GPL-3.0.
 """
 authors = ["Eren"]
 owners = ["qweeren"]
@@ -31,7 +31,7 @@ license = "GPL-3.0-only"
 source = "https://github.com/qweeren/fpvhorizon"
 icon = "icons/fpvhorizon.png"
 categories = ["transportation", "game-mechanics"]
-tags = ["fpv", "drone", "quadcopter", "simulator", "port"]
+tags = ["fpv", "drone", "quadcopter", "simulator"]
 
 [[versions]]
 version = "0.9.0"

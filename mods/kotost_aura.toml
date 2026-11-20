@@ -1,0 +1,26 @@
+id = "kotost_aura"
+kind = "native-mod"
+name = "Kotost Aura"
+summary = "Damage turns your screen into a hardtekk edit about whoever hurt you. Lose aura when hurt, win it back by revenge."
+description = """
+Get pricked by a sweet berry bush and a cool "Berry sigma" climbs out next to you, and for six seconds your screen is an edit about it: cinematic camera cuts on the beat, zoom punches, shakes, captions word by word, letterbox bars, white flashes, a grey "MOGGED" and red on the drop, over a beat made of vanilla sounds. Fire, falls, water, mobs, players and explosions each have their own words. Every hit costs aura; kill the character to win it back.
+
+Commands: `/aura` (your aura and the top five), `/aura off` and `/aura on` (edits for you), and for operators `/aura test <theme>` and `/aura give <player> <count>`. Settings are in `config/kotost_aura.txt` (aura per theme, edit length, cooldowns, bpm, volume, flashes, captions, your own track).
+
+The grey and red filters are vanilla post chains in the package, not a shader pack."""
+authors = ["Kotost Games"]
+owners = ["Leks2000"]
+owner_ids = [107043945]
+license = "MIT"
+source = "https://github.com/Leks2000/kotost-aura/tree/main/sdk"
+icon = "icons/kotost_aura.png"
+categories = ["game-mechanics"]
+tags = ["edit", "meme", "camera"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-20"
+game = "26.3"
+file = "kotost_aura.hmod"
+sha256 = "f2dced1e2e114c03eaf9c0f4342e8fcc4046637853cfc8b00acbe3e6b727f043"
+changelog = "First registry release, built with the exact-build SDK 0a875da on the mod API (one RETURN mixin adds the grey and red post chains). No music is bundled: set your own track in config/kotost_aura.txt, the vanilla beat plays otherwise."

@@ -20,9 +20,9 @@ categories = ["social"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "smwyg.hmod"
-sha256 = "b39b5d5d003b6859b1b2cbe0f350d4306dadf4adc2326065a3fc90efe4258e8d"
-changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the retired .hnmod."
+sha256 = "b59c984be03fa773cd1c85d0d6d3233d0e7c637a5aece09c5fb8fd64c8733f16"
+changelog = "0.4.1: a share is now real player chat that goes through the game's own chat checks; the server only decorates a line that passed them, and only with what the typed line already says. No more `tellraw`, no client-name fallback."

@@ -18,9 +18,9 @@ categories = ["decoration"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "invisibleframes.hmod"
-sha256 = "337996665750fe699410813a0a8f06439dfff8b6c92c6619097d6da4692862da"
-changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the retired .hnmod."
+sha256 = "05270c50e46d3534a2ddca8cf9d74cb2fed73b92e759970f30c5fbe6500541fe"
+changelog = "0.4.1: visibility changes only after the engine has accepted the interaction; reveal-on-hit now covers accepted projectile hits too."

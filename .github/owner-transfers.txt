@@ -1,5 +1,12 @@
 # Reviewed owner transfers of archived ids: <id> <old_owner_id> <new_owner_id> <new_login> <reason>.
-# An archived id moves to another account only with evidence that it is the same person, linked in the reason.
+# An archived id moves to another account only with evidence that it is the same person, linked in the reason, or, for
+# one of Horizon's own former extras, to the horizon-rust organization.
 # scripts/catalogue.py reads this from main only. The entry may keep its archived owners or take the new login and
 # id together, and only the new id counts as the owner. Earlier lines of an id apply first.
 minimap_worldmap_waypoints_reworked 67186086 355298203 Gurov08ruS same person: the new repository keeps daniliammo's commits and the later ones share their email (horizon-mods #1440)
+coords_hud 136255825 349008135 horizon-rust official: one of Horizon's own former extras (authors = Horizon) moves from ludovic111 to the horizon-rust organization, decided by the owner and council (NikitaMGrimm)
+fps_overlay 136255825 349008135 horizon-rust official: one of Horizon's own former extras (authors = Horizon) moves from ludovic111 to the horizon-rust organization, decided by the owner and council (NikitaMGrimm)
+keystrokes 136255825 349008135 horizon-rust official: one of Horizon's own former extras (authors = Horizon) moves from ludovic111 to the horizon-rust organization, decided by the owner and council (NikitaMGrimm)
+minimap 136255825 349008135 horizon-rust official: one of Horizon's own former extras (authors = Horizon) moves from ludovic111 to the horizon-rust organization, decided by the owner and council (NikitaMGrimm)
+recipes 136255825 349008135 horizon-rust official: one of Horizon's own former extras (authors = Horizon) moves from ludovic111 to the horizon-rust organization, decided by the owner and council (NikitaMGrimm)
+zoom 136255825 349008135 horizon-rust official: one of Horizon's own former extras (authors = Horizon) moves from ludovic111 to the horizon-rust organization, decided by the owner and council (NikitaMGrimm)

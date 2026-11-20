@@ -34,6 +34,14 @@ categories = ["transportation", "game-mechanics"]
 tags = ["fpv", "drone", "quadcopter", "simulator"]
 
 [[versions]]
+version = "1.0.0"
+published = "2026-11-20"
+game = "26.3"
+file = "fpvhorizon.hmod"
+sha256 = "c48c92a3d422541c8f6ad9491e198c6544ce849d63c275b25fb23f3151ce81cd"
+changelog = "1.0. Fisheye lens option for the FPV camera, gamepad button art in the OSD hints, and built for Nightly 2026-11-20 (0a875da)."
+
+[[versions]]
 version = "0.9.0"
 published = "2026-11-19"
 game = "26.3"

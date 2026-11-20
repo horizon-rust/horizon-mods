@@ -1,0 +1,39 @@
+id = "fluxxy_pvp"
+kind = "mod"
+name = "Fluxxy's PvP Pack"
+summary = "PvP helpers in one mod: low fire, food info, armour HUD, item counters, damage indicator and elytra pitch."
+description = """
+Client-side helpers for PvP, each with its own switch in Options > Mods > Fluxxy's PvP Pack.
+
+- **Low fire**: while you burn, the fire overlay is drawn lower on the screen, so it hides less of the view (Low,
+  Lower or Lowest).
+- **Food info**, as AppleSkin shows it: the saturation outlines over the hunger bar and the exhaustion bar under it,
+  both from the server; with food in hand, the hunger, saturation and hearts eating it would give, flashing; a food's
+  hunger and saturation in its tooltip. The exhaustion bar needs the mod on the server too (single player has it).
+- **Elytra pitch**: while gliding, the angle you look at under the crosshair.
+- **Armor HUD**: the armour you wear and its durability in slots left of the hotbar (only drawn, never clickable).
+- **Item counters**: golden apples, ender pearls, totems, arrows, potions and cobwebs you carry, bottom right.
+- **Damage indicator**: how many hearts a hit took, above your hearts, for a moment.
+
+It only draws on your screen: nothing changes how the game plays. Food info is ported from
+[AppleSkin](https://github.com/squeek502/AppleSkin) by squeek502 (public domain, the Unlicense): its pixels and its
+layout. The other helpers are this mod's own code, on ideas from PVP Essentials, "low fire" packs and elytra HUD mods. English and French.
+
+A WebAssembly mod: install it from the launcher's Mods page, with nothing to build.
+"""
+authors = ["fluxxy33"]
+owners = ["fluxxy33"]
+owner_ids = [217227875]
+license = "MIT"
+source = "https://github.com/fluxxy33/fluxxy-pvp-pack"
+icon = "icons/fluxxy_pvp.png"
+categories = ["utility"]
+tags = ["pvp", "hud", "fire", "hunger", "saturation", "elytra", "armor", "counter"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-20"
+game = "26.3"
+file = "fluxxy_pvp-1.0.0.hmod"
+sha256 = "437aa0fccaf9d39f56d7c3bfaa0b5dd98af56735e9de5a9cbe0848507b77d61c"
+changelog = "First version: low fire, food info, elytra pitch, armour HUD, item counters and damage indicator."

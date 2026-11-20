@@ -32,9 +32,9 @@ categories = ["utility", "social"]
 tags = ["servers", "multiplayer", "flags", "country", "client-side"]
 
 [[versions]]
-version = "2.0.0"
+version = "2.0.1"
 published = "2026-11-20"
 game = "26.3"
-file = "server_flags-2.0.0.hmod"
-sha256 = "dbb386bf3c633a2df159ba5a8cca029a559004fae40d77d96a89f5adb5bd7f4d"
-changelog = "Rebuilt on Horizon's new mod API (the .hmod SDK) for Nightly 2026-11-19 f00125f. The lookup now runs the system's curl instead of a bundled HTTPS library, so the mod has no registry dependencies. Settings now open from Mods > Server Flags > Config and start from the defaults once."
+file = "server_flags-2.0.1.hmod"
+sha256 = "e0bcd0e774343afd00015e59a19e347b89c83a4ef4611c592650fee622a29464"
+changelog = "Rebuilt on Horizon's new mod API (the .hmod SDK) for Nightly 2026-11-19 5ef7734, with its game patches checked for that build. Settings now open from Mods > Server Flags > Config and start from the defaults once."

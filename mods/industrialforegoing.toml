@@ -30,9 +30,17 @@ categories = ["utility"]
 tags = ["port", "horizon"]
 
 [[versions]]
-version = "0.2.1"
+version = "0.2.0"
 published = "2026-11-10"
 game = "26.3"
 file = "industrialforegoing.hmod"
-sha256 = "4cc91337a2d92c023aad9d2bcfd9a83ef1c37c284bf1b33b8bbaeafebeaa1b55"
+sha256 = "c10182f32584e6522b274855f6c8331793421237112d87acf804a4fb17752ed7"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-20"
+game = "26.3"
+file = "industrialforegoing.hmod"
+sha256 = "4cc91337a2d92c023aad9d2bcfd9a83ef1c37c284bf1b33b8bbaeafebeaa1b55"
+changelog = "Repair: 0.2.0 attached the Machine Part twice (block_part and block_entity_part), which the engine refuses at load — the package could not start. The redundant block_part is removed; the block half arrives through expand_block_entity_parts. No behaviour or content change."

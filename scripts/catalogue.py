@@ -30,7 +30,11 @@ PORTED_KINDS = {("native-mod", "mod")}
 # The reviewed live-to-archive moves, one `<archive> <id>` per line, read from the trusted base only: no other
 # pull request can take a live project out of the index by moving it.
 MOVES = ".github/archive-moves.txt"
+# The reviewed owner transfers of archived ids, one `<id> <old_owner_id> <new_owner_id> <new_login> <reason>` per line,
+# also read from the trusted base only: a pull request can't hand an id to anyone by adding its own line.
+TRANSFERS = ".github/owner-transfers.txt"
 ID = re.compile(r"[a-z0-9_]{1,64}")
+LOGIN = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})")
 REGULAR = ("100644", "100755")
 RELEASES = "https://github.com/horizon-rust/horizon-mods/releases/download/"
 
@@ -99,13 +103,46 @@ def reviewed_moves(repo, sha):
     return moves
 
 
+def reviewed_transfers(repo, sha):
+    """{id: [(old_owner_id, new_owner_id, new_login), ...]} in file order."""
+    data = regular_file(repo, sha, TRANSFERS) or b""
+    transfers = {}
+    for number, line in enumerate(data.decode().splitlines(), 1):
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split(maxsplit=4)
+        if (len(parts) != 5 or not ID.fullmatch(parts[0]) or not all(p.isascii() and p.isdigit() for p in parts[1:3])
+                or not LOGIN.fullmatch(parts[3])):
+            raise ValueError(f"{TRANSFERS}:{number}: expected <id> <old_owner_id> <new_owner_id> <new_login> <reason>")
+        transfers.setdefault(parts[0], []).append((int(parts[1]), int(parts[2]), parts[3]))
+    return transfers
+
+
+def transferred_owners(id, historic, transfers):
+    """The (owners, owner_ids) pairs an archived id may come back with after its reviewed transfers, in order: each
+    transfer replaces one owner's login and id together. The archived pair itself is not in the list."""
+    owners, ids = historic.get("owners", []), historic.get("owner_ids", [])
+    states = []
+    for old, new, login in transfers.get(id, []):
+        if old not in ids or len(owners) != len(ids):
+            raise ValueError(f"{id}: {TRANSFERS} hands over owner id {old}, which isn't one of its owner_ids")
+        if new in ids:
+            # Else a self-transfer, or a chain through a co-owner, would leave the outgoing account an owner.
+            raise ValueError(f"{id}: {TRANSFERS} hands owner id {old} to {new}, which already is one of its owner_ids")
+        at = ids.index(old)
+        owners, ids = owners[:at] + [login] + owners[at + 1:], ids[:at] + [new] + ids[at + 1:]
+        states.append((owners, ids))
+    return states
+
+
 def owned_by_author(historic, author_id):
     """The pull request's author (GitHub's own numeric account id, not a login or a form's claim) is a recorded owner.
     An entry without owner_ids never passes: a maintainer verifies its owner by hand."""
     return author_id in historic.get("owner_ids", [])
 
 
-def review_archive(name, kinds, holds, old, live, before, frozen, moves, author_id, removed, unconfirmed):
+def review_archive(name, kinds, holds, old, live, before, frozen, moves, transfers, author_id, removed, unconfirmed):
     for id, (_, data) in before.items():
         if id not in frozen or frozen[id][1] != data:
             raise ValueError(f"{id}: frozen historical metadata must not change or disappear")
@@ -122,13 +159,20 @@ def review_archive(name, kinds, holds, old, live, before, frozen, moves, author_
             removed.append(id)
         if id in live:
             current = live[id][0]
+            # After a reviewed transfer the entry may still hold the archived owners (until the pull request that
+            # moves them merges) or the owners after any of its transfers, but only the newest owners count as the
+            # author: the account it was handed from doesn't.
+            states = transferred_owners(id, historic, transfers)
+            owner = {"owner_ids": states[-1][1]} if states else historic
             # Not raised here: the check runs every other step first and fails on this last, so a maintainer
             # who confirms the owner by hand still has every other result for the exact head.
-            if (id not in old or old[id][1] != live[id][1]) and not owned_by_author(historic, author_id):
+            if (id not in old or old[id][1] != live[id][1]) and not owned_by_author(owner, author_id):
                 unconfirmed.append(f"{id}: this id is archived, and the pull request's author is not in its owner_ids; "
                                    "a maintainer must confirm the owner by hand")
             for field in ("kind", "owners", "owner_ids", "key"):
                 if current.get(field) == historic.get(field):
+                    continue
+                if field in ("owners", "owner_ids") and (current.get("owners"), current.get("owner_ids")) in states:
                     continue
                 if field == "kind" and (historic.get("kind"), current.get("kind")) in PORTED_KINDS:
                     continue
@@ -144,7 +188,8 @@ def review_base(base, base_sha, head, head_sha, out, author_id):
     old = entries(base, base_sha, "mods")
     live = entries(head, head_sha, "mods")
     moves = reviewed_moves(base, base_sha)
-    frozen = {name: entries(head, head_sha, path) for name, (path, *_) in ARCHIVES.items()}
+    transfers = reviewed_transfers(base, base_sha)
+    frozen ={name: entries(head, head_sha, path) for name, (path, *_) in ARCHIVES.items()}
     seen = set()
     for ids in frozen.values():
         if seen & ids.keys():
@@ -152,7 +197,7 @@ def review_base(base, base_sha, head, head_sha, out, author_id):
         seen |= ids.keys()
     removed, unconfirmed = [], []
     for name, (path, kinds, holds, _) in ARCHIVES.items():
-        review_archive(name, kinds, holds, old, live, entries(base, base_sha, path), frozen[name], moves,
+        review_archive(name, kinds, holds, old, live, entries(base, base_sha, path), frozen[name], moves, transfers,
                        author_id, removed, unconfirmed)
     (out / "mods").mkdir(parents=True)
     for id, (_, data) in old.items():

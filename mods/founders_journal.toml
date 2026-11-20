@@ -1,19 +1,19 @@
 id = "founders_journal"
 kind = "datapack"
-name = "Founders Journal"
-summary = "Settlement quests for Horizon 26.3. The illustrated book and reward button require the Quest Journal beta runtime."
+name = "Chapterloom: Founders"
+summary = "Settlement quests for Horizon 26.3. The illustrated book and reward button require the Chapterloom beta runtime."
 description = """
 Start a settlement and follow its progress from a crafting table to tools, a hearth and fields. Obtain a crafting table to complete Set Up Camp and earn 10 XP.
 
-This download installs the Founders chapter data in your world. For the book and its Claim reward button, build the [matching Quest Journal runtime](https://github.com/Fnux8890/horizon-quest-journal/tree/v1.1.2-beta.1#build-the-beta-runtime). Press L to open it. Single-player works offline after setup. Multiplayer uses the same patched build on the host and clients.
+This download installs the Founders chapter data in your world. For the book and its Claim reward button, build the [matching Chapterloom runtime](https://github.com/Fnux8890/chapterloom/tree/v1.1.2-beta.1#build-the-beta-runtime). Press L to open it. Single-player works offline after setup. Multiplayer uses the same patched build on the host and clients.
 
-The second screenshot shows an optional Expert modpack rule. The Founders chapter by itself leaves blast furnace crafting available. [Mod authors and modpack authors](https://github.com/Fnux8890/horizon-quest-journal/tree/v1.1.2-beta.1) can add chapters, claimable rewards and crafting prerequisites.
+The second screenshot shows an optional Expert modpack rule. The Founders chapter by itself leaves blast furnace crafting available. [Mod authors and modpack authors](https://github.com/Fnux8890/chapterloom/tree/v1.1.2-beta.1) can add chapters, claimable rewards and crafting prerequisites.
 """
 authors = ["Fnux8890"]
 owners = ["Fnux8890"]
 owner_ids = [21344589]
 license = "MIT"
-source = "https://github.com/Fnux8890/horizon-quest-journal/tree/v1.1.2-beta.1"
+source = "https://github.com/Fnux8890/chapterloom/tree/v1.1.2-beta.1"
 icon = "icons/founders_journal.png"
 categories = ["game-mechanics", "utility"]
 tags = ["quests", "progression", "settlement", "journal"]

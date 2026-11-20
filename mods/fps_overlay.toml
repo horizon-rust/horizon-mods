@@ -7,12 +7,13 @@ Horizon's own FPS counter, an official Horizon Extra, formerly an extra in Optio
 
 - Frames in the last second, in a small box in the corner you pick.
 - Optionally the slowest frame and the 1% low of the last 5 seconds.
-- Settings: Options > Mods > FPS Counter (corner; minimum and 1% low).
+- Settings: Options > Mods > FPS Counter > Config (corner; minimum and 1% low).
+- Gives way to the debug screen (F3), as 2.0.0 did.
 
 It counts the game's frames and draws on the HUD: nothing else.
 
 Now a WebAssembly mod (3.0.0): install it on the launcher's Mods page, with nothing to build. Your settings carry over
-from earlier versions. Its source is
+from earlier versions, and the first time from Options > Horizon Extras. Its source is
 [horizon-mods/native/fps-overlay](https://github.com/horizon-rust/horizon-mods/tree/main/native/fps-overlay).
 """
 authors = ["Horizon"]
@@ -23,6 +24,14 @@ source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/fps-over
 icon = "icons/fps_overlay.png"
 categories = ["utility"]
 tags = ["fps", "hud", "performance", "frame-time"]
+
+[[versions]]
+version = "3.0.1"
+published = "2026-11-20"
+game = "26.3"
+file = "fps_overlay-3.0.1.hmod"
+sha256 = "5ee593c692d9b0a2fcfc6db65e8665044e026e1db5821213d19d04e37e1bf559"
+changelog = "Gives way to the debug screen (F3) as 2.0.0 did: no box in the top corners while F3 is open, nor in a bottom corner while an F3 chart is there. The first time, takes the corner and the minimum/1% low option from Options > Horizon Extras (horizon-extras.txt) when you hadn't set them in the mod. Built on the 0a875da SDK."
 
 [[versions]]
 version = "3.0.0"

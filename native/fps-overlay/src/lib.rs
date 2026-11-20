@@ -1,11 +1,12 @@
 //! Horizon's official FPS Counter: the frames of the last second in a small box in a corner of the
 //! HUD, and if you like the slowest frame and the 1% low of the last 5 seconds, drawn as the extra
-//! and the 1.x and 2.x mods drew it. Its settings keep the files of earlier versions
-//! (`horizon-mods/.horizon-mod-data/fps_overlay/corner`, `lows`).
+//! and the 1.x and 2.x mods drew it, and gives way to F3's debug screen as 2.0.0 did. Its settings
+//! keep the files of earlier versions (`horizon-mods/.horizon-mod-data/fps_overlay/corner`,
+//! `lows`); the extra's own (`fpsCorner`, `fpsLows` in `horizon-extras.txt`) seed them once.
 use std::sync::Mutex;
 
 use mod_api::{
-    ClientHost, Corner, Hooks, Registrar, RegistrationContext, RenderFramePreEvent,
+    ClientHost, ConfigPath, Corner, Hooks, Registrar, RegistrationContext, RenderFramePreEvent,
     RenderGuiPostEvent, SettingSpec,
 };
 
@@ -25,6 +26,9 @@ pub const CORNERS: [(Corner, &str); 4] = [
     (Corner::BottomLeft, "bottom_left"),
     (Corner::BottomRight, "bottom_right"),
 ];
+/// The file in the mod's data folder (`horizon-mod-data/fps_overlay/`) that says the extra's old
+/// settings were read: they are read once, never again.
+pub const EXTRAS_READ: &str = "extras-read";
 /// Seconds the minimum and 1% low look back.
 const LOW_WINDOW: f64 = 5.0;
 /// Seconds between two readings.
@@ -53,6 +57,60 @@ pub fn stored_corner(text: &str) -> Option<usize> {
         .iter()
         .position(|(_, name)| *name == text)
         .or_else(|| text.parse().ok().filter(|i| *i < CORNERS.len()))
+}
+
+/// The mod's settings the extra's old ones (`official_extra_settings`) give, as the settings
+/// store them: `fpsCorner` (`top_left`) as `corner`'s index, `fpsLows` as `lows`. `fps`, the
+/// extra's switch, is left out: the mod's switch in Options > Mods is the player's.
+pub fn from_extra(old: &[(String, String)]) -> Vec<(&'static str, String)> {
+    old.iter()
+        .filter_map(|(key, value)| match key.as_str() {
+            "fpsCorner" => CORNERS
+                .iter()
+                .position(|(_, name)| *name == value.trim())
+                .map(|i| ("corner", i.to_string())),
+            "fpsLows" => match value.trim() {
+                v @ ("true" | "false") => Some(("lows", v.to_owned())),
+                _ => None,
+            },
+            _ => None,
+        })
+        .collect()
+}
+
+/// What the one read of the extra's old settings needs from the game; the tests stand in for it.
+pub trait ExtraSource {
+    /// Whether the data folder says the extras were never read (`extras-read` isn't there). False
+    /// when it is there, or when the folder can't be asked.
+    fn unread(&self) -> bool;
+    /// The extra's old settings (`official_extra_settings`).
+    fn extra(&self) -> Vec<(String, String)>;
+    /// Whether the mod has a file for the setting already.
+    fn has_setting(&self, key: &str) -> bool;
+    fn set_setting(&self, key: &str, value: &str);
+    /// Writes `extras-read`; false when it couldn't.
+    fn mark_read(&self) -> bool;
+}
+
+/// The extra's old corner and lows become the mod's own, for each the mod has no file for yet, so
+/// a choice made in an earlier version (or on the settings page) stays. The marker is written
+/// after the settings, and only when the game gave the extra's settings: with none (a player who
+/// never changed the extras, a file that couldn't be read) the next run asks again. True when the
+/// marker was written.
+pub fn seed_from_extra(source: &dyn ExtraSource) -> bool {
+    if !source.unread() {
+        return false;
+    }
+    let old = source.extra();
+    if old.is_empty() {
+        return false;
+    }
+    for (key, value) in from_extra(&old) {
+        if !source.has_setting(key) {
+            source.set_setting(key, &value);
+        }
+    }
+    source.mark_read()
 }
 
 /// What the box says: frames in the last second, then the slowest frame and the 1% low.
@@ -152,6 +210,35 @@ struct State {
     counter: Counter,
     /// Whether this run looked at the stored corner once (to rewrite an earlier version's name).
     corner_read: bool,
+    /// Whether this run looked for the extra's old settings.
+    extras_checked: bool,
+}
+
+/// The game itself, for the one read of the extra's settings.
+struct HostExtras<'a> {
+    host: &'a dyn ClientHost,
+    marker: ConfigPath,
+}
+
+impl ExtraSource for HostExtras<'_> {
+    fn unread(&self) -> bool {
+        matches!(self.host.data_files().stat(&self.marker), Ok(None))
+    }
+    fn extra(&self) -> Vec<(String, String)> {
+        self.host.official_extra_settings()
+    }
+    fn has_setting(&self, key: &str) -> bool {
+        self.host.setting(ID, key).is_some()
+    }
+    fn set_setting(&self, key: &str, value: &str) {
+        self.host.set_setting(ID, key, value);
+    }
+    fn mark_read(&self) -> bool {
+        self.host
+            .data_files()
+            .write(&self.marker, b"done\n")
+            .is_ok()
+    }
 }
 
 #[derive(Default)]
@@ -163,6 +250,17 @@ struct Fps {
 impl Fps {
     fn state(&self) -> std::sync::MutexGuard<'_, State> {
         self.state.lock().unwrap_or_else(|e| e.into_inner())
+    }
+
+    /// At most once a run, until the data folder remembers it was done: the extra's old corner
+    /// and lows become the mod's own (`seed_from_extra`).
+    fn read_extra_once(&self, host: &dyn ClientHost) {
+        if std::mem::replace(&mut self.state().extras_checked, true) {
+            return;
+        }
+        if let Ok(marker) = ConfigPath::new(EXTRAS_READ) {
+            seed_from_extra(&HostExtras { host, marker });
+        }
     }
 
     /// The corner picked. The first time in a run, a name an earlier version stored is rewritten
@@ -198,12 +296,17 @@ impl Hooks for Fps {
         self.state().counter.frame(event.elapsed.as_secs_f64());
     }
 
-    /// The box in its corner, below (or above) what the corner holds already.
+    /// The box in its corner, below (or above) what the corner holds already; none while F3's
+    /// debug screen takes the corner.
     fn render_gui_post(&self, host: &dyn ClientHost, event: &mut RenderGuiPostEvent<'_>) {
         if !host.on(ID) {
             return;
         }
+        self.read_extra_once(host);
         let corner = CORNERS[self.corner(host)].0;
+        if !host.native_corner_shown(corner) {
+            return;
+        }
         let lows = host.setting_bool("lows").unwrap_or(false);
         let reading = self.state().counter.reading();
         let text = text(reading, lows);
@@ -247,6 +350,163 @@ mod tests {
         assert_eq!(lows.read(None), Toggle(false), "no lows, as the extra");
         assert_eq!(lows.read(Some("true")), Toggle(true));
         assert_eq!(lows.store(Toggle(false)).as_deref(), Some("false"));
+    }
+
+    #[test]
+    fn takes_the_extras_corner_and_lows_once() {
+        let old = |pairs: &[(&str, &str)]| -> Vec<(String, String)> {
+            pairs
+                .iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect()
+        };
+        assert_eq!(
+            from_extra(&old(&[
+                ("fps", "true"),
+                ("fpsCorner", "bottom_right"),
+                ("fpsLows", "true"),
+            ])),
+            [("corner", "3".to_owned()), ("lows", "true".to_owned())]
+        );
+        assert_eq!(
+            from_extra(&old(&[("fpsCorner", "top_left"), ("fpsLows", "false")])),
+            [("corner", "0".to_owned()), ("lows", "false".to_owned())]
+        );
+        // The game sends what the extra read, but nothing else is taken.
+        assert!(from_extra(&old(&[("fpsCorner", "middle"), ("fpsLows", "yes")])).is_empty());
+        assert!(from_extra(&old(&[("fps", "false"), ("zoomLevel", "4")])).is_empty());
+        assert!(from_extra(&[]).is_empty());
+        // What it gives is what the settings read back.
+        let [corner, lows] = settings();
+        use mod_api::SettingValue::{Choice, Toggle};
+        assert_eq!(corner.read(Some("3")), Choice(3));
+        assert_eq!(lows.read(Some("true")), Toggle(true));
+        assert!(ConfigPath::new(EXTRAS_READ).is_ok());
+    }
+
+    /// The game as the one read of the extra's settings sees it, with what was done in order.
+    #[derive(Default)]
+    struct FakeGame {
+        marker: std::cell::Cell<bool>,
+        /// The folder can't be asked (stat fails).
+        broken: bool,
+        /// The marker can't be written.
+        mark_fails: bool,
+        extra: Vec<(String, String)>,
+        settings: std::cell::RefCell<Vec<(String, String)>>,
+        log: std::cell::RefCell<Vec<String>>,
+    }
+
+    impl ExtraSource for FakeGame {
+        fn unread(&self) -> bool {
+            !self.broken && !self.marker.get()
+        }
+        fn extra(&self) -> Vec<(String, String)> {
+            self.log.borrow_mut().push("extra".into());
+            self.extra.clone()
+        }
+        fn has_setting(&self, key: &str) -> bool {
+            self.settings.borrow().iter().any(|(k, _)| k == key)
+        }
+        fn set_setting(&self, key: &str, value: &str) {
+            self.log.borrow_mut().push(format!("set {key}={value}"));
+            self.settings.borrow_mut().push((key.into(), value.into()));
+        }
+        fn mark_read(&self) -> bool {
+            self.log.borrow_mut().push("marker".into());
+            self.marker.set(!self.mark_fails);
+            !self.mark_fails
+        }
+    }
+
+    fn extra(pairs: &[(&str, &str)]) -> Vec<(String, String)> {
+        pairs
+            .iter()
+            .map(|(k, v)| (k.to_string(), v.to_string()))
+            .collect()
+    }
+
+    #[test]
+    fn the_extras_settings_are_written_before_the_marker() {
+        let game = FakeGame {
+            extra: extra(&[("fpsCorner", "bottom_right"), ("fpsLows", "true")]),
+            ..FakeGame::default()
+        };
+        assert!(seed_from_extra(&game));
+        assert_eq!(
+            *game.log.borrow(),
+            ["extra", "set corner=3", "set lows=true", "marker"]
+        );
+        // The next run finds the marker and asks nothing.
+        game.log.borrow_mut().clear();
+        assert!(!seed_from_extra(&game));
+        assert!(game.log.borrow().is_empty());
+    }
+
+    #[test]
+    fn the_extras_never_overwrite_the_players_own_setting() {
+        let game = FakeGame {
+            extra: extra(&[("fpsCorner", "bottom_right"), ("fpsLows", "true")]),
+            settings: vec![("corner".into(), "1".into())].into(),
+            ..FakeGame::default()
+        };
+        assert!(seed_from_extra(&game));
+        assert_eq!(*game.log.borrow(), ["extra", "set lows=true", "marker"]);
+        assert_eq!(
+            *game.settings.borrow(),
+            [
+                ("corner".into(), "1".into()),
+                ("lows".into(), "true".into())
+            ]
+        );
+    }
+
+    #[test]
+    fn no_extras_leave_no_marker_and_are_asked_again_next_run() {
+        // A player who never changed the extras, or a file the game couldn't read this time.
+        let game = FakeGame::default();
+        assert!(!seed_from_extra(&game));
+        assert_eq!(*game.log.borrow(), ["extra"]);
+        assert!(!game.marker.get());
+        // The next run asks again; once the game gives them they are taken.
+        let game = FakeGame {
+            extra: extra(&[("fpsLows", "true")]),
+            ..game
+        };
+        assert!(seed_from_extra(&game));
+        assert!(game.marker.get());
+        // Only the extra's switch: nothing to take, but the extras were read.
+        let game = FakeGame {
+            extra: extra(&[("fps", "false")]),
+            ..FakeGame::default()
+        };
+        assert!(seed_from_extra(&game));
+        assert_eq!(*game.log.borrow(), ["extra", "marker"]);
+        // A folder that can't be asked: nothing read, nothing written.
+        let game = FakeGame {
+            broken: true,
+            extra: extra(&[("fpsLows", "true")]),
+            ..FakeGame::default()
+        };
+        assert!(!seed_from_extra(&game));
+        assert!(game.log.borrow().is_empty());
+    }
+
+    #[test]
+    fn a_marker_that_cant_be_written_changes_no_setting_twice() {
+        let game = FakeGame {
+            mark_fails: true,
+            extra: extra(&[("fpsLows", "true")]),
+            ..FakeGame::default()
+        };
+        assert!(!seed_from_extra(&game));
+        assert_eq!(*game.log.borrow(), ["extra", "set lows=true", "marker"]);
+        // The next run tries again, but the setting has its file now: nothing is changed.
+        game.log.borrow_mut().clear();
+        game.settings.borrow_mut()[0].1 = "false".into();
+        assert!(!seed_from_extra(&game));
+        assert_eq!(*game.log.borrow(), ["extra", "marker"]);
+        assert_eq!(*game.settings.borrow(), [("lows".into(), "false".into())]);
     }
 
     #[test]

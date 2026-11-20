@@ -1,0 +1,43 @@
+id = "earshot"
+kind = "native-mod"
+name = "Earshot"
+summary = "Proximity voice chat for servers running Simple Voice Chat: 3D voices, push to talk, whisper and voice groups"
+description = """
+Proximity voice chat for Horizon. Talk to the players near you on servers that run **Simple Voice Chat**: with Java players using Simple Voice Chat, and with other Horizon players using Earshot.
+
+- **Proximity voice** with 3D audio: voices come from where players stand and fade with distance.
+- **Push to talk** (Mouse 4), held or toggled, or **voice activation** with an adjustable threshold and a live mic level.
+- A **mic test**: hear yourself as the others would.
+- **Whisper** (Mouse 5, held): only players close by hear you.
+- **Voice groups**: create one (normal, open or isolated, with an optional password), join one with a click; a panel lists the members and lights up whoever is talking.
+- **Noise reduction**, **per-player volume**, **mute** and **deafen**.
+- A **mic icon** on the HUD, and a **speaker icon** beside other players' name tags while they talk.
+- Opus audio and AES-128-GCM encryption, as the server expects.
+
+Keys: V opens the voice menu, M mutes, N deafens; rebind them in Controls. Mods > Earshot > Config has a voice chat switch and debug info.
+
+**Network use:** when you join a server that runs Simple Voice Chat, Earshot asks it for a voice key over the game connection, then sends and receives encrypted voice over UDP to the address the server names (default port 24454). It contacts nothing else, and stays quiet on servers without Simple Voice Chat.
+
+**Platforms:** Windows and macOS for now. On Linux the launcher refuses it: its audio library uses ALSA there, which the game links too.
+
+Works with Simple Voice Chat 2.6.27 (compatibility version 20), Fabric and Paper. Hosting voice on a Horizon dedicated server is off in this version (horizon-rust/horizon#18462).
+
+Source: https://github.com/selfmonoraque5/earshot
+
+Earshot is an independent project, not affiliated with or endorsed by Simple Voice Chat or its author. It contains no Simple Voice Chat code or assets; its protocol support was worked out from our own network captures (PROTOCOL.md). Opus by opus-rs (BSD-3-Clause)."""
+authors = ["selfmonoraque5"]
+owners = ["selfmonoraque5"]
+owner_ids = [86315101]
+license = "MIT AND BSD-3-Clause"
+source = "https://github.com/selfmonoraque5/earshot"
+icon = "icons/earshot.png"
+categories = ["social", "utility"]
+tags = ["voice-chat", "proximity", "multiplayer", "audio", "simple-voice-chat"]
+
+[[versions]]
+version = "2.0.0"
+published = "2026-11-20"
+game = "26.3"
+file = "earshot-2.0.0.hmod"
+sha256 = "67cc208c42e12399924b2ae5d01c0af4b521d51f6a684b72a0207d44c49884c7"
+changelog = "First release on the Horizon registry: built on Horizon's mod API for Nightly 2026-11-19 f00125f."

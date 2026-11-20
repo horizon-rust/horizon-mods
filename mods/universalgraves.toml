@@ -20,9 +20,9 @@ categories = ["utility"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "universalgraves.hmod"
-sha256 = "0e07a604772be1b5255e75372b5e3fcb36fd2796c0ed5927e20ac5126323c2d6"
-changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with COPYING, LICENSE, NOTICE in the package. Replaces the retired .hnmod."
+sha256 = "b29596dccd410f287e45877a2d2d57f74000686448d5a191437de30077802ae9"
+changelog = "0.4.1: spectators can't open graves, and the XP put in a grave is the dying player's own death drop."

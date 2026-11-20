@@ -13,7 +13,7 @@ A small flag beside each server in your Multiplayer list for the country it's ho
 
 Settings in Mods > Server Flags > Config: lookups on/off, flag position, hover tooltip, codes for countries without a flag.
 
-**Privacy:** to know where a server is, the mod resolves its address and sends only that IP address to https://api.country.is (open source, no account or key), which answers with a country code. Once per server per game session, in the background, only while "Look up server locations" is on. Nothing about you, your account or your other servers is sent; with the setting off, nothing is sent at all.
+**Privacy:** to know where a server is, the mod resolves its address and sends only that IP address to https://api.country.is (open source, no account or key), which answers with a country code. Once per server per game session, in the background, only while "Look up server locations" is on; a lookup that couldn't get through (an ad blocker, no connection) is tried again a minute later, three times at most, so the same IP can be sent up to three more times. Nothing about you, your account or your other servers is sent; with the setting off, nothing is sent at all.
 
 The request is made by the system's `curl` program (built into Windows 10 and 11, macOS and most Linux systems), run with only the service address and the server's IP. Rust's HTTPS libraries bring a second copy of a native library the game already has, which a mod may not link.
 

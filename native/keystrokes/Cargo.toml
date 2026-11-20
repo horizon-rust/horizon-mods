@@ -1,11 +1,14 @@
 [package]
-name = "horizon-mod-keystrokes"
-version = "2.0.0"
+name = "mod-keystrokes"
+version = "3.0.0"
 edition = "2024"
 license = "MIT"
 publish = false
-description = "Horizon's official Keystrokes, a native mod: movement keys, mouse buttons and space bar in a corner, lit while held."
 
-# The mod's logic and its tests: the same file the bundle adds to the game.
-[lib]
-path = "mixins/keystrokes/runtime.rs"
+[dependencies]
+# The pinned SDK's API crate, fetched into .horizon/sdk/ by any `cargo horizon-mod` command.
+horizon-mod-api = { path = ".horizon/sdk/api/crates/horizon-mod-api" }
+
+# The SDK build this mod is made for: `cargo horizon-mod update` moves it.
+[package.metadata.horizon]
+sdk = "0a875da91dbb0fdcb7ba8c42c11341aa229af51a"

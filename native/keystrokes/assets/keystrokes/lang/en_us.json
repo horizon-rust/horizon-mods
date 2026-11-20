@@ -1,0 +1,10 @@
+{
+  "keystrokes.setting.corner": "Corner",
+  "keystrokes.setting.corner.tooltip": "Where the keys show. They give way to the debug screen (F3): both top corners, and a bottom corner while a chart is there.",
+  "keystrokes.corner.top_left": "Top left",
+  "keystrokes.corner.top_right": "Top right",
+  "keystrokes.corner.bottom_left": "Bottom left",
+  "keystrokes.corner.bottom_right": "Bottom right",
+  "keystrokes.setting.cps": "Clicks per second",
+  "keystrokes.setting.cps.tooltip": "Under each mouse button, how many times it was pressed in the last second."
+}

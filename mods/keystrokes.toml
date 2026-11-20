@@ -1,0 +1,33 @@
+id = "keystrokes"
+kind = "mod"
+name = "Keystrokes"
+summary = "Your movement keys, mouse buttons and space bar in a corner, lit while held, with clicks per second."
+description = """
+Horizon's own keystrokes overlay, an official Horizon Extra, formerly an extra in Options > Horizon Extras.
+
+- Forward, left, back and right as you bound them, the two mouse buttons and the space bar, lit while held.
+- Clicks per second under each mouse button (can be turned off).
+- Settings: Options > Mods > Keystrokes > Config (corner; clicks per second).
+
+It reads which keys you hold and your clicks, and draws on the HUD: nothing else.
+
+Now a WebAssembly mod (3.0.0): install it on the launcher's Mods page, with nothing to build. Your settings carry over
+from earlier versions, and the first time from Options > Horizon Extras. Its source is
+[horizon-mods/native/keystrokes](https://github.com/horizon-rust/horizon-mods/tree/main/native/keystrokes).
+"""
+authors = ["Horizon"]
+owners = ["horizon-rust"]
+owner_ids = [349008135]
+license = "MIT"
+source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/keystrokes"
+icon = "icons/keystrokes.png"
+categories = ["utility"]
+tags = ["keystrokes", "hud", "cps", "pvp"]
+
+[[versions]]
+version = "3.0.0"
+published = "2026-11-20"
+game = "26.3"
+file = "keystrokes-3.0.0.hmod"
+sha256 = "b1aa156569a40af14c3f51569ceb20a0a27974322802ea4d60de34c40bb058d1"
+changelog = "WebAssembly mod on the new mod SDK: no build needed; same look, options and settings files; the settings are on the Config page. Gives way to the debug screen (F3) as 2.0.0 did. The first time, takes the corner and the clicks per second from Options > Horizon Extras (horizon-extras.txt) when you hadn't set them in the mod. Built on the 0a875da SDK."

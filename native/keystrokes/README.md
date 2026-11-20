@@ -1,49 +1,55 @@
-# Keystrokes (Horizon native mod)
+# Keystrokes
 
-> [!WARNING]
-> **Legacy.** This is the old `.hnmod` source. Launchers from 0.2.70 on can't load it, and the registry archived it on
-> 2026-11-18. A port to the new mod SDK is tracked in [#1214](https://github.com/horizon-rust/horizon-mods/issues/1214).
-> The install steps below no longer work.
-
-Horizon's official Keystrokes: your movement keys, mouse buttons and space bar in a corner, lit while held, with clicks per second. Its settings page (Options > Mods > Keystrokes > Settings) picks the corner and the clicks per second.
-
-It is a [horizon-mixins](https://github.com/horizon-rust/horizon-mixins) bundle (`mixins/keystrokes/`) that the Horizon
-launcher builds into the game. It keeps the settings of earlier versions: the same files (`horizon-mods/.horizon-mod-data/keystrokes/corner`, `cps`).
+Horizon's official Keystrokes, an official Horizon Extra: your movement keys, mouse buttons and space bar in a corner of
+the screen, lit while held, with clicks per second under the mouse buttons. It looks as the extra did: 22-pixel keys
+2 GUI pixels apart, translucent black with white shadowed text, light with dark text while held, 2 GUI pixels from the
+edge, scaled with the GUI. The movement keys show the keys you bound them to in Options > Controls.
 
 ## Install
 
-In the Horizon launcher: Mods → Keystrokes → Install, then **Build** on the same page (once built, switch it
-on or off in the game under Options → Mods). The
-launcher downloads its own Rust and builds the game with your native mods; see Horizon's
-[native mods](https://github.com/horizon-rust/horizon/blob/main/docs/native-mods.md).
+In the Horizon launcher: **Mods**, find Keystrokes, **Install**. It is a WebAssembly mod, so nothing is built on your
+computer.
 
-## Made on the hook points
+## Settings
 
-The bundle hooks only Horizon's native hook points (`crates/horizon-client/src/game/native_hooks.rs`), which keep
-their names and signatures across releases. `compatibility.json` names the version it needs (`"hooks": 1`), so the
-launcher builds Keystrokes on any Horizon with that version or a later one, the player's own game by default, together with any other
-mod. `horizon_revision` is only the commit it was last tested on.
+**Options > Mods > Keystrokes > Config:** the corner (top left by default) and the clicks per second (on). Kept in
+`horizon-mods/.horizon-mod-data/keystrokes/` (`corner`, `cps`), the same files earlier versions used. A corner earlier
+versions stored by name (`bottom_right`) is read as before and rewritten as the option's number the first time the
+keys are drawn.
 
-| File | What it is |
-|---|---|
-| `mixins/keystrokes/horizon-mixin.toml` | The bundle: one module and the HEAD hooks |
-| `mixins/keystrokes/runtime.rs` | The mod's logic and state, added to the game as `game::official_keystrokes`; also this crate's library, for its tests |
-| `mixins/keystrokes/*.rs` | One small helper per hook |
-| `../tools/native.py` | Shared by the native mods: apply on Horizon (from GitHub, by commit), check, build, package the `.hnmod`, run the proof |
-| `proof.py` (with `../tools/game.py`) | The proof: the built game driven with `horizon-ctl --offscreen` on fresh, temporary data |
+The first time the keys are drawn, the extra's own settings in `horizon-extras.txt` (`keystrokesCorner`,
+`keystrokesCps`, through the SDK's `official_extra_settings`) fill in whichever of the two the mod has no file for yet;
+a choice made in an earlier version of the mod stays. Then `horizon-mod-data/keystrokes/extras-read` is written, so it
+happens once; while the game has no extra settings to give, it looks again (once) the next time you play. The extra's
+switch (`keystrokes`) isn't taken: the mod's switch in Options > Mods is the one that counts.
 
-## Build and prove
+While the debug screen (F3) is open the keys give way to it, as 2.0.0 did: none in the top corners (F3's two columns),
+nor in a bottom corner while one of F3's charts is drawn there.
+
+## Clicks per second
+
+Each press of the left or right mouse button while you play, in the last second, as the game counted them for the
+extra, on the button you pressed (with attack on the right button, the right column counts it). A key, a controller's
+trigger or a scripted press (`horizon-ctl mouse left down`) counts too: a press of the attack or use mapping in a frame
+with no mouse press counts once, when the mapping goes down. A press released before the next frame (`horizon-ctl
+mouse left click`) is not seen.
+
+## Build
+
+With [`cargo horizon-mod`](https://github.com/horizon-rust/horizon/tree/main/docs/modding):
 
 ```sh
-(cd native/keystrokes && cargo test)                    # the logic
-python3 native/tools/native.py check keystrokes    # apply on the tested Horizon and cargo check the game
-python3 native/tools/native.py check keystrokes --horizon latest  # ... on the newest Nightly
-python3 native/tools/native.py check all           # with the other native mods, as a player's set
-python3 native/tools/native.py package keystrokes  # native/target/keystrokes-<version>.hnmod for the registry
-python3 native/tools/native.py proof keystrokes --resources /path/to/.local/horizon-client/26.3
+cargo test                       # the layout, the click counter and the settings
+cargo horizon-mod build --wasm   # target/horizon-mod/keystrokes.hmod
+cargo horizon-mod check
 ```
 
-The proof needs resources prepared from your own Minecraft 26.3 (`horizon-prepare`); none are in this repository.
-It seeds an earlier version's settings (bottom right, no clicks per second) in a temporary game folder, then checks that Options > Mods shows them, and that the Corner button moves the keys to the top left and writes the same file. CI runs `cargo test`, packages the `.hnmod` and checks the game on the tested commit, and every Monday on the newest Nightly.
+## Earlier versions (legacy)
 
-License: MIT.
+2.0.0 was a native `.hnmod` built into the game by the launcher, and 1.0.0 an API 0.1 WebAssembly mod. Launchers from
+0.2.70 on can't load either, and their install and build steps no longer apply. Their source is in this folder's
+history.
+
+## Licence
+
+MIT, see [LICENSE](LICENSE).

@@ -40,9 +40,9 @@ screenshots = [
 ]
 
 [[versions]]
-version = "1.0.2"
+version = "1.0.3"
 published = "2026-11-20"
 game = "26.3"
 file = "voice_chat.hmod"
-sha256 = "b31a6661af2ca8d62286d7f200923c2f5371a1b73bd107d0e0500e18596a638c"
-changelog = "Disable Voice Chat now closes audio streams and clears queued microphone samples. Documents capture, UDP routing, and local preferences."
+sha256 = "09bf106420f68795d0932ec6e58a7914097d53fbdb3ee5d564d1fdc2f5b4d301"
+changelog = "Targets Horizon Nightly 0a875da. Includes the audio lifecycle and documentation fixes from 1.0.2."

@@ -20,9 +20,9 @@ categories = ["game-mechanics"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "toocheap.hmod"
-sha256 = "f3d5343e3198981c2d3429249a6228eab3ef143b190e5a49d3fa6adeccfcf35c"
-changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the retired .hnmod."
+sha256 = "7dff401e133d9a0d8c008560d721c5b3dc38556d955117f3da1ef8f71bf10f2c"
+changelog = "0.4.1: only the cost cap is lifted: entries of the right input that can't go on the item are skipped as the engine skips them, the compatible ones still apply, and the XP charge is the engine's own uncapped cost."

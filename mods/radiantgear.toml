@@ -5,7 +5,7 @@ summary = "Worn trinkets that glow give dynamic light."
 description = """
 Worn trinkets that glow give dynamic light.
 
-**Needs** [trinkets](https://playhorizon.dev/mods/trinkets) 0.4 or later installed too (declared as a dependency, so the game names it if it's missing). Its glowing trinkets are the lanterns of [trinketlantern](https://playhorizon.dev/mods/trinketlantern).
+**Needs** [trinkets](https://playhorizon.dev/mods/trinkets) 0.4.x installed too (declared as a dependency, so the game names it if it's missing). Its glowing trinkets are the lanterns of [trinketlantern](https://playhorizon.dev/mods/trinketlantern).
 
 **Differences from the original:** Only your own worn light is drawn, not other players'. The light is Horizon Extras' dynamic lights, so it shows only with that option on. In this pack only the Wearable Lantern trinkets (trinketlantern) glow.
 
@@ -22,9 +22,9 @@ categories = ["equipment"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "radiantgear.hmod"
-sha256 = "c4e3b9cdecfb5a529e4f1d2ea156df31a6d5b371f6078c99b12f27bc6ebb7c05"
-changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with COPYING, COPYING.LESSER, LICENSE, NOTICE in the package. Replaces the retired .hnmod."
+sha256 = "b6c343447d93b1e056c978cfc7637814912f47142dd6178641f81c04ded82cbf"
+changelog = "0.4.1: the water-sensitive lantern goes out by the engine's eye-in-water state, so the water level and the player's pose (standing, crouching, swimming) decide it."

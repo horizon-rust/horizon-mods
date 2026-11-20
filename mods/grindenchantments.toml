@@ -20,9 +20,9 @@ categories = ["magic"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "grindenchantments.hmod"
-sha256 = "adef078a4ee1ae4b0f23ede5d4eade2c095aba87cfa00a83c91010acdb52b4d9"
-changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with COPYING, LICENSE, NOTICE in the package. Replaces the retired .hnmod."
+sha256 = "a51b2b5e9e333c50498a512e743385a359fb7547bf4871b7af5ff575d29d5d90"
+changelog = "0.4.1: the cost is revalidated at the authoritative click, before the engine can move the result: an unpayable result is withdrawn and nothing transfers."

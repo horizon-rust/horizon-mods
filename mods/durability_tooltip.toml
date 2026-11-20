@@ -1,0 +1,46 @@
+id = "durability_tooltip"
+kind = "native-mod"
+name = "durability_tooltip"
+summary = "A Horizon port of Durability Tooltip."
+description = """A behavioral port of [SuperMartijn642's Durability Tooltip](https://modrinth.com/mod/durability-tooltip)
+(All Rights Reserved, no source published): no upstream code is included.
+The mod shows a tool or armor piece's durability inside its item tooltip.
+
+## What is ported (the behavior the mod documents)
+
+- The three tooltip styles from the mod page: **numbers** ("dur/max"), **bar**, and **text** (percent).
+- The visibility rule: client-side only, and the line is hidden on items still at full durability (configurable).
+- The bar color follows the vanilla durability curve: green at full, yellow in the middle, red at the low end.
+
+Tests: 10 (`cargo test`), all passing.
+
+## Host seams (need Horizon native-mod API support)
+
+1. **Item tooltip decoration** - the line is computed here and must be appended to the hovered item's
+   tooltip. Horizon has no client item-tooltip render hook yet; this is the same gap already filed for
+   the shulkerboxtooltip port (tooltip rendering), tracked there until patched.
+2. **Config persistence** - the config file (style, only-when-damaged) needs the standard native-mod
+   config file hook.
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Behavioural port: the port contains no upstream code; upstream stays All Rights Reserved with its author and is credited here.
+
+Licence: CC0-1.0. Source: https://github.com/Sparticle62ops/horizon-durability-tooltip
+"""
+authors = ["sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-durability-tooltip"
+icon = "icons/durability_tooltip.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "durability_tooltip-1.0.0.hmod"
+sha256 = "4718d60c5a3ecbf6a0cfece6204768a72d7381a1ab5f64ef7581ab1ef014c2b7"
+changelog = "Initial registry submission"

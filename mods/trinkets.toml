@@ -1,0 +1,28 @@
+id = "trinkets"
+kind = "native-mod"
+name = "Trinkets"
+summary = "Extra equipment slots for trinkets, in a menu on G."
+description = """
+Extra equipment slots for trinkets, in a menu on G.
+
+**Differences from the original:** The trinket slots are in a separate menu opened with the G key, not beside the inventory. Worn trinkets aren't drawn on the player's body. Attribute bonuses stored on trinket items aren't applied, so a trinket only does what its own mod's port provides. A totem of undying worn in the Charm slot saves you as one in the off hand does.
+
+A port of [Trinkets](https://github.com/emilyploszaj/trinkets) 3.7.2 by Emi, C4, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Emi", "C4"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/trinkets"
+icon = "icons/trinkets.png"
+categories = ["equipment", "library"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-20"
+game = "26.3"
+file = "trinkets.hmod"
+sha256 = "2ca4b2e4946d115d81276005c25103ac5d49bdf014603cfc15a557cdcecbaa5c"
+changelog = "One native package with the code and the content, built with the exact-build SDK dd67b76 (mod API, game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the content-only entry and the retired .hnmod."

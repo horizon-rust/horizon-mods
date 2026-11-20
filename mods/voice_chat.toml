@@ -36,9 +36,9 @@ screenshots = [
 ]
 
 [[versions]]
-version = "1.0.0"
+version = "1.0.1"
 published = "2026-11-20"
 game = "26.3"
 file = "voice_chat.hmod"
-sha256 = "2732705e874bbb491426727ed84b52ca63180c2a8bd19a6ca3d2c5910b6b6d59"
-changelog = "First public release. Built and tested against Horizon 5ef7734."
+sha256 = "40424a9fe62634d4ab903a13d9611aa30c574812fd6a086cd9c026a9ee8f8df6"
+changelog = "First public release. Includes the Opus licence and no debug file tracing. Built and tested against Horizon 5ef7734."

@@ -1,0 +1,40 @@
+id = "litematica"
+kind = "native-mod"
+name = "Litematica"
+summary = "A modern schematic mod for Horizon, ported from Litematica and MaLiLib."
+description = """
+Litematica for Horizon (Rust Minecraft).
+
+A clean-room native port of **Litematica** and its core dependency **MaLiLib** for the Horizon engine.
+
+**Features**
+- **Schematic Formats**: Reads `.litematic` (v5 & v6), Sponge `.schem`, and legacy `.schematic` files.
+- **In-World Ghost Blocks**: Visual overlays displaying placed schematics with color-coded verification:
+  - Missing blocks: see-through ghosts
+  - Wrong blocks: highlighted in red
+  - Wrong block states: highlighted in orange
+  - Extra blocks: highlighted in magenta
+- **Layer Slicing**: Render complete schematic, all below, single layer, or layer range with Page Up / Page Down hotkeys.
+- **Material List**: Real-time material calculation and missing items inventory tracking.
+- **Area Selection & Saving**: Define regions using corner selections and export directly to `.litematic` files.
+- **In-Game Menu**: Press **M** to open the main menu or use `/litematica` and `/schematics` commands.
+- **MaLiLib Configuration**: Full in-game configuration manager for visuals, colors, hotkeys, and rendering.
+
+Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["masa", "Sakura-Ryoko", "AzambekDev"]
+owners = ["AzambekDev"]
+owner_ids = [122017984]
+license = "LGPL-3.0-only"
+source = "https://github.com/AzambekDev/litematica"
+icon = "icons/litematica.png"
+categories = ["utility", "building"]
+tags = ["schematic", "litematica", "malilib", "building", "client-side", "overlay", "ghost-blocks"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-21"
+game = "26.3"
+file = "litematica-1.0.0.hmod"
+sha256 = "5ba031c627d99f24a9abed86369ac9864bde7658ba355e9ceab21d178cedd608"
+changelog = "Initial release of Litematica + MaLiLib for Horizon."

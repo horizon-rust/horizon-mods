@@ -1,0 +1,31 @@
+id = "letmedab"
+kind = "mod"
+name = "Let me Dab"
+summary = "Emote. Express. Have Fun."
+description = """
+  LetMeDAB 🎭
+
+LetMeDAB is an emote mod for Horizon Client, rebuilt from Emotecraft.
+
+🕺 Express yourself in Minecraft with fun emotes and animations.
+
+🎮 Bring your character to life and enjoy a more expressive multiplayer experience.
+
+✨ Simple, fun, and made for expression.
+
+💜 LetMeDAB — Emote. Express. Have Fun."""
+authors = ["Swag / Sarthak"]
+owners = ["dvloperSarthak"]
+owner_ids = [210558344]
+license = "MIT"
+source = "https://github.com/dvloperSarthak/LetmeDab"
+icon = "icons/letmedab.png"
+categories = ["social"]
+tags = ["emotes", "animations", "emote", "animation"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-19"
+game = "26.3"
+file = "letmedab-0.1.0.hmod"
+sha256 = "b3b13e5df91025481bc68deaf9c2762f7904df75d37bf80b3a0e6a3272c9fdf4"

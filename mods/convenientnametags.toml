@@ -20,9 +20,9 @@ categories = ["utility"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "convenientnametags.hmod"
-sha256 = "1b02910304984ee5d3a8bc18a767807df092263c5d1e728f59aef1496ebe3f4c"
-changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the retired .hnmod."
+sha256 = "03a00a4ea42396ed6218f794f850c3b0f8a6bdd0c8ebbba6382eea7fb59d08df"
+changelog = "0.4.1: a returned tag keeps the mob's full custom-name component (colour and style), and renames compare the structured names, so a formatting-only rename counts as a change."

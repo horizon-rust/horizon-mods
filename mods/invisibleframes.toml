@@ -1,0 +1,26 @@
+id = "invisibleframes"
+kind = "native-mod"
+name = "Invisible Frames"
+summary = "Sneak-use an item frame to make it invisible."
+description = """
+Sneak-use an item frame to make it invisible.
+
+A port of [Invisible Frames](https://github.com/Roundaround/mc-fabric-invisible-frames) 1.1.0 by Roundaround, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Roundaround"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/invisibleframes"
+icon = "icons/invisibleframes.png"
+categories = ["decoration"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-20"
+game = "26.3"
+file = "invisibleframes.hmod"
+sha256 = "337996665750fe699410813a0a8f06439dfff8b6c92c6619097d6da4692862da"
+changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the retired .hnmod."

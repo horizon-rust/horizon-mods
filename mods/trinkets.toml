@@ -20,9 +20,9 @@ categories = ["equipment", "library"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "trinkets.hmod"
-sha256 = "2ca4b2e4946d115d81276005c25103ac5d49bdf014603cfc15a557cdcecbaa5c"
-changelog = "One native package with the code and the content, built with the exact-build SDK dd67b76 (mod API, game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the content-only entry and the retired .hnmod."
+sha256 = "7aa2881a7b1f38fc4222073c2e902dcbbf753c09e2b604f0d1459d556b8a1bf2"
+changelog = "0.4.1: a consumed worn totem, and the death drop, now clear only their own slots in the trinkets:worn attachment; entries for other slots, items not installed and unknown keys are kept."

@@ -1,0 +1,42 @@
+id = "accessories"
+kind = "mod"
+name = "Accessories"
+summary = "Accessory slots like hat, back, rings and belt, with a screen to manage them. Requires the native mod Accessories (native)."
+description = """
+An independent port of [Accessories](https://github.com/wisp-forest/accessories) by Wisp Forest (blodhgarm, chyzman, Dr.Zeal).
+
+**Both projects are required:** install this one (`accessories`) and **Accessories (native)** (`accessories_native`)
+
+- Accessory slots: hat, face, necklace, cape, back, hands, rings, wrist, belt, anklet, shoes and charm, defined by data packs in the original's format.
+- The accessories screen (H or the inventory button) with cosmetic slots, show/hide toggles, a crafting grid and a settings panel.
+- Equipping by dragging, shift-click, right-click or a dispenser; curses of binding and vanishing; drops on death by each slot's rule.
+- Items can give attributes, effects and extra slots while worn; totems, elytras and protective gear work from the slots, and so do their enchantments.
+- Advancement triggers `accessories:equip_accessory` and `accessories:unequip_accessory`, and data-driven renderers.
+- A library for other mods: few vanilla items are accessories on their own. Works with Traveler's Backpack (its Back slot).
+
+Source, changelog and details: https://github.com/DeportedToHell/MCRE-Mods/tree/main/accessories
+
+MIT, same as the original. Not affiliated with or endorsed by Wisp Forest."""
+authors = ["DispatchedToHeaven"]
+owners = ["DispatchedToHeaven"]
+owner_ids = [211231405]
+license = "MIT"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/e55715ffca555eb2f700dd3257034cc7f87ad2ef/accessories"
+icon = "icons/accessories.png"
+categories = ["library", "equipment", "utility"]
+tags = ["accessories", "slots", "trinkets", "curios", "cosmetics", "port"]
+screenshots = ["screenshots/accessories/1.png"]
+key = "RWRKE9PraqtKIBNLiCXXKIdqfZ6tUGUVxdzMWkSmPfMz3PcTDxnyAEbv"
+
+[[versions]]
+version = "0.3.0"
+published = "2026-11-14"
+game = "26.3"
+file = "accessories-0.3.0.hmod"
+sha256 = "f457ee7dbe15822381a827a7665212a76fb6ad04e76b3094a4828ffd3b199e87"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURKE9PraqtKIOBjF4DdY++v7CYnhR3X2537f9EATnr+cKQcSjYaYDSZQ2fBWqCL9L/TJ1hYTbolY6p8rntGGVdq+Qcpbo+3QgE=\r
+trusted comment: timestamp:1794676102\tfile:accessories-0.3.0.hmod\thashed\r
+GMHYvfj0VVY9vsk8SvMNr2/ivlP2b/2qfKaKP0sfaiFD4BKHryhkLtqHUbiyHurfoNxSzF6S3pVeBWnEsLofCA=="""
+changelog = "First version in the registry. Built for Horizon Nightly 2026-11-13: pinned to Horizon Nightly 9f42064c11efe7ef3e5ed2baad7ddc2a3b36eea0 and Horizon Mixins 5a64af938ec86b00d53d16a408aabc0038fb3e57."

@@ -17,6 +17,19 @@ tags = ["freecam", "camera", "spectator"]
 key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
 
 [[versions]]
+version = "2.0.1"
+published = "2026-11-20"
+game = "26.3"
+file = "freecam_plus-2.0.1.hmod"
+sha256 = "dbf6836c3911945342c28787423dd764e6e0a2454fdf31edae8162b01bcbcf4a"
+signature = """
+untrusted comment: signature from minisign secret key
+RUT9Ujo/oCprPH56F9Ts1s9q+pn7oFBuzh6OaFTrbtHh+ZPNszJ3GCp2O8V8/SF0wAwPeyzSBkbS0oW1rdv/ZSD4sznnxhpR1wY=
+trusted comment: timestamp:1795183447	file:freecam_plus-2.0.1.hmod	hashed
+Oi+gY+feWmPFKzQWaxZtBlyHPQAhNtZHJTiJ8kRmcEnKm/OWN4V+XscYsGMhQlqSi6EgRW4eX8RtyDR6CdVuDQ=="""
+changelog = "Built for Horizon Nightly 2026-11-20 (0a875da). No other changes; 2.0.0 stays for Nightly 0b14f8a."
+
+[[versions]]
 version = "2.0.0"
 published = "2026-11-18"
 game = "26.3"

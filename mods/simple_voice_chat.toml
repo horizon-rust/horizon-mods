@@ -1,0 +1,26 @@
+id = "simple_voice_chat"
+kind = "native-mod"
+name = "simple_voice_chat"
+summary = "A Horizon port of Simple Voice Chat."
+description = """
+
+Pinned to Horizon 3fb4c31 and horizon-mixins (none, api-level bundle); exact 1:1 Rust port tested against those revisions.
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-simple-voice-chat
+"""
+authors = ["sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-simple-voice-chat"
+icon = "icons/simple_voice_chat.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "simple_voice_chat-1.0.0.hnmod"
+sha256 = "bf14f4045bf3fe54b7cf38186d4434247a9a04250b42ee9c8c19d8621e3bca14"
+changelog = "Initial registry submission"

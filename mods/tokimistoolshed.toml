@@ -20,9 +20,9 @@ categories = ["equipment"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "tokimistoolshed.hmod"
-sha256 = "7f7b17d85b77cb0d671f55569aa6fa20d071864eb68e4e6b4e14663407538155"
-changelog = "One native package with the code and the content, built with the exact-build SDK dd67b76 (mod API, game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the content-only entry and the retired .hnmod."
+sha256 = "2b8976445f8e8652d084f3749281a6ebd8ced5696872118b6f9d4b16c83e68a8"
+changelog = "0.4.1: the chisel validates everything before it touches a block; standalone felling works; the Abacus HUD's tick route is registered."

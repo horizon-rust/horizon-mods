@@ -1,0 +1,28 @@
+id = "hearth_and_home"
+kind = "native-mod"
+name = "Hearth & Home"
+summary = "Chimneys, lattices, columns, tile roofs and other cosy building blocks."
+description = """
+Chimneys, lattices, columns, tile roofs and other cosy building blocks.
+
+**Differences from the original:** Thatch doesn't soften falls as hay does. Chimney smoke and crackle are sent by the server as particle and sound commands, so every player sees the same smoke.
+
+A port of [Hearth & Home](https://github.com/starfish-studios/Hearth-and-Home) 2.0.3 by Starfish Studios, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Starfish Studios"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/hearth_and_home"
+icon = "icons/hearth_and_home.png"
+categories = ["decoration"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.3.0"
+published = "2026-11-20"
+game = "26.3"
+file = "hearth_and_home.hmod"
+sha256 = "c5f1507aca6350f6e834680da32857caca243677073131c90954f57d051474d2"
+changelog = "First registry release. Built with the exact-build SDK dd67b76 (mod API, game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package."

@@ -1,0 +1,28 @@
+id = "tokimistoolshed"
+kind = "native-mod"
+name = "Tokimi's Toolshed"
+summary = "Hammers, excavators, scythes, copper buckets and other tools."
+description = """
+Hammers, excavators, scythes, copper buckets and other tools.
+
+**Differences from the original:** The manual has no book screen, and the items show no tooltip lines. Chisels switch between Copy and Shuffle when used in the air instead of with Left Alt and the mouse wheel, and the abacus shows its counts on the action bar with no outline. Dispensers don't use copper buckets, and wooden tools don't work as furnace fuel. In creative mode, filling a copper bucket gives a vanilla bucket.
+
+A port of [Tokimi's Toolshed](https://github.com/CozyCord/TokimisToolshed) 1.8 by Tokimi, CozyStudios, published under its licence, CC0-1.0. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Tokimi", "CozyStudios"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "CC0-1.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/tokimistoolshed"
+icon = "icons/tokimistoolshed.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-20"
+game = "26.3"
+file = "tokimistoolshed.hmod"
+sha256 = "7f7b17d85b77cb0d671f55569aa6fa20d071864eb68e4e6b4e14663407538155"
+changelog = "One native package with the code and the content, built with the exact-build SDK dd67b76 (mod API, game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the content-only entry and the retired .hnmod."

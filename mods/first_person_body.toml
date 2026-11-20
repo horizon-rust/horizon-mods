@@ -30,9 +30,9 @@ categories = ["utility", "decoration"]
 tags = ["first-person", "body", "camera", "immersion", "client-side"]
 
 [[versions]]
-version = "2.0.0"
+version = "2.0.1"
 published = "2026-11-20"
 game = "26.3"
-file = "first_person_body-2.0.0.hmod"
-sha256 = "0a5135420cca3a0da25c1bfc6644ebec3a18ce4c9bb48e05d0d39a6620ffb461"
-changelog = "Rebuilt on Horizon's new mod API (the .hmod SDK) for Nightly 2026-11-19 f00125f, with its game patches redone for that build. Settings now open from Mods > First Person Body > Config and start from the defaults once."
+file = "first_person_body-2.0.1.hmod"
+sha256 = "8bc64fec98d06993bfbb77d79d98b3a287e1d651af827603b19ef0502b66cbe6"
+changelog = "Rebuilt on Horizon's new mod API (the .hmod SDK) for Nightly 2026-11-19 5ef7734, with its game patches checked for that build. Settings now open from Mods > First Person Body > Config and start from the defaults once."

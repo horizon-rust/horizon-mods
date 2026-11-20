@@ -20,9 +20,9 @@ categories = ["worldgen"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "yungsbridges.hmod"
-sha256 = "53736a3471c0fa35b794327c5a6d5c02776be9fbbdb6595b37aa06fa52e86dc4"
-changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with COPYING, LICENSE, NOTICE in the package. Replaces the retired .hnmod."
+sha256 = "3c3b46a4d1dd0fb9a2deb254519dc7c2f6cc161fd935270ef6e1f4c16e2a6c79"
+changelog = "0.4.1: every block a bridge would write is checked before any is changed, and bridges only go into freshly generated chunks."

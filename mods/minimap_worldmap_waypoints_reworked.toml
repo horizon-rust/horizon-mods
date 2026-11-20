@@ -30,11 +30,13 @@ An adaptive minimap and a full world map for Horizon, with a persistent per-worl
 - Distant terrain uses snow-aware climate/height approximation, fixed world-space biome blending and shared water opacity: snowy taiga and mangrove water retain their expected appearance. Detailed terrain remains authoritative; fresh LOD samples gradually refresh legacy colours.
 - Version 0.7.0 is a flat source .hmod for the signed native SDK, pinned to Nightly 2026-11-18 (0b14f8a), Minecraft 26.3 and SDK Rust 1.99.1; tested with launcher 0.2.78. Existing scoped waypoints, settings and terrain containers remain in use.
 
+Created by daniliammo and continued by Gurov08ruS after the original account was removed from GitHub.
+
 The runtime uses only portable standard-library APIs and is intended for Linux, macOS and Windows. The 0.7.0 SDK port was built and tested in a live Linux game; macOS and Windows runs remain unverified.
 """
 authors = ["daniliammo", "Gurov08ruS"]
-owners = ["daniliammo"]
-owner_ids = [67186086]
+owners = ["Gurov08ruS"]
+owner_ids = [355298203]
 license = "GPL-3.0-only"
 source = "https://github.com/Gurov08ruS/Minimap-Worldmap-and-waypoints-reworked"
 icon = "icons/minimap_worldmap_waypoints_reworked.png"

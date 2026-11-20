@@ -20,9 +20,9 @@ categories = ["decoration"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "mcaccel.hmod"
-sha256 = "100ea42153eeb8b61592f05beaa10143baba42fe6b68bb5c6c5cff0e9f889e57"
-changelog = "One native package with the code and the content, built with the exact-build SDK dd67b76 (mod API, game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the content-only entry and the retired .hnmod."
+sha256 = "4bce13ed1d0b6bd84e188c8507fec9d7d1d957a5e14d7b2bcbd81705d8e35769"
+changelog = "0.4.1: reverse carving runs inside the game's own left-click handling, after its permission checks, and writes at once: no deferred write is left to go stale."

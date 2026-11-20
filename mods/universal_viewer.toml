@@ -5,12 +5,12 @@ summary = "See inside maps, shulker boxes and bundles without opening them. Clie
 description = """
 Look inside things without opening them.
 
-- **Maps on their slot**: a loaded filled map shows its own picture as its inventory icon, edge to edge (inventory, chests, hotbar, creative tabs). The stack count stays on top.
-- **Map tooltip**: hovering a map adds its picture, inside the game's own held-map frame, to the normal tooltip, with its scale (1:1 to 1:16) and lock state. Every other tooltip line stays: vanilla's, a server's lore and prices, other mods'.
-- **Shulker boxes and bundles**: hold **Shift** while hovering to see the full contents as a slot grid drawn like a vanilla inventory, tinted in the box's or bundle's colour.
-- **Placed shulker boxes**: opening one tints its screen in the box's colour.
+- **Maps on their slot**: a loaded filled map shows its own picture as its inventory icon, edge to edge (inventory, chests, hotbar). The stack count stays on top. In the Creative inventory screen the pinned engine exposes no slot positions, so maps keep their vanilla icon there; the tooltip still shows the picture.
+- **Map tooltip**: hovering a map adds its picture, inside the game's own held-map frame, to the normal tooltip, with its scale (1:1 to 1:16) and lock state. The picture can be shown at 64, 96 or 128 px (a setting; 128 by default). Every other tooltip line stays: vanilla's, a server's lore and prices, other mods'.
+- **Shulker boxes and bundles**: hold **Shift** while hovering to see the full contents as a slot grid drawn like a vanilla inventory, tinted in the box's or bundle's colour. Hold **Ctrl** to lock the preview in place and hover its items (a setting switches to press-to-toggle).
+- **Placed shulker boxes**: opening one tints the inventory panel and slots in the box's colour.
 
-**What it does and does not do.** Everything runs on the client. One mixin (HEAD of `remote_map_item_data`) copies the map pictures a server already sends to the client, and the game's own map colour palette, so maps show on vanilla servers; it changes nothing in the game's handling of the packet. The mod also registers an optional payload pair (`universal_viewer:map_request` / `universal_viewer:map_data`): when the server also runs the mod (or in singleplayer), the client may ask it for a map's picture by id, so maps sitting in a chest show at once; a server without the mod never answers. No other network access, no files written, no data collected. It gives no advantage over what a player could see by holding the map or opening the box.
+**What it does and does not do.** All rendering runs on the client. One mixin (HEAD of `remote_map_item_data`) copies the map pictures a server already sends to the client, and the game's own map colour palette, so maps show on vanilla servers; it changes nothing in the game's handling of the packet. Separately, the mod registers an optional payload pair (`universal_viewer:map_request` / `universal_viewer:map_data`): when the server also runs the mod (or in singleplayer), the client may ask it for a map's picture by id, so maps sitting in a chest show at once. The server answers only for a map the player can see (in their inventory or the menu they have open, including inside shulker boxes and bundles there), at most 10 replies per second per player; clients ask at most once every 2 ticks. A server without the mod never answers. No other network access, no files written, no data collected. It gives no advantage over what a player could see by holding the map or opening the box.
 
 The mod ships no Minecraft data: map colours come from the running game and the frame is the game's own `map_background` sprite.
 
@@ -25,6 +25,22 @@ icon = "icons/universal_viewer.png"
 categories = ["utility", "storage", "management"]
 tags = ["map", "tooltip", "shulker", "bundle", "preview", "client-side", "qol"]
 screenshots = ["screenshots/universal_viewer/1.png", "screenshots/universal_viewer/2.png", "screenshots/universal_viewer/3.png", "screenshots/universal_viewer/4.png", "screenshots/universal_viewer/5.png", "screenshots/universal_viewer/6.png", "screenshots/universal_viewer/7.png", "screenshots/universal_viewer/8.png"]
+
+[[versions]]
+version = "0.1.18"
+published = "2026-11-21"
+game = "26.3"
+file = "universal_viewer-0.1.18.hmod"
+sha256 = "88cbb53a8f192ff23e752f723c96d5ad2e99adeb65ad455d81bc4be84bcf21dc"
+changelog = "New setting: tooltip map size (64, 96 or 128 px, default 128). The held-map frame scales with the picture."
+
+[[versions]]
+version = "0.1.17"
+published = "2026-11-20"
+game = "26.3"
+file = "universal_viewer-0.1.17.hmod"
+sha256 = "551a736773e03f347ccff5c18c74fc3014a9c5150016efcbe574f2daedb683c9"
+changelog = "Server map replies are sent only for maps the player can see (inventory or open menu, including shulker boxes and bundles there) and are limited to 10 per second per player; clients ask less often. Includes 0.1.14-0.1.16: Ctrl lock for shulker and bundle previews (hold, or toggle in settings), placed shulker screens tinted again, map pictures drawn once per screen and the open menu read a few slots per tick to remove CPU cost and spikes."
 
 [[versions]]
 version = "0.1.13"

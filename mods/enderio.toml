@@ -1,0 +1,39 @@
+id = "enderio"
+kind = "native-mod"
+name = "enderio"
+summary = "A Horizon port of enderio."
+description = """
+A port of [Ender IO](https://github.com/Team-EnderIO/EnderIO) (Unlicense, by Team-EnderIO) for Horizon. This first slice is the **item conduit** and its network.
+
+**Implemented so far**
+
+- `enderio:conduit` (the `minecraft:stone` template: hardness 1.5, blast resistance 10, no occlusion, a 3 px core outline) with six boolean state properties — `down`, `up`, `north`, `south`, `west`, `east` — and a `multipart` blockstate that draws the 3 px core plus one 2 px arm per connected side. The block carries a self-drop loot table.
+- Connections: a face connects to another `enderio:conduit` or to a block with an item container reachable from the touching side (the pin's `native_container_slots`, API 48). The connection state is recomputed when a neighbour changes.
+- Per-side configuration (input / output / disabled), the network cycle that groups connected conduits, and item transfer along it, all through the hopper-rule helpers so a refused item stays where it is.
+- `/enderio info|config` readout and configuration commands, with the carried texture, models, language and loot inside the one `.hnmod`.
+
+**Not yet ported**
+
+- The item filters (extract and insert filter slots), the speed tiers (enhanced and vibrant item conduits), priority and dye channels.
+- The conduit screen (menu, slots and toggles) and the redstone control.
+- The bundle (several conduit types in one block), facades, the Yeta Wrench, and every other conduit family (energy, fluid, gas, me, redstone, dense, ender).
+- The rest of Ender IO's machines and blocks.
+
+Unlicense, like the original; the port's sources are released under the same public-domain dedication and the notice travels inside the archive.
+"""
+authors = ["Team-EnderIO", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "Unlicense"
+source = "https://github.com/AdLf0208/ender_io"
+icon = "icons/enderio.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-10"
+game = "26.3"
+file = "enderio.hmod"
+sha256 = "d85004c41de5abca2b7e9b7e8a892449c40edf0c6a835328dc95ef165e12f3ee"
+changelog = "First release"

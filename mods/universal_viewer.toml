@@ -1,0 +1,35 @@
+id = "universal_viewer"
+kind = "native-mod"
+name = "Universal Viewer"
+summary = "See inside maps, shulker boxes and bundles without opening them. Client-side, works on any server."
+description = """
+Look inside things without opening them.
+
+- **Maps on their slot**: a loaded filled map shows its own picture as its inventory icon, edge to edge (inventory, chests, hotbar, creative tabs). The stack count stays on top.
+- **Map tooltip**: hovering a map adds its picture, inside the game's own held-map frame, to the normal tooltip, with its scale (1:1 to 1:16) and lock state. Every other tooltip line stays: vanilla's, a server's lore and prices, other mods'.
+- **Shulker boxes and bundles**: hold **Shift** while hovering to see the full contents as a slot grid drawn like a vanilla inventory, tinted in the box's or bundle's colour.
+- **Placed shulker boxes**: opening one tints its screen in the box's colour.
+
+**What it does and does not do.** Everything runs on the client. One mixin (HEAD of `remote_map_item_data`) copies the map pictures a server already sends to the client, and the game's own map colour palette, so maps show on vanilla servers; it changes nothing in the game's handling of the packet. The mod also registers an optional payload pair (`universal_viewer:map_request` / `universal_viewer:map_data`): when the server also runs the mod (or in singleplayer), the client may ask it for a map's picture by id, so maps sitting in a chest show at once; a server without the mod never answers. No other network access, no files written, no data collected. It gives no advantage over what a player could see by holding the map or opening the box.
+
+The mod ships no Minecraft data: map colours come from the running game and the frame is the game's own `map_background` sprite.
+
+Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["Aiken1609"]
+owners = ["Aiken1609"]
+owner_ids = [171152288]
+license = "MIT"
+source = "https://github.com/Aiken1609/uni-viewer"
+icon = "icons/universal_viewer.png"
+categories = ["utility", "storage", "management"]
+tags = ["map", "tooltip", "shulker", "bundle", "preview", "client-side", "qol"]
+screenshots = ["screenshots/universal_viewer/1.png", "screenshots/universal_viewer/2.png", "screenshots/universal_viewer/3.png", "screenshots/universal_viewer/4.png", "screenshots/universal_viewer/5.png", "screenshots/universal_viewer/6.png", "screenshots/universal_viewer/7.png", "screenshots/universal_viewer/8.png"]
+
+[[versions]]
+version = "0.1.13"
+published = "2026-11-19"
+game = "26.3"
+file = "universal_viewer-0.1.13.hmod"
+sha256 = "4420e5525240636e17bafeed2248f7e72357e3dd4d3e43b386b514778320bda9"
+changelog = "First release: map pictures on slot icons and in the tooltip, Shift preview of shulker boxes and bundles, tinted placed shulker screens."

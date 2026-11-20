@@ -1,0 +1,30 @@
+id = "emojiful"
+kind = "native-mod"
+name = "Emojiful"
+summary = ":short_name: in chat shows the emoji (Twemoji)."
+description = """
+Type `:smile:`, `:thumbsup:`, `:flag-us:` or any of nearly 2,000 short names in chat, and the line shows the Twemoji emoji. Messages are sent as typed, so players without the mod see the codes. One package with the code and the emoji images; no resource pack needed.
+
+**Differences from the original:** Emoji codes become images only in received chat lines, not on signs, books, names or in the chat box while typing. There are no completions while typing a `:name` and no emoji picker button. Emoji typed as characters are drawn by the game's own font, not as Twemoji. There are no Emojiful custom or GIF emoji, no datapack emoji and no profanity filter. A code split across text colours stays as text.
+
+A port of [Emojiful](https://github.com/InnovativeOnlineIndustries/Emojiful) 4.2.0 by HorizonStudio (Innovative Online Industries), published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Emoji graphics: [Twemoji](https://github.com/jdecked/twemoji), Copyright 2020 Twitter, Inc and other contributors, and jdecked/twemoji contributors, licensed under CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/; full text in LICENSE-GRAPHICS), taken from [iamcal/emoji-data](https://github.com/iamcal/emoji-data)'s sheet_twitter_32_clean.png (MIT). The images are cut into font sheets; they are otherwise unchanged. Short names from iamcal/emoji-data.
+
+No Minecraft code is included."""
+authors = ["lavoide", "HorizonStudio"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT AND CC-BY-4.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/emojiful"
+icon = "icons/emojiful.png"
+categories = ["social"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-19"
+game = "26.3"
+file = "emojiful.hmod"
+sha256 = "30a0a57a5f2eb9d1b1bdb70889b0143686ef756e1699347517bf018bfc4c70df"
+changelog = "One native package with the code and the Twemoji font, built with the exact-build SDK dd67b76 on the mod API only. Replaces the retired .hnmod; the separate emojiful_twemoji pack is no longer needed."

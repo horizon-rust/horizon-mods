@@ -1,0 +1,31 @@
+id = "xtonesreworked"
+kind = "mod"
+name = "Xtones Reworked"
+summary = """34 tone families of 16 decorative blocks, the xtone tile and the flat lamp"""
+description = """
+A Horizon port of [XTones Reworked](https://github.com/TobsenD/XTones-Reworked) (MIT), carried as a content-only package.
+
+34 tone families of 16 decorative blocks, the xtone tile and the flat lamp
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported:** see the repository's notes for the recorded gaps.
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact.
+"""
+authors = ["TobsenD", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/xtonesreworked"
+icon = "icons/xtonesreworked.png"
+categories = ["technology"]
+tags = ["port"]
+
+[[versions]]
+version = "1.1.1-1.21.1"
+published = "2026-11-18"
+game = "26.3"
+file = "xtonesreworked.hmod"
+sha256 = "5952a00793cfc9b1eb999569a3e69be7a5a1cd4e1fb6e4453e3c06ed1198ea00"
+changelog = "First publication in the SDK format."

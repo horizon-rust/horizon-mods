@@ -1,0 +1,51 @@
+id = "vivid_horizon_raytracing"
+kind = "shader"
+name = "Vivid Horizon Raytracing"
+summary = "Ray-traced light for Horizon: soft indirect light, sun shadows, light shafts, physical water, painted sky and cubic clouds, vibrant style. Beta."
+description = """
+**Beta.** A ray-traced shader pack for Horizon's shader API 0.2, written from scratch in WGSL. It is the vibrant-colour style on top of a physically based ray-traced lighting base.
+
+- **Ray-traced indirect light**: two bounces of diffuse light from the sun, the sky and glowing blocks, denoised over time and space. Caves and shade pick up colour from what is around them.
+- **Soft sun shadows** and light shafts through trees, and underwater beams.
+- **Water**: colour follows depth (light loses red first, then green), the seabed shows through in the shallows, waves fade with distance, with sun glitter.
+- **Sky**: a painted gradient with Rayleigh and Mie scattering, stars, a Milky Way, and a moon with its phase.
+- **Clouds**: soft-edged cubic clouds, lit by the sun and shaded underneath.
+- **Image**: glare, bloom, edge anti-aliasing and a tone curve.
+
+Each departure from physics is named in the source comments. For the non-ray-traced vibrant pack, see Vivid Horizon.
+
+## Needs
+
+- Horizon with shader API 0.2 and **ray tracing turned on** (it is opt-in), on a GPU with hardware ray queries.
+- HDR frame format set to float.
+
+## Performance
+
+About 150 frames per second in a forest at 1440p on an RTX 5070 Ti (measured by the author, one machine only).
+
+## Known issues
+
+- Vanilla particles (torch smoke, rain splashes) do not get the pack's light and fog fully.
+- Lamps follow the game's light level and cast no shadow of their own yet.
+- Swamp and mangrove water has had little testing.
+- Some flicker remains in caves and on block edges.
+- Water caustics stop on sharp block edges.
+- The cubic clouds are made of rather small cubes.
+"""
+authors = ["Evan-lhm"]
+owners = ["Evan-lhm"]
+owner_ids = [182446547]
+license = "MIT"
+source = "https://github.com/Evan-lhm/vivid-horizon-raytracing"
+icon = "icons/vivid_horizon_raytracing.png"
+categories = ["path-tracing", "semi-realistic", "atmosphere"]
+tags = ["shaders", "ray-tracing", "global-illumination", "water", "sky", "clouds", "vibrant", "beta"]
+screenshots = ["screenshots/vivid_horizon_raytracing/1.jpg", "screenshots/vivid_horizon_raytracing/2.jpg", "screenshots/vivid_horizon_raytracing/3.jpg", "screenshots/vivid_horizon_raytracing/4.jpg"]
+
+[[versions]]
+version = "0.9.0"
+published = "2026-11-18"
+game = "26.3"
+file = "vivid_horizon_raytracing-0.9.0.hshader"
+sha256 = "112f9feb66d41930d5eae4917726060fcd1e48161427631f37f1403f13f83071"
+changelog = "First beta release."

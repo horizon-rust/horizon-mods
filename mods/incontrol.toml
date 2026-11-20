@@ -1,0 +1,47 @@
+id = "incontrol"
+kind = "native-mod"
+name = "InControl!"
+summary = """Spawn and loot control driven by two JSON rule files a pack author edits by hand: config/incontrol/spawn.json denies a fresh mob by id, mod, dimension,…"""
+description = """
+A Horizon port of InControl 1.21-10.3.0, the server-side rule engine a pack author drives with two hand-edited JSON files: `config/incontrol/spawn.json` cancels mob spawns and `config/incontrol/loot.json` rewrites the drops of a mob or a block. The package carries no blocks, items or assets, only the rules engine and the hooks that drive it. Upstream: https://github.com/McJtyMods/InControl — licence **MIT**.
+
+**Implemented so far**
+
+- The spawn engine reads `spawn.json` top to bottom, matches a rule only when every condition in it matches, and lets the first match decide unless the rule says `"continue": true`.
+- Spawn conditions cover `when` (`position` for natural attempts, `onjoin` for every fresh mob), `mob` and `mod`, `dimension`, `minheight` and `maxheight`, and block and sky light through `minlight`, `maxlight`, `minlight_sky` and `maxlight_sky`.
+- The results `deny`, `deny_with_actions`, `allow` and `default` are honoured, and any other word denies as upstream does.
+- The loot engine reads `loot.json` and denies, replaces or adds the drops of a mob or a broken block, with `drops`, `add`, `replace`, `remove` and `result`, the `item` and `removeall` aliases, looting-scaled `itemcount` tiers, and a per-drop `nbt` object applied as `minecraft:custom_data`.
+- A rule that uses a key this port cannot evaluate is inert and reported by `/incontrol reload`, so a rule it cannot read in full never denies more than its author asked.
+- A broken rule file is refused and the rules already in force stay, so a typo cannot silently un-deny every spawn.
+- `/incontrol reload` and `/incontrol status` work at permission level 1, and the JSON parser is bounded to 32 levels so a deeply nested imported file is refused instead of overflowing the stack.
+- The package was proven in game at 0.2.1 with a control run that fails at the first rule assertion.
+
+**Not yet ported**
+
+- `minlight_full`, `maxlight_full` and the `light` expression stay inert, because they subtract the sky darkening value and the pin has no probe for it.
+- `biome` and `biometags` are unavailable, because the pin exposes no biome read outside client-side colour refresh, and `mob: "#tag"` cannot match, because entity-type tags do not exist at the pin.
+- `finalize` rules for equipment, health, AI and NBT are absent, because the entity-write APIs they need are not exposed, and `despawn` rules are absent because there is no despawn hook.
+- Phases, random rolls, counts, distance, difficulty, weather, cave and slime checks, structure and area tests, block tests and scoreboard conditions are outside this slice.
+- The other rule files are not read: summon-aid `spawner.json`, events, experience, effects, break, place and click rules.
+- The pre-join veto redesign is not implemented, which is also why a denied natural spawn can still leave a jockey behind.
+
+Ported from the upstream mod (MIT); `LICENSE-NOTICE.md` records the credit and `LICENSE` the licence text.
+
+Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["McJty", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/in_control"
+icon = "icons/incontrol.png"
+categories = ["utility"]
+tags = ["port", "rules"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "incontrol.hmod"
+sha256 = "14c4f743a03aea1dff536462fafaded1fa2d4b7fee0b5eb77d97f17e27ccf537"
+changelog = "First publication in the SDK format."

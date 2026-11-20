@@ -1,0 +1,35 @@
+id = "bwncr"
+kind = "native-mod"
+name = "bwncr"
+summary = "A Horizon port of bwncr."
+description = """
+A port of [Bad Wither No Cookie Reloaded](https://gitlab.com/kreezxil/BadWitherNoCookie) (MIT, by Kreezxil and Eleksploded) for Horizon.
+
+**Implemented so far**
+
+- The decision data and the harness surface for upstream's sound silencing: the wither spawn (`entity.wither.spawn`, exact) and wither death (`entity.wither.death`, case-insensitive) sound names, plus the wandering trader's ambient and the llama's ambient, with `/bwncr listen|heard|silence` recording and printing the decisions the hook will use.
+- The three carried language files (`en_us`, `es_ar`, `pt_br`) from the jar, inside the one `.hnmod`.
+
+**Not yet ported, and this is the important part**
+
+- **The suppression itself is not carried.** The pin has no client-side "a sound is about to play" hook: `native-hooks.json` contains no sound or audio entry, and `play_sound_to` is still pending and unstamped. The named hook request is NeoForge's `PlaySoundEvent` — sound id, category, position, volume, pitch, **cancellable**. Until that hook is stamped this port silences nothing; `/bwncr` reports the decisions such a hook would make.
+- `/bwncr listen` prints through `/bwncr heard` rather than live: upstream sends each name to the player's chat as it arrives client-side, and this slice collects them instead.
+
+So: installing this mod currently changes no sound. It exists to hold the decision table and the command surface for the slice that lands when the hook does. MIT — the licence is declared by the jar the pack ships (`META-INF/neoforge.mods.toml`, `license="MIT"`; upstream publishes no LICENSE file), and the notice travels inside the archive at `mixins/bwncr/LICENSE`.
+"""
+authors = ["Kreezxil", "Eleksploded", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/bad_wither_no_cookie_reloaded"
+icon = "icons/bwncr.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-10"
+game = "26.3"
+file = "bwncr.hmod"
+sha256 = "216ccb50e043f1ee354915c46777c52ed4ef75d0f7a7a56b0fcc7acaeda1217b"
+changelog = "First release"

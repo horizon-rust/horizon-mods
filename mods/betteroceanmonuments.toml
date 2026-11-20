@@ -1,0 +1,31 @@
+id = "betteroceanmonuments"
+kind = "mod"
+name = "YUNG's Better Ocean Monuments"
+summary = """YUNG's Better Ocean Monuments as carried worldgen: a deep-ocean jigsaw structure, 13 template pools, 59 templates and the jar's ten processors."""
+description = """
+A Horizon port of [YUNG's Better Ocean Monuments 4.1.2](https://github.com/YUNG-GANG/YUNGs-Better-Ocean-Monuments) by YUNG GANG (**LGPL-3.0-only**), carried as worldgen data.
+
+This is a **content-only** package: `kind = "mod"`, `api = "0.2"`, no Rust source and no `[native]` block. It carries the mod's own worldgen — one deep-ocean jigsaw structure, 13 template pools, 59 structure templates and one loot table — unchanged.
+
+**What the port does.** Upstream's ten Java structure processors flood the monument's interior with water, waterlog its slabs and stairs, and decorate it with prismarine slabs, oxidised copper, seagrass and sponges. This port expresses them as the game's own processor types (`horizon:flood_air`, `horizon:waterlog`, `horizon:keep_world_block`, `horizon:pick`, `horizon:yung_pillar`, `minecraft:rule`) instead of shipping Java, so the monument builds from the carried data with no code of its own.
+
+**Not yet ported.** There is no code to port — the mod is data plus ten processors. The one place this port could differ from upstream is a processor whose behaviour the engine does not offer exactly, and each mapping is recorded in the port's `notes.md`.
+
+Upstream's licence and notice travel inside the package. Pinned to Horizon `0b14f8a` and horizon-mixins `e59da90`.
+"""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/yungs_better_ocean_monuments"
+icon = "icons/betteroceanmonuments.png"
+categories = ["adventure"]
+tags = ["port", "worldgen", "structures"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "betteroceanmonuments.hmod"
+sha256 = "7d96c43b53c11e687c018ab4114748708b90544e9d7a877106ea16d51555c52a"
+changelog = "First publication in the SDK format."

@@ -1,0 +1,41 @@
+id = "hostilenetworks"
+kind = "native-mod"
+name = "hostilenetworks"
+summary = "A Horizon port of hostilenetworks."
+description = """
+A port of [Hostile Neural Networks](https://github.com/Shadows-of-Fire/Hostile-Neural-Networks) by Shadows_of_Fire for Horizon — the Simulation Chamber and the Loot Fabricator.
+
+**Implemented so far**
+
+- **Simulation Chamber** (`hostilenetworks:sim_chamber`): a model plus one input and one output slot, a 2,000,000 FE buffer, the jar's runtime/prediction arithmetic and its failure states; a finished run yields the model's predicted drop.
+- **Loot Fabricator** (`hostilenetworks:loot_fabricator`): a model in one slot and 16 output slots, a 1,000,000 FE buffer, the jar's per-model selection and its 60-tick × 256 FE cost per drop.
+- Both machines' block entities, fill-only energy capability on all faces, menus, screens, persistence, six data slots for the chamber and five for the fabricator (runtime, selection, model index, both halves of the FE count).
+- The carried models/drops/tags/lang and the creative tab, plus `/hostilenetworks info` and the administrative commands.
+
+**Not yet ported**
+
+- Kill/break model upgrades (`data_gained`, the `living_death` hook, the Deep Learner scan), blank-model attunement and the Model Framework's use.
+- The other 58 entity and 10 block models, their optional drops and the silk-touch upgrade conditions.
+- The Deep Learner (curio, menu, HUD), the Fabrication Directive, the Data Center multiblock with queue and redstone modes, training mode's model-data upgrades, the generalized predictions and the `living_matter` recipes.
+- The chamber/fabricator GUI textures and the model-rendering item.
+
+All commands that change a machine or grant a model are **operator-only**; only `/hostilenetworks info` is open to players.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/hostilenetworks/LICENSE` and `NOTICE.md`, with the upstream MIT notice) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93.
+"""
+authors = ["Shadows-of-Fire", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/hostile_neural_networks"
+icon = "icons/hostilenetworks.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-10"
+game = "26.3"
+file = "hostilenetworks.hmod"
+sha256 = "c76c0996af962e3d702c40760855aba385e82f954a4aec0e3339377a8f295522"
+changelog = "First release"

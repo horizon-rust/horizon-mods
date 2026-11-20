@@ -1,0 +1,28 @@
+id = "respectmytrims"
+kind = "native-mod"
+name = "Respect My Trims"
+summary = "Piglins respect gold armour trims."
+description = """
+Piglins respect gold armour trims.
+
+**Differences from the original:** On LAN, the game doesn't check a guest's armour for gold at all, so a gold trim only keeps piglins calm for the host.
+
+A port of [Respect My Trims](https://github.com/tnoctua/respectmytrims) 1.0.0 by N (tnoctua), published under its licence, LGPL-2.1-only. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "N (tnoctua)"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-2.1-only"
+source = "https://github.com/lavoide/horizon-ports/tree/main/respectmytrims"
+icon = "icons/respectmytrims.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-20"
+game = "26.3"
+file = "respectmytrims.hmod"
+sha256 = "8fd0d622e822b23ca07470451a5f515643fa3e0ef6b42c414aaea7f26365fba0"
+changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the retired .hnmod."

@@ -1,0 +1,51 @@
+id = "rftoolsbuilder"
+kind = "native-mod"
+name = "RFTools Builder"
+summary = """RFTools Builder for Horizon: the Builder block and its shape cards. A card carries a shape (box, sphere, cylinder, capped cylinder, prism, cone, top and…"""
+description = """
+A Horizon port of RFTools Builder 1.21-7.0.8: the Builder block and its shape cards, plus the shape geometry behind them. A card carries a shape, a size, an offset and whether it is solid or hollow, and the Builder walks that shape placing blocks into it from a container above or below. Upstream: https://github.com/McJtyMods/RFToolsBuilder — licence **MIT**.
+
+**Implemented so far**
+
+- The shape card `rftoolsbuilder:shape_card_def` carries shape, size, offset, solidity and the corner-selection state in its `rftoolsbuilder:shape_card` component, and a stack with no component is the jar's default solid 5×5×5 box.
+- The jar's ten shape formulas — box, sphere, top and bottom dome, cylinder, capped cylinder, prism, torus, heart and cone — are transcribed cell for cell, with the float arithmetic, the integer truncation and the per-axis centre nudge.
+- Solid and hollow follow upstream's border test, where a cell is in the shell when one of its six neighbours is outside, and the jar's quirks are kept (a hollow cylinder has no cap, only its rim).
+- Dimension is clamped into 0–512 and offset into −260–260, and a card whose box exceeds 50,000,000 cells is refused with those numbers.
+- Cards are authored by sneak-right-clicking a Builder and clicking two corners, and by `/rftoolsbuilder shape|offset|reset` for shapes corners cannot express.
+- The Builder block entity walks the shape from the top down with x fastest at eight cells a tick, takes the first placeable block from the container above it or below if that one is empty, and waits at a cell it has no block for.
+- A protection gate skips a cell outside the world border before anything is read or taken, so a protected cell is never built and never charged a block.
+- `/rftoolsbuilder status <pos>` prints shape, size, offset, cell count, progress and the first refused cell, with the count bounded and cached so a huge sparse shape cannot stall the server thread.
+- The upstream walk defect is fixed: a shape straddling a chunk boundary is built completely instead of losing the cells in the earlier chunk.
+- The package was proven in game at 0.2.1 with a control and a selftest that both fail without it.
+
+**Not yet ported**
+
+- The quarry is not carried, nor its resource scan, silk and fortune drops, void list, replacement block or chunk loading; upstream's quarry is a card type with no geometry, so no quarry shape was invented.
+- The movers with their control pages and vehicle builder, the shields with their projector and renderer, and the space chamber with the copy, move and swap modes it feeds are not carried.
+- The composer, the projector and the scanner are not carried, which is also why the composition and scan shapes are missing.
+- The GUI screens and the mod's own networking are replaced here by the commands and the action bar.
+- The liquid and pump cards, the filter module (which is why the container has one slot) and energy are not carried, so this slice builds without power.
+- A placed block's own placement hook does not run, because the pin has no fake player, so a bed or door appears only half placed.
+- Chunk loading is replaced by waiting for a loaded chunk, and the hilight mode, progress HUD and renderer are not carried.
+- Spawn protection is not enforced, because the pin cannot read it, so only the world border is checked.
+
+Ported from the upstream mod (MIT); `LICENSE-NOTICE.md` records the credit and `LICENSE` the licence text.
+
+Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["McJty", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/rftools_builder"
+icon = "icons/rftoolsbuilder.png"
+categories = ["technology"]
+tags = ["port", "building", "automation"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "rftoolsbuilder.hmod"
+sha256 = "da48b02d137e8d6cbf8df87536feb417ed7e4b02761f84b9e620cef314d627a6"
+changelog = "First publication in the SDK format."

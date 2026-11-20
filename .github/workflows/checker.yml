@@ -1,0 +1,70 @@
+# Builds the checker at .github/horizon-rev once, on main, and publishes it as the prerelease checker@<rev> (asset
+# cargo-horizon-mod-<rev>) with a build-provenance attestation. install-tool.sh uses that file only when GitHub's
+# attestation shows this workflow on main built a file of exactly that name; otherwise it builds from source.
+# Built fresh from the pinned engine commit: no Actions cache, no pull request input. The tag has an `@`, which no
+# `<id>-<version>` release tag of publish.yml can contain.
+name: checker
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/horizon-rev
+      - .github/workflows/checker.yml
+      - scripts/install-tool.sh
+  workflow_dispatch:
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+concurrency:
+  group: checker
+  cancel-in-progress: false
+jobs:
+  build:
+    # Attestations name the ref they were built from, and install-tool.sh takes only main's: a dispatch on another
+    # branch would only build a file nothing uses.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: The pin
+        id: pin
+        run: |
+          rev="$(tr -d '[:space:]' < .github/horizon-rev)"
+          [[ "$rev" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::.github/horizon-rev must hold one 40-character commit"; exit 1; }
+          echo "rev=$rev" >> "$GITHUB_OUTPUT"
+      # Only a published file the installer would accept counts: a broken upload, or one that fails its attestation,
+      # is built again and replaced.
+      - name: Already built
+        id: have
+        run: |
+          if scripts/install-tool.sh --prebuilt-only; then echo "built=yes" >> "$GITHUB_OUTPUT"; fi
+      - if: steps.have.outputs.built != 'yes'
+        run: scripts/install-tool.sh --from-source
+      - if: steps.have.outputs.built != 'yes'
+        name: Name it for the pin
+        env:
+          REV: ${{ steps.pin.outputs.rev }}
+        run: |
+          mkdir -p out
+          cp "$HOME/.cargo/bin/cargo-horizon-mod" "out/cargo-horizon-mod-$REV"
+      - if: steps.have.outputs.built != 'yes'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: out/cargo-horizon-mod-${{ steps.pin.outputs.rev }}
+      - if: steps.have.outputs.built != 'yes'
+        name: Publish it
+        env:
+          REV: ${{ steps.pin.outputs.rev }}
+        run: |
+          gh release view "checker@$REV" >/dev/null 2>&1 \
+            || gh release create "checker@$REV" --target "$GITHUB_SHA" --prerelease --latest=false \
+                 --title "Checker ${REV:0:12}" \
+                 --notes "cargo-horizon-mod built by checker.yml at horizon-rust/horizon@$REV, for the registry's own checks. Not a mod."
+          gh release upload --clobber "checker@$REV" "out/cargo-horizon-mod-$REV"

@@ -1,0 +1,53 @@
+id = "vanilla_horizon"
+kind = "shader"
+name = "Vanilla Horizon"
+summary = "Vanilla Minecraft's light, plus real sunrises and sunsets, water and rain."
+description = "Vanilla's own light is the base: the sun and the moon cast shadows on top of it, the blocks the low sun reaches turn warm, rays spill across the horizon, and the air near the ground takes the hour's colour. The water, the rain and the glowing blocks are the pack's own."
+authors = ["PureEvilValera"]
+owners = ["PureEvilValera"]
+owner_ids = [130057984]
+license = "MIT"
+source = "https://github.com/PureEvilValera/vanilla-horizon-shader"
+icon = "icons/vanilla_horizon.png"
+categories = ["vanilla-like", "atmosphere", "shadows"]
+screenshots = [
+    "screenshots/vanilla_horizon/1.jpg",
+    "screenshots/vanilla_horizon/2.jpg",
+    "screenshots/vanilla_horizon/3.png",
+    "screenshots/vanilla_horizon/4.jpg",
+    "screenshots/vanilla_horizon/5.jpg",
+    "screenshots/vanilla_horizon/6.jpg",
+    "screenshots/vanilla_horizon/7.jpg",
+]
+
+[[versions]]
+version = "2.11.1"
+published = "2026-11-19"
+game = "26.3"
+file = "vanilla_horizon-2.11.1.hshader"
+sha256 = "a502e6cf3584b732f7e49dec74300b5fcbe051596ee604d387abddce85c7b1e3"
+changelog = """
+Sunlight and shadows read again: the direct light and the shade share were converted to linear light
+one power too low, so the sun barely showed on the ground and a shadow was a few percent of shade.
+Skyline haze now follows the edge of the loaded terrain instead of the configured render distance, so
+a server with a shorter view distance no longer draws the haze beyond the real edge; it mixes toward
+the sky's colour too, so dusk and night no longer darken the last chunks.
+Defaults retuned to the hand-tuned profile: fog off by default, Shadow edges Sharp, Shadow depth 1.50,
+Block light colour 0.65, Water transparency 0.70, Far water 0.40 at 124 blocks, Night mist 1.20 and
+Midnight mist 0.25, Wind 0.45.
+"""
+
+[[versions]]
+version = "2.11.0"
+published = "2026-11-19"
+game = "26.3"
+file = "vanilla_horizon-2.11.0.hshader"
+sha256 = "f734a1344f058ba54b4a790250d9d85c991c48f8d6a087a88d567180a13149ee"
+changelog = """
+Moved to shader API 0.2: linear light, [frame] fog = "pack", vanilla_fog(), the face's shade and
+ambient occlusion as fields of their own, and a [tonemap] stage with Tone curve and Exposure.
+Fixed the doubled sun and moon at a silhouette (Skyline haze no longer samples the picture).
+Far water and Far water distance keep the end of the loaded chunks from cutting a lake off.
+Cave fog clears the render-distance fog out of the caves.
+Ground mist for the dawn, the dusk and the night, with its own height and distance.
+"""

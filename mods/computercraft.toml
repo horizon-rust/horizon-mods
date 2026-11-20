@@ -1,0 +1,37 @@
+id = "computercraft"
+kind = "native-mod"
+name = "computercraft"
+summary = "A Horizon port of computercraft."
+description = """
+A port of [CC: Tweaked](https://github.com/cc-tweaked/CC-Tweaked) 1.121.0 for Horizon — the **Computer** block, with a terminal that runs a program.
+
+**Implemented in this slice**
+
+- `computercraft:computer_normal` — `facing` × `state` (`off`/`on`/`blinking`) on the stone template, upstream's blockstate model chain (`minecraft:block/orientable` with the computer's own front/side/top textures and the lit screen while running), a block entity declared in code, self-drop loot, the upstream crafting shape with 26.3 ingredients, and a creative tab.
+- A **Lua 5.2 subset** interpreter: `print`, numbers, strings, `..`, arithmetic and comparisons, `and`/`or`/`not`, `#`, `local`, assignment, `if`/`elseif`/`else`, `while`, numeric `for`, comments, `return`, blocks and scopes.
+- The terminal is kept in the block entity's saved compound and drawn on the block's front face with the font atlas; `/computercraft screen` returns it as one line of JSON for machines, `/computercraft load` boots a program, and every `/computercraft` usage is operator-only.
+
+**Not yet ported**
+
+- **The ROM**: 105 Lua files (`bios.lua`, 20 `rom/apis`, 23 `rom/modules`, 60 `rom/programs`) and the shell. That needs a real Lua 5.2 VM, and the pin's lock blocks the engine route (see the port's record), so the engine is the unblocker.
+- **Language features**: tables, functions and closures, `break`, `repeat`, `in`/generic `for`, multiple returns and assignment, metamethods, `pcall`/`error`, the string/table/math/os libraries, `require`/`dofile`, coroutines (the basis of every CC API), varargs, `#` on tables, integer division `//`, `goto`, long strings, hex literals and `\\ddd` escapes.
+- Peripherals, modems/rednet, monitors, disk drives, printers, speakers, turtles, pocket computers, the GUI and the remaining 15 blockstates.
+
+The four upstream CCPL textures are **regenerated** by `tools/gen_textures.py` (documented palette, byte-identical `--check`) because CCPL §7 forbids reusing them in another game — no upstream pixel is carried. Original copyright and licence notices travel in the package. Pinned to Horizon `0b14f8a` and horizon-mixins `e59da90`.
+"""
+authors = ["Daniel Ratcliffe", "Aaron Mills", "SquidDev", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "CCPL-1.0"
+source = "https://github.com/AdLf0208/cc_tweaked"
+icon = "icons/computercraft.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-10"
+game = "26.3"
+file = "computercraft.hmod"
+sha256 = "a92fc5ff2338dd3530049360b84b41f68eec37b40fbd3333a29b0058b3ecf4ff"
+changelog = "First release"

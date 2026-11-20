@@ -1,0 +1,37 @@
+id = "crashutilities"
+kind = "native-mod"
+name = "Crash Utilities"
+summary = """Server-admin housekeeping commands for Horizon, from Crash Utilities 9.0.4: count and clear the world's ground items on a configured countdown, remove or…"""
+description = """Server-admin housekeeping commands for Horizon, from Crash Utilities 9.0.4: count and clear the world's ground items on a configured countdown, remove or dump entities by type, group or name, teleport yourself across dimensions, and get yourself out of a block. Every command sits under the roots /cu and /crashutilities at permission level 2. The inventory, chunk, block-entity and memory readout commands of the original are not ported (the API surface for them does not exist here).
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- e remove regex: a regex filter needs a crate (regex), and a port may not add
+- blockentity *: no block-entity enumeration/removal API.
+- i * (inventory read/remove/open), memoryCheck, chunks *: no APIs
+- tp <player> / offline playerdata: no playerdata load/save API. Only the
+- unstuck <name> / overworld spawn: no shared-spawn API; the port's safe-spot
+- ~~Config reload~~: **closed by the SDK format** — config_reloading re-reads the
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact.
+
+Based on the original project: https://github.com/Darkere/CrashUtilities
+"""
+authors = ["Darkere (upstream)", "Horizon native mod contributors", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/crash_utilities"
+icon = "icons/crashutilities.png"
+categories = ["utility"]
+tags = ["port", "commands"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "crashutilities.hmod"
+sha256 = "bf9b6ca6faaac51aeac4860ec0f6d2fd47150e1dbb8dd6468a845c068f8ed858"
+changelog = "First publication in the SDK format."

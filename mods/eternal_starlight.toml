@@ -1,0 +1,41 @@
+id = "eternal_starlight"
+kind = "native-mod"
+name = "Eternal Starlight"
+summary = """A port of Eternal Starlight for Horizon, slice 1: the Starlight dimension exists, is enterable and generates. The dimension is registered over the mod's…"""
+description = """A port of Eternal Starlight for Horizon, slice 1: the Starlight dimension exists,
+is enterable and generates. The dimension is registered over the mod's own noise settings and
+parameters, with its own surface material rule and four of its biomes (starlight forest, dense
+forest, glimmer scrubland, dark swamp) and the blocks those surfaces use. Its other nineteen
+biomes, its structures, its plants and ores, its mobs and its client effects are recorded gaps.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- **The other nineteen biomes.** The jar has 23 biome files; the slice carries
+- **Structures: all eight dropped.**
+- **Carvers.** worldgen/configured_carver/caves.json:2 "type":
+- **Features.** Every mod feature entry is a Java feature or placement type —
+- **Mobs, items, menus, progression.** The biomes' spawners name Java entity
+- **Client effects.** dimension_type.starlight.json "effects":
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact.
+
+Based on the original project: https://github.com/LeoMinecraftModding/eternal-starlight
+"""
+authors = ["LeoMinecraftModding", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/eternal_starlight"
+icon = "icons/eternal_starlight.png"
+categories = ["adventure"]
+tags = ["port", "worldgen", "dimension"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "eternal_starlight.hmod"
+sha256 = "170d4e56ed627291951d2ea8a6d003493a99775b992cb44a9ffe708048494c16"
+changelog = "First publication in the SDK format."

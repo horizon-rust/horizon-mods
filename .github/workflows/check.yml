@@ -6,8 +6,12 @@ name: check
 on:
   pull_request:
     branches: [main]
+    # ready_for_review too: owner-update.yml passes over a draft, and marking it ready pushes no commit.
+    types: [opened, synchronize, reopened, ready_for_review]
 permissions:
   contents: read
+  # The last successful publish run and its verified-files artifact.
+  actions: read
 concurrency:
   group: check-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -79,7 +83,27 @@ jobs:
             | tee -a "$GITHUB_STEP_SUMMARY" || status=1
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           exit $status
+      # Every live file, not only the new ones, goes into the candidate index. The files the last successful
+      # publish verified (publish.yml's artifact, unpacked outside the checkouts; fetch.sh rehashes each against
+      # the entry) are reused when they match, and only the rest is downloaded: one download per live file on every
+      # check doesn't hold up when many pull requests come at once.
+      - name: The last successful publish
+        id: last
+        run: |
+          run=$(base/scripts/last-publish.sh 2>/dev/null) || run=
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+      - if: steps.last.outputs.run != ''
+        id: kept
+        continue-on-error: true
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: verified-files
+          path: ${{ runner.temp }}/kept-files
+          run-id: ${{ steps.last.outputs.run }}
+          github-token: ${{ github.token }}
       - name: Download its files
+        env:
+          FILES_KEPT: ${{ runner.temp }}/kept-files
         run: base/scripts/fetch.sh head
       - name: Check each new file
         run: |

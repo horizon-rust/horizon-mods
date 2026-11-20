@@ -1,0 +1,46 @@
+id = "integratedtunnels"
+kind = "native-mod"
+name = "integratedtunnels"
+summary = "A Horizon port of integratedtunnels."
+description = """
+A Horizon port of Integrated Tunnels 1.13.0, the item, fluid and energy transport add-on for Integrated Dynamics. This slice is the item tunnel: an Item Importer pulls items out of the inventory behind a cable face into the network's store, an Item Exporter hands them out again, and `/integratedtunnels info` reads the cable back. Upstream: https://github.com/CyclopsMC/IntegratedTunnels — licence **MIT**.
+
+**Implemented so far**
+
+- The package adds the carrier block `integratedtunnels:tunnel_cable`, a 4 px non-occluding core with six `part_<face>` properties and a block entity holding the network's item store.
+- Two part items, `integratedtunnels:part_importer_item` and `part_exporter_item`, are placed on a clicked cable face and consumed outside creative, and `/integratedtunnels part` covers a face that is not clickable.
+- An importer moves up to 64 items a tick into the store and an exporter hands up to 64 a tick into the inventory behind its own face, while whatever the destination refuses stays in the store.
+- The network is the connected cable set (six-way adjacency, bounded to 1,024 cables), its store lives on the network's root cable, and importers run before exporters so items can leave the tick they arrive.
+- A stack that carries components or damage is left in its container rather than flattened to an id and a count, so a filled shulker is never silently rebuilt.
+- The launcher-built package was proven in game: import runs at the jar's rate, export loses nothing, and removing either part stops its half of the loop.
+
+**Not yet ported**
+
+- The variable and aspect layer is not ported — variable cards, the aspect screen and the other six item aspects — because it needs the parent's variable system, which the Integrated Dynamics port does not carry.
+- The fluid and energy parts and their channels are absent, since the parent has neither a fluid nor an energy network.
+- The world parts and the block break and place handlers are absent, because they need a fake player the pin does not expose.
+- The interface parts, the player simulator, the part screens, the part-removal path and the jar's `error` state are not carried.
+- Network energy is not modelled, and neither is NBT fidelity in the store, which keeps an id and a count per entry.
+- Cable interop with the sibling Integrated Dynamics port is impossible, because two packages cannot share a namespace and that port's cable enumerates only its own part kinds.
+- The two part recipes, advancements, the info book and the multipart renderer are not carried.
+
+Ported from the upstream mod (MIT); `LICENSE-NOTICE.md` records the credit and `LICENSE` the licence text.
+
+Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["rubensworks (aka kroeser)", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/integrated_tunnels"
+icon = "icons/integratedtunnels.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-10"
+game = "26.3"
+file = "integratedtunnels.hmod"
+sha256 = "87ab0b4b23892527a1c8ba6550a7b084d3fe058384f35ce860c5427e1639bfaa"
+changelog = "First release"

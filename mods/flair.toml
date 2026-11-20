@@ -1,0 +1,27 @@
+id = "flair"
+kind = "native-mod"
+name = "Flair"
+summary = "Capes, hats, wings, pets and auras for your player, picked from an in-game catalog."
+description = "A cosmetics catalog for Horizon. Open it from the title screen or the pause menu and wear HD capes that move like cloth, animated bandanas with Japanese script, hats, wings, shoulder pets and auras with colour themes. Turn your player in a live preview, hide your armor, and add your own capes and Blockbench cosmetics with animations. Only you see them."
+authors = ["_idom_"]
+owners = ["umbx-dot"]
+owner_ids = [203141410]
+license = "MIT"
+source = "https://github.com/umbx-dot/horizon-flair"
+icon = "icons/flair.png"
+categories = ["decoration"]
+tags = ["cosmetics", "capes", "hats", "wings", "pets", "blockbench"]
+key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
+
+[[versions]]
+version = "2.0.0"
+published = "2026-11-18"
+game = "26.3"
+file = "flair-2.0.0.hmod"
+sha256 = "b2af06b5a90e5a3952f94b19f41300a342a6f0f489e56e240f336a7db164a8f9"
+signature = """
+untrusted comment: signature from minisign secret key
+RUT9Ujo/oCprPPKgC1e5velDtykKlrBdYQYUfA1awVWKeytAPt90hb9JJfozWcMf8lihveIWaFVG2vNe8mgsAo40WxZZw1Rxowo=
+trusted comment: timestamp:1795017007	file:flair-2.0.0.hmod	hashed
+NYBM0WE39dwPZWrXHYXWOY3aqlAcCpLp0j8DLgLlssL32Nyy7yWnIXIGvK1uYtM3W6xOQdZgZQyQScnPLnInBQ=="""
+changelog = "Works with the new mod system and Horizon Nightly 2026-11-18 (0b14f8a). Your equipped cosmetics and your own cosmetics folder carry over."

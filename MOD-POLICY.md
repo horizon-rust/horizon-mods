@@ -13,8 +13,10 @@ who makes them, who is responsible for them, and how to have one removed. By sub
   licence is the one its authors chose.
 - **A listing is not an endorsement.** Reviewers check that an entry is complete, that its files match their pinned
   hashes, that it builds or loads against the Horizon version it names, and that nothing obviously harmful is in it.
-  That review is not a legal review, a security audit or a guarantee. Mods are provided as they are, without
-  warranty, by their authors.
+  That review is not a legal review, a security audit or a guarantee. An owner's later versions of an entry of
+  kind `resourcepack`, `shader` (`.hshader`) or `datapack` publish once the automatic checks pass, without a person
+  reading them; new projects, page changes, `shaderpack` zips and every mod version are reviewed. Mods are provided
+  as they are, without warranty, by their authors.
 - **Native mods** (source `.hmod` packages built locally against their exact signed Horizon SDK) run
   with the same access to your computer as the game. Install them only from authors you trust.
   The frozen native-v1 catalogue retains old `.hnmod` metadata and assets for history, not installation on the SDK runtime.

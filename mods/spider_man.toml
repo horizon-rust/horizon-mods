@@ -1,0 +1,41 @@
+id = "spider_man"
+kind = "native-mod"
+name = "Spider-Man"
+summary = "Web swinging, zips, wall running and parkour, tuned against the console games' feel."
+description = """
+Swing through a city on webs. Hold **R** and jump: a web catches the nearest anchor ahead and you swing on it, let go
+to fly on, catch the next one.
+
+**Controls** (change them in Controls):
+- **R**: hold to swing; on the ground, a parkour run, faster with **W**; on a wall, a wall run
+- **Z**: hold to zip to where you look
+- **Space** on a web: pump for speed; let go to jump off
+- **A / D** while swinging: lean to the side
+- **F5**: third person, where the poses, the web lines and the chase camera show
+
+**Settings** (Options > Mods > Spider-Man > Config): how long a web flies before it bites. `/swingmode on|off|delay|view|debug`
+in chat does the same and more.
+
+Works in your own worlds: single player, or a LAN world you host. On other servers it stays off.
+
+What it changes in the game: the player's velocity and fall while swinging (own world only), the third-person camera
+and player pose, web lines drawn in the world, and the view's turn while running on a wall. It reads no files outside
+its settings and sends nothing over the network.
+
+Fan-made, not affiliated with Marvel, Sony or Insomniac Games."""
+authors = ["wyddy7"]
+owners = ["wyddy7"]
+owner_ids = [172210694]
+license = "MIT"
+source = "https://github.com/wyddy7/minecraft-spider-man-rust"
+icon = "icons/spider_man.png"
+categories = ["adventure", "transportation"]
+tags = ["spider-man", "web-swinging", "parkour", "wall-running", "movement"]
+
+[[versions]]
+version = "0.2.5"
+published = "2026-11-18"
+game = "26.3"
+file = "spider_man-0.2.5.hmod"
+sha256 = "45840d869f7e264ad38774f85643529ded71153f30b50835b24a7aa23bd054ea"
+changelog = "The mod as a native .hmod for launchers 0.2.70 and later, pinned to Horizon's Nightly of 2026-11-18 (0b14f8a) and horizon-mixins e59da90. R and Z in Controls; the web delay on the mod's Config page; /swingmode taken in your own world only. Release v0.2.5 of the repository."

@@ -1,11 +1,14 @@
 [package]
-name = "horizon-mod-fps-overlay"
-version = "2.0.0"
+name = "mod-fps-overlay"
+version = "3.0.0"
 edition = "2024"
 license = "MIT"
 publish = false
-description = "Horizon's official FPS counter, a native mod: frames per second in a corner of the screen."
 
-# The mod's logic and its tests: the same file the bundle adds to the game.
-[lib]
-path = "mixins/fps_overlay/runtime.rs"
+[dependencies]
+# The pinned SDK's API crate, fetched into .horizon/sdk/ by any `cargo horizon-mod` command.
+horizon-mod-api = { path = ".horizon/sdk/api/crates/horizon-mod-api" }
+
+# The SDK build this mod is made for: `cargo horizon-mod update` moves it.
+[package.metadata.horizon]
+sdk = "f00125f61f794aaa3d4e950d301f353b35b6ee3d"

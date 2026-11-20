@@ -1,0 +1,32 @@
+id = "moredragoneggs"
+kind = "native-mod"
+name = "More Dragon Eggs"
+summary = """Vanilla places a dragon egg on the first ender-dragon kill only; this mod places one at the End exit podium on every kill after the first. With spawn_head…"""
+description = """Vanilla places a dragon egg on the first ender-dragon kill only; this mod places one at
+the End exit podium on every kill after the first. With spawn_head = true in config/moredragoneggs.conf
+it also puts a dragon wall head beside the podium, facing the nearest player, on every kill.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported:** see the repository's notes for the recorded gaps.
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact.
+
+Based on the original project: https://github.com/Darkere/moredragoneggs
+"""
+authors = ["Darkere", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/more_dragon_eggs"
+icon = "icons/moredragoneggs.png"
+categories = ["technology"]
+tags = ["port", "energy"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "moredragoneggs.hmod"
+sha256 = "2438ada0a407e713683e4d377796b066954762e0ebc64acf1046d4e2e27345f3"
+changelog = "First publication in the SDK format."

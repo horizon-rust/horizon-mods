@@ -1,0 +1,41 @@
+id = "bellsandwhistles"
+kind = "native-mod"
+name = "Bells & Whistles"
+summary = """Bells & Whistles' decorative station, metro and train blocks for Horizon: 36 blocks — the andesite/brass/copper grab rails, bogie steps and door steps,…"""
+description = """Bells & Whistles' decorative station, metro and train blocks for Horizon: 36 blocks — the andesite/brass/copper grab rails, bogie steps and door steps, the headlight, the ornate iron trapdoor, the station platform, the metro casing/panel/trapdoor/window set and eighteen pilots — with their block items, self-drop loot tables, 44 carried recipes, the climbable and mineable/pickaxe tags and one creative tab. The blocks copy vanilla templates (ladder, lever, iron trapdoor, carved pumpkin, end rod, iron block), because the original's Create classes do not exist here; the headlight therefore keeps a lever's powered state and toggles on right click, and the nine Create-only polished-cut pilots have no recipe. There is no block entity, entity, menu, renderer, config or network code: the original mod at 0.4.7 ships none.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- **Create is not ported.** The wrench behaviour, Create's panel placement helper and copycat face-hiding, and the train-door forms (`folding_metro_door`, `sliding_metro_door`) are deferred — the two door forms are not registered by `ModBlocks` at 0.4.7 anyway.
+- **The headlight uses `minecraft:lever`.** Its `powered` state and right-click toggle are a template artefact; the light is constant 15.
+- **Custom shapes** for the rails, headlight and pilots are not declared.
+- **Nine pilots have no recipe** (Create's polished-cut stones).
+- **Recipe materials are substituted**; the recipes are not upstream's exact ingredients, because Create is absent.
+- **Stonecutting recipes are carried but not crafted in the e2e.** The crafting path is proved for six recipes; the stonecutter menu path is not exercised.
+- **The creative tab's position** differs from upstream, which inserts into vanilla tabs; Horizon content mods cannot.
+- **Map colour** is the template's (upstream copied mossy cobblestone/stone colours) and was not visually checked headless.
+
+**Licence:** `GPL-3.0`, not "or later" — the pinned jar's own `neoforge.mods.toml` declares `license="GPL-3.0"`, its `LICENSE` is the GPL version 3 text, and the "or any later version" wording appears only in that text's generic application example, not in a project-specific grant.
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact.
+
+Based on the original project: https://github.com/aesefficio/BellsAndWhistlesMod
+"""
+authors = ["lev", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "GPL-3.0"
+source = "https://github.com/AdLf0208/create_bells_and_whistles"
+icon = "icons/bellsandwhistles.png"
+categories = ["decoration"]
+tags = ["port", "blocks"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "bellsandwhistles.hmod"
+sha256 = "b0b240ef02790d9da2d5ebafe1e07b0ceecde0aafb45bad84c1d50b885cdb986"
+changelog = "First publication in the SDK format."

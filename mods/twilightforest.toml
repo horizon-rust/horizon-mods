@@ -1,0 +1,47 @@
+id = "twilightforest"
+kind = "native-mod"
+name = "The Twilight Forest"
+summary = """The Twilight Forest's portal and its dimension for Horizon: a water pool that a diamond lights into twilightforest:twilight_portal, and…"""
+description = """
+A partial Horizon port of The Twilight Forest 4.8.3345: the mod's portal and its dimension, with the dimension type, the biome source and the world data the jar ships. A water pool ringed by a plant-topped frame lights into `twilightforest:twilight_portal` when a diamond is dropped into it, and `twilightforest:twilight_forest` is registered with the jar's own dimension type and biome grid. Upstream: https://github.com/TeamTwilight/twilightforest — code **LGPL-2.1-or-later**; the upstream art is CC-BY-NC-SA-4.0, so no upstream art travels in this package.
+
+**Implemented so far**
+
+- The portal rule is upstream's own: four or more water blocks on a sturdy floor, ringed by grass, dirt, farmland or dirt path with a plant standing on each frame block, lit by a dropped diamond, at most 64 pool blocks.
+- A protection gate runs before any write or lightning, so the ticked player must be allowed to build and use the item there, inside the world border and outside a dedicated server's spawn protection, and only that player's own drop counts as the catalyst.
+- The lit portal block keeps upstream's light 11, no collision, glass sound and 0–13/16 outline, and the catalyst is consumed while lightning strikes the pool.
+- The dimension uses the jar's dimension type: `min_y` −32, height 288, coordinate scale 0.125, ambient light 0.01, fixed time, no ceiling, skylight, monster spawn light 0–7, no raids, working beds and zombifying piglins.
+- A biome source reproduces `twilightforest:twilight_biomes` by rebuilding the jar's whole layer stack over its biome grid in pure Rust, exactly for all 22 biomes, of which 14 are carried.
+- The three `deadrock` blocks the jar's surface rule places are carried, and so are the surface rule and the noise settings, converted and ready for the terrain slice.
+- The world data is registered as an always-active, hidden server data pack, so the biomes and the noise settings load in every world, and `/twilightforest dimension` prints the level, its biome count and the grid's answer for a cell.
+- No packaged file is an upstream byte: every texture, model, blockstate, tag and lang file is written or drawn by the port's own tools, and a provenance check proves none of the 63 packaged files matches the jar's 10,437 entries.
+- The package was proven in game at 0.2.1: the portal legs, the dimension and the readout pass, a game without the package lights nothing, and a selftest fails as designed.
+
+**Not yet ported**
+
+- The terrain is `blocked(density-function type)`, because the jar's density graph names two density-function types this pin's registry cannot decode and that registry loads atomically, so the chunk generator deliberately writes nothing and the level is empty rather than a vanilla stand-in.
+- Eight of the 22 biomes are not carried, though the grid's placement is exact for all of them; a biome outside the carried set answers the nearest carried biome of its family.
+- Decoration, carvers, structures, mobs, bosses, progression and the client effects are not carried, and the biomes' spawners are empty.
+- The portal's travel is decided and unit-tested but not wired, because the destination has no terrain and a player sent there would fall out of the world.
+- The dimension's fixed-time value and its sky effects cannot be expressed, because the pin's dimension settings have no field for them.
+
+Ported from the upstream mod and published under LGPL-2.1-or-later with its complete corresponding source and the original copyright notice; `LICENSE-NOTICE.md` records the licence split and `PROVENANCE.md` the origin of every packaged file.
+
+Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["Benimatic (Ben Mazur) and the Twilight Forest contributors", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-2.1-or-later"
+source = "https://github.com/AdLf0208/the_twilight_forest"
+icon = "icons/twilightforest.png"
+categories = ["adventure"]
+tags = ["port", "worldgen", "dimension"]
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-18"
+game = "26.3"
+file = "twilightforest.hmod"
+sha256 = "c503d29c5428fcf366eb1057c73302aff8cc7a5b7d98dcaf97fe22e8aeeee940"
+changelog = "First publication in the SDK format."

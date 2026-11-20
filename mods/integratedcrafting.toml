@@ -1,0 +1,48 @@
+id = "integratedcrafting"
+kind = "native-mod"
+name = "Integrated Crafting"
+summary = """A port of Integrated Crafting for Horizon: a Crafting Interface block that accepts crafting jobs, resolves each against the game's own crafting recipes,…"""
+description = """
+A Horizon port of Integrated Crafting 1.8.1, the autocrafting add-on for Integrated Dynamics. This slice is the crafting-job engine and its Crafting Interface: a request for N of an item is resolved against the game's own crafting recipes, the ingredients are held in the interface's slots, and one recipe is crafted at a time. Upstream: https://github.com/CyclopsMC/IntegratedCrafting — licence **MIT**.
+
+**Implemented so far**
+
+- The block `integratedcrafting:part_interface_crafting` is a part-shaped plate with a 13-slot container: nine ingredient slots laid out as a crafting grid and four result slots, with hoppers above and beside it as the ordinary route.
+- The job engine resolves a request to a `minecraft:crafting` recipe, computes `ceil(requested / output)`, and reserves the whole job's ingredients at submission, refusing with the exact deficit when the slots cannot pay.
+- A craft takes 20 ticks, and ingredients are consumed and the result inserted only on the tick it completes, so a craft that cannot finish costs nothing.
+- A job that cannot continue blocks with a reason (`missing` with the deficit, or `output full`) and retries every tick, a finished job leaves the queue, and the queue is capped at eight jobs.
+- An idle interface answers `Unchanged` from its tick, so it does not dirty its chunk or notify comparators.
+- `/integratedcrafting status <x> <y> <z>` reads the queue, the running craft and the blocked reason, and `/integratedcrafting request|cancel|feed` work within six blocks of the interface, where `feed` moves the player's own items rather than creating any.
+- The carried content is the interface texture and model geometry, a blockstate, an item model, the block declaration, a loot table, a creative tab and a recipe in 26.3's ingredient form.
+- The package was proven in game at 0.2.1 with a control run that fails without it and a selftest that inverts the craft count.
+
+**Not yet ported**
+
+- The network half is `blocked(no-parent-network-attachment-api)`: a part on the Integrated Dynamics cable, the network's recipe list and its item storage, because the parent exports no API and its cable's face properties are a closed enum.
+- The variable-card layer and the Crafting Writer part are `blocked(no-variable-card-layer)`, and so are the attuned and enumerated interface variants.
+- The five part screens are not carried, since this slice has the container and the commands but no GUI.
+- The job dependency graph is missing, so a request whose ingredient is itself craftable is refused as missing ingredients; this is the largest remaining piece of the engine.
+- Priorities, distributed jobs over several interfaces, several crafting CPUs, blocking modes, reusable ingredients, fluids and energy are not implemented, and neither is inserting the inputs into the machine the interface faces.
+- Recipe types other than `minecraft:crafting` are unsupported, because stonecutting, smelting and smithing recipes expose no ingredient and result lists this engine can read.
+- Advancements, the info book and the gametests are not carried, and stack components are not preserved through a job, since the slots keep an item id and a count.
+
+Ported from the upstream mod (MIT); `LICENSE-NOTICE.md` records the credit and `LICENSE` the licence text.
+
+Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["rubensworks (aka kroeser)", "Horizon native mod contributors", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/integrated_crafting"
+icon = "icons/integratedcrafting.png"
+categories = ["technology"]
+tags = ["port", "crafting", "automation"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "integratedcrafting.hmod"
+sha256 = "0798935ecaaaff52301b2160ae580deae33f34b1daf927d25b2170b9d479d4fc"
+changelog = "First publication in the SDK format."

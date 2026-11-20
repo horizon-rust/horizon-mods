@@ -1,0 +1,38 @@
+id = "refinedtypes"
+kind = "native-mod"
+name = "Refined Types"
+summary = """An add-on for Refined Storage that stores FE, Source and Souls: storage blocks, disks and a Network Energizer."""
+description = """A Horizon port of [Refined Types](https://github.com/starforcraft/Refined-Types) by **Starforcraft** (MIT) — an add-on for Refined Storage that stores what Refined Storage does not: FE, Source and Souls. Storage blocks add their tier's capacity to the network, storage disks carry their amount in
+the item and live in the network's disk drives, and the Network Energizer keeps the network supplied
+from the energy storage. Scoped to that storage: the typed grid, exporters, importers, external
+storage, autocrafting, the storage screens and the recipes are the port's gap list, not this
+version.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- The typed grid, exporters, importers, external storage, autocrafting and storage-monitor insertion — that half needs Refined Storage's Java API and is the recorded gap, not this slice.
+- **Recipes are not carried.** Every one needs `refinedstorage:machine_casing` (the parent has no crafting chain), `c:dusts/redstone` (a NeoForge tag absent at 26.3) and `neoforge:conditions` (no such loader condition at 26.3); the 111 recipes and their advancement unlocks would be dead data, so the items come from the creative menu until the parent's chain exists.
+- The storage-block and energizer screens, block contents surviving a break, and `fireResistant` as upstream declares it.
+- The energizer does not refill its buffer from the network once drained — upstream does not either: the buffer is a load-time kick-start. The network is not shut down when unpowered (the parent has no such state); storage stays readable and `active` says whether the usage was covered.
+- Source and Soul have no consumer at this pin (no exporters, and Ars Nouveau / the soul mod are not ported), so their role is capacity, totals and usage.
+- A storage block beside a cable does not appear in the parent's cable connection state.
+
+"""
+authors = ["Starforcraft", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/refinedtypes"
+icon = "icons/refinedtypes.png"
+categories = ["technology"]
+tags = ["port"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-18"
+game = "26.3"
+file = "refinedtypes.hmod"
+sha256 = "9dcbbd3af28e7578e383858352d6f3ce3b8762470132857bd95cf2b15b264606"
+changelog = "First publication in the SDK format."

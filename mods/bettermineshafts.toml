@@ -1,0 +1,50 @@
+id = "bettermineshafts"
+kind = "native-mod"
+name = "YUNG's Better Mineshafts"
+summary = """YUNG's Better Mineshafts 5.1.1 for Horizon: the mod's own mineshaft geometry, generated in Rust behind an SDK structure type. The jar has no templates at…"""
+description = """YUNG's Better Mineshafts 5.1.1 for Horizon: the mod's own mineshaft geometry, generated in
+Rust behind an SDK structure type. The jar has no templates at all (0 .nbt, 0 pools, 0 processor
+lists) — its mineshaft is a Java structure type that builds ten piece classes in code — so this
+port carries the jar's thirteen structure definitions with their per-variant palettes and writes
+the geometry itself: a vertical entrance shaft with ladder and doorway, a 9x8x24 main corridor with
+planks, fence supports, rails, lanterns, cobwebs and gravel piles, a 5x5x8 branch corridor and a
+10x5x5 workstation room, from the seed and the structure's own config. The other pieces (stairs,
+turns, layered intersections, ore deposits, zombie-villager rooms, surface tunnels, minecarts and
+biome decorations) are recorded gaps in notes.md.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- **The in-game leg passes — what it does *not* yet cover.** The three legs are green (below), but
+- **Biome decorations:** addBiomeDecorations (BetterMineshaftPiece.java:175-240) places
+- **Corridor legs (edge/inner):** BigTunnel.generateLegsVariant1/2 (BigTunnel.java:253-369)
+- **Surface tunnel:** VerticalEntrance.determineDirection (VerticalEntrance.java:300-361)
+- **Six piece kinds:** stairs, turns, layered intersections 4/5, ore deposits, zombie-villager
+- **Minecarts, chests, furnaces, barrels:** not attempted in this slice. PieceContext::entity and
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact."""
+authors = ["YUNGNICKYOUNG", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/yungs_better_mineshafts"
+icon = "icons/bettermineshafts.png"
+categories = ["adventure"]
+tags = ["port", "worldgen", "mineshafts"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "bettermineshafts.hmod"
+sha256 = "bdefafb1e28582d0e369db0f3c5140b6dd45c964b2483df6fff3211da4115d12"
+changelog = "First publication in the SDK format."
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-20"
+game = "26.3"
+file = "bettermineshafts.hmod"
+sha256 = "7e27da816c58db978bdabbbbc088943831465cfff77fe1ca72d359843ce5aab7"
+changelog = "Slice 2: the stair piece family (SmallTunnelStairs) — its 5x9x5 box, the branch chain's per-segment kind roll, the stair rail shape on all four facings, and the vines/ore randomization. Two defects fixed on the way: the port's LCG used a signed shift (so nextInt went negative and the corridor chain stopped at two segments), and upstream's stairs always set an ascending-north rail whatever the piece's direction. The structure is now entered in game and the stair's rail read back at its own coordinate."

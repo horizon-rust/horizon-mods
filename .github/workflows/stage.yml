@@ -1,0 +1,236 @@
+# A pull request's new files, staged without a maintainer: the description links each file that a [[versions]]
+# record it adds to mods/ names (a GitHub release download), and its check looks for it in the `staging`
+# prerelease. pull_request_target runs main's copy of this file and its scripts; like scripts/stage.sh it reads
+# the pull request only as data (git objects at its head and where it leaves main), never checks it out or runs it.
+# Untrusted text (the description, entries, file names, branch names) reaches scripts as files, arguments and
+# environment variables only.
+#
+# Split by privilege: `fetch` (read only) downloads each file, requires its record's name and SHA-256 and runs the
+# pinned checker on it; `stage` (staging writes) takes only those bytes, rehashed against the records it reads
+# itself, and uploads them, one run at a time, while staging stays under its ceiling; `rerun` re-runs the pull
+# request's check once if its first attempt failed while they were missing. It looks once and never waits: a check
+# that ends later starts this workflow again (workflow_run), and only `rerun` runs then.
+# cleanup.yml deletes staging files no open pull request lists after 30 days.
+name: stage
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited]
+    paths: ["mods/*.toml"]
+  workflow_run:
+    workflows: [check]
+    types: [completed]
+permissions: {}
+concurrency:
+  group: stage-${{ github.event.pull_request.number || 'check' }}-${{ github.event.pull_request.head.sha || github.run_id }}
+  cancel-in-progress: true
+jobs:
+  fetch:
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      base: ${{ steps.pr.outputs.base }}
+      records: ${{ steps.files.outputs.records }}
+    env:
+      GH_REPO: ${{ github.repository }}
+      PR: ${{ github.event.pull_request.number }}
+      HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: python3 -I scripts/test_stage.py
+      - name: The pull request, as data
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: scripts/stage-pr.sh "$RUNNER_TEMP/body" "$RUNNER_TEMP/staged"
+      - name: Download its files
+        id: files
+        if: steps.pr.outputs.base != ''
+        env:
+          BASE: ${{ steps.pr.outputs.base }}
+        run: |
+          set -o pipefail
+          mkdir "$RUNNER_TEMP/files"
+          { echo "## Staging"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          status=0
+          python3 -I scripts/stage.py links "$BASE" "$HEAD" "$RUNNER_TEMP/body" "$RUNNER_TEMP/files" \
+            "$RUNNER_TEMP/staged" 2>&1 | tee -a "$GITHUB_STEP_SUMMARY" || status=1
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "count=$(ls "$RUNNER_TEMP/files" | wc -l)" >> "$GITHUB_OUTPUT"
+          [ $status = 0 ] && echo "records=$(jq length "$RUNNER_TEMP/files.json")" >> "$GITHUB_OUTPUT"
+          exit $status
+      # The token only reads the checker's release and its attestation; the next step runs without it.
+      - if: steps.files.outputs.count > 0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: scripts/install-tool.sh
+      - name: Check each file
+        if: steps.files.outputs.count > 0
+        run: |
+          set -o pipefail
+          { echo "## Check"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          status=0
+          python3 -I scripts/stage.py check "$RUNNER_TEMP/files" 2>&1 | tee -a "$GITHUB_STEP_SUMMARY" || status=1
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          exit $status
+      - if: steps.files.outputs.count > 0
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: staged
+          path: ${{ runner.temp }}/files/
+          retention-days: 1
+          if-no-files-found: error
+
+  stage:
+    needs: fetch
+    if: needs.fetch.outputs.records > 0
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # One run at a time holds staging, so its count and uploads can't interleave with another's. queue: max keeps
+    # every waiting run (by default only the newest waits and the others are cancelled).
+    concurrency:
+      group: staging
+      queue: max
+    permissions:
+      contents: write
+      pull-requests: read
+    outputs:
+      base: ${{ steps.pr.outputs.base }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      PR: ${{ github.event.pull_request.number }}
+      HEAD: ${{ github.event.pull_request.head.sha }}
+      BASE: ${{ needs.fetch.outputs.base }}
+      # A release takes 1000 files; automatic staging leaves the rest to maintainers and cleanup.yml.
+      CEILING: 900
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        continue-on-error: true
+        with:
+          name: staged
+          path: ${{ runner.temp }}/files
+      # Right before the upload: the pull request is still at this head, and what staging holds now.
+      - name: The pull request, as data
+        id: pr
+        run: scripts/stage-pr.sh "$RUNNER_TEMP/body" "$RUNNER_TEMP/staged" "$BASE"
+      # Nothing in the file is read here: its bytes are rehashed against the records, which this job reads itself.
+      - name: Upload to staging
+        if: steps.pr.outputs.base != ''
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/files"
+          python3 -I scripts/stage.py verify "$BASE" "$HEAD" "$RUNNER_TEMP/files" "$RUNNER_TEMP/staged" \
+            > "$RUNNER_TEMP/upload"
+          count=$(cat "$RUNNER_TEMP/staged.count") n=$(wc -l < "$RUNNER_TEMP/upload")
+          if [ "$n" -gt 0 ] && [ $((count + n)) -gt "$CEILING" ]; then
+            echo "::error::staging holds $count files and automatic staging stops at $CEILING (a release takes" \
+              "1000): a maintainer stages these $n by hand once cleanup.yml has made room"
+            exit 1
+          fi
+          # Staged: uploaded, and GitHub's digest of it is the SHA-256 its name says.
+          complete() {
+            [ "$(gh release view staging --json assets | jq -r --arg n "$1" \
+              '.assets[] | select(.name == $n) | "\(.state) \(.digest)"')" = "uploaded sha256:${1%%.*}" ]
+          }
+          while read -r name; do
+            # Another upload got there first, or one that was cut off left it incomplete: then it is replaced.
+            gh release upload staging "$RUNNER_TEMP/files/$name" || complete "$name" ||
+              gh release upload --clobber staging "$RUNNER_TEMP/files/$name"
+            complete "$name" || { echo "::error::staging's $name is not this file"; exit 1; }
+            echo "staged $name" | tee -a "$GITHUB_STEP_SUMMARY"
+          done < "$RUNNER_TEMP/upload"
+
+  # The check of this head, once: after an upload, or when the check ends (workflow_run) if its first attempt failed.
+  rerun:
+    needs: stage
+    if: >-
+      always() && ((github.event_name == 'pull_request_target' && needs.stage.result == 'success' &&
+      needs.stage.outputs.base != '') || (github.event_name == 'workflow_run' &&
+      github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.run_attempt == 1))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Both ways in, one at a time for a head: the second finds the check already re-run.
+    concurrency:
+      group: stage-rerun-${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
+      queue: max
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: write
+      checks: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      HEAD: ${{ github.event.pull_request.head.sha || github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      # A check that failed for another reason is left alone, before anything else is read.
+      - name: Did the check miss a file
+        id: missed
+        if: github.event_name == 'workflow_run'
+        env:
+          RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GH_REPO/actions/runs/$RUN/attempts/1/jobs" --jq '.jobs[] | select(.conclusion == "failure") | .id' |
+            while read -r job; do gh api "repos/$GH_REPO/check-runs/$job/annotations?per_page=100" --jq '.[].message'; done \
+            > "$RUNNER_TEMP/messages"
+          if grep -q ": reviewed package is absent from its release and staging" "$RUNNER_TEMP/messages"; then
+            echo "missed=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "the check failed, not on a missing file: nothing to re-run"
+          fi
+      # A fork's workflow run names no pull request: then it is the one open into main at its head repository,
+      # branch and SHA.
+      - name: Which pull request
+        id: which
+        if: github.event_name == 'pull_request_target' || steps.missed.outputs.missed == '1'
+        env:
+          NUMBER: ${{ github.event.pull_request.number }}
+          PULLS: ${{ toJSON(github.event.workflow_run.pull_requests) }}
+          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        run: |
+          set -euo pipefail
+          n="$NUMBER"
+          if [ -z "$n" ]; then
+            n="$(jq -r '[.[] | select(.base.ref == "main") | .number] | if length == 1 then .[0] else empty end' <<< "$PULLS")"
+          fi
+          if [ -z "$n" ] && [ "$(jq length <<< "$PULLS")" = 0 ]; then
+            n="$(gh api --paginate "repos/$GH_REPO/pulls?state=open&base=main&per_page=100" \
+              --jq '.[] | {number, sha: .head.sha, repo: .head.repo.full_name, ref: .head.ref}' |
+              jq -rs --arg sha "$HEAD" --arg repo "$HEAD_REPO" --arg ref "$HEAD_BRANCH" \
+              '[.[] | select(.sha == $sha and .repo == $repo and .ref == $ref) | .number] | if length == 1 then .[0] else empty end')"
+          fi
+          if [[ "$n" =~ ^[0-9]+$ ]]; then
+            echo "pr=$n" >> "$GITHUB_OUTPUT"
+          else
+            echo "no single open pull request into main has head $HEAD: nothing to re-run"
+          fi
+      - name: The pull request, as data
+        id: pr
+        if: steps.which.outputs.pr != ''
+        env:
+          PR: ${{ steps.which.outputs.pr }}
+        run: scripts/stage-pr.sh "$RUNNER_TEMP/body" "$RUNNER_TEMP/staged"
+      - name: Re-run the check
+        if: steps.pr.outputs.base != ''
+        env:
+          PR: ${{ steps.which.outputs.pr }}
+          BASE: ${{ steps.pr.outputs.base }}
+        run: |
+          set -o pipefail
+          scripts/stage-rerun.sh "$RUNNER_TEMP/staged" | tee -a "$GITHUB_STEP_SUMMARY"

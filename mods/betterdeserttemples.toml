@@ -1,0 +1,35 @@
+id = "betterdeserttemples"
+kind = "mod"
+name = "betterdeserttemples"
+summary = "The desert temple: 198 carried templates, its jigsaw pools and its loot, generating in game."
+description = """A Horizon port of [YUNG's Better Desert Temples](https://github.com/YUNG-GANG/YUNGs-Better-Desert-Temples) (LGPL-3.0, by **YUNGNICKYOUNG** and **Acarii**) for Horizon. This is a **content carry**: the temple's 198 structure templates, its jigsaw pools, its structure set and its loot, with the Java pieces rewritten as data.
+
+**What works**
+
+- The temple generates: `locate structure betterdeserttemples:desert_temple` finds one, and `/place structure` writes it — measured at **1,262 cut sandstone, 302 smooth sandstone, 174 blue terracotta, 119 yellow terracotta, 11 sandstone walls, 10 iron chains and 2 spawners** placed, with the processors' removals applied (no diorite, no stained glass, no blue or yellow concrete survive).
+- Its chests roll the carried loot tables (14 stacks measured in one chest).
+- The placement rule keeps upstream's intent — random spread with a salt and spacing, and no temple within 48 blocks of a river or ocean at y 120.
+
+**Not carried**
+
+- the entity processors (banner, armour stand, item frame, pharaoh) — no data form at this target;
+- four approximations: sponge clusters, the purple/quartz pillar and yellow-glass fills below each piece, and acacia waterlogging;
+- vanilla desert pyramids still generate (the target has no key to disable another mod's structure set), and the mod's mining-fatigue effect is not applied.
+
+Licence: LGPL-3.0. `LICENSE`, the GPL-3.0 text and a NOTICE naming both authors, the upstream URL and the jar's SHA-256 travel inside the package."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/yungs_better_desert_temples"
+icon = "icons/betterdeserttemples.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-10"
+game = "26.3"
+file = "betterdeserttemples.hmod"
+sha256 = "7cdc7c265425a404c06014a6a495a32854e10acfb1d58b49615ac541b5c4dd31"
+changelog = "First release"

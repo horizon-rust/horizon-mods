@@ -1,0 +1,44 @@
+id = "data_exporter"
+kind = "native-mod"
+name = "Data Exporter"
+summary = "Saves what happens in your game and your statistics to files on your computer, ready to analyze."
+description = """Turns what happens in your game into data you own. While you play, Data Exporter saves events and statistics to files on your computer, ready to analyze with DuckDB, pandas, Spark or a spreadsheet.
+
+Nothing is sent over the network. It only writes to the folder you choose.
+
+**What it saves**
+
+- Session & player: joining and leaving, dimension changes, and a sample of position, health and food every 5 seconds.
+- Blocks & combat: blocks broken and placed with their coordinates, your deaths, and the mobs you kill.
+- Items & progress: crafting, items picked up, and advancements.
+- Statistics: every increase of the game's statistics, at the moment it happens.
+
+By default it only saves your own data. Other players' data, typed text and keyboard input are not captured.
+
+**How to use it**
+
+Options > Mods > Data Exporter > Config has one switch per group and the format (JSON Lines or CSV). In a world, `/data_exporter` says what was saved and where your profile is, and `/data_exporter open` shows it in your file manager.
+
+Files go to `data-exporter/` in your game folder, one file per kind of data, world and session.
+
+**Your profile**
+
+Everything is in `config/data_exporter.json`. Edit it while playing and the mod picks it up within a second. There you can turn each kind of data on or off, send one to its own folder or format, and set size limits. When the folder reaches its limit, the mod stops saving until you free space or raise the limit. It never deletes your data.
+
+Source and full documentation: https://github.com/DylanGonzaloFerreyra/horizon-data-exporter"""
+authors = ["DylanGonzaloFerreyra"]
+owners = ["DylanGonzaloFerreyra"]
+owner_ids = [195512723]
+license = "MIT"
+source = "https://github.com/DylanGonzaloFerreyra/horizon-data-exporter"
+icon = "icons/data_exporter.png"
+categories = ["utility", "management"]
+tags = ["data", "export", "statistics", "analytics"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-19"
+game = "26.3"
+file = "data_exporter-0.2.0.hmod"
+sha256 = "12b7844c33630077596c01ccb622f0a870e92afaf87e6ba1f13aac10707cdbd0"
+changelog = "First publication, in the SDK format (mod API 0.2, Nightly 2026-11-18, Horizon dd67b76). Replaces the .hnmod 0.1.1 submission (#718), closed when the format was retired."

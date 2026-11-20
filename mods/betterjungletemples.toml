@@ -1,0 +1,27 @@
+id = "betterjungletemples"
+kind = "mod"
+name = "betterjungletemples"
+summary = "The jungle temple: 127 templates, its pools and loot, with the Java processors rewritten as data."
+description = """A Horizon port of [YUNG's Better Jungle Temples](https://github.com/YUNG-GANG/YUNGs-Better-Jungle-Temples) (LGPL-3.0, by **YUNGNICKYOUNG** and **Acarii**) for Horizon. A **content carry**: 127 structure templates, 17 jigsaw pools, two processor lists, its structure set and its loot.
+
+**Measured in game:** `/place structure` writes **20,026 cobblestone, 9,003 mossy cobblestone, 2,188 mossy stone bricks, 1,538 infested cobblestone**, and **zero** of the templates' granite/red-sandstone/glass placeholders — which is the proof the mod's own processors ran; a chest rolls 6 stacks from its loot tables; `locate structure` answers from a **world-generated** temple 242 blocks out. Controls: a vanilla jungle pyramid places with none of our markers, and without the content our id is refused at both `/place` and `/locate`.
+
+**Not carried:** dispensers are empty (up to nine random arrows), cave vines do not fruit, four of 39 replacements lose their random facing/half, placed water does not flow, vanilla jungle pyramids still generate (the target has no key to disable another mod's structure set), and the Create/Supplementaries/Alex's Mobs rooms are absent exactly as upstream is without those mods.
+
+Licence: LGPL-3.0; the LGPL text and a NOTICE naming both authors, the upstream URL and the jar's SHA-256 travel with the package."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/yungs_better_jungle_temples"
+icon = "icons/betterjungletemples.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-10"
+game = "26.3"
+file = "betterjungletemples.hmod"
+sha256 = "74394afa0ebd90f1b24d017ec427dfd744fc8c23da83b33ea3f5c283e9729615"
+changelog = "First release"

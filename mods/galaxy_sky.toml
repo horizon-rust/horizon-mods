@@ -1,0 +1,44 @@
+id = "galaxy_sky"
+kind = "shader"
+name = "Hipped´s Galaxie Shader"
+summary = "A galaxy night sky with turning planets, volumetric clouds, sun shafts, rainbows, puddles, water waves and glowing Nether and End skies."
+description = """
+A shader pack for Horizon (shader API 0.2) that turns the sky into a galaxy and brings weather, light and water to life.
+
+**Sky**
+- Night: a painted galaxy with glowing nebulae, a blue gas giant with four turning moons, twinkling stars, rare shooting stars, now and then a comet that stays for several nights, and an aurora in cold biomes.
+- Day: a deep blue scattered-light sky with volumetric clouds. Some days are clear, some overcast; clouds cast shadows and let sun shafts through their gaps.
+- After rain: rainbows (sometimes a double one), fog bows on damp mornings, rare solar and lunar eclipses with a corona.
+
+**World**
+- Sun and moon shadows; torches and other light sources fill the shadows around them.
+- Coloured block light (lava orange, soul fire blue, redstone red) and light from held torches with Horizon's Dynamic lights.
+- Leaves, grass and flowers sway in the wind; sunlight shines through leaves.
+- Rain darkens the ground and leaves reflecting puddles that dry over a few minutes; rain rings and sheet lightning in storms.
+- Water with waves, refraction, depth colour, foam, caustics and a mirror; light shafts and floating specks under water.
+- Bloom, biome-tinted haze, auto exposure and a filmic tone curve; optional depth of field, motion blur and chromatic aberration.
+
+**Nether and End**
+- The Nether glows in each biome's colour, lit from below by the lava sea, with heat shimmer, rising embers and an animated portal.
+- The End gets a black hole with a glowing accretion disc over a drifting violet nebula.
+
+Every effect has its own option on the pack's options page. Needs a Horizon build that serves shader API 0.2; it is made for a strong GPU (tested on an RTX 4060 Ti).
+
+All textures are painted by the pack's own generator (skygen, in the source repository); nothing comes from Minecraft."""
+authors = ["HippedPainter68"]
+owners = ["HippedPainter68"]
+owner_ids = [250530518]
+license = "CC-BY-NC-SA-4.0"
+source = "https://github.com/HippedPainter68/hippeds-galaxie-shader"
+icon = "icons/galaxy_sky.png"
+categories = ["fantasy", "atmosphere", "high"]
+tags = ["galaxy", "sky", "clouds", "planets", "stars", "water", "rain", "weather", "nether", "end"]
+screenshots = ["screenshots/galaxy_sky/1.jpg", "screenshots/galaxy_sky/2.jpg", "screenshots/galaxy_sky/3.jpg", "screenshots/galaxy_sky/4.jpg", "screenshots/galaxy_sky/5.jpg", "screenshots/galaxy_sky/6.jpg"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-18"
+game = "26.3"
+file = "galaxy_sky-1.0.0.hshader"
+sha256 = "0ae1c1a858e63710af198bdbb981f749e3e0401c3ca1b9456ae71bc58f21db28"
+changelog = "First release."

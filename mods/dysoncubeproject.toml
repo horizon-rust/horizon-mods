@@ -1,0 +1,37 @@
+id = "dysoncubeproject"
+kind = "native-mod"
+name = "Dyson Cube Project"
+summary = """A Dyson-sphere ray receiver: place the controller where its 3x6x3 shell fits and it writes the sixteen multiblock placeholders around itself, then pulls…"""
+description = """A Dyson-sphere ray receiver: place the controller where its 3x6x3 shell fits and it writes the sixteen multiblock placeholders around itself, then pulls up to 50,000,000 FE a tick from a sphere of solar sails into a 100,000,000 FE buffer that only gives power through its bottom face. Beams support six sails each, a sail makes 20 FE a tick, and /dysoncubeproject status, set and add read and change the sphere at a controller. This slice has the receiver, its multiblock and the beam and solar-sail components; the EM Rail Ejector (the only way to grow a sphere in game), the shared per-player sphere, the client renderers and GUIs, and the advancements are not ported yet.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- **EM Rail Ejector**: its multiblock, its 400,000 FE buffer, 40 FE per sent item,
+- **The shared sphere**: DysonSphereProgressSavedData, subscribe/unsubscribe, one
+- **The client half**: RayReceiverRender, EMRailEjectorRender, HologramRender,
+- **The component items' payloads** (dysoncubeproject:solar_sail /
+- **Advancements**: the root and the six sphere-percentage milestones.
+- The ejector block/item/recipe/loot.
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact.
+
+Based on the original project: https://github.com/InnovativeOnlineIndustries/Dyson-Cube-Project
+"""
+authors = ["Buuz135 (upstream)", "Horizon native mod contributors", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/dyson_cube_project"
+icon = "icons/dysoncubeproject.png"
+categories = ["technology"]
+tags = ["port", "energy"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "dysoncubeproject.hmod"
+sha256 = "063195efbfe9cf23791c1147642aa47eab9c7c23a612146a803cfee90a6c07dc"
+changelog = "First publication in the SDK format."

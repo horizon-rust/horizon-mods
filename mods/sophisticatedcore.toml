@@ -1,0 +1,28 @@
+id = "sophisticatedcore"
+kind = "native-mod"
+name = "Sophisticated Backpacks and Storage"
+summary = "Sophisticated Backpacks and Sophisticated Storage in one package: tiered backpacks, chests, barrels and shulker boxes with upgrades."
+description = """
+Sophisticated Backpacks and Sophisticated Storage with their shared library Sophisticated Core, in one package. Backpacks in six tiers keep their contents in the item: open one from the hand, with the Open Backpack key (J; the worn backpack first, then the first one in the inventory) or placed on the ground. Chests, barrels, limited barrels and shulker boxes come in six tiers and eleven woods; they are upgraded in place, packed with packing tape and reached by hoppers. Upgrades that work: stack, pickup, magnet, feeding, compacting, void, restock, deposit, refill, crafting and (in placed storage) hopper, with their filter settings.
+
+**Differences from the original:** The menus are chest-style screens with pages and a row of upgrade slots: no sort or search buttons beyond sorting by item, no settings tabs and no cursor tricks. Inert upgrades (their items and recipes are there): filter, the furnace family, jukebox, tank, pump, battery, XP pump, tool swapper, stonecutter, anvil, smithing, inception, everlasting and infinity. A worn backpack isn't drawn on the player, mobs don't spawn with backpacks, and placed backpacks have no hopper access. Dyed storage is drawn untinted (the colours are kept), the controller, storage link, I/O blocks and decoration table are plain blocks, and flat-top barrels and barrel materials aren't ported.
+
+A port of [Sophisticated Core](https://github.com/Salandora/SophisticatedCore) 1.2.7.15.166, [Sophisticated Backpacks](https://github.com/Salandora/SophisticatedBackpacks) 3.23.4.5.110 and [Sophisticated Storage](https://github.com/Salandora/SophisticatedStorage) 1.3.5.11.142 (Fabric 1.20.1) by P3pp3rF1y, Ridanisaurus, Salandora, published under their licence, GPL-3.0. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mods, under their own namespaces. No Minecraft code is included."""
+authors = ["lavoide", "P3pp3rF1y", "Ridanisaurus", "Salandora"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "GPL-3.0-only"
+source = "https://github.com/lavoide/horizon-ports/tree/main/sophisticatedcore"
+icon = "icons/sophisticatedcore.png"
+categories = ["storage", "equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-19"
+game = "26.3"
+file = "sophisticatedcore.hmod"
+sha256 = "0e8329267f7ba6dc35464310267eba10f697d138b6e624a863ec7aec81e5f8a6"
+changelog = "First registry release: Sophisticated Core, Backpacks and Storage in one native package, built with the exact-build SDK dd67b76 on the mod API only, with LICENSE and NOTICE in the package."

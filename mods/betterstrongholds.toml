@@ -1,0 +1,36 @@
+id = "betterstrongholds"
+kind = "mod"
+name = "YUNG's Better Strongholds"
+summary = """YUNG's Better Strongholds as carried worldgen: the jar's structure, pools, templates and vanilla rule processors, upgraded to Minecraft 26.3."""
+description = """
+A Horizon port of [YUNG's Better Strongholds 5.1.3](https://github.com/YUNG-GANG/YUNGs-Better-Strongholds) by **YUNGNICKYOUNG and Acarii** (**LGPL-3.0-only**), carried as worldgen data.
+
+This is a **content-only** package: `kind = "mod"`, `api = "0.2"`, no Rust source and no `[native]` block. The jar's `assets/` and `data/` are upgraded to Minecraft 26.3, and the structure is carried as written — YUNG's jigsaw, size 15, start pool and start jigsaw, absolute `start_height` from −30 to 11, `max_distance_from_center` 116.
+
+**What still runs.** The vanilla `minecraft:rule` processors the port's lists precede are kept, so the mossy, cracked and infested weathering and the red-glass to TNT swap still happen.
+
+**Not yet ported**
+
+- **Vanilla strongholds still generate alongside ours.** Upstream suppresses them in a mixin; this pin has no `horizon:disables` key for a structure set, so both are placed.
+- **Eight Java structure processors are dropped** (ruin, banner, ore, armor stand, item frame, rare block, redstone, leg): a processor list holding an unknown type is refused whole, so the carry drops the unknown entries and keeps the vanilla rules they precede.
+- **`/locate structure stronghold` is not redirected** to `betterstrongholds:stronghold`; that is command behaviour, not data.
+- **`max_y: 60` and YUNG's `enhanced_terrain_adaptation` do not run** — only vanilla terrain adaptation applies, so the structure is not buried by its own kernel.
+
+Upstream's licence and notice travel inside the package. Pinned to Horizon `0b14f8a` and horizon-mixins `e59da90`.
+"""
+authors = ["YUNGNICKYOUNG", "Acarii", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/betterstrongholds"
+icon = "icons/betterstrongholds.png"
+categories = ["adventure"]
+tags = ["port", "worldgen", "structures"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "betterstrongholds.hmod"
+sha256 = "af46f8648342f25380cfe0739a819e15f8a768dc31e3e1c5c7b02797fc214022"
+changelog = "First publication in the SDK format."

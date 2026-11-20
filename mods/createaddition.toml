@@ -1,0 +1,37 @@
+id = "createaddition"
+kind = "native-mod"
+name = "createaddition"
+summary = "A Horizon port of createaddition."
+description = """
+A port of [Create Crafts & Additions](https://github.com/mrh0/createaddition) for Horizon — the electric (FE) half of the mod, with the jar's own transfer rates. Upstream is **MIT**, by **MRH0**.
+
+**Implemented**
+
+- `createaddition:connector` (small) and `createaddition:large_connector` — 1,000 FE/t and 5,000 FE/t each way, declared through `block_entity_energy` as `Capabilities.Energy.BLOCK`. Placed against a face, `facing` points at the block it is mounted on.
+- `createaddition:modular_accumulator` — 2,000,000 FE storage, 5,000 FE/t each way.
+- Seven items: `copper_wire`, `gold_wire`, `electrum_wire`, `spool`, `copper_spool`, `gold_spool`, `electrum_spool`.
+- Placement mode, as upstream's `ConnectorMode.test` decides on the first server tick: a mounted block that can give is **pulled** from, one that can only take is **pushed** into, else none. `/createaddition mode` sets it (upstream uses Create's wrench, which is not installed here).
+
+**Not yet ported**
+
+- The rotation half: `electric_motor`, `alternator`, `rolling_mill`, `tesla_coil`, `servo_motor`, and the `charging/` recipe type (40+ oxidisation and charging recipes). Create is a separate native mod with no mod-to-mod API, so these blocks cannot join its kinetic network — a recorded gap, not an omission.
+- `small_light_connector` (its 1 FE/t lamp consumption) and `creative_energy`.
+
+Original copyright and licence notices are kept in this repository, and the upstream author is credited above. Pinned to Horizon `0b14f8a` and horizon-mixins `e59da90`. Help with the remaining slices is welcome.
+"""
+authors = ["MRH0", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/create_crafts_and_additions"
+icon = "icons/createaddition.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-10"
+game = "26.3"
+file = "createaddition.hmod"
+sha256 = "16ce1dec5e002333871794ca3839e837b6d3b04a7b0139d2c1d52ca36926d50c"
+changelog = "First release"

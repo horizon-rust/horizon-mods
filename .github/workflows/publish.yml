@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 30
     environment:
       name: github-pages
-      url: ${{ steps.pages.outputs.page_url }}
+      url: ${{ steps.pages.outputs.page_url || steps.pages-again.outputs.page_url }}
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
@@ -36,18 +36,18 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      # Built fresh at the pin: no tool cache.
+      # The pin's checker: checker.yml's attested build, else built from source. No tool cache.
       - run: scripts/install-tool.sh
       # Files the last successful publish verified: GitHub counts every download of a release asset, so
       # fetching them all again each hour would count as players. Not an Actions cache (any job in main's
       # cache scope could write that, and it is unpacked before anything is hashed): an artifact only this
-      # workflow uploads, unpacked outside the checkout, and fetch.sh rehashes each file before use. Anything
+      # workflow uploads, taken only from a run this repository started on main (scripts/last-publish.sh; never a
+      # pull request's), unpacked outside the checkout, and fetch.sh rehashes each file before use. Anything
       # missing (no earlier run, an expired artifact, a failed download) is the cold path: download it all.
       - name: The last successful publish
         id: last
         run: |
-          run=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow publish.yml --branch main --status success \
-            --limit 1 --json databaseId --jq '.[0].databaseId // empty' 2>/dev/null) || run=
+          run=$(scripts/last-publish.sh 2>/dev/null) || run=
           echo "run=$run" >> "$GITHUB_OUTPUT"
           [ -n "$run" ] || echo "no earlier successful publish: every file is downloaded"
       - if: steps.last.outputs.run != ''
@@ -77,9 +77,13 @@ jobs:
           cargo horizon-mod registry build . --files files --out site/index.json --site https://horizon-rust.github.io/horizon-mods/ --generated "$(date -u +%FT%TZ)"
       - name: Publish new files as releases
         run: |
+          # One listing of the releases (the download counts read it too), not a request per version: every
+          # request counts against the repository's hourly API budget, which every check and staging run shares.
+          gh api --paginate "repos/$GH_REPO/releases?per_page=100" > releases.json
+          jq -r '.[].tag_name' releases.json > tags.txt
           cargo horizon-mod registry list . | while read -r sha id version file; do
             tag="$id-$version"
-            gh release view "$tag" >/dev/null 2>&1 && continue
+            grep -Fxq "$tag" tags.txt && continue
             dir="$(mktemp -d)"
             cp "files/$sha" "$dir/$file"
             gh release create "$tag" "$dir/$file" --title "$id $version" --latest=false \
@@ -91,10 +95,10 @@ jobs:
           # downloads are every release of its id, the versions an entry lists
           # now and those it no longer does (an archived project brought back
           # with a new version keeps the counts of its old ones). An id has no
-          # "-", so the tag's text before the first "-" is the id.
-          gh api --paginate "repos/$GH_REPO/releases?per_page=100" \
-            --jq '.[] | (.tag_name | split("-")[0]) as $id | .assets[] | {id: $id, n: .download_count}' \
-            | jq -s 'group_by(.id) | map({key: .[0].id, value: (map(.n) | add)}) | from_entries' > counts.json
+          # "-", so the tag's text before the first "-" is the id. A release
+          # made by this run isn't in the listing and has no downloads yet.
+          jq -n '[inputs[] | (.tag_name | split("-")[0]) as $id | .assets[] | {id: $id, n: .download_count}]
+            | group_by(.id) | map({key: .[0].id, value: (map(.n) | add)}) | from_entries' releases.json > counts.json
           jq --slurpfile counts counts.json '
             .projects |= map(
               ($counts[0][.id] // 0) as $n
@@ -106,13 +110,26 @@ jobs:
           # A project's stars are its source repository's (owner/repo of a
           # https://github.com/ source, a folder of it or .git included), asked
           # once per repository. One that can't be read is left out, not zero.
-          jq -r '.projects[].source // empty' site/index.json \
-            | sed -nE 's#^https://github\.com/([A-Za-z0-9-]+)/([A-Za-z0-9._-]+).*#\1/\2#p' \
-            | sed -E 's/\.git$//' | tr 'A-Z' 'a-z' | sort -u \
-            | while read -r repo; do
-                n="$(gh api "repos/$repo" --jq .stargazers_count 2>/dev/null)" || continue
-                echo "{\"key\": \"$repo\", \"value\": $n}"
-              done | jq -s from_entries > stars.json
+          # That is a request per repository, so only the hourly run asks; any
+          # other run takes each repository's stars from the published index.
+          if [ "$GITHUB_EVENT_NAME" = schedule ]; then
+            jq -r '.projects[].source // empty' site/index.json \
+              | sed -nE 's#^https://github\.com/([A-Za-z0-9-]+)/([A-Za-z0-9._-]+).*#\1/\2#p' \
+              | sed -E 's/\.git$//' | tr 'A-Z' 'a-z' | sort -u \
+              | while read -r repo; do
+                  n="$(gh api "repos/$repo" --jq .stargazers_count 2>/dev/null)" || continue
+                  echo "{\"key\": \"$repo\", \"value\": $n}"
+                done | jq -s from_entries > stars.json
+          else
+            (set -o pipefail
+             curl -fsS https://horizon-rust.github.io/horizon-mods/index.json | jq '
+               [.projects[] | select(.stars)
+                 | {key: (first((.source // "") | ascii_downcase
+                     | capture("^https://github[.]com/(?<r>[a-z0-9-]+/[a-z0-9._-]+)").r
+                     | sub("[.]git$"; "")) // ""), value: .stars}
+                 | select(.key != "")] | from_entries') > stars.json \
+              || echo '{}' > stars.json
+          fi
           jq --slurpfile stars stars.json '
             .projects |= map(
               (first((.source // "") | ascii_downcase
@@ -148,5 +165,14 @@ jobs:
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: site
+      # GitHub sometimes doesn't list the artifact just uploaded yet ("No artifacts named github-pages") or answers
+      # with a 5xx. Re-running the job can't recover, since it uploads a second github-pages artifact, so wait and
+      # deploy once more here.
       - id: pages
+        continue-on-error: true
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+      - if: steps.pages.outcome == 'failure'
+        run: sleep 60
+      - id: pages-again
+        if: steps.pages.outcome == 'failure'
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

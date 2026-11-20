@@ -1,0 +1,36 @@
+id = "farmersdelight"
+kind = "native-mod"
+name = "Farmer's Delight"
+summary = "Farmer's Delight: stove, cooking pot, skillet, cutting board, crops, rich soil and 170 foods."
+description = """
+Farmer's Delight: stoves, cooking pots, skillets and cutting boards with their recipes; cabbages, onions, tomato vines on rope and rice; rich soil and organic compost; baskets, cabinets, feasts, placeable pies and 170 foods with the Comfort and Nourishment effects. One package with the code and the content.
+
+**Differences from the original:** Cooking pot meals give no experience, and the cutting board ignores Fortune. Eating a pie slice straight from the placed pie gives its food but not the slice's effects. The skillet has no flip animation or Fire Aspect speed-up. There are no steam, bubble or smoke particles and no boiling or crackling sounds. Rich soil's growth boost lands one tick after the crop's own growth, and its "solid block" checks go by block tags.
+
+A port of [Farmer's Delight](https://github.com/MehVahdJukaar/FarmersDelight) 1.20.1-2.4.1+refabricated by vectorwing, MehVahdJukaar, MerchantPug, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "vectorwing", "MehVahdJukaar", "MerchantPug"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/farmersdelight"
+icon = "icons/farmersdelight.png"
+categories = ["food"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.5.0"
+published = "2026-11-19"
+game = "26.3"
+file = "farmersdelight.hmod"
+sha256 = "eff653899ec28e7cdd1c4642c145438b5bc86e58df5e7d7472cf9bb8af25fc30"
+changelog = "One native package with code and content, built with the exact-build SDK dd67b76 on the mod API only. Replaces the content-only entry and the retired .hnmod."
+
+[[versions]]
+version = "0.5.1"
+published = "2026-11-19"
+game = "26.3"
+file = "farmersdelight.hmod"
+sha256 = "74142ecf6c41cf682990ae81ce47e86efdbed8b40be339a87751a8cae3750ef8"
+changelog = "Installed alone, 0.5.0 lost the stove, cooking pot, skillet and iron knife recipes and a few foods: they name c item tags that only other mods define. 0.5.1 defines them, and its biome tags' c references are optional."

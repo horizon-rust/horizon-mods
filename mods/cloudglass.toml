@@ -1,0 +1,45 @@
+id = "cloudglass"
+kind = "native-mod"
+name = "cloudglass"
+summary = "A Horizon port of cloudglass."
+description = """
+A port of [Cloud Glass](https://github.com/Mrbysco/CloudGlass) for Horizon.
+
+**Implemented so far**
+
+- Sixteen coloured cloud-glass blocks (`cloudglass:<colour>_cloud_glass`), each with the mod's own model, texture, blockstate, item definition, loot table, recipe and language entry.
+- Each block is a transparent block with no collision, no occlusion, no spawn, no redstone conduction and no suffocation, strength 0.3, glass sounds and the dye's map colour; not waterloggable.
+- A self-drop loot table, and every block is craftable from its glass recipe.
+
+**Not yet ported**
+
+- **No panes.** Upstream 1.1.0 has no pane block, blockstate, model, recipe or language key; the port ships the sixteen blocks the mod defines.
+- **The eye-tint overlay is not drawn.** `mixins/cloudglass/support.rs` returns without drawing when the pin exposes no camera read, so the screen tint upstream applies while standing inside the glass **does not appear**; the pin's engine has no HUD path usable here, and the port's harness deliberately reports this as a gap rather than a pass.
+- The `minecraft:cobweb` template differs from upstream's `noOcclusion()` in two facts: `dampening` is 1 and `skylight_down` is false (vanilla glass is 0/true), so cloud glass slightly attenuates skylight.
+
+MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93.
+"""
+authors = ["Mrbysco", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/cloud_glass"
+icon = "icons/cloudglass.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-10"
+game = "26.3"
+file = "cloudglass.hmod"
+sha256 = "4a8b9fb7617faacad05ce489793d47a321a528fd2290cc7549671837b40bc497"
+changelog = "First release (port 0.1.0: the sixteen carried blocks, their items, recipes, drops and walking behaviour, all inside one .hnmod)"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-20"
+game = "26.3"
+file = "cloudglass.hmod"
+sha256 = "af0a220fda3d19b06fe3803d56cacdd84d0140f50687bf8084476dd5f8effc5c"
+changelog = "Slice 2: the in-game leg, and with it the parity coverage — all 16 variants placed and read back, all 16 loot tables mined for their self-drop, all 31 carried recipes crafted with their ingredients consumed (two stick controls stay empty), the two content tags matched positively and negatively, and collision measured against vanilla glass. The eye tint remains a recorded gap."

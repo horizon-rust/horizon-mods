@@ -1,0 +1,62 @@
+id = "minimap_worldmap_waypoints_reworked"
+kind = "native-mod"
+name = "Minimap, Worldmap and waypoints reworked"
+summary = "An adaptive minimap and world map with named waypoints, portals, world borders and a biome readout."
+description = """
+An adaptive minimap and a full world map for Horizon, with a persistent per-world terrain cache.
+
+- Minimap in four corners, square or round, 64–256 GUI pixels, 0.1–4 blocks per pixel, and optional player rotation.
+- Player arrow on both maps shows the viewing direction and accounts for minimap rotation.
+- English, Russian, French, Spanish and German interfaces follow the game language, including regional variants.
+- World map opened by a rebindable key (M by default); drag to pan and scroll to zoom under the cursor, with eased camera motion.
+- Independent dimension selection for the minimap and the world map (Player / Overworld / Nether / End), without teleporting the player.
+- Hover shows the pointed-at coordinates, the localised biome and waypoint names; the hovered block is outlined.
+- Right-click menu: copy coordinates, create a named waypoint, or teleport when the client knows the player has game-master permission.
+- Configurable two-letter initials distinguish waypoints sharing their first letter: similar colours (default), any colours, or a single letter; the same labels appear on maps, in the list and in 3D.
+- Separate waypoint manager (N by default) for creating, renaming and deleting waypoints; waypoints are drawn as first-letter markers on the HUD through walls and on both maps.
+- 3D-world waypoint markers in the waypoint's colour (or a skull for deaths), through walls; the label can be letter + distance, letter only, or name + distance, and can be shown only while the crosshair is on the marker. Each point can hide its own 3D marker.
+- Death waypoints are placed automatically as numbered black skulls and can be removed on approach or switched off in the settings.
+- Eight compass direction letters (localised) or the game's axis names at the inner edge of both maps, tracking true north.
+- Water and glass-family blocks are semi-transparent, water tint thickens with depth, grass-like ground cover is skipped, and flowers/crops use their real colours.
+- Portals (Nether, End and End gateways) are marked and show their destination; Nether destinations prefer the nearest known portal, otherwise coordinate conversion.
+- Overworld and Nether world borders are drawn on both maps (the Nether border is scaled to the same physical area).
+- Relief shading crosses chunk borders; unknown terrain is transparent; the minimap renders at high resolution for smooth movement.
+- Settings and named waypoints persist asynchronously in the mod data folder. Waypoints are isolated by save/server identity and dimension, with 64 points per world/server. Legacy unscoped points are deleted on upgrade; preferences are retained.
+- Both maps stream reusable GPU tile pages. Persistent world-space overview tiles accelerate distant views; camera and zoom targets are prefetched, retaining coarse coverage until finer tiles are ready. Detailed terrain preserves original block texels when zoomed in. Detailed and LOD terrain, sampled heights, biome names and portals persist across reconnects and restarts in one `.mwwr` container per single-player save/server address. A **Map RAM** slider (16–512 MiB, default 64 MiB) budgets retained terrain; no network requests are made by the mod.
+- Each of the 67 vanilla biomes has an individual 16×16 icon. Waypoint colours can be edited, and Show on map centres the world map on a selected waypoint.
+- World, actual-render/LOD and chunk-render borders have hover labels; right-click outlines the selected chunk and region.
+
+- Map caches lists world/server names and available local icons, file sizes and compatibility. Rebuild derived images without deleting saved terrain; old image revisions offer an update. Compression and canonical-format conversion are future work.
+- Distant terrain uses snow-aware climate/height approximation, fixed world-space biome blending and shared water opacity: snowy taiga and mangrove water retain their expected appearance. Detailed terrain remains authoritative; fresh LOD samples gradually refresh legacy colours.
+- Version 0.7.0 is a flat source .hmod for the signed native SDK, pinned to Nightly 2026-11-18 (0b14f8a), Minecraft 26.3 and SDK Rust 1.99.1; tested with launcher 0.2.78. Existing scoped waypoints, settings and terrain containers remain in use.
+
+Created by daniliammo and continued by Gurov08ruS after the original account was removed from GitHub.
+
+The runtime uses only portable standard-library APIs and is intended for Linux, macOS and Windows. The 0.7.0 SDK port was built and tested in a live Linux game; macOS and Windows runs remain unverified.
+"""
+authors = ["daniliammo", "Gurov08ruS"]
+owners = ["Gurov08ruS"]
+owner_ids = [355298203]
+license = "GPL-3.0-only"
+source = "https://github.com/Gurov08ruS/Minimap-Worldmap-and-waypoints-reworked"
+icon = "icons/minimap_worldmap_waypoints_reworked.png"
+screenshots = [
+  "screenshots/minimap_worldmap_waypoints_reworked/world-map-long-distance.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/world-map.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/world-map-overview.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/nether-portal.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/end.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/create-waypoint.png",
+  "screenshots/minimap_worldmap_waypoints_reworked/waypoint-on-map.png",
+]
+categories = ["utility", "adventure"]
+tags = ["minimap", "map", "world-map", "waypoints", "navigation", "hud", "portals", "biome"]
+
+
+[[versions]]
+version = "0.7.0"
+published = "2026-11-18"
+game = "26.3"
+file = "minimap_worldmap_waypoints_reworked-0.7.0.hmod"
+sha256 = "e467da230b56a6a3e04ff284d822a215c2882ca0955f5a62283190e37a4501e0"
+changelog = "Since 0.6.0: signed native SDK and .hmod migration; faster distant LOD and persistent overview/GPU tile streaming; asynchronous cache manager with world/server identities and safe image rebuilding; snow/ice and mangrove-water LOD fixes; configurable two-letter waypoint labels on maps and in 3D. Preserves scoped waypoints, settings and canonical terrain. Requires Nightly 2026-11-18 (0b14f8a). Compression and canonical conversion remain future work."

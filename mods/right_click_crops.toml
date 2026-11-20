@@ -1,0 +1,52 @@
+id = "right_click_crops"
+kind = "mod"
+name = "Right-Click Crops"
+summary = "Right-click harvest for 16 plant families, with replanting and individual settings."
+description = """
+Harvest mature plants with a right-click, replant crops, and keep your garden growing.
+
+### Features
+- Supports 16 plant families.
+- Replants crops using one planting item from the harvest, or from your inventory.
+- Keeps the base of tall plants and the stems of pumpkins and melons.
+- Lets you enable or disable each plant separately in **Options > Mods > Right-Click Crops > Config**.
+
+### Supported plants
+Wheat, carrots, potatoes, beetroot, nether wart, cocoa, torchflower, pitcher crop, sugar cane, cactus, bamboo, kelp, twisting vines, weeping vines, pumpkin and melon.
+
+### Good to know
+- Harvesting works in survival, one targeted plant at a time.
+- Without a suitable planting item, the crop is harvested but not replanted.
+- Torchflower needs spare seeds; pitcher crop needs spare pitcher pods.
+- Twisting and weeping vines can drop nothing when harvested by hand. Use shears for guaranteed drops.
+- Bone meal, ordinary breaking and planting, sweet berries and glow berries keep their normal behaviour.
+
+### Compatibility
+For Minecraft 26.3. A WebAssembly mod: install it on the launcher's Mods page, with nothing to build. Install it on every player's game for LAN play. Settings from the old native versions do not carry over. Tested Horizon builds and results: [Validation](https://github.com/AyanoKaito/horizon-right-click-crops/blob/main/VALIDATION.md).
+
+
+[Watch the demo](https://youtu.be/kll-qvj5s54) · [Harvesting guide](https://github.com/AyanoKaito/horizon-right-click-crops/blob/main/docs/harvesting.md)
+"""
+authors = ["AyanoKaito"]
+owners = ["AyanoKaito"]
+owner_ids = [82058189]
+license = "MIT"
+source = "https://github.com/AyanoKaito/horizon-right-click-crops"
+icon = "icons/right_click_crops.png"
+categories = ["utility", "food"]
+tags = ["farming", "crops", "harvest", "replant"]
+screenshots = ["screenshots/right_click_crops/1.jpg", "screenshots/right_click_crops/2.jpg"]
+key = "RWRwbuaByP5mM4VUm4kZEQVPiuw+3IEVJ7CZcEHIjY5fPKf9lhQKUZRy"
+
+[[versions]]
+version = "2.0.1"
+published = "2026-11-19"
+game = "26.3"
+file = "right_click_crops-2.0.1.hmod"
+sha256 = "e6b741f6d45f0d498eaf8fddbef5a517955befbedacca0093a4a5b3e64d8b1a1"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURwbuaByP5mM7xtQdBJT4a0vrR0W9yvbGUZqlzFo19VPyeKp5DHxkv4M56+srvCtnUnAf7V5YCYUPvj53TizfWnTkZLczEX6QA=\r
+trusted comment: timestamp:1795109643\tfile:right_click_crops-2.0.1.hmod\thashed\r
+kVXL+WCCAkXkY4Hg5TCVRPFHFZTNephWxCW+a7UNN7JjFQdAU3iXxRq0vL0dfMA1/B8cD4oM1n7JFTpa6CtFDg=="""
+changelog = "WebAssembly mod on the new mod SDK: no build needed. Same harvesting for all 16 plant families; settings are on the mod's Config page and start ON. Validated in single-player and for LAN host and guest."

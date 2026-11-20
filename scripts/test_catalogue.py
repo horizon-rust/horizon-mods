@@ -30,6 +30,8 @@ NATIVE_V1 = catalogue.ARCHIVE
 API_01 = catalogue.ARCHIVES["api-0.1"][0]
 # A reactivation: a genuinely new package with the archived identity.
 PORT = NATIVE.replace("1.0.0", "2.0.0").replace(".hnmod", ".hmod").replace("a" * 64, "b" * 64)
+# The same reactivation after a reviewed transfer of owner 7 to Heir (8).
+HANDED = PORT.replace('["Author"]', '["Heir"]').replace("[7]", "[8]")
 
 
 def git(repo, *args):
@@ -49,6 +51,7 @@ class CatalogueTests(unittest.TestCase):
             git(repo, "config", "user.name", "test")
             git(repo, "config", "core.symlinks", "true")
         self.moves = set()
+        self.transfers = []
 
     def write(self, repo, folder, text=NATIVE, name="sample.toml"):
         path = repo / folder / name
@@ -63,6 +66,9 @@ class CatalogueTests(unittest.TestCase):
     def review(self, author_id=7):
         if self.moves:
             self.write(self.base, ".github", "".join(f"{m} {i}\n" for m, i in sorted(self.moves)), "archive-moves.txt")
+        if self.transfers:
+            self.write(self.base, ".github", "# reviewed transfers\n" + "".join(f"{t}\n" for t in self.transfers),
+                       "owner-transfers.txt")
         base, head = self.commit(self.base), self.commit(self.head)
         out = self.root / "review-base"
         if out.exists():
@@ -193,6 +199,54 @@ sha256 = "{}"
         self.frozen()
         self.write(self.head, "mods", PORT.replace('["Author"]', '["attacker"]'))
         with self.assertRaisesRegex(ValueError, "preserve archived owners"):
+            self.review(author_id=7)
+
+    def test_reviewed_transfer_hands_an_archived_id_to_its_new_owner(self):
+        self.frozen()
+        self.transfers.append("sample 7 8 Heir same person, evidence in #1440")
+        self.write(self.head, "mods", HANDED)
+        self.review(author_id=8)
+        self.assertEqual(self.unconfirmed, [])
+        # The account it was handed from is no longer an owner.
+        self.assert_owner_unconfirmed(7)
+
+    def test_entry_may_keep_its_archived_owners_until_the_transfer_merges(self):
+        self.frozen()
+        self.write(self.base, "mods", PORT)
+        self.write(self.head, "mods", PORT)
+        self.transfers.append("sample 7 8 Heir same person")
+        self.review(author_id=99)
+        self.assertEqual(self.unconfirmed, [])
+
+    def test_transfer_counts_only_from_main(self):
+        self.frozen()
+        self.write(self.head, ".github", "sample 7 8 Heir mine now\n", "owner-transfers.txt")
+        self.write(self.head, "mods", HANDED)
+        with self.assertRaisesRegex(ValueError, "preserve archived owners"):
+            self.review(author_id=8)
+
+    def test_transfer_moves_login_and_id_together(self):
+        self.frozen()
+        self.transfers.append("sample 7 8 Heir same person")
+        for text, field in ((PORT.replace('["Author"]', '["Heir"]'), "owners"), (PORT.replace("[7]", "[8]"), "owner_ids")):
+            self.write(self.head, "mods", text)
+            with self.assertRaisesRegex(ValueError, f"preserve archived {field}$"):
+                self.review(author_id=8)
+
+    def test_transfer_must_name_the_id_and_an_owner(self):
+        self.frozen()
+        self.write(self.head, "mods", HANDED)
+        self.transfers = ["other 7 8 Heir same person"]
+        with self.assertRaisesRegex(ValueError, "preserve archived owners"):
+            self.review(author_id=8)
+        self.transfers = ["sample 5 8 Heir same person"]
+        with self.assertRaisesRegex(ValueError, "owner id 5, which isn't one of its owner_ids"):
+            self.review(author_id=8)
+        self.transfers = ["sample 7 8 Heir"]
+        with self.assertRaisesRegex(ValueError, "owner-transfers.txt:2: expected"):
+            self.review(author_id=8)
+        self.transfers = ["sample 7 7 Author same person"]
+        with self.assertRaisesRegex(ValueError, "already is one of its owner_ids"):
             self.review(author_id=7)
 
     def test_native_can_come_back_as_a_sandboxed_mod(self):

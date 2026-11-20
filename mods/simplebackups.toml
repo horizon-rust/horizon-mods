@@ -1,0 +1,47 @@
+id = "simplebackups"
+kind = "native-mod"
+name = "Simple Backups"
+summary = """Scheduled, on-disk backups of the whole world, with retention. A backup saves the open world, then a worker thread walks the world folder into a…"""
+description = """
+A Horizon port of Simple Backups 1.21-4.0.30: scheduled, on-disk backups of the server's world, with retention. A backup saves the open world, a worker thread walks the world folder into a `.zip.part`, publishes it by renaming, and the oldest archives are pruned down to the configured count. Upstream: https://github.com/ChaoticTrials/SimpleBackups — licence **Apache-2.0**.
+
+**Implemented so far**
+
+- The schedule counts server ticks when `interval_ticks` is set and otherwise uses `interval_minutes` of wall clock, with 0 disabling it, and due checks run at the end of a running tick.
+- A save is requested from the open levels before the copy, and the copy starts only when the save cycle reports back.
+- A worker thread writes `<world>/backups/<world>_<UTC>.zip.part` and publishes it by renaming, skipping `session.lock`, `.part` and `.tmp` files, symlinks and the backups folder.
+- Retention prunes only `<world>_*.zip` files, oldest first, until `keep` remain, and never touches foreign files or a partial archive.
+- A copy that a save overlapped is thrown away and redone, up to two retries, instead of publishing a possibly half-replaced region file; with retries off it is published and `/simplebackups status` reports `stale=true`.
+- `/simplebackups backup [quiet]`, `status` and `list` work at permission level 2, a manual backup ignores `enabled`, and `config/simplebackups.toml` carries the schedule, `keep`, `compression_level`, `save_before_backup`, `retry_on_save`, `broadcast`, `backups_dir` and the ignore lists.
+- Paths are hardened: an absolute or parent-traversing `backups_dir` is refused, and a backups folder or staging file that resolves outside the world is never written through.
+- The package was proven in game at 0.2.1 with a control run that fails without it.
+
+**Not yet ported**
+
+- The consistency window cannot be closed, because there is no save-off or autosave-veto API at this pin, so a copy can still overlap an autosave and read a region file mid-replacement, a race upstream has too.
+- Compression is unavailable, because an SDK mod may not add a registry crate, so the archive is written with `std` alone and entries are stored rather than deflated, which means `compression_level` is parsed and reported but cannot shrink a backup.
+- The schedule is not persisted across restarts and starts at world open.
+- Pause and unpause, `latest.log` capture, a disk-size cap, the empty-server policy, incremental backups, chains and merging, Cherished Worlds and mc2discord compat, regex ignores, and a synchronous copy mode are all deferred.
+- Retention prunes after a successful publish and counts only the mod's own archives, both deliberate safety changes from upstream's delete-before-create behaviour.
+- Naming is UTC and backups live in `<world>/backups`, where upstream used local time and the working directory.
+
+Ported from the upstream mod (Apache-2.0); `LICENSE-NOTICE.md` records the credit and `LICENSE` the licence text.
+
+Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["ChaoticTrials", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "Apache-2.0"
+source = "https://github.com/AdLf0208/simple_backups"
+icon = "icons/simplebackups.png"
+categories = ["utility"]
+tags = ["port", "backups"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "simplebackups.hmod"
+sha256 = "6565f5acd73b5c03f2f49f3009b8a520cf945b25daec1f08d9f7869448b978a2"
+changelog = "First publication in the SDK format."

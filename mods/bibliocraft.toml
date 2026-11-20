@@ -1,0 +1,39 @@
+id = "bibliocraft"
+kind = "native-mod"
+name = "Bibliocraft Legacy"
+summary = """A port of Bibliocraft Legacy for Horizon: plain decorative furniture. Slice 1 carries the oak bookcase, the oak shelf, the black oak seat and the desk…"""
+description = """A port of Bibliocraft Legacy for Horizon: plain decorative furniture. Slice 1 carries the
+oak bookcase, the oak shelf, the black oak seat and the desk bell with their block states (facing and
+waterlogged, the seat's occupied), their shapes transcribed from upstream, their items, self-drop
+loot, the upstream shaped recipes, the block and item tags and one Bibliocraft creative tab. The
+bookcase and shelf inventories, the seat entity, the desk bell's ring and redstone answers, the other
+11 wood types and 15 seat colours, and the table are not ported yet.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- **Decorative, not functional.** The bookcase and shelf have no inventory,
+- **Table deferred.** Its collision depends on type *and* facing
+- **Waterlogged is a declared state, not fluid logic.** The state binds and
+- **Occlusion is the template's.** Upstream marks the bookcase, shelf, seat
+- **One wood type and one seat colour.** Slice 1 carries only oak and
+- **The seat carries an extra axis state.** The seat uses the oak_log
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact."""
+authors = ["Minecraftschurli", "IchHabeHunger54", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/bibliocraft_legacy"
+icon = "icons/bibliocraft.png"
+categories = ["decoration"]
+tags = ["port", "furniture"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "bibliocraft.hmod"
+sha256 = "48544f9e8306b7ffa4c2934e0f6c46756aaf40eb29540d9dc2f99e9fae33105e"
+changelog = "First publication in the SDK format."

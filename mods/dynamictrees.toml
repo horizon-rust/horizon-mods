@@ -1,0 +1,42 @@
+id = "dynamictrees"
+kind = "native-mod"
+name = "Dynamic Trees"
+summary = """Dynamic Trees for Horizon, slice 1: an oak acorn grows through named stages into a full tree, and resumes after a relaunch."""
+description = """
+A Horizon port of [Dynamic Trees 1.7.2](https://github.com/DynamicTreesTeam/DynamicTrees) by DynamicTreesTeam (**MIT**) — slice 1: the oak.
+
+Dynamic Trees replaces vanilla tree growth with trees that grow procedurally over time. This slice carries one species: an **oak acorn** planted on soil grows through named stages — sprout, trunk, branches, canopy, mature — placing trunk, branches and leaves progressively, and resumes after a relaunch.
+
+**Implemented so far**
+
+- `dynamictrees:oak_seed` (the Oak Acorn) used on the top face of dirt-like soil plants `dynamictrees:oak_sapling`; stone and an occupied spot are refused and nothing is spent.
+- Growth starts on the sapling's own random tick or a bone-meal click, then proceeds **over time**: one plan step per 20 server ticks, gated by upstream's `growth_rate` (seeded), with the trunk height derived from `signal_energy` and `lowest_branch_height`.
+- The tree lives in a world-level record (`<save>/horizon-mod-data/dynamictrees/trees.tsv`), because a tree spans many positions and the pin reverts a block entity's writes inside its own tick; a world close flushes and forgets it, so trees cannot leak between worlds.
+- `/dynamictrees info <pos>` and `/dynamictrees list` report the stage, the steps and the block counts.
+
+**Not yet ported**
+
+- **Every other species** (acacia, birch, cherry, dark oak, jungle, mangrove, spruce, crimson and the rest): each needs its own species numbers and shape.
+- **The tree-pack API** is Java-only, so a Horizon port cannot host the add-on packs that depend on it.
+- **The cell-kit solver** is not implemented — this plan honours the species' numbers, not the solver's geometry.
+- **Rooty soil and fertility**, branch radius, tapering, stripping, rot and disease, fruit, voluntary seed drops, the falling-tree entity and leaf age-decay.
+- **The dendro pouch, staff, potions, dirt bucket and config screens**, and worldgen replacement of vanilla trees.
+
+Upstream's MIT notice travels inside the package. Pinned to Horizon `0b14f8a` and horizon-mixins `e59da90`.
+"""
+authors = ["Ferreusveritas", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/dynamictrees"
+icon = "icons/dynamictrees.png"
+categories = ["technology"]
+tags = ["port"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-18"
+game = "26.3"
+file = "dynamictrees.hmod"
+sha256 = "777d0d4bd09559e6f049fae33596d0433a19f4c2a372893293aa61b0c51c5987"
+changelog = "First publication in the SDK format."

@@ -1,0 +1,66 @@
+id = "vasttweaks"
+kind = "native-mod"
+name = "Vast Tweaks"
+summary = "KubeJS-style scripts for your recipes: remove, replace, unify, add and override recipes and tags from config/vasttweaks/*.vt, with /reload."
+description = """
+Change any mod's recipes with a small script, the way KubeJS does on Java, for modpack makers and players.
+
+1. Install it and build natives. Open a world once: you get **`config/vasttweaks/`** with a README and an example.
+2. Write **`<anything>.vt`** files there and run **`/reload`**. The recipe book and JEI show the changes.
+3. **`last-load.txt`** in that folder says what loaded and points at any mistake by file and line.
+
+```
+remove output minecraft:iron_pickaxe
+replace input stick with vastores:steel_rod where id minecraft:*_pickaxe
+unify othermod:tin_ingot -> vastores:tin_ingot as #c:ingots/tin
+shaped minecraft:saddle
+  "LLL"
+  "S S"
+  L = leather
+  S = string
+end
+shapeless minecraft:string x4 = #minecraft:wool
+smelting minecraft:rotten_flesh -> minecraft:leather xp 0.1
+override minecraft:furnace shapeless minecraft:furnace = #minecraft:stone_crafting_materials x8
+tag item c:ingots/tin add othermod:tin_ingot
+```
+
+It also works on a server: the server's scripts apply, and Horizon players get its recipes in their book and JEI.
+
+**What it changes in the game:** on each data load (a world opening, `/reload`) it reads `config/vasttweaks/*.vt` and adds the recipe filters, recipes and tags they say to that load (the mod API's `data_pack_files` hook); when there are scripts, it asks the server to send its clients the recipes of the game's own crafting, cooking, stonecutting and smithing types (`datapack_sync`), so their viewers match. Hooks only, no mixins. It writes only in `config/vasttweaks/` (the first README and example, and `last-load.txt`). No network of its own.
+
+Also a Python tool in the repository compiles the same scripts into a content mod to share (with item renames).
+
+1.2.0 is the same mod on Horizon's mod API (1.1.0 was a `.hnmod`, which launchers from 0.2.70 no longer load). Pinned to Horizon 0b14f8a."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-tweaks"
+icon = "icons/vasttweaks.png"
+categories = ["utility", "library"]
+tags = ["recipes", "scripting", "modpack", "tweaks", "unification"]
+
+[[versions]]
+version = "1.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "vasttweaks-1.2.1.hmod"
+sha256 = "8048b26c223bc3508fd8fe0cf56aaa1496b79dcddbdd9bfa33f516229cf83ef7"
+changelog = "First release on Horizon's mod API: the native mod as a `.hmod` (1.1.0's `.hnmod` was never published; launchers from 0.2.70 no longer load it). Same scripts and language. Pinned to Nightly 2026-11-18 (0b14f8a)."
+
+[[versions]]
+version = "1.2.3"
+published = "2026-11-19"
+game = "26.3"
+file = "vasttweaks-1.2.3.hmod"
+sha256 = "dcc1c4e4106032c2465d40f6bbd9c11cf89c2da0585a3f3e1c0cf36c7563d457"
+changelog = "Opening a world no longer crashes: 1.2.1 and 1.2.2 asked the game for its folder while the server loads its data, which Horizon refuses with a panic. The folder is now taken once at registration; scripts load on every world open and `/reload`. Tested in game."
+
+[[versions]]
+version = "1.2.2"
+published = "2026-11-19"
+game = "26.3"
+file = "vasttweaks-1.2.2.hmod"
+sha256 = "701002a23bf9e44d2b875e6044e741a731c72756320ef28a26bc3065c854652a"
+changelog = "A shapeless recipe whose repeat would pass nine ingredients is refused before it is expanded, so a short script can no longer exhaust memory or stall world load and /reload."

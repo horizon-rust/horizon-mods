@@ -1,0 +1,28 @@
+id = "armorstatues"
+kind = "native-mod"
+name = "Armor Statues"
+summary = "Sneak and use an armor stand with an empty hand to pose, style and move it."
+description = """
+Sneak and use an armor stand with an empty hand to pose, style and move it.
+
+**Differences from the original:** There is no equipment tab, so armour and held items are put on the stand by hand as in vanilla. Positions and angles change with buttons in fixed steps, with no sliders or typed values. The stand's name can't be edited in the menu, but a name tag still works.
+
+A port of [Armor Statues](https://github.com/Fuzss/armorstatues) 8.0.6 by Fuzs, published under its licence, MPL-2.0. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Fuzs"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MPL-2.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/armorstatues"
+icon = "icons/armorstatues.png"
+categories = ["decoration", "utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-19"
+game = "26.3"
+file = "armorstatues.hmod"
+sha256 = "18fb5f59e5693b44c546c429b88758cb8b9385a3473a963942778d57728e43bc"
+changelog = "Built with the exact-build SDK dd67b76 on the mod API only, with LICENSE and NOTICE in the package. Replaces the retired .hnmod."

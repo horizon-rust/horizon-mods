@@ -1,0 +1,47 @@
+id = "refinedstorage_quartz_arsenal"
+kind = "native-mod"
+name = "Refined Storage - Quartz Arsenal"
+summary = "Refined Storage's two wireless crafting grid items, carried to 26.3 with 18 locales."
+description = """
+A port of [Refined Storage - Quartz Arsenal](https://github.com/refinedmods/refinedstorage-quartz-arsenal) by Refined Mods
+for Horizon: the two wireless crafting grid items.
+
+Implemented so far:
+- The mod's two items: `wireless_crafting_grid` and `creative_wireless_crafting_grid`,
+  with the inactive/active model pair, their two textures and 18 language files.
+- Both items register and give (one per inventory slot); the two are separate ids, and
+  an absent id is refused.
+- The mod's shaped recipe is carried in the 26.3 recipe format.
+
+Not yet ported:
+- The grid itself is not ported: using the item does not open a crafting menu, no energy
+  is stored or spent, and nothing binds to a Refined Storage network. The
+  `network_bound_active` model condition could be wired through the stamped
+  `item_model_property` hook (API 1, listen) in a later slice; it is not used yet.
+- The recipe cannot match yet: its `refinedstorage:quartz_enriched_iron`,
+  `refinedstorage:advanced_processor`, `#refinedstorage:crafting_grids` and
+  `#c:ender_pearls` ingredients are not provided by this port.
+- This is an add-on: it expects the Refined Storage parent mod in the same game.
+- There is no `notes.md` in the port yet; the scope was settled by the campaign's slice
+  record.
+
+A content carry with a test-only Rust census module (no injection). MIT — the original copyright and licence notices are kept in
+the port repository (see LICENSE and LICENSE-NOTICE.md there). Pinned to
+Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["Refined Mods", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/refined_storage_quartz_arsenal"
+icon = "icons/refinedstorage_quartz_arsenal.png"
+categories = ["technology", "utility"]
+tags = ["port", "storage", "wireless", "crafting"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-09"
+game = "26.3"
+file = "refinedstorage_quartz_arsenal.hmod"
+sha256 = "91e6edf809039aa7c1953b9030eb329ae95d01b2e44b0f029e6bab957a9f7409"
+changelog = "First release: the slice described above."

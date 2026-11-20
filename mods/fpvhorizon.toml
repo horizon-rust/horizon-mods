@@ -1,0 +1,42 @@
+id = "fpvhorizon"
+kind = "native-mod"
+name = "FPV Horizon"
+summary = "Fly real FPV drones in Horizon with quadcopter physics, Betaflight rates, an OSD and gamepad support. Beta."
+description = """
+**Beta.** Fly FPV drones in Minecraft as in a drone sim.
+
+Press **H** (L1 + R1 on a gamepad) to put your drone down and switch to its camera. Your body stays where it stood. Arm with **R** (Triangle), fly, and press **H** again to return to your own eyes.
+
+**Features**
+
+- Quadcopter physics: 6-DoF flight, blade element propeller lift and drag, motor back-EMF and heating, battery voltage sag, and block collisions with bouncing.
+- Real drone presets: 5" freestyle and race quads, a 3.5" cinewhoop, a 75mm whoop and a 7.5" long-range build, or your own custom build.
+- Betaflight rates (RC Rate, Super Rate, Expo per axis), a configurable deadzone and an optional 3D mode.
+- FPV camera that rolls with the drone, with an adjustable field of view, an OSD and stick gimbal overlays.
+- Gamepad (Mode 2) or mouse and keyboard.
+- Motor and wind sound.
+
+**What it does and doesn't do**
+
+Client-side only. While a drone is out, the mod reads the gamepad and the player's position, moves the camera, and stops pad buttons from also triggering game actions. It makes no network connections and reads or writes no files beyond its own settings.
+
+**Credits**
+
+The flight physics, drone build model, rates and controller logic are based on code from [Minecraft FPV](https://github.com/minecraft-fpv/mfpv-client) by its authors, used under GPL-3.0.
+"""
+authors = ["Eren"]
+owners = ["qweeren"]
+owner_ids = [48918603]
+license = "GPL-3.0-only"
+source = "https://github.com/qweeren/fpvhorizon"
+icon = "icons/fpvhorizon.png"
+categories = ["transportation", "game-mechanics"]
+tags = ["fpv", "drone", "quadcopter", "simulator"]
+
+[[versions]]
+version = "0.9.0"
+published = "2026-11-19"
+game = "26.3"
+file = "fpvhorizon.hmod"
+sha256 = "b7087026ce3d3fd3c4c02517bf45feb06a97c676a8be588f40bfa5524277a680"
+changelog = "First public beta."

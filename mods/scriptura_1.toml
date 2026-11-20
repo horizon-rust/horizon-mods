@@ -1,0 +1,20 @@
+id = "scriptura_1"
+kind = "datapack"
+name = "Scriptura — Bíblia Católica para Minecraft"
+summary = "Bíblia católica em português, organizada em volumes para leitura dentro do Minecraft."
+description = "Projeto comunitário que transforma a tradução histórica da Bíblia associada ao Padre António Pereira de Figueiredo em uma coleção de livros escritos para Minecraft, incluindo os 73 livros do cânon católico e os deuterocanônicos."
+authors = ["Deus", "Igreja Católica", "Padre António Pereira de Figueiredo", "ChatGPT", "JRMcodegit (Juan32zzz)"]
+owners = ["JRMcodegit"]
+owner_ids = [280831676]
+license = "MIT"
+source = "https://github.com/JRMcodegit/Scriptura-B-blia-Cat-lica-para-Minecraft"
+icon = "icons/scriptura_1.png"
+categories = ["social", "utility", "decoration"]
+tags = ["cristo", "catolico", "biblia", "livro", "datapack", "religioso", "amor"]
+
+[[versions]]
+version = "1.0"
+published = "2026-11-16"
+game = "26.3"
+file = "scriptura_1-1.0.zip"
+sha256 = "16517aa0cffe2f2909210dfa0ba489d7af4a7fe099b3e5ad06cf1fd55c53e150"

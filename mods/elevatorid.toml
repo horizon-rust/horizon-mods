@@ -1,0 +1,38 @@
+id = "elevatorid"
+kind = "native-mod"
+name = "elevatorid"
+summary = "A Horizon port of elevatorid."
+description = """
+A port of [ElevatorMod](https://github.com/VsnGamer/ElevatorMod) by Vasco (VsnGamer) for Horizon — the coloured elevators.
+
+**Implemented so far**
+
+- All 16 coloured elevators, on the jar's block template and with its models, textures, recipes, tags and names.
+- Jump-up and sneak-down teleport the player to the nearest elevator of the same colour above or below, with the jar's search range and same-colour rule.
+- The block entity and its saved state, and the carried assets in one self-loading archive.
+
+**Not yet ported / deviations**
+
+- **Teleport motion:** the move goes through the pin's command path at the tick, the only teleport surface the API offers, so horizontal velocity is lost and upstream's sound and particles are not sent.
+- **Input:** a raw jump key edge is unavailable; the jump is inferred from the player's body, with `player_jump` as the exact edge at this pin (issue-shaped gap: give `native_player_tick` the player's input, `on_ground`/jump flag).
+- **Suffocation** is approximated with a full-collision block, so glass and leaves differ at the edges.
+- **Not carried:** camouflage, the options GUI, the directional model/arrow/yaw, `resetPitch`, the XP cost, mob spawning and `config/elevatorid-server.toml`.
+
+The original copyright and licence notices travel inside the distributed archive (`mixins/elevatorid/LICENSE` and `NOTICE.md`, with ElevatorMod's `Copyright (c) 2016 Vasco`) and are also in this repository. MIT. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93.
+"""
+authors = ["VsnGamer", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/elevatormod"
+icon = "icons/elevatorid.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-10"
+game = "26.3"
+file = "elevatorid.hmod"
+sha256 = "3d3ef0d422981c94de59939ce4ab824eba1d8c530ff80a7429f913cf814ea71a"
+changelog = "First release"

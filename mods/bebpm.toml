@@ -1,0 +1,28 @@
+id = "bebpm"
+kind = "native-mod"
+name = "BEBPM"
+summary = "Enchanting tables count bookshelves further away."
+description = """
+Enchanting tables count bookshelves further away.
+
+**Differences from the original:** There is no config. The radius is fixed at 10 blocks and line of sight is never checked, as Homestead sets it. The table's floating glyph particles still only come from bookshelves in the vanilla positions.
+
+A port of [BEBPM](https://www.curseforge.com/projects/1462757) 1.0.0 by CozyStudios, published under its licence, CC0-1.0. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "CozyStudios"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "CC0-1.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/bebpm"
+icon = "icons/bebpm.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-20"
+game = "26.3"
+file = "bebpm.hmod"
+sha256 = "fa7e6a0fec531f1afed4bc187c6f2495ee41f847775536660b263e302460e17e"
+changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the retired .hnmod."

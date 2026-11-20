@@ -1,0 +1,28 @@
+id = "betterdays"
+kind = "native-mod"
+name = "BetterDays"
+summary = "Slower or faster days and nights."
+description = """
+Slower or faster days and nights.
+
+**Differences from the original:** Sleeping skips the night as in vanilla. The Java mod's speeded-up clock while players sleep is left out. The slower clock is saved in the world, so a world opened without this mod keeps it until you run /time rate 1.
+
+A port of [BetterDays](https://github.com/wendall911/BetterDays) 3.3.4.5 by wendall911, published under its licence, LGPL-3.0-or-later. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "wendall911"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/lavoide/horizon-ports/tree/main/betterdays"
+icon = "icons/betterdays.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-19"
+game = "26.3"
+file = "betterdays.hmod"
+sha256 = "18712adff0e1414c3256cd9d04d90b433914e57d9cff052442576b243a451cb4"
+changelog = "Built with the exact-build SDK dd67b76 on the mod API only, with LICENSE and NOTICE in the package. Replaces the retired .hnmod."

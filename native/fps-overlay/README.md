@@ -1,49 +1,44 @@
-# FPS Counter (Horizon native mod)
+# FPS Counter
 
-> [!WARNING]
-> **Legacy.** This is the old `.hnmod` source. Launchers from 0.2.70 on can't load it, and the registry archived it on
-> 2026-11-18. A port to the new mod SDK is tracked in [#1214](https://github.com/horizon-rust/horizon-mods/issues/1214).
-> The install steps below no longer work.
-
-Horizon's official FPS counter: frames per second in a box in a corner of the screen, and, if you like, the slowest frame and the 1% low of the last 5 seconds. Its settings page (Options > Mods > FPS Counter > Settings) picks the corner and the lows.
-
-It is a [horizon-mixins](https://github.com/horizon-rust/horizon-mixins) bundle (`mixins/fps_overlay/`) that the Horizon
-launcher builds into the game. It keeps the settings of earlier versions: the same files (`horizon-mods/.horizon-mod-data/fps_overlay/corner`, `lows`).
+Horizon's official FPS Counter, an official Horizon Extra: the frames of the last second in a small box in a corner of
+the screen, and, if you like, the slowest frame and the 1% low of the last 5 seconds. It looks as the extra did: white
+text with a shadow on a translucent black box, 2 GUI pixels from the edge, scaled with the GUI.
 
 ## Install
 
-In the Horizon launcher: Mods → FPS Counter → Install, then **Build** on the same page (once built, switch it
-on or off in the game under Options → Mods). The
-launcher downloads its own Rust and builds the game with your native mods; see Horizon's
-[native mods](https://github.com/horizon-rust/horizon/blob/main/docs/native-mods.md).
+In the Horizon launcher: **Mods**, find FPS Counter, **Install**. It is a WebAssembly mod, so nothing is built on your
+computer.
 
-## Made on the hook points
+## Settings
 
-The bundle hooks only Horizon's native hook points (`crates/horizon-client/src/game/native_hooks.rs`), which keep
-their names and signatures across releases. `compatibility.json` names the version it needs (`"hooks": 1`), so the
-launcher builds FPS Counter on any Horizon with that version or a later one, the player's own game by default, together with any other
-mod. `horizon_revision` is only the commit it was last tested on.
+**Options > Mods > FPS Counter > Config:** the corner (top left by default) and the minimum and 1% low (off). Kept in
+`horizon-mods/.horizon-mod-data/fps_overlay/` (`corner`, `lows`), the same files earlier versions used. A corner
+earlier versions stored by name (`bottom_right`) is read as before and rewritten as the option's number the first time
+the box is drawn.
 
-| File | What it is |
-|---|---|
-| `mixins/fps_overlay/horizon-mixin.toml` | The bundle: one module and the HEAD hooks |
-| `mixins/fps_overlay/runtime.rs` | The mod's logic and state, added to the game as `game::official_fps_overlay`; also this crate's library, for its tests |
-| `mixins/fps_overlay/*.rs` | One small helper per hook |
-| `../tools/native.py` | Shared by the native mods: apply on Horizon (from GitHub, by commit), check, build, package the `.hnmod`, run the proof |
-| `proof.py` (with `../tools/game.py`) | The proof: the built game driven with `horizon-ctl --offscreen` on fresh, temporary data |
+## Known limits
 
-## Build and prove
+- The SDK doesn't tell a mod when the debug screen (F3) is open, so the box stays in its corner over the debug text,
+  where the extra and 2.0.0 gave way to it.
+- The SDK doesn't give a mod `horizon-extras.txt`, so the extra's own settings (`fpsCorner`, `fpsLows`) aren't read; the
+  files of the 1.x and 2.x mods are.
+
+## Build
+
+With [`cargo horizon-mod`](https://github.com/horizon-rust/horizon/tree/main/docs/modding):
 
 ```sh
-(cd native/fps-overlay && cargo test)                    # the logic
-python3 native/tools/native.py check fps-overlay   # apply on the tested Horizon and cargo check the game
-python3 native/tools/native.py check fps-overlay --horizon latest  # ... on the newest Nightly
-python3 native/tools/native.py check all           # with the other native mods, as a player's set
-python3 native/tools/native.py package fps-overlay # native/target/fps_overlay-<version>.hnmod for the registry
-python3 native/tools/native.py proof fps-overlay --resources /path/to/.local/horizon-client/26.3
+cargo test                       # the counter, the text and the settings
+cargo horizon-mod build --wasm   # target/horizon-mod/fps_overlay.hmod
+cargo horizon-mod check
 ```
 
-The proof needs resources prepared from your own Minecraft 26.3 (`horizon-prepare`); none are in this repository.
-It seeds an earlier version's settings (bottom right, lows on) in a temporary game folder, then checks that Options > Mods shows them, and that the Corner button moves the box to the top left and writes the same file. CI runs `cargo test`, packages the `.hnmod` and checks the game on the tested commit, and every Monday on the newest Nightly.
+## Earlier versions (legacy)
 
-License: MIT.
+2.0.0 was a native `.hnmod` built into the game by the launcher, and 1.0.0 an API 0.1 WebAssembly mod. Launchers from
+0.2.70 on can't load either, and their install and build steps no longer apply. Their source is in this folder's
+history.
+
+## Licence
+
+MIT, see [LICENSE](LICENSE).

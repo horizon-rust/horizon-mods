@@ -3,24 +3,15 @@ kind = "mod"
 name = "Simply Light"
 summary = "160 decorative light-emitting blocks and panels in every colour."
 description = """
-A port of [Simply Light](https://github.com/Flanks255/simplylight) by Flanks255 for Horizon: ten families of decorative light blocks — lamps, slabs, panels, wall lamps, bulbs, rods, posts and edge lights — in all sixteen colours, 160 blocks and 2048 block states.
+A Horizon port of [Simply Light](https://github.com/Flanks255/simplylight) by **Flanks255** (MIT): the blocks, states, models, textures, recipes and tags are data in the package, and it has no native code and no hooks. 160 blocks in ten families, 2,048 blockstates, the jar's light levels, self-drop loot, six recipes and the climbable/mineable tags.
 
-**Implemented so far**
-
-- Lamps emit light 15; bulbs and edge lights emit 14; an unlit lamp emits none.
-- Every block drops itself and is craftable from its family's recipe.
-- Builders get the same shapes as upstream: panels and slabs that sit flush, wall-mounted lamps, and edge lights for ceilings and floors.
-
-**Not yet ported**
-
-- Redstone toggling, the lamp-post column and the edge-light editor are later slices.
-
-A content-only carry: no native code and no hooks. MIT: the original copyright and licence travel inside the archive (`data/simplylight/license/`), not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93. The artifact the entry pins is `content/simplylight.hmod` in the source repository; the release asset must be re-uploaded from that file so the two hashes agree."""
+MIT: the original copyright and licence travel inside the archive (`data/simplylight/license/`), not only in the source repository. Built for mod API 0.2 on Minecraft 26.3.
+"""
 authors = ["Flanks255", "AdLf0208"]
 owners = ["AdLf0208"]
 owner_ids = [107615167]
 license = "MIT"
-source = "https://github.com/AdLf0208/simplylight"
+source = "https://github.com/AdLf0208/simply_light"
 icon = "icons/simplylight.png"
 categories = ["decoration"]
 tags = ["port", "decoration", "lighting", "blocks"]
@@ -31,3 +22,11 @@ published = "2026-11-12"
 game = "26.3"
 file = "simplylight-0.1.0.hmod"
 sha256 = "179023199bb17d8079010d3c6617bd83e8a08f13d4630b39e39f541028058b7a"
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-19"
+game = "26.3"
+file = "simplylight.hmod"
+sha256 = "433705de1d8467c0ab076ae02a0b7ed447e65b068032414db694dc46992c5c50"
+changelog = "Content-only package for mod API 0.2: assets/ and data/ with a content manifest, no native half. The 160 blocks, 2048 states, light levels, drops, recipes, tags and creative tab are unchanged."

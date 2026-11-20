@@ -1,0 +1,27 @@
+id = "betterendisland"
+kind = "mod"
+name = "YUNG's Better End Island"
+summary = """A complete redesign of the End island: 41 arena structure templates, the dragon-immune arena tag and the mod's strings"""
+description = """A complete redesign of the End island: 41 arena structure templates, the dragon-immune arena tag and the mod's strings
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported:** see the repository's notes for the recorded gaps.
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact."""
+authors = ["YUNGNICKYOUNG", "Acarii", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/yungs_better_end_island"
+icon = "icons/betterendisland.png"
+categories = ["adventure"]
+tags = ["port", "worldgen", "structures"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "betterendisland.hmod"
+sha256 = "93c7105f41889c4a392ea9ec0b035a484e46cb5fa3f736c7409f21cba315cdcf"
+changelog = "First publication in the SDK format."

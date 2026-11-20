@@ -1,0 +1,39 @@
+id = "enderstorage"
+kind = "native-mod"
+name = "enderstorage"
+summary = "A Horizon port of enderstorage."
+description = """
+A port of [EnderStorage](https://github.com/chicken-bones/EnderStorage) for Horizon.
+
+**Implemented so far**
+
+- The ender chest, keyed by its three wool colours, with the mod's own model, texture, blockstate, recipe, loot table and language.
+- Upstream keeps **one inventory per frequency** in a world-global manager and every chest with that frequency opens the same container. Horizon gives a mod block entity its own slots, so the port keeps the frequency store as the truth and mirrors it into each chest once per tick.
+- The mirror is a **three-way merge on counts**: an untouched slot adopts the store, and a slot a chest changed is applied to the store as a **delta**, so two chests that each withdraw from one stack subtract twice and two that each insert add twice. A stack that no longer fits stays in the chest that inserted it rather than being destroyed.
+- The store persists per world and survives a relaunch.
+
+**Not yet ported**
+
+- **The tank does not store fluid at this pin.** The block entity can declare fluid tanks, but a bucket emptied into one does not keep the fluid: the engine's own bucket path consumes the item before any mod hook can refuse it, and a `FluidTanks::insert` over `horizon:fluids` loses the write (a 1000 mB insert leaves 0 after the tick; 500 mB is kept once and the next 500 mB refused; 250 mB is not kept at all; and cancelling the bucket event — which the mod must do so a full tank never pours into the world — takes the write back with the event's transaction). So the tank accepts the click, reads empty, and never pours into the world; the in-game leg asserts exactly that, so a pin that keeps the fluid makes it fail. The measured table and the SDK symbols are in the port's `notes.md` under *Gap: the declared tank at 0b14f8a*.
+- **The pouch is deferred.** A pouch opens the same inventory from an item; a mod item has no menu route at this pin.
+- Personal (owned) frequencies, the lid animation and the custom renderer are not carried.
+- A slot whose *item* is replaced on two chests in the same tick is a genuine tie: one slot holds one item, so the later edit wins and the other stack remains in its own chest.
+
+MIT: the original copyright (`Copyright (c) 2020 covers1624, ChickenBones, Christopher R. Thompson (Ecu)`) and licence travel inside the bundle, not only in the source repository. Pinned to Horizon `0b14f8a` and horizon-mixins `e59da90`.
+"""
+authors = ["chicken-bones", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/ender_storage_1_8"
+icon = "icons/enderstorage.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-10"
+game = "26.3"
+file = "enderstorage.hmod"
+sha256 = "38aa56337e172376ca638088617f26e40a728781e6303ea38a11fccfd5d586ac"
+changelog = "Review fixes: sibling-mirror commit and reach-gated readout, hand exchange in the tank transaction, and the load-time double Part attach. The tank fluid gap at 0b14f8a is now measured and stated."

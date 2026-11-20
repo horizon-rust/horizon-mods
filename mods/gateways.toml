@@ -1,0 +1,46 @@
+id = "gateways"
+kind = "native-mod"
+name = "Gateways to Eternity"
+summary = """A port of Gateways to Eternity for Horizon: a gate pearl opens a gateway, the gateway runs its wave list, and each wave pays out when its mobs die. The…"""
+description = """
+A Horizon port of Gateways to Eternity 1.21.1-5.1.0: a gate pearl opens a gateway, the gateway runs its wave list, and each wave pays out when its mobs die. This slice carries one gateway, `gateways:emerald_grove`, with the jar's complete four-wave list, its rewards and its timing rules. Upstream: https://github.com/Shadows-of-Fire/GatewaysToEternity — licence **MIT**.
+
+**Implemented so far**
+
+- The item `gateways:gate_pearl` is made by the emerald-grove recipe (eight flowers around an ender eye) and carries its gateway in `minecraft:custom_data`; it ships as a vanilla shaped recipe with a result component, because a content mod cannot declare the jar's own recipe type.
+- Using a pearl on a block opens the gateway there with upstream's placement lift from the clicked block's top, and a second gateway in the same box is refused.
+- The gateway runs the jar's four waves in order — zombies, spiders, a mixed wave, and a named zombie villager — each after its setup time and within its maximum wave time, with the 200-tick no-player grace period, dead-mob accounting and out-of-leash re-placement.
+- Wave rewards are split into stacks of four and spawned as item drops at the gateway, the completion reward summons six of each animal, and each is paid once.
+- Gate state is bound to the world it was opened in and cleared when that world closes, so a gate can never resume or teleport an entity from a save loaded in the same process.
+- `/gateways list` and `/gateways open <x> <y> <z> <id>` work at permission level 2, standing in for upstream's `/open_gateway` and accepting a namespaced id.
+- The port was proven in game at 0.2.1: the launcher-built package passes, a game without it fails at the first step, and a selftest inverts the reward assertion.
+
+**Not yet ported**
+
+- The gateway entity itself is absent, so there is no visible portal, boss bar, particles or sound; the gateway is a server-side record and the wave mobs are what a player sees.
+- An open gateway does not survive a world reload, because upstream saves it as an entity and this port keeps it in memory only.
+- Wave attribute, effect and gear modifiers and `entity_loot` rewards are not applied, because the pin has no attribute API and no per-mob loot roll, and the failure explosion and lives system are not carried either.
+- The other seven gateway definitions (basic blaze, slime and enderman, overworldian nights, hellish fortress, the endless pair) and their recipes are not carried.
+- The pearl's tooltip lines and its size-driven model are missing, since the size models need a custom item property the content API does not offer.
+- JEI and Jade integration, the `gates_defeated` statistic and the advancement trigger are not implemented.
+
+Ported from the upstream mod (MIT); `LICENSE-NOTICE.md` records the credit and `LICENSE` the licence text.
+
+Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["Shadows_of_Fire", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/gateways_to_eternity"
+icon = "icons/gateways.png"
+categories = ["technology"]
+tags = ["port", "combat"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-18"
+game = "26.3"
+file = "gateways.hmod"
+sha256 = "d6bf75a9685be9eb9ebd48be5dba9559a136a505eb4e92fc8310d5cc5e040bd0"
+changelog = "First publication in the SDK format."

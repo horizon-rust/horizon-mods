@@ -1,0 +1,27 @@
+id = "betterfortresses"
+kind = "mod"
+name = "YUNG's Better Nether Fortresses"
+summary = """A complete redesign of Minecraft's Nether fortresses: one structure (keep, halls, bridges, blaze towers), 18 template pools, 167 templates and 9 loot…"""
+description = """A complete redesign of Minecraft's Nether fortresses: one structure (keep, halls, bridges, blaze towers), 18 template pools, 167 templates and 9 loot tables, carried as content.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported:** see the repository's notes for the recorded gaps.
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact."""
+authors = ["YUNGNICKYOUNG", "Acarii", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/yungs_better_nether_fortresses"
+icon = "icons/betterfortresses.png"
+categories = ["adventure"]
+tags = ["port", "worldgen", "structures"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "betterfortresses.hmod"
+sha256 = "d03c879a0c22cecd858570c7cf8992bd8c38f0b6a5cdfc55cc6fcbfb7c67778e"
+changelog = "First publication in the SDK format."

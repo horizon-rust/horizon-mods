@@ -1,0 +1,5 @@
+# Reviewed owner transfers of archived ids: <id> <old_owner_id> <new_owner_id> <new_login> <reason>.
+# An archived id moves to another account only with evidence that it is the same person, linked in the reason.
+# scripts/catalogue.py reads this from main only. The entry may keep its archived owners or take the new login and
+# id together, and only the new id counts as the owner. Earlier lines of an id apply first.
+minimap_worldmap_waypoints_reworked 67186086 355298203 Gurov08ruS same person: the new repository keeps daniliammo's commits and the later ones share their email (horizon-mods #1440)

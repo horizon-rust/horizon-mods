@@ -26,6 +26,30 @@ categories = ["utility"]
 tags = ["zoom", "camera", "spyglass"]
 
 [[versions]]
+version = "3.0.3"
+published = "2026-11-19"
+game = "26.3"
+file = "zoom-3.0.3.hmod"
+sha256 = "53935d0af3307bbe8fa5057103a62b13a8cb6a69431b3058f3981b9c1313d348"
+changelog = "Built for Nightly 2026-11-19 · f00125f, where wasm calls are linked by name. No other changes; 3.0.2 stays for Nightly dd67b76."
+
+[[versions]]
+version = "3.0.2"
+published = "2026-11-19"
+game = "26.3"
+file = "zoom-3.0.2.hmod"
+sha256 = "c364f8c8febcd7971997bf33e2b996034d5fd9ba261c029cefcd475d929d46c2"
+changelog = "Built for Nightly 2026-11-18 · dd67b76. No other changes; 3.0.1 stays for Nightly 6d765e0."
+
+[[versions]]
+version = "3.0.1"
+published = "2026-11-18"
+game = "26.3"
+file = "zoom-3.0.1.hmod"
+sha256 = "87024911c25490e34f57d6147ec82efde1b696f443ec79aced30ad39614b8e0d"
+changelog = "Built for Nightly 2026-11-18 · 6d765e0. No other changes; 3.0.0 stays for Nightly 0b14f8a."
+
+[[versions]]
 version = "3.0.0"
 published = "2026-11-18"
 game = "26.3"

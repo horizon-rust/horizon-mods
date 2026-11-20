@@ -1,0 +1,28 @@
+id = "toms_storage"
+kind = "native-mod"
+name = "Tom's Simple Storage"
+summary = "Join chests into one network and reach it all from a storage or crafting terminal."
+description = """
+An inventory connector joins every chest, barrel and other inventory touching it (through trims too), and cable connectors add inventories further away over cables. Storage and crafting terminals placed on the network show everything in it in one screen: take and put items, sort by amount or name, search by typing, and craft from a 3x3 grid refilled from the network. Wireless and advanced wireless terminals open it from afar, and hoppers can reach the whole network through a connector or an inventory proxy.
+
+**Differences from the original:** The terminals are chest-style screens: there are no terminal sizes, search history, recipe-viewer fill or cursor dragging. The inventory hopper, level emitter and open crate can be placed but do nothing. Item, polymorphic and tag filters, the filtered cable connector's filter (it acts as a plain cable connector) and inventory link channels aren't ported, nor the beacon range bonus for wireless terminals, painted blocks or the paint kit.
+
+A port of [Tom's Simple Storage](https://github.com/tom5454/Toms-Storage) 1.7.1 (Fabric 1.20.1) by tom5454, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "tom5454"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/toms_storage"
+icon = "icons/toms_storage.png"
+categories = ["storage", "technology"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.3.0"
+published = "2026-11-19"
+game = "26.3"
+file = "toms_storage.hmod"
+sha256 = "a595c0eb1f8b552a711500824bfb2a471fc6a30acd37e14d0581dfc7ce3b2203"
+changelog = "First registry release. Built with the exact-build SDK dd67b76 on the mod API only, with LICENSE and NOTICE in the package."

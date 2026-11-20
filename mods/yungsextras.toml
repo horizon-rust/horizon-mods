@@ -1,0 +1,34 @@
+id = "yungsextras"
+kind = "native-mod"
+name = "YUNG's Extras"
+summary = """YUNG's Extras' scattered decoration for Horizon: six swamp pieces (arches, double arches, pillars, cubbies, a church and an ogre) and five desert pieces…"""
+description = """YUNG's Extras' scattered decoration for Horizon: six swamp pieces (arches, double arches, pillars, cubbies, a church and an ogre) and five desert pieces (wells, obelisks, ruins, a giant torch and a chillzone), each a structure template placed by a feature. The pin has no surface for a mod to register a feature type, so the swamp arch family (11 templates) is carried as vanilla `minecraft:template` configured features with a data processor list that runs the mod's own marker-block processing, and the other ten families are carried as content only with their placement recorded as blocked: their feature types (`yungsextras:desert_well`, `yungsextras:swamp_cubby`, ...) and the mod's `yungsextras:rng_initializer` placement modifier cannot be named at 26.3. All 62 templates ship, so every piece can be placed by hand with `/place template`; only the arches generate in a swamp.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- **The generated arch is not asserted** (above): the descriptor and processors are
+- **Ten families place nowhere.** Their templates are /place template-able and a
+- **No rng_initializer, no offset-block terrain checks** (deviations 1 and 2).
+- **The wells' markers stay glass.** Their brown/yellow_stained_glass markers are
+- **No diagnostics.** The SDK exports no logger and a native mod may not add a crate;
+- **side = both** because the content and the worldgen it feeds belong to the server,
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact."""
+authors = ["YUNGNICKYOUNG (upstream)", "Acarii (upstream)", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/yungs_extras"
+icon = "icons/yungsextras.png"
+categories = ["adventure"]
+tags = ["port", "worldgen", "decoration"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-18"
+game = "26.3"
+file = "yungsextras.hmod"
+sha256 = "28da290a7bff9efe572e46dc89394b8f178f027842f29a0f29ebdc9160f83b5f"
+changelog = "First publication in the SDK format."

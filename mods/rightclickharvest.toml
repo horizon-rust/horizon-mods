@@ -1,0 +1,28 @@
+id = "rightclickharvest"
+kind = "native-mod"
+name = "Right Click Harvest"
+summary = "Right-click a grown crop to harvest and replant it."
+description = """
+Right-click a grown crop to harvest and replant it.
+
+**Differences from the original:** The Java mod takes one seed out of the drops for the replant. This port leaves the drops as vanilla rolls them, so each harvest gives one seed more.
+
+A port of [Right Click Harvest](https://github.com/JamCoreModding/right-click-harvest) 4.6.1+1.20.1 by Jamalam, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Jamalam"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/rightclickharvest"
+icon = "icons/rightclickharvest.png"
+categories = ["utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-19"
+game = "26.3"
+file = "rightclickharvest.hmod"
+sha256 = "ac9cc466f6133f7baca33352d71d609ace1b2ff12ecec872cd5e3f9005cca042"
+changelog = "Built with the exact-build SDK dd67b76 on the mod API only, with LICENSE and NOTICE in the package. Replaces the retired .hnmod."

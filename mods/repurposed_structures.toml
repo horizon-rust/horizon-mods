@@ -1,0 +1,27 @@
+id = "repurposed_structures"
+kind = "mod"
+name = "Repurposed Structures"
+summary = "18 outposts and 6 witch huts carried whole, with their pools, processors and loot."
+description = """A Horizon port of [Repurposed Structures](https://github.com/TelepathicGrunt/RepurposedStructures) (LGPL-3.0, by **TelepathicGrunt**) for Horizon. Slice 1 carries **two families whole**: 18 outposts (overworld, nether, ocean and end variants) and 6 witch huts — 24 structures, 5 sets, 80 pools, 21 processor lists, 211 templates, 19 loot tables and 45 biome tags.
+
+**Measured in game:** an oak outpost places with a delta of **351 oak planks and 191 oak fences** and a chest holding the mod's loot; an oak witch hut places 84 oak planks; `minecraft:end_city` through the same path writes 1,933 purpur and **zero** oak planks, so the read-back is not generic. Without the content the id is refused.
+
+**Not carried yet:** the other 83 structures (mineshafts next), and **a mod structure's `spawn_overrides` are not read at this target**, so the outposts' pillagers do not spawn — recorded, not faked.
+
+Licence: LGPL-3.0; the full text and a NOTICE naming the author, upstream URL and jar SHA-256 travel inside the package."""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/repurposed_structures"
+icon = "icons/repurposed_structures.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-10"
+game = "26.3"
+file = "repurposed_structures.hmod"
+sha256 = "7391044b6574e3b932d515ccb3145aec2c2f5349d1f6314787e253e801eec3de"
+changelog = "First release"

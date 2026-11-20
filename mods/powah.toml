@@ -1,0 +1,50 @@
+id = "powah"
+kind = "native-mod"
+name = "Powah"
+summary = "The starter Furnator, Energy Cell and Energy Cable: generation, storage and FE transfer, ported."
+description = """
+A port of [Powah](https://github.com/Technici4n/Powah) by owmii, Technici4n and shartte for Horizon. This is the first slice, not a full replacement.
+
+Implemented so far
+
+- `powah:furnator_starter` — burns furnace fuel into a carbon buffer and makes 20 FE/t into a 20,000 FE buffer (48,000 FE per coal), at the mod's 80 FE/t output per side.
+- `powah:energy_cell_starter` — a 1,000,000 FE capacitor that accepts and gives 1,000 FE/t on every side, backed by the engine's energy capability.
+- `powah:energy_cable_starter` — moves up to 500 FE/t between the block entities beside it, storing nothing, with the round-robin start rotating each tick.
+- The blocks' carried blockstates, models, textures, loot tables, recipes, advancements and creative tab; the furnator accepts any `minecraft:cooking_fuel` fuel through its container.
+- `/powah info <x> <y> <z>` and `/powah set <amount> <x> <y> <z>` (harness controls, not upstream gameplay).
+
+Not yet ported
+
+- the other six machine tiers, the creative energy cell, and the ~15 remaining machines (Magmator, Thermo Generator, Solar Panel, reactors, Energizing Orb/Rods, Discharger, Hopper, Player Transmitter);
+- the GUIs, side configuration and redstone modes (the port ships upstream's `ALL`/`IGNORE` defaults);
+- item charging, comparator output, `keepEnergy()` on break, and particle/sound feedback;
+- multi-cable networks — this slice moves FE one cable hop per tick, so a run of two or more cables does not relay;
+- crafting: the carried recipes need later-slice items (`powah:capacitor_basic_tiny`, `powah:dielectric_*`);
+- the Ender Cells/Gates, upgrades, worldgen and the guide book.
+
+Licensed **LGPL-3.0-only**, the original's licence, with the complete corresponding source in this repository: the original copyright and licence notices travel inside the distributed archive (`mixins/powah/LICENSE` and `NOTICE.md`) and are also here. Help with the gaps above is welcome.
+"""
+authors = ["owmii", "Technici4n", "shartte", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "LGPL-3.0-only"
+source = "https://github.com/AdLf0208/powah_rearchitected"
+icon = "icons/powah.png"
+categories = ["technology", "game-mechanics"]
+tags = ["port", "machines", "energy", "power"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-09"
+game = "26.3"
+file = "powah.hmod"
+sha256 = "698b63fb7880f84729dda23d0c9a14ccca091ebd595b97a7c56b977efc981670"
+changelog = "First release: slice 1 of the port, with the full licence and corresponding source in the port repository"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-20"
+game = "26.3"
+file = "powah.hmod"
+sha256 = "9b600446d7457809af1583b3f478881de5b066add4035c0d18ba14ae414bcdf3"
+changelog = """Slice 2: the dielectric and capacitor family — six items and eight recipes — so the three carried machine recipes finally craft. The leg drives a real crafting table through all eleven: paste, rods, casing, both capacitors, the furnator, the energy cell and the cables, asserting each result's id and count and that every ingredient is consumed (the lava bucket leaving its bucket), with an off-pattern grid leaving the result empty."""

@@ -1,0 +1,113 @@
+# An owner's update of a resource pack, shader pack or data pack merges without a reviewer once its check passes:
+# scripts/owner_update.py (main's copy) lists the rules. Everything else waits for a reviewer as before.
+#
+# workflow_run runs main's copy of this file. `decide` reads the pull request through the API and as git objects,
+# never checks it out or runs it, and holds no secret. `merge` holds the GitHub App's token, which may merge past the
+# review rule; a merge by GITHUB_TOKEN would not start publish.yml. Without the App (vars.REGISTRY_APP_ID, and
+# REGISTRY_APP_KEY in the `registry-merge` environment, which only main may use) it only says the pull request was
+# eligible.
+name: owner-update
+on:
+  workflow_run:
+    workflows: [check]
+    types: [completed]
+permissions: {}
+concurrency:
+  group: owner-update-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+jobs:
+  decide:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+      checks: read
+    outputs:
+      pr: ${{ steps.decide.outputs.pr }}
+      sha: ${{ steps.decide.outputs.sha }}
+      kind: ${{ steps.decide.outputs.kind }}
+      id: ${{ steps.decide.outputs.id }}
+      entry: ${{ steps.decide.outputs.entry }}
+      revoked: ${{ steps.decide.outputs.revoked }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - run: python3 -I scripts/test_owner_update.py
+      - name: Is it an owner update?
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          RUN_EVENT: ${{ github.event.workflow_run.event }}
+          RUN_PATH: ${{ github.event.workflow_run.path }}
+        run: python3 -I scripts/owner_update.py
+
+  merge:
+    needs: decide
+    # Holds the App's key: deployments limited to main, so a workflow on another branch can't make its token.
+    environment: registry-merge
+    if: needs.decide.outputs.pr != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pull-requests: write
+    env:
+      GH_REPO: ${{ github.repository }}
+      PR: ${{ needs.decide.outputs.pr }}
+      SHA: ${{ needs.decide.outputs.sha }}
+      KIND: ${{ needs.decide.outputs.kind }}
+      ID: ${{ needs.decide.outputs.id }}
+      ENTRY: ${{ needs.decide.outputs.entry }}
+      REVOKED: ${{ needs.decide.outputs.revoked }}
+    steps:
+      - name: Merge identity
+        id: identity
+        env:
+          APP_ID: ${{ vars.REGISTRY_APP_ID }}
+          HAS_KEY: ${{ secrets.REGISTRY_APP_KEY != '' }}
+        run: |
+          if [ -n "$APP_ID" ] && [ "$HAS_KEY" = true ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "#$PR is eligible, no merge identity configured" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+      - if: steps.identity.outputs.ok == 'true'
+        id: app
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
+        with:
+          # The App's client ID or its numeric id: GitHub takes either.
+          client-id: ${{ vars.REGISTRY_APP_ID }}
+          private-key: ${{ secrets.REGISTRY_APP_KEY }}
+          permission-contents: write
+      - name: Merge
+        id: merge
+        if: steps.identity.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app.outputs.token }}
+        # The REST call, not `gh pr merge`: gh refuses a pull request whose review is still required before asking
+        # GitHub, which lets the App past that rule. `sha` merges only the head that was checked. This job may wait
+        # in the queue after `decide`: the entry and revoked.toml must still be what it read on main (other files
+        # may change).
+        run: |
+          set -euo pipefail
+          for pair in "mods/$ID.toml $ENTRY" "revoked.toml $REVOKED"; do
+            read -r path blob <<< "$pair"
+            if [ "$(gh api "repos/$GH_REPO/contents/$path?ref=main" --jq .sha)" != "$blob" ]; then
+              echo "main changed $path since the decision; waits for a reviewer" | tee -a "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+          done
+          gh api --silent -X PUT "repos/$GH_REPO/pulls/$PR/merge" -f merge_method=squash -f sha="$SHA"
+          echo "merged=true" >> "$GITHUB_OUTPUT"
+          echo "merged #$PR at $SHA" | tee -a "$GITHUB_STEP_SUMMARY"
+      - if: steps.merge.outputs.merged == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment "$PR" --body "Published automatically: owner update of $KIND."

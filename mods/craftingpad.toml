@@ -1,0 +1,26 @@
+id = "craftingpad"
+kind = "native-mod"
+name = "Crafting Pad"
+summary = "A portable crafting table."
+description = """
+A portable crafting table.
+
+A port of [Crafting Pad](https://github.com/StrikerRockers-Mods/CraftingPad) 1.0.12 by StrikerRocker, Giselbaer, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "StrikerRocker", "Giselbaer"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/craftingpad"
+icon = "icons/craftingpad.png"
+categories = ["utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-20"
+game = "26.3"
+file = "craftingpad.hmod"
+sha256 = "ba5f8bbc3ce1fe27ecb97bb4f311053049bb1d3569f0b323242e0664cc3999d6"
+changelog = "One native package with the code and the content, built with the exact-build SDK dd67b76 (mod API, game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the content-only entry and the retired .hnmod."

@@ -1,0 +1,31 @@
+id = "vastrifts"
+kind = "native-mod"
+name = "Vast Rifts"
+summary = "Rifts that bring waves of mobs, stronger wave by wave, and rewards for beating them."
+description = """
+A native mod of combat events on Horizon's mod API, whose waves follow the MIT data of [Gateways to Eternity](https://github.com/Shadows-of-Fire/GatewaysToEternity) (by Shadows_of_Fire), with names, art and words of its own. One package: the code, the sigils, their art, recipes and words in English and Brazilian Portuguese.
+
+- **Place a rift's sigil** and the rift opens: a swirl of its colour and a bar at the top of the screen. Each wave has a few seconds of setup, then its mobs come out around it; kill them all before the wave's time runs out and its rewards drop on the rift. Beat the last wave and it closes with its own rewards.
+- **Seven rifts**: Ember (blazes), Warp (endermen), Mire (slimes), Pasture (crops and animals), Night (the overworld's night mobs), Inferno (the nether fortress) and Golem (iron golems), from small to large, with named mobs in their own gear.
+- **Stronger wave by wave**: health, speed, damage and knockback go up.
+- **Collapse**: if a wave runs out of time, or no player stays within 32 blocks, the rift collapses, its mobs vanish and some strike back (an explosion, blindness, a few mobs). Rifts of hostile mobs don't open on Peaceful.
+
+**What it changes in the game**: through the mod API (hooks, Parts and the Host; no mixins) it summons the rifts' mobs and rewards (items, experience, a few animals) around a rift block, runs a few commands for its effects, tells nearby players in chat and shows them a boss bar. A rift's progress lives in its block entity's data; no files, no network.
+
+0.2.0 replaces 0.1.0's two files (`vastrifts_native` .hnmod and `vastrifts` content): remove both. Pinned to Horizon 0b14f8a (the mod API). Not yet: endless rifts. Not affiliated with or endorsed by Gateways to Eternity's author; none of its art or words are used."""
+authors = ["voltzz900"]
+owners = ["voltzz900"]
+owner_ids = [354832816]
+license = "MIT"
+source = "https://github.com/voltzz900/vast-rifts"
+icon = "icons/vastrifts.png"
+categories = ["adventure", "mobs", "game-mechanics"]
+tags = ["waves", "mob-farms", "combat", "loot", "translation"]
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-19"
+game = "26.3"
+file = "vastrifts-0.2.2.hmod"
+sha256 = "b3de59437afec3665d1ac31ad5f0e3e1acf18ffa0c94fcd8dc792221533aa7d0"
+changelog = "First release on Horizon's mod API: one native package (code and content). Pinned to Nightly 2026-11-18 (0b14f8a). Replaces 0.1.0's two files (`vastrifts_native` .hnmod and the `vastrifts` content mod, never published). Reward tables are the mod's own; a rift's cleanup only touches its own dimension; an out-of-range saved wave no longer stops the rift's tick."

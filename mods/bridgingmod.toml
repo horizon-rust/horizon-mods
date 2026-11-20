@@ -1,0 +1,46 @@
+id = "bridgingmod"
+kind = "native-mod"
+name = "Bridging Mod"
+summary = """A port of Bridging Mod for Horizon: a right click in the air with a placeable block item fills the gap the player looks into, so a bridge can be built…"""
+description = """
+A Horizon port of Bridging Mod 2.7.0: right-click in the air with a placeable block item while looking into a gap over an edge, and the block lands in the gap instead of requiring a block to aim at. Upstream does this on the client, while this port computes the same target from the acting player's eye ray on the server, so it works in single player and on a server with no client mod. Upstream: https://github.com/squeeglii/BridgingMod — licence **MIT**.
+
+**Implemented so far**
+
+- A right click **in the air** walks the eye ray from 20 % of the reach to the reach, in vanilla's main-hand-then-off-hand order.
+- The first cell along that ray is taken when it is replaceable, outside the player's box, and next to a solid non-liquid block on a side the view points into.
+- The held block is placed there, one item is consumed (none in creative), the place sound and the `used` statistic fire, and a stack's `minecraft:block_entity_data` is applied only for a player who may use game-master blocks.
+- Every placement check runs before anything is written: build permission, item use at the position, the world border, a dedicated server's spawn protection, and an unobstructed destination.
+- Torches are skipped as upstream does, a cell inside the player's own body is skipped while the search continues, and anything the assist cannot place falls through to vanilla.
+- The package was proven in game at 0.2.2 with a control game that does not fill the gap and a selftest that inverts the assertion.
+
+**Not yet ported**
+
+- The placed state is the block's default state plus the item's `minecraft:block_state` component rather than vanilla's `getStateForPlacement` from a fake hit, because the pin has no query for one, so a bridged stair or log keeps its default facing and loses that much fidelity.
+- The state's own survival rule is not consulted, because no `canSurvive`-shaped query exists at this pin.
+- `minecraft:placed_block` never fires, because the SDK refuses `minecraft:` criteria, so advancement triggers do not see a bridged placement.
+- `EntityPlaceEvent` is not fired, so a mod that cancels placements does not see a bridged one.
+- On a LAN guest the crosshair check uses the server's eye ray rather than the guest's reported hit, since no forced-hit read is exposed.
+- The client effects, the keybind and config screen, and the slab and perspective alignment helpers are not ported, because they are client-only by design.
+- The special-item compatibility layer for DankStorage, BankStorage, PlaceableItem and Sable is not carried, and a refused placement is silent, since a native mod may not add a logging crate.
+
+Ported from the upstream mod (MIT); `LICENSE-NOTICE.md` records the credit and `LICENSE` the licence text.
+
+Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["squeeglii", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/bridging_mod"
+icon = "icons/bridgingmod.png"
+categories = ["utility"]
+tags = ["port", "building"]
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-18"
+game = "26.3"
+file = "bridgingmod.hmod"
+sha256 = "dd184f6b2a392024d25aeeea9952ae9650acd5466a812ebfabb9e821dfb3b1bd"
+changelog = "First publication in the SDK format."

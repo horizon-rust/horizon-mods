@@ -1,0 +1,30 @@
+id = "cratedelight"
+kind = "mod"
+name = "Crate Delight"
+summary = "Storage crates and bags for crops, fish and other foods: nine of an item in one block."
+description = """
+Storage crates and bags for crops, fish and other foods: each holds nine of an item and crafts back into the nine.
+
+**Works on its own.** With [farmersdelight](https://playhorizon.dev/mods/farmersdelight) 0.5 or later installed too, the pumpkin slice crate is crafted from its pumpkin slices; with [expandeddelight](https://playhorizon.dev/mods/expandeddelight) 0.6 or later, the peanut crate and the salt and cinnamon bags from its peanuts, salt and ground cinnamon. Both are declared as optional dependencies.
+
+**Differences from the original:** The blueberry crate has a block model: the original jar has none, so it showed as the missing-model block. The recipes for Expanded Delight's items are in Crate Delight's namespace instead of Expanded Delight's, because a content package may only add files in its own namespaces. The blueberry crate is listed last in the creative tab.
+
+A port of [Crate Delight](https://github.com/axperty/cratedelight) 26.07.01-1.20-fabric by Axperty, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "Axperty"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/cratedelight"
+icon = "icons/cratedelight.png"
+categories = ["food", "storage"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "26.07.01-horizon.3"
+published = "2026-11-19"
+game = "26.3"
+file = "cratedelight.hmod"
+sha256 = "77f2fd261c1dc23378a7f80c6e8fe3f5b43a99b751f8c2b07c22850f44fda8a8"
+changelog = "A content package checked against the unified farmersdelight 0.5.1. It no longer points at the retired farmersdelight_native: farmersdelight and expandeddelight are optional dependencies, used only by eight recipes. LICENSE and NOTICE are inside the package. The blueberry crate gets the block model the original lacks. The categories Food and Storage are back. Supersedes #698."

@@ -1,7 +1,7 @@
 # Horizon mods
 
 The registry of what is made for [Horizon](https://github.com/horizon-rust/horizon): mods (`.hmod`), modpacks (`.hpack`)
-and resource packs, each one reviewed before it is published. Browse them at
+and resource packs. Every new project and every mod version is reviewed before it is published. Browse them at
 [playhorizon.dev/mods](https://playhorizon.dev/mods) or in the launcher (Mods, then Horizon beside Modrinth).
 
 Players install through the launcher, which verifies each reviewed package's SHA-256 and, when the project has a
@@ -26,15 +26,29 @@ it accepts, and how to have a project taken down.
 
 ## Submit
 
-Use the form at [playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit): sign in with GitHub, pick the file
-and fill in the page. The form checks the file, uploads it here and opens a pull request for you. Then:
+Submit with a pull request:
 
-1. Checks compare the entry with main, verify package structure, hashes and signatures, and build the candidate
+1. Attach the file to a GitHub release of your own repository, under the name the entry gives it.
+2. Open a pull request that adds or updates `mods/<id>.toml` with a new `[[versions]]` record: its `version`, `file`
+   name and the file's `sha256` (`sha256sum <file>`). Link the release's file in the pull request's description:
+   `https://github.com/<owner>/<repo>/releases/download/<tag>/<file>`.
+
+Then:
+
+1. The `stage` workflow downloads each linked file, makes sure its name and SHA-256 are a new record's, runs the
+   checker on it and puts it in the `staging` prerelease as `<sha256>.<extension>`. If the check failed because the
+   file was missing, it re-runs the check once. It reads the pull request only as data and runs none of it. At most
+   3 files a run, 64 MiB each.
+2. Checks compare the entry with main, verify package structure, hashes and signatures, and build the candidate
    index. They never compile or execute submitted code. Their report and candidate index are in the pull request.
-2. A reviewer (see [`.github/CODEOWNERS`](.github/CODEOWNERS)) reads the entry, the source and the report, and asks
-   for changes in the pull request if needed.
-3. Merging publishes it: the file becomes a release, the project appears on the site and in the launcher within
+3. A reviewer (see [`.github/CODEOWNERS`](.github/CODEOWNERS)) reads the entry, the source and the report (a native
+   mod's source also gets a security review), and asks for changes in the pull request if needed. An owner's update
+   of a pack skips this step (see Updates below).
+4. Merging publishes it: the file becomes a release, the project appears on the site and in the launcher within
    minutes.
+
+The form at [playhorizon.dev/mods/submit](https://playhorizon.dev/mods/submit) is legacy: it can't take current
+packages ([#1289](../../issues/1289)).
 
 Accepted kinds include content/wasm mods, native source mods, modpacks of current registry mods, resource/data packs
 and shader packs supported by the checker. Before submitting, use the checker for the reviewed engine revision:
@@ -44,27 +58,42 @@ cargo install --locked --git https://github.com/horizon-rust/horizon --rev "$(ca
 cargo horizon-mod check target/horizon-mod/my_mod.hmod
 ```
 
-**Updates** come the same way: the form adds a version to your entry, and a reviewer reads it before it is
-published. Only an entry's `owners` can add versions, and every version of a native mod is reviewed, owner or
-not: its code runs with the player's account permissions. A published file never changes: publish a new version.
+**Updates** come the same way: a pull request adds a version to your entry, and a reviewer reads it before it is
+published, except an owner's update of a pack (below). Only an entry's `owners` can add versions, and every version
+of a mod, native or not, is reviewed, owner or not: a native mod's code runs with the player's account permissions.
+
+An owner's update of a `kind = "resourcepack"`, `"shader"` (`.hshader`) or `"datapack"` entry publishes without a
+reviewer once its checks pass (`owner-update.yml`); a `"shaderpack"` (a zip) is reviewed. The pull request is opened
+by an account in the entry's `owner_ids` and only adds `[[versions]]` records to that one live entry, every other
+field unchanged, and the project is not taken down. A new record goes above any record with the same `published`
+day: the index keeps a same-day tie in the entry's order, and the launcher takes the first as the newest. New
+projects, page changes and every mod version still get a person. A published file never changes: publish a new
+version.
+
+The checker reads a resource or data pack's `pack.mcmeta` and paths, so other files in it, `.wasm` or Rust sources
+included, are accepted but never loaded (a shader pack holding them is refused). In
+[horizon](https://github.com/horizon-rust/horizon) at `.github/horizon-rev`:
+
+- the kind decides where the launcher installs the file: `resourcepacks/`, `shaderpacks/`, or the zip copied into a
+  world's `datapacks/` (`launcher/src/browser/horizon.rs:830-837`, `launcher/src/datapacks.rs:92-106`);
+- the game loads mods, and so code, only from `horizon-mods/` and `horizon-native-mods/`
+  (`crates/horizon-mod-package/src/mod_list.rs:16-19`, `crates/horizon-client/src/game/modding/mods/mod.rs:1557-1558`);
+- the file must have its kind's extension, `.zip` or `.hshader`, or the index build refuses it
+  (`crates/horizon-mod-package/src/index.rs:113-120`, `623-627`);
+- an owner update can't change the kind (`scripts/owner_update.py`).
 
 **Signing** is optional and recommended: put your [minisign](https://jedisct1.github.io/minisign/) public key in your
 entry, and every later version must be signed with it, so nobody else can publish an update in your name.
 
-## Publishing without the form
+## Staging by hand
 
-While the form is down, a hand-made pull request does the same:
-
-1. Attach the file to a GitHub release of your own repository, under the name the entry gives it.
-2. Open a pull request that adds or updates `mods/<id>.toml` with a new `[[versions]]` record: its `version`, `file`
-   name and the file's `sha256` (`sha256sum <file>`). Link the release's file in the pull request's description.
-3. A maintainer reviews the entry (a native mod's source also gets a security review). From a checkout of main they
-   trust, signed in to `gh` as a maintainer, they run
-   `scripts/stage.sh <pull request> <base sha> <head sha> <link>` with the head they reviewed and
-   `git merge-base origin/main <head sha>`. To have both commits without checking the pull request out, first run
-   `git fetch origin main refs/pull/<pull request>/head`. The script reads the pull request as data and runs none of its code; it
-   stages the file once its name and SHA-256 match a version the pull request adds. Then they re-run the check, and
-   merge that reviewed head once its required checks pass.
+A file linked somewhere `stage` doesn't take (not a GitHub release download, or more than 3 files) is staged by a
+maintainer, as is any file once `staging` holds 900 (a release takes 1000; `cleanup.yml` makes room). From a checkout of main they trust, signed in to `gh` as a maintainer, they run
+`scripts/stage.sh <pull request> <base sha> <head sha> <link>` with the head they reviewed and
+`git merge-base origin/main <head sha>`. To have both commits without checking the pull request out, first run
+`git fetch origin main refs/pull/<pull request>/head`. The script reads the pull request as data and runs none of its
+code; it stages the file once its name and SHA-256 match a version the pull request adds. Then they re-run the
+check, and merge that reviewed head once its required checks pass.
 
 ## Report
 
@@ -80,9 +109,12 @@ why.
 | `mods/<id>.toml` | One project: its page and its versions, each pinned by SHA-256 |
 | `icons/<id>.png` | Its icon, at most 256 KiB |
 | `revoked.toml` | Files taken down |
+| `.github/workflows/stage.yml` | A pull request's new files, into `staging` |
 | `.github/workflows/check.yml` | A pull request's checks |
+| `.github/workflows/owner-update.yml` | After the check: merges an owner's update of a resource, shader or data pack |
 | `.github/workflows/publish.yml` | On merge: releases, then `index.json` on Pages |
 | `.github/workflows/cleanup.yml` | Weekly: staging files nobody needs any more |
+| `.github/workflows/checker.yml` | When the pin changes: builds the checker once, attested, as release `checker@<rev>` |
 | `archive/native-v1/mods/` | Frozen original native-project histories, including earlier `.hmod` releases, and their dependent modpack; never installed or validated as current packages |
 | `archive/api-0.1/mods/` | Frozen shader API 0.1 packs and content mods with pre-SDK manifests, whole projects with no version the current tool reads; same rules as native-v1 |
 | `native/<name>/` | Frozen pre-SDK official-mod source history; not migrated mods or current build automation |
@@ -119,13 +151,17 @@ index. Modpack dependencies in the current index must all refer to current packa
 is archived rather than offered with missing dependencies.
 
 Archived IDs are reserved by the pull request check: a `mods/<id>.toml` for an archived id passes only when the
-pull request was opened by an account whose numeric GitHub id is in the archived entry's `owner_ids`. Anything else
+pull request was opened by an account whose numeric GitHub id is in the archived entry's `owner_ids` (after a
+reviewed transfer, below, the new account's id instead of the old one's). Anything else
 fails, including an archived entry without `owner_ids` and every pull request the submission form opens (as its bot).
 That failure comes last: every other check still runs, and the final step says "owner not confirmed; every other check
 passed" (or that other checks failed too). A maintainer may then admin-merge a reactivation only after verifying the
 owner by hand, and only when every step except that final owner step is green on the exact head they reviewed.
 The form service itself still checks only live ids. Owners reactivate a project through a manually reviewed `mods/<id>.toml` with a genuinely new `.hmod`
-version, preserving kind, owners, numeric owner IDs and signing key. The one kind change allowed is a legacy
+version, preserving kind, owners, numeric owner IDs and signing key. An archived id moves to another account only
+with evidence that it is the same person (a deleted account, say): a maintainer adds a line to
+`.github/owner-transfers.txt` on main, and from then on the new account is the owner. The entry may keep the archived
+owners until it is changed, or name the new login and id together. The one kind change allowed is a legacy
 `native-mod` coming back as a `mod` (content or sandboxed wasm), which can do less than native code. The frozen entry stays unchanged. That review checks the port, its source and
 exact-SDK proof, and the normal package/index checks still run. Consumer-mod ports are not part of this cutover.
 
@@ -136,9 +172,13 @@ The old `native.yml` and `native-compat.yml`, their source-application/check/tra
 cache, combined-game publisher or signing step in this repository. This replaces the unsafe context in #390;
 the old combined-game proposal #381 is not revived.
 
-Trusted validation and publication jobs build the pinned checker fresh and restore no Actions cache. So that hourly
+Trusted validation and publication jobs restore no Actions cache. They take the pinned checker from release
+`checker@<rev>` only when GitHub's build attestation shows `checker.yml` on main built that file for that exact pin,
+and otherwise build it from source. So that hourly
 runs don't count as players' downloads, each publish uploads the files it verified as a short-lived artifact, and
-the next one takes them from the last successful publish run, outside the checkout; every byte is rehashed against
+the next one, and every pull request's check, takes the matching ones from the last successful publish run this
+repository started itself (a push, the schedule or a dispatch on main, never a pull request's run), outside the
+checkout, and downloads the rest; every byte is rehashed against
 its entry, kept or downloaded, and anything missing or mismatched is downloaded again from the original version
 release or staging. The ordinary index builder then checks package structure, metadata and author
 signatures before anything is published. Existing SDK release signature/provenance authority stays in the engine's

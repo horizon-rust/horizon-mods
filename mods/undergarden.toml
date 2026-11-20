@@ -1,0 +1,43 @@
+id = "undergarden"
+kind = "native-mod"
+name = "The Undergarden"
+summary = """The Undergarden's ceiling dimension for Horizon: the level undergarden:undergarden is registered with the jar's dimension type (a bedrock ceiling, fixed…"""
+description = """The Undergarden's ceiling dimension for Horizon: the level undergarden:undergarden is
+registered with the jar's dimension type (a bedrock ceiling, fixed time, min_y -64, height 192,
+coordinate scale 4, ambient light 0.1), the jar's noise settings carried as 26.3 data with its
+surfaces, a multi-noise biome table restricted to five of the mod's biomes, the blocks those
+surfaces place, the one data-defined structure whose structure type is vanilla's jigsaw, and
+/undergarden status. The other biomes, the mobs, the Java chunk generator, carver and structure
+types, and the custom effects id are recorded gaps in notes.md.
+
+**Implemented so far:** the slice in the package, as described above.
+
+**Not yet ported**
+
+- **blocked(undergarden:noise) — the Java chunk generator.** data/undergarden/dimension/undergarden.json:1
+- **blocked(undergarden:undergarden_cave) — the Java carver.**
+- **blocked(undergarden:bigger_jigsaw) — three of the four structures.**
+- **blocked(undergarden:boulder) — the two rock features.**
+- **minecraft:random_patch has no 26.3 feature type.** The jar's deepturf_patch
+- **No mobs.** The biomes' spawners (…/biome/forgotten_field.json:… "spawners") and the
+
+Ported to Horizon 0.2 from the upstream mod; pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`. The full corresponding source ships in this repository beside the artifact.
+
+Based on the original project: https://github.com/quek04/The-Undergarden
+"""
+authors = ["quek", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/the_undergarden"
+icon = "icons/undergarden.png"
+categories = ["adventure"]
+tags = ["port", "worldgen", "dimension"]
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-18"
+game = "26.3"
+file = "undergarden.hmod"
+sha256 = "2561d47a5413e51ce1bbffa6d314c543a4cb49adc3c203375be81c77ae8c33e7"
+changelog = "First publication in the SDK format."

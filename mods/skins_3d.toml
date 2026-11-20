@@ -13,14 +13,14 @@ tags = ["skins", "3d-skins", "players", "cosmetic"]
 key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
 
 [[versions]]
-version = "2.0.0"
-published = "2026-11-18"
+version = "2.0.1"
+published = "2026-11-20"
 game = "26.3"
-file = "skins_3d-2.0.0.hmod"
-sha256 = "02c7daaab772cd9e3d6a6d247b65afba379ccf0b3dc7f36f11fbe18984426a91"
+file = "skins_3d-2.0.1.hmod"
+sha256 = "a0248c381a0e5f803aa5f4e85152ed8813a7e049699b066506a569e93db1b695"
 signature = """
 untrusted comment: signature from minisign secret key
-RUT9Ujo/oCprPBDrD/PO88c2B6MEMg+PDr1EmpPkSgJIUksHFMlU7cMJx5fb6942JBIQdHIZQLfFcKy7DWrh5JZ3tGV0bchjBQM=
-trusted comment: timestamp:1795017007	file:skins_3d-2.0.0.hmod	hashed
-s7u09CIKaPDBVf7lGsX0REH7wLGFwtARnWfwgNJmVYenJnLbTxEZukxosElUYdvrXnx//YIriZ53DmcNoA4sCw=="""
-changelog = "Works with the new mod system and Horizon Nightly 2026-11-18 (0b14f8a). The reach (8, 16, 32 or 64 blocks) is a setting in Options, Mods."
+RUT9Ujo/oCprPEO0BIlp+L6YrMcR2hoLGdWPKkN3s3nCMLHsHJtG68EKBK+pDQ9ANKCFsB3fOBCx0c05nuPBUxRmSXvOKSxl6gY=
+trusted comment: timestamp:1795183447	file:skins_3d-2.0.1.hmod	hashed
+2OOSi49/ObHuJfkgs2jmXjLcMgzbs69bppV5Jssba3I8n6WhvI1ZcHRzy6u4rb+bCZmavdNze6JCJzpaRpmrCA=="""
+changelog = "Works with the new mod system and Horizon Nightly 2026-11-20 (0a875da). The reach (8, 16, 32 or 64 blocks) is a setting in Options, Mods."

@@ -1,0 +1,12 @@
+id = "anti_xray"
+name = "Anti-Xray"
+version = "0.1.0"
+description = "Conceals enclosed blocks in terrain sent by a dedicated server."
+api = "0.2"
+side = "server"
+capabilities = ["registries"]
+
+[native]
+game = "26.3"
+horizon = "dd1509b82d4804a234fbc0da3263a5454948e9c4"
+mixins = "e59da9094f0c2fdda6c627fe9eff22dec6a906f0"

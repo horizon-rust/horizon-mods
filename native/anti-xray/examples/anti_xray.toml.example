@@ -1,0 +1,26 @@
+# Copy to config/anti_xray.toml in the dedicated server directory and restart.
+[defaults]
+enabled = false
+mode = 1
+max_block_height = 64
+update_radius = 2
+lava_obscures = false
+permission_bypass = false
+
+[dimensions."minecraft:overworld"]
+enabled = true
+hidden_blocks = [
+  "coal_ore", "deepslate_coal_ore", "iron_ore", "deepslate_iron_ore",
+  "copper_ore", "deepslate_copper_ore", "gold_ore", "deepslate_gold_ore",
+  "redstone_ore", "deepslate_redstone_ore", "lapis_ore", "deepslate_lapis_ore",
+  "diamond_ore", "deepslate_diamond_ore", "emerald_ore", "deepslate_emerald_ore",
+  "chest", "trapped_chest", "ender_chest",
+]
+
+[dimensions."minecraft:the_nether"]
+enabled = true
+max_block_height = 128
+hidden_blocks = ["ancient_debris", "nether_gold_ore", "nether_quartz_ore"]
+
+[dimensions."minecraft:the_end"]
+enabled = false

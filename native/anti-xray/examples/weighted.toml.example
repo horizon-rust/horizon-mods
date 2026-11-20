@@ -1,0 +1,22 @@
+# Copy to config/anti_xray.toml in the dedicated server directory and restart.
+[defaults]
+enabled = false
+mode = 3
+update_radius = 2
+
+[dimensions."minecraft:overworld"]
+enabled = true
+max_block_height = 64
+# Repetition makes gold ore twice as likely as either of the other entries.
+hidden_blocks = ["diamond_ore", "gold_ore", "gold_ore", "redstone_ore"]
+replacement_blocks = ["stone", "deepslate", "andesite", "granite", "diorite", "tuff", "chest"]
+
+[dimensions."minecraft:the_nether"]
+enabled = true
+mode = 2
+max_block_height = 128
+hidden_blocks = ["ancient_debris", "nether_gold_ore", "nether_quartz_ore", "nether_quartz_ore"]
+replacement_blocks = ["netherrack", "blackstone", "basalt"]
+
+[dimensions."minecraft:the_end"]
+enabled = false

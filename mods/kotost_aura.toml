@@ -1,0 +1,26 @@
+id = "kotost_aura"
+kind = "native-mod"
+name = "Kotost Aura"
+summary = "Damage turns your screen into a hardtekk edit about whoever hurt you. Lose aura when hurt, win it back by revenge."
+description = """
+Get pricked by a sweet berry bush and a cool "Berry sigma" climbs out next to you, and for six seconds your screen is an edit about it: cinematic camera cuts on the beat, zoom punches, shakes, captions word by word, letterbox bars, a grey "MOGGED" and red on the close-up, over a beat made of vanilla sounds. Fire, falls, water, mobs, players and explosions each have their own words. Every hit that lands costs aura (a blocked hit costs nothing); kill the character to win it back. Full-screen white flashes and red pulses are off by default: turn them on with `screen_flashes = 1`.
+
+Commands: `/aura` (your aura and the top five), `/aura off` and `/aura on` (all edits for you, revenge included; the aura balance still counts), and for operators `/aura test <theme>` and `/aura give <player> <count>`. Settings are in `config/kotost_aura.txt` (aura per theme, edit length, cooldowns, bpm, volume, screen flashes, captions, your own track).
+
+The grey and red filters are vanilla post chains in the package, not a shader pack."""
+authors = ["Kotost Games"]
+owners = ["Leks2000"]
+owner_ids = [107043945]
+license = "MIT"
+source = "https://github.com/Leks2000/kotost-aura/tree/main/sdk"
+icon = "icons/kotost_aura.png"
+categories = ["game-mechanics"]
+tags = ["edit", "meme", "camera"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-20"
+game = "26.3"
+file = "kotost_aura.hmod"
+sha256 = "70031a305ca3d55df782e59b89aee4029807e969f0af71ff7c606d45574435cf"
+changelog = "First registry release, built with the exact-build SDK 0a875da on the mod API (one RETURN mixin adds the grey and red post chains). Aura and the edit only for damage that lands (after the shield and the hurt cooldown); /aura off silences every edit, revenge included; no post-chain warmup on world entry; full-screen white flashes and red pulses are opt-in (screen_flashes = 1). No music is bundled: set your own track in config/kotost_aura.txt, the vanilla beat plays otherwise."

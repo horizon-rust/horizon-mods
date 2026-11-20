@@ -1,0 +1,44 @@
+id = "voice_chat"
+kind = "native-mod"
+name = "Voice Chat"
+summary = "Simple Voice Chat client for Horizon: proximity voice, positional audio, groups, push-to-talk, and voice activation."
+description = """
+An unofficial native client for the [Simple Voice Chat](https://github.com/henkelmax/simple-voice-chat) protocol on Horizon. Join a compatible Minecraft server and talk with other players through proximity voice or private groups.
+
+- Proximity voice with distance attenuation and stereo positioning.
+- Push-to-talk and voice activation with a live microphone meter.
+- Password-protected groups and a group member roster.
+- Per-player and per-source volume controls, including compatible modded audio sources.
+- Input and output device selection without rejoining the server.
+- Speaking indicators, player heads, and group icons in the HUD and name tags.
+- A localized in-game menu with vanilla-style controls and feedback sounds.
+
+Simple Voice Chat 2.6.x and 2.7 are supported. The server must run Simple Voice Chat and expose its voice UDP port.
+
+This is a native source package: Horizon Launcher builds it against the pinned SDK. Native code is not sandboxed and runs with the player's permissions.
+
+Not affiliated with Max Henkel or the Simple Voice Chat project.
+"""
+authors = ["JKearnsl"]
+owners = ["JKearnsl"]
+owner_ids = [76239707]
+license = "MIT"
+source = "https://github.com/JKearnsl/voice-chat"
+icon = "icons/voice_chat.png"
+categories = ["utility", "social"]
+tags = ["voice", "voicechat", "simple-voice-chat", "proximity-chat", "groups", "opus", "multiplayer", "client-side"]
+screenshots = [
+  "screenshots/voice_chat/1.png",
+  "screenshots/voice_chat/2.png",
+  "screenshots/voice_chat/3.png",
+  "screenshots/voice_chat/4.png",
+  "screenshots/voice_chat/5.png",
+]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-20"
+game = "26.3"
+file = "voice_chat.hmod"
+sha256 = "2732705e874bbb491426727ed84b52ca63180c2a8bd19a6ca3d2c5910b6b6d59"
+changelog = "First public release. Built and tested against Horizon 5ef7734."

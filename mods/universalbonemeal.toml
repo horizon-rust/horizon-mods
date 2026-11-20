@@ -18,9 +18,9 @@ categories = ["game-mechanics"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "universalbonemeal.hmod"
-sha256 = "9be916187d4dd1c801971d3d17a4208fc338cb0ece8656f2de2bd6ffc970ee30"
-changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the retired .hnmod."
+sha256 = "4494e8ef2d8e7ce06f8d705f460955264ffe517ebdca8c845375fe031d46d912"
+changelog = "0.4.1: chorus growth visits each stem once, so the work is bounded; the registry icon is new original art."

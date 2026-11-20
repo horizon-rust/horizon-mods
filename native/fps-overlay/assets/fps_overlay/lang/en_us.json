@@ -1,0 +1,10 @@
+{
+  "fps_overlay.setting.corner": "Corner",
+  "fps_overlay.setting.corner.tooltip": "Where the box shows. The debug screen (F3) takes the top left.",
+  "fps_overlay.corner.top_left": "Top left",
+  "fps_overlay.corner.top_right": "Top right",
+  "fps_overlay.corner.bottom_left": "Bottom left",
+  "fps_overlay.corner.bottom_right": "Bottom right",
+  "fps_overlay.setting.lows": "Minimum and 1% low",
+  "fps_overlay.setting.lows.tooltip": "Also show the slowest frame and the 1% low of the last 5 seconds."
+}

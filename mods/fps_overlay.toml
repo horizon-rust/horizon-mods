@@ -1,0 +1,33 @@
+id = "fps_overlay"
+kind = "mod"
+name = "FPS Counter"
+summary = "Frames per second in a corner of the screen, with the minimum and the 1% low."
+description = """
+Horizon's own FPS counter, an official Horizon Extra, formerly an extra in Options > Horizon Extras.
+
+- Frames in the last second, in a small box in the corner you pick.
+- Optionally the slowest frame and the 1% low of the last 5 seconds.
+- Settings: Options > Mods > FPS Counter (corner; minimum and 1% low).
+
+It counts the game's frames and draws on the HUD: nothing else.
+
+Now a WebAssembly mod (3.0.0): install it on the launcher's Mods page, with nothing to build. Your settings carry over
+from earlier versions. Its source is
+[horizon-mods/native/fps-overlay](https://github.com/horizon-rust/horizon-mods/tree/main/native/fps-overlay).
+"""
+authors = ["Horizon"]
+owners = ["ludovic111"]
+owner_ids = [136255825]
+license = "MIT"
+source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/fps-overlay"
+icon = "icons/fps_overlay.png"
+categories = ["utility"]
+tags = ["fps", "hud", "performance", "frame-time"]
+
+[[versions]]
+version = "3.0.0"
+published = "2026-11-20"
+game = "26.3"
+file = "fps_overlay-3.0.0.hmod"
+sha256 = "4e65859b37d2e76fa59669ff028649a5f5c3fd5f5c6dd1fecacb5d7872dfcca6"
+changelog = "WebAssembly mod on the new mod SDK: no build needed; same look, options and settings files; the settings are on the Config page."

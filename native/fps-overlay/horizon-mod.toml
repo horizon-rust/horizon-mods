@@ -1,0 +1,14 @@
+id = "fps_overlay"
+name = "FPS Counter"
+version = "3.0.0"
+description = "Frames per second in a corner of the screen, with the slowest frame and the 1% low if you like."
+authors = ["Horizon"]
+license = "MIT"
+homepage = "https://github.com/horizon-rust/horizon-mods/tree/main/native/fps-overlay"
+api = "0.2"
+side = "client"
+capabilities = ["registries"]
+
+[wasm]
+sha512 = "aba4cd05e8c8f2d400a07ec9dc39cbf17800dccff2472b35a48f54783075c6357a933da35053806b509dbedff88c883f0ed4e476d87f06a2a1a25408025af55f"
+toolchain = "1.99.1 58cf8f9c35b355199727627d07ae34a4e2846d67"

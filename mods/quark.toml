@@ -1,0 +1,39 @@
+id = "quark"
+kind = "mod"
+name = "Quark"
+summary = "Quark's building blocks and tweaks. Requires the native mod Quark (native)."
+description = """
+Independent port of [Quark](https://github.com/VazkiiMods/Quark) by Vazkii and the Quark team to Horizon. Not affiliated with or endorsed by them.
+
+This version has Quark's building blocks and a set of its tweaks; the rest of Quark comes in later versions.
+
+**Both projects are required:** this content mod (blocks, items, textures, recipes' data) and the native mod **Quark (native)** (behaviour, config, recipes).
+
+- **Building blocks:** vertical slabs for every slab, wooden posts, hedges, hollow logs, stools you can sit on, rope, leaf carpets, framed glass, paper lanterns and walls, bamboo mats, thatch, shingles, crates and sacks, bookshelves and ladders in every wood, blackstone and deepslate furnaces, rainbow lamps, more bricks and stone variants, grates, gold bars, more potted plants.
+- **Tweaks:** double doors open together, right-click harvesting, hoe harvesting, ladders drop down, note blocks chime on amethyst, map washing, renewable spore blossoms, scaffolding replacing, petting dogs, pig litters, safer rabbits and slimes, slimes to magma cubes, concrete powder stays on magma, glass shards, two slabs back into a block, utility recipes, automatic recipe unlock.
+- **Config:** the original's `config/quark-common.toml`.
+
+Licensed under CC BY-NC-SA 3.0, same as the original: not for commercial use."""
+authors = ["DispatchedToHeaven"]
+owners = ["DispatchedToHeaven"]
+owner_ids = [211231405]
+license = "CC-BY-NC-SA-3.0"
+source = "https://github.com/DeportedToHell/MCRE-Mods/tree/quark-0.1.0/quark"
+icon = "icons/quark.png"
+categories = ["game-mechanics", "decoration"]
+tags = ["building", "blocks", "decoration", "tweaks", "vanilla-plus"]
+screenshots = ["screenshots/quark/1.png"]
+key = "RWRKE9PraqtKIBNLiCXXKIdqfZ6tUGUVxdzMWkSmPfMz3PcTDxnyAEbv"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-15"
+game = "26.3"
+file = "quark-0.1.0.hmod"
+sha256 = "ef15544519b21db8eac14bd5f78ff2f91924ea19cf83ca0f68f4f4b18e369b45"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RURKE9PraqtKIAEh+XwQBfzHqI3GATOXtqlIPLt+hkR8y9VYzQEwrhIqD4AEGg6/CMRsYQtxry2HIO79pjGn76XZv4CK9Mjc3AM=\r
+trusted comment: timestamp:1794751675\tfile:quark-0.1.0.hmod\thashed\r
+dOCks/qDyLwvRN6vN7BsUbmKi0ySPLELRlexPxnOo4ZRHc9vVIAAYGRIHz5V0oGh4olH9e5yTB4U5BNQJdgfCw=="""
+changelog = "First release: the building group, 17 tweaks, the original's config."

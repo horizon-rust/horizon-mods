@@ -24,6 +24,7 @@ source = "https://github.com/Aiken1609/uni-viewer"
 icon = "icons/universal_viewer.png"
 categories = ["utility", "storage", "management"]
 tags = ["map", "tooltip", "shulker", "bundle", "preview", "client-side", "qol"]
+screenshots = ["screenshots/universal_viewer/1.png", "screenshots/universal_viewer/2.png", "screenshots/universal_viewer/3.png", "screenshots/universal_viewer/4.png", "screenshots/universal_viewer/5.png", "screenshots/universal_viewer/6.png", "screenshots/universal_viewer/7.png", "screenshots/universal_viewer/8.png"]
 
 [[versions]]
 version = "0.1.13"

@@ -1,0 +1,41 @@
+# Catalog submission metadata; listing requires maintainer acceptance.
+id = "plasmo_voice"
+kind = "native-mod"
+source = "https://github.com/rison1337/horizon-plasmo-voice"
+owners = ["rison1337"]
+owner_ids = [225131806]
+icon = "icons/plasmo_voice.png"
+name = "Plasmo Voice for Horizon"
+summary = "Proximity voice for Plasmo Voice 2.1 servers, built natively for Horizon. Spatial audio, push to talk, and player controls."
+authors = ["rison1337"]
+license = "MIT"
+categories = ["utility"]
+tags = ["voice-chat", "proximity", "audio", "multiplayer"]
+description = """
+An unofficial, independently written Rust client compatible with [Plasmo Voice](https://github.com/plasmoapp/plasmo-voice) 2.1 servers.
+
+- Proximity voice, distance attenuation, stereo positioning, optional HRTF, occlusion and RNNoise.
+- Push to talk over normal interfaces and a foreground microphone indicator.
+- Six settings tabs, English/Russian translations, device selection and local microphone preview.
+- Individual player volume/mute; player gain multiplies source and master levels. Hold Shift + RMB and scroll while aiming at a player; its hint appears only after a change.
+- Pixel player icons use the current entity render pose and world depth buffer, with helmet clearance.
+- Ordinary servers without a voice handshake show no connection animation.
+
+Version 0.6.0 is a flat source-only SDK .hmod, pinned to published Nightly 2026-11-19 (f00125f) and API 0.2. Horizon Launcher 0.2.85 or newer compiles only the mod against the exact signed prebuilt SDK; no game rebuild, private injections or legacy .hnmod format.
+
+First audio preparation runs offline in a background worker, using complete hash-verified Opus/RNNoise/OpenAL Soft sources included in the package. Linux x86_64 GNU needs C/C++, CMake, pkg-config and ALSA development headers. Windows x64 GNU needs C/C++, CMake and Ninja on PATH. Missing tools or failed preparation leave voice disabled with a translated explanation; install the tools and press Reconnect voice. Restart the launcher if PATH changed. macOS and Windows MSVC voice are unsupported. Later starts reuse the instance audio cache.
+
+Native code uses selected audio devices, the joined server's advertised voice endpoint and instance-local settings/cache. It adds no telemetry service. Minecraft protocol and inventory compatibility belong to Horizon.
+
+This is not an official Plasmo Voice or Horizon release. Original Plasmo Voice implementation sources and graphics were not read or copied. Independent protocol reference and third-party notices are in the source repository.
+
+0.6.0 has an actual optimized signed-SDK launcher build, Linux game/menu checks, engine/adapter regressions, OpenSSL RSA interoperability and source-built DSP/null-output tests. Earlier five-server tests belong to 0.5.0, before the migration. Two isolated clients also pass an actual Paper 1.21.11 / Plasmo Voice 2.1.17 session with generated audio in both directions, PTT across interfaces, saved bindings, player volume and world-icon occlusion. Windows GUI and physical audio-device tests are not claimed. See VALIDATION.md for exact revisions and evidence.
+"""
+
+[[versions]]
+version = "0.6.0"
+published = "2026-11-20"
+game = "26.3"
+file = "plasmo-voice-0.6.0.hmod"
+sha256 = "0b4bb9d55614c8b3215b67d229d7cd868b59dcdc43d2758ae3546bb9806e6da8"
+changelog = "Migrates to signed SDK API 0.2 and a flat source-only .hmod. Current-frame world icons, asynchronous offline audio preparation and OpenAL capture/playback. Preserves voice controls and translated UI; removes legacy bundle/injection/install paths."

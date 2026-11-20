@@ -5,7 +5,7 @@ summary = "Wearable lanterns for the trinket lantern slot."
 description = """
 Wearable lanterns for the trinket lantern slot.
 
-**Needs** [trinkets](https://playhorizon.dev/mods/trinkets) 0.4 or later installed too (declared as a dependency, so the game names it if it's missing). With [radiantgear](https://playhorizon.dev/mods/radiantgear) 0.4 or later (an optional dependency) a worn lantern gives light.
+**Needs** [trinkets](https://playhorizon.dev/mods/trinkets) 0.4.x installed too (declared as a dependency, so the game names it if it's missing). With [radiantgear](https://playhorizon.dev/mods/radiantgear) 0.4.x (an optional dependency) a worn lantern gives light. Both are native packages for Horizon's exact-build SDK dd67b76: they were tested, with this package, on dd67b76 builds and run only there; this content package itself isn't tied to a build.
 
 **Differences from the original:** The lanterns have their own creative tab and are worn through the Trinkets port's menu on the G key. Their light comes from the radiantgear package, through Horizon Extras' dynamic lights (that option has to be on), and only your own lantern's light is drawn.
 

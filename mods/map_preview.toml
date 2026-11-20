@@ -29,9 +29,9 @@ categories = ["utility"]
 tags = ["maps", "tooltip", "inventory", "preview", "client-side"]
 
 [[versions]]
-version = "2.0.0"
+version = "2.0.1"
 published = "2026-11-20"
 game = "26.3"
-file = "map_preview-2.0.0.hmod"
-sha256 = "0c9ccdd6d3b178851115178fa13cb4f80388340ed804c11541923400c0167ed8"
-changelog = "Rebuilt on Horizon's new mod API (the .hmod SDK) for Nightly 2026-11-19 f00125f. New: tooltip backgrounds, slot styles (full slot, border, inside the map frame), high-resolution slots and glass on locked maps, contributed by FitchWorks. Settings start from the defaults once."
+file = "map_preview-2.0.1.hmod"
+sha256 = "3bd6559055c078710e86c286d8f7ef538b831f30a0a56723dcaee849f6007eb0"
+changelog = "Rebuilt on Horizon's new mod API (the .hmod SDK) for Nightly 2026-11-19 5ef7734, with its game patches checked for that build. Settings now open from Mods > Map Preview > Config and start from the defaults once."

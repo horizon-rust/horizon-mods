@@ -1,0 +1,35 @@
+id = "more_chat_history"
+kind = "native-mod"
+name = "More Chat History"
+summary = "Raises the chat history from vanilla's 100 messages to 16384."
+description = """
+Keeps up to 16384 chat messages instead of vanilla's 100, so you can scroll back through a long session.
+
+- Chat messages, wrapped lines and the up-arrow history of sent messages all keep 16384 entries.
+- Nothing else about the chat changes: scrolling, search and resizing work as before.
+
+Made for Horizon from the idea of [More Chat History](https://modrinth.com/mod/morechathistory) by JackFredMods (CC0-1.0).
+None of its code is used. This is a native mod: three mixins replace the chat's trimming functions with copies that
+use the new limit.
+
+**Draft:** pinned to Nightly 2026-11-20 (`0a875da`). The `#[replaceable]` markers on three chat functions are in
+(horizon-rust/horizon#18356); building needs a launcher with horizon-rust/horizon#18789 (merged, not in a launcher release
+yet). With a launcher built from `main` it builds and works; released launchers fail with
+`unresolved import crate::command`.
+"""
+authors = ["ZiQu-dev"]
+owners = ["ZiQu-dev"]
+owner_ids = [75249449]
+license = "MIT"
+source = "https://github.com/ZiQu-dev/horizon-more-chat-history"
+icon = "icons/more_chat_history.png"
+categories = ["utility"]
+tags = ["chat", "history", "quality-of-life"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-19"
+game = "26.3"
+file = "more_chat_history-0.1.0.hmod"
+sha256 = "6016c99d846c2852d19bb3cd4be75e4d168bbf556907bd4c20f2c1ac158237b5"
+changelog = "First version. Pinned to Nightly 2026-11-20 (0a875da); needs a launcher with horizon-rust/horizon#18789."

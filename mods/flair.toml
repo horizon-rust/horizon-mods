@@ -14,6 +14,19 @@ tags = ["cosmetics", "capes", "hats", "wings", "pets", "blockbench"]
 key = "RWT9Ujo/oCprPGHHiSLHFNOJV1ZzoJdAU6EdZyiQcBwT2iMXfiYms4hD"
 
 [[versions]]
+version = "2.0.1"
+published = "2026-11-20"
+game = "26.3"
+file = "flair-2.0.1.hmod"
+sha256 = "7351198eb405efa2100d695a16913b9eb546439cb2b26057ee0ed6a2566e2bbb"
+signature = """
+untrusted comment: signature from minisign secret key
+RUT9Ujo/oCprPDfxNm5WQAvO0269CFu2IbNt8bhVyCWQMtWANEeZDoRrDoSp4sn1uWACx66OaNWHyXeJ66xKmE2fUBYKbKXa4A4=
+trusted comment: timestamp:1795183447	file:flair-2.0.1.hmod	hashed
+K1mPB3qVrkMSX95W/XTew/mI2W3FPRD+5tm8+PekUnQVQE6ZNTsV3QMOOtUb1EKWVH7KCaeWChCKVWXstjQLBA=="""
+changelog = "Built for Horizon Nightly 2026-11-20 (0a875da). Fixes the catalog's text, which 2.0.0 drew invisible (tabs, item names, Wearing, Hide armor)."
+
+[[versions]]
 version = "2.0.0"
 published = "2026-11-18"
 game = "26.3"

@@ -59,7 +59,8 @@ cargo horizon-mod check target/horizon-mod/my_mod.hmod
 ```
 
 **Updates** come the same way: a pull request adds a version to your entry, and a reviewer reads it before it is
-published, except an owner's update of a pack (below). Only an entry's `owners` can add versions, and every version
+published, except an owner's update of a pack (below). Only an entry's `owners` can add versions (Horizon's own former
+extras are the exception, see the archive section below), and every version
 of a mod, native or not, is reviewed, owner or not: a native mod's code runs with the player's account permissions.
 
 An owner's update of a `kind = "resourcepack"`, `"shader"` (`.hshader`) or `"datapack"` entry publishes without a
@@ -159,11 +160,12 @@ passed" (or that other checks failed too). A maintainer may then admin-merge a r
 owner by hand, and only when every step except that final owner step is green on the exact head they reviewed.
 The form service itself still checks only live ids. Owners reactivate a project through a manually reviewed `mods/<id>.toml` with a genuinely new `.hmod`
 version, preserving kind, owners, numeric owner IDs and signing key. An archived id moves to another account only
-with evidence that it is the same person (a deleted account, say): a maintainer adds a line to
-`.github/owner-transfers.txt` on main, and from then on the new account is the owner. Horizon's own former extras
-(`authors = ["Horizon"]`: Zoom, FPS Counter, Coordinates HUD, Keystrokes, Minimap and Recipes) belong to the
-`horizon-rust` organization rather than a person. An organization never opens a pull request, so anyone may send an
-update to them and a maintainer confirms the owner step by hand. The entry may keep the archived
+with evidence that it is the same person (a deleted account, say), or, for Horizon's own former extras, to the
+`horizon-rust` organization: a maintainer adds a line to `.github/owner-transfers.txt` on main, and from then on the
+new account is the owner. Those extras (`authors = ["Horizon"]`: Zoom, FPS Counter, Coordinates HUD, Keystrokes,
+Minimap and Recipes) belong to the organization rather than a person. An organization never opens a pull request, so
+anyone may open one on GitHub with a new version of them, and a maintainer confirms the owner step by hand; the
+submission form refuses them, because it accepts only an owner's own account. The entry may keep the archived
 owners until it is changed, or name the new login and id together. The one kind change allowed is a legacy
 `native-mod` coming back as a `mod` (content or sandboxed wasm), which can do less than native code. The frozen entry stays unchanged. That review checks the port, its source and
 exact-SDK proof, and the normal package/index checks still run. Consumer-mod ports are not part of this cutover.

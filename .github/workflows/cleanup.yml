@@ -1,11 +1,12 @@
 # The submission form uploads files to the `staging` prerelease as
-# <sha256>.<extension>. Once a version is published in its own release, or when
-# no open pull request lists a file any more, its staging copy goes:
-# published ones after 7 days, abandoned ones after 30.
+# <sha256>.<extension>. Once a version's own release holds its file, or when
+# no open pull request lists a file any more, its staging copy goes: published
+# ones after 1 day, abandoned ones after 7 (a retired .hnmod at once). Daily:
+# stage.yml stops staging automatically at 900 files. scripts/cleanup.py decides.
 name: cleanup
 on:
   schedule:
-    - cron: "17 4 * * 1"
+    - cron: "17 4 * * *"
   workflow_dispatch:
 permissions:
   contents: write
@@ -16,31 +17,34 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
+      # Every request counts against the repository's hourly API budget (1000 for this token), which every
+      # check, staging and publish run shares: a backlog is deleted over several days, oldest first.
+      MAX_DELETES: 300
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Delete staging files nobody needs
         run: |
           set -euo pipefail
-          # Hashes main lists (published), and those open pull requests add.
-          grep -ho 'sha256 = "[0-9a-f]\{64\}"' mods/*.toml | cut -d'"' -f2 | sort -u > published.txt || true
+          python3 -I scripts/test_cleanup.py
+          # Hashes open pull requests add. A diff that can't be read stops the run: its files would look abandoned.
           : > pending.txt
           # --limit: gh lists 30 by default, and a file only an older open pull request lists would be deleted.
-          for pr in $(gh pr list --state open --limit 1000 --json number --jq '.[].number'); do
-            gh pr diff "$pr" | grep -o '^+sha256 = "[0-9a-f]\{64\}"' | cut -d'"' -f2 >> pending.txt || true
+          # Its own line: a listing that fails inside `for ... in $(...)` would leave every pull request's files out.
+          prs="$(gh pr list --state open --limit 1000 --json number --jq '.[].number')"
+          for pr in $prs; do
+            diff="$(gh pr diff "$pr")" || { echo "::error::#$pr's diff can't be read: nothing deleted"; exit 1; }
+            grep -o '^+sha256 = "[0-9a-f]\{64\}"' <<< "$diff" | cut -d'"' -f2 >> pending.txt || true
           done
-          now=$(date +%s)
-          gh api --paginate "repos/$GH_REPO/releases/tags/staging" --jq '.assets[] | [.id, .name, .created_at] | @tsv' |
-          while IFS=$'\t' read -r id name created; do
-            sha="${name%%.*}"
-            age=$(( (now - $(date -d "$created" +%s)) / 86400 ))
-            grep -qx "$sha" pending.txt && continue
-            # Frozen history is not abandonment: preserve even a staging-only copy.
-            if grep -qrlF "sha256 = \"$sha\"" archive; then continue; fi
-            if grep -qx "$sha" published.txt; then
-              [ "$age" -ge 7 ] || continue
-            else
-              [ "$age" -ge 30 ] || continue
-            fi
-            echo "Deleting $name ($age days)"
+          # main as it is now: a pull request merged since the checkout is in neither list otherwise.
+          git fetch -q --depth=1 origin main
+          git checkout -q FETCH_HEAD -- mods archive
+          gh api "repos/$GH_REPO/releases/tags/staging" --jq '.assets[] | [.id, .name, .created_at] | @tsv' > assets.tsv
+          # One listing of the releases, not a request per version (publish.yml does the same).
+          gh api --paginate "repos/$GH_REPO/releases?per_page=100" \
+            --jq '.[] | {tag_name, draft, assets: [.assets[] | {name, state, digest}]}' > releases.jsonl
+          python3 -I scripts/cleanup.py "$(date +%s)" . assets.tsv releases.jsonl pending.txt > delete.tsv
+          head -n "$MAX_DELETES" delete.tsv | while IFS=$'\t' read -r id name why; do
+            echo "Deleting $name ($why)"
             gh api -X DELETE "repos/$GH_REPO/releases/assets/$id"
           done
+          echo "$(wc -l < delete.tsv) to delete, at most $MAX_DELETES a run"

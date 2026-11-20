@@ -10,7 +10,7 @@
 # itself, and uploads them, one run at a time, while staging stays under its ceiling; `rerun` re-runs the pull
 # request's check once if its first attempt failed while they were missing. It looks once and never waits: a check
 # that ends later starts this workflow again (workflow_run), and only `rerun` runs then.
-# cleanup.yml deletes staging files no open pull request lists after 30 days.
+# cleanup.yml deletes staging files no open pull request lists after 7 days (published ones after 1).
 name: stage
 on:
   pull_request_target:

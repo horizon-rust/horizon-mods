@@ -1,0 +1,30 @@
+id = "radiantgear"
+kind = "native-mod"
+name = "Radiant Gear"
+summary = "Worn trinkets that glow give dynamic light."
+description = """
+Worn trinkets that glow give dynamic light.
+
+**Needs** [trinkets](https://playhorizon.dev/mods/trinkets) 0.4 or later installed too (declared as a dependency, so the game names it if it's missing). Its glowing trinkets are the lanterns of [trinketlantern](https://playhorizon.dev/mods/trinketlantern).
+
+**Differences from the original:** Only your own worn light is drawn, not other players'. The light is Horizon Extras' dynamic lights, so it shows only with that option on. In this pack only the Wearable Lantern trinkets (trinketlantern) glow.
+
+A port of [Radiant Gear](https://github.com/illusivesoulworks/radiantgear) 2.1.6 by Illusive Soulworks, published under its licence, LGPL-3.0-or-later. The original copyright and licence notices are kept in the file (COPYING, COPYING.LESSER, LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Illusive Soulworks"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/lavoide/horizon-ports/tree/main/radiantgear"
+icon = "icons/radiantgear.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-20"
+game = "26.3"
+file = "radiantgear.hmod"
+sha256 = "c4e3b9cdecfb5a529e4f1d2ea156df31a6d5b371f6078c99b12f27bc6ebb7c05"
+changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with COPYING, COPYING.LESSER, LICENSE, NOTICE in the package. Replaces the retired .hnmod."

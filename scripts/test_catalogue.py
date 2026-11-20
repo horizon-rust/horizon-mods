@@ -245,6 +245,9 @@ sha256 = "{}"
         self.transfers = ["sample 7 8 Heir"]
         with self.assertRaisesRegex(ValueError, "owner-transfers.txt:2: expected"):
             self.review(author_id=8)
+        self.transfers = ["sample 7 7 Author same person"]
+        with self.assertRaisesRegex(ValueError, "already is one of its owner_ids"):
+            self.review(author_id=7)
 
     def test_native_can_come_back_as_a_sandboxed_mod(self):
         self.frozen()

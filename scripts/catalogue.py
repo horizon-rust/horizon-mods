@@ -127,6 +127,9 @@ def transferred_owners(id, historic, transfers):
     for old, new, login in transfers.get(id, []):
         if old not in ids or len(owners) != len(ids):
             raise ValueError(f"{id}: {TRANSFERS} hands over owner id {old}, which isn't one of its owner_ids")
+        if new in ids:
+            # Else a self-transfer, or a chain through a co-owner, would leave the outgoing account an owner.
+            raise ValueError(f"{id}: {TRANSFERS} hands owner id {old} to {new}, which already is one of its owner_ids")
         at = ids.index(old)
         owners, ids = owners[:at] + [login] + owners[at + 1:], ids[:at] + [new] + ids[at + 1:]
         states.append((owners, ids))

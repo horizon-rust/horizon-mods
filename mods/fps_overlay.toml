@@ -16,8 +16,8 @@ from earlier versions. Its source is
 [horizon-mods/native/fps-overlay](https://github.com/horizon-rust/horizon-mods/tree/main/native/fps-overlay).
 """
 authors = ["Horizon"]
-owners = ["ludovic111"]
-owner_ids = [136255825]
+owners = ["horizon-rust"]
+owner_ids = [349008135]
 license = "MIT"
 source = "https://github.com/horizon-rust/horizon-mods/tree/main/native/fps-overlay"
 icon = "icons/fps_overlay.png"

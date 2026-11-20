@@ -1,0 +1,42 @@
+id = "occultism"
+kind = "native-mod"
+name = "Occultism"
+summary = "Occultism by KliKli, ported to Horizon: ritual circles, spirits, working foliots, soul gems, dimensional storage and the mineshaft."
+description = """
+An unofficial, alpha port to Horizon of [Occultism](https://github.com/klikli-dev/occultism), the mod by KliKli ([klikli-dev](https://github.com/klikli-dev)), made with their permission. It isn't made or supported by KliKli, so please report problems [to this port](https://github.com/Dawnforger/occultism-horizon/issues), not to them. Occultism's code is MIT and some of its art is CC BY 3.0, both credited in the package's NOTICE.
+
+**What's in this alpha**
+
+- **Ritual circles.** Chalk glyphs that wear down as you use them, sacrificial bowls and a golden bowl, and Occultism's rituals, with their sacrifices and item uses.
+- **Spirit names.** Books of binding carry their spirit's name, and what is made from them passes it on.
+- **Working foliots.** Summoned with a job and bound to a book of calling: the janitor gathers dropped items, the transporter moves stacks between containers, the lumberjack fells and replants trees, and the farmer harvests and replants crops, each bringing what it gathers to a container.
+- **Soul gems.** Capture a creature whole and let it out elsewhere.
+- **Unbound spirits.** Summon a hostile Afrit or Marid, drawn from Occultism's own models and animations, with its stats, immunities and helpers.
+- **The Demonic Altar.** A bound crusher spirit grinds ores into dusts at its rank's speed.
+- **Spirit fire and Demon's Dream.** Datura, otherstone, books of binding, inks and more.
+- **The Third Eye and otherworld goggles.** Raw iesnium in silver ore, otherworld logs among the oaks you chop.
+- **Dimensional storage.** The Storage Actuator in Occultism's terminal look with its crafting grid, stabilizer plates, stable wormholes, the Storage Accessor, and hoppers that pull from it.
+- **The dimensional mineshaft.** Miner spirits dig ores into it.
+
+**Different from Occultism for now:** the book of calling has no screen (its mode and work area change when you use it, and its tooltip shows them); spirits take no item filters; the transporter doesn't open doors; the lumberjack's summoning takes a jungle sapling for the otherworld sapling, whose trees aren't in this port.
+
+**Not in yet:** possessed mobs, wild hordes, familiars, the djinni's and higher spirits' jobs, and Occultism's guide book.
+
+This is a native mod: the launcher builds it after asking you to trust its code, and it runs with your account's permissions. It contains no Minecraft code or assets. Pinned to game 26.3, Horizon SDK `0b14f8a` and horizon-mixins `e59da90`, and fits the Nightlies of 2026-11-19 (`5ef7734`) and 2026-11-20 (`0a875da`); the full corresponding source is the linked repository.
+"""
+authors = ["KliKli", "Dawnforger"]
+owners = ["Dawnforger"]
+owner_ids = [73370299]
+license = "MIT AND CC-BY-3.0"
+source = "https://github.com/Dawnforger/occultism-horizon"
+icon = "icons/occultism.png"
+categories = ["magic", "storage"]
+tags = ["occultism", "rituals", "spirits", "chalk", "storage", "port", "alpha"]
+
+[[versions]]
+version = "0.9.0-alpha.2"
+published = "2026-11-20"
+game = "26.3"
+file = "occultism-0.9.0-alpha.2.hmod"
+sha256 = "4e600aa76c7ae2727c9e38ba3bd88b0325ad1de11a52b15848a2889e3c31f57b"
+changelog = "First publication in the SDK format: one native package on Horizon's mod API, with the working foliots (janitor, transporter, lumberjack, farmer) and soul gems. Fits Horizon's newer Nightlies and carries all of Occultism's notices."

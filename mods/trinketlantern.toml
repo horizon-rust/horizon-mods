@@ -1,0 +1,30 @@
+id = "trinketlantern"
+kind = "mod"
+name = "Wearable lanterns"
+summary = "Wearable lanterns for the trinket lantern slot."
+description = """
+Wearable lanterns for the trinket lantern slot.
+
+**Needs** [trinkets](https://playhorizon.dev/mods/trinkets) 0.4 or later installed too (declared as a dependency, so the game names it if it's missing). With [radiantgear](https://playhorizon.dev/mods/radiantgear) 0.4 or later (an optional dependency) a worn lantern gives light.
+
+**Differences from the original:** The lanterns have their own creative tab and are worn through the Trinkets port's menu on the G key. Their light comes from the radiantgear package, through Horizon Extras' dynamic lights (that option has to be on), and only your own lantern's light is drawn.
+
+A port of [Wearable lanterns](https://github.com/AbsentAbigail/WearableLantern) 1.0.1 by tsuki, Absent Abigail, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, LICENSE-CC0, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "tsuki", "Absent Abigail"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/trinketlantern"
+icon = "icons/trinketlantern.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "1.0.1-horizon.2"
+published = "2026-11-20"
+game = "26.3"
+file = "trinketlantern.hmod"
+sha256 = "4ab242bef2f37798d434be16112e4cff131a51d30c38d3091ae7d97f9d21b6c2"
+changelog = "Content package with LICENSE, LICENSE-CC0 and NOTICE at the root; depends on the unified trinkets ^0.4 (radiantgear ^0.4 optional for the light)."

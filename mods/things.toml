@@ -1,0 +1,30 @@
+id = "things"
+kind = "native-mod"
+name = "Things"
+summary = "Trinkets and gadgets from Things (subset)."
+description = """
+Trinkets and gadgets from Things (subset).
+
+**Works with** [trinkets](https://playhorizon.dev/mods/trinkets) 0.4 or later (an optional dependency): the socks, gloves, necklaces and other trinkets are worn in its slots. The tools work without it.
+
+**Differences from the original:** The Agglomeration, Displacement Tome, Broken Watch, Ender Pouch, Radiant Gem and the Things almanac are left out. Mining Gloves give Haste II instead of the Momentum effect, and the Infernal Scepter fires on use with a cooldown instead of charging. The Enchanted Wax Gland doesn't help with floating or lava, the Hades Crystal doesn't put out fire, and mobs can trigger the diamond pressure plate. Players joining over LAN can open a locked container with any Container Key. The socks' upgrade and Jumpy Socks crafting recipes are left out.
+
+A port of [Things](https://github.com/glisco03/things) 0.3.3 by glisco, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+Its textures, models and data come from the original mod. No Minecraft code is included."""
+authors = ["lavoide", "glisco"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/things"
+icon = "icons/things.png"
+categories = ["adventure", "equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-20"
+game = "26.3"
+file = "things.hmod"
+sha256 = "880f62fb29b83b69bf7badcc4742110655aef816b0ce57bf02fca24e2f5fafa2"
+changelog = "One native package with the code and the content, built with the exact-build SDK dd67b76 (mod API, game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the content-only entry and the retired .hnmod."

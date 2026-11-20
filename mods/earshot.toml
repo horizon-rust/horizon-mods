@@ -35,9 +35,9 @@ categories = ["social", "utility"]
 tags = ["voice-chat", "proximity", "multiplayer", "audio", "simple-voice-chat"]
 
 [[versions]]
-version = "2.0.1"
+version = "2.0.2"
 published = "2026-11-20"
 game = "26.3"
-file = "earshot-2.0.1.hmod"
-sha256 = "3bbd152b690c5944dbb7a4f9882f9787f51f42caf143ebce7f2e00aa3dcadab3"
-changelog = "First release on the Horizon registry: built on Horizon's mod API for Nightly 2026-11-19 f00125f. 2.0.1 fixes a crash report on every game exit on Windows."
+file = "earshot-2.0.2.hmod"
+sha256 = "fe856455c591b35e6f7051fca5a87892e348497f046347039ba171f09ea0e436"
+changelog = "First release on the Horizon registry: built on Horizon's mod API for Nightly 2026-11-19 5ef7734. Fixes a crash report on every game exit on Windows."

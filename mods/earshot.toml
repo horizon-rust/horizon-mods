@@ -20,7 +20,7 @@ Keys: V opens the voice menu, M mutes, N deafens; rebind them in Controls. Mods 
 
 **Platforms:** Windows and macOS for now. On Linux the launcher refuses it: its audio library uses ALSA there, which the game links too.
 
-Works with Simple Voice Chat 2.6.27 (compatibility version 20), Fabric and Paper. Hosting voice on a Horizon dedicated server is off in this version (horizon-rust/horizon#18462).
+Works with Simple Voice Chat 2.6.27 (compatibility version 20), Fabric and Paper. Hosting voice on a Horizon dedicated server is off in this version, until its game patch is tested again (horizon-rust/horizon#18462 is fixed).
 
 Source: https://github.com/selfmonoraque5/earshot
 
@@ -35,9 +35,9 @@ categories = ["social", "utility"]
 tags = ["voice-chat", "proximity", "multiplayer", "audio", "simple-voice-chat"]
 
 [[versions]]
-version = "2.0.2"
+version = "2.0.3"
 published = "2026-11-20"
 game = "26.3"
-file = "earshot-2.0.2.hmod"
-sha256 = "fe856455c591b35e6f7051fca5a87892e348497f046347039ba171f09ea0e436"
-changelog = "First release on the Horizon registry: built on Horizon's mod API for Nightly 2026-11-19 5ef7734. Fixes a crash report on every game exit on Windows."
+file = "earshot-2.0.3.hmod"
+sha256 = "aaf66534a1391bf990b0bc817f7a0a412c0c6f248358d7589b6178597541c182"
+changelog = "First release on the Horizon registry: built on Horizon's mod API for Nightly 2026-11-19 5ef7734, and also builds on later Nightlies where the mod API it uses is unchanged (tested on 2026-11-20 0a875da). Fixes a crash report on every game exit on Windows."

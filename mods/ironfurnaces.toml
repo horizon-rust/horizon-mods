@@ -1,0 +1,46 @@
+id = "ironfurnaces"
+kind = "native-mod"
+name = "ironfurnaces"
+summary = "A Horizon port of ironfurnaces."
+description = """
+A port of [Iron Furnaces](https://github.com/Qelifern/IronFurnaces) for Horizon.
+
+**Implemented so far**
+
+- The eight furnace tiers with vanilla-only recipes in the jar: **copper, iron, gold, diamond, emerald, obsidian, crystal and netherite**.
+- Smelting with fuel, the tier speed, the coal-scaled burn time, the vanilla furnace menu (input, fuel, output, plus the flame and arrow data slots), the `lit` state and the tier-upgrade items.
+- Vanilla-furnace → copper/iron upgrades work (read through the vanilla furnace block entity, its three slots restored).
+
+**Not yet ported**
+
+- **Eight tiers only.** Silver, allthemodium, vibranium, unobtainium and the rainbow furnace need other mods' materials; their assets are carried but inert.
+- **Augments, the factory, the generator, the wireless heater, the settings GUI, auto IO, redstone modes and XP** are deferred; the furnace branch only.
+- Lit light is 13 (the `minecraft:furnace` template) where upstream is 14.
+- The e2e exercises only the copper → iron upgrade.
+
+**Licence: Apache-2.0**, from the exact jar this port was written against (`ironfurnaces-neoforge-1.21.1-4.3.2.jar` declares `license="Apache License Version 2.0"`); upstream's GitHub default branch is the 1.20.1 tree, whose `LICENSE` says GPL-3.0, so the provenance follows the jar. The original copyright (Qelifern (pizzaatime), XenoMustache) and the licence travel inside the bundle: `LICENSE` and `LICENSE-NOTICE.md` at the package root, with the same texts in the source repository. Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
+"""
+authors = ["Qelifern", "AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "Apache-2.0"
+source = "https://github.com/AdLf0208/iron_furnaces"
+icon = "icons/ironfurnaces.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-10"
+game = "26.3"
+file = "ironfurnaces.hmod"
+sha256 = "0b2a1f2b582c401b92930ecd864d74a057f4f3f47be402c93d2e186f4d7187f1"
+changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "ironfurnaces.hmod"
+sha256 = "71590264a3b1857466ff1b032856e1990fc2427ab564667e247438662b1250d7"
+changelog = """Review repair. Two upgrades before the furnace ticks no longer lose the contents: the transfer is atomic now — the captured inventory and the four burn/cook counters are written into the replacement in the same server call, inside one transaction, all-or-nothing, and the deferred queue keeps one entry per position and carries the earlier snapshot forward. The game mode is checked before anything is read, replaced or consumed: a spectator changes nothing, adventure only where the item may be used. The package carries upstream's third-party credits (NOTICE.txt verbatim at the root, Apache-2.0). Proven in game: two upgrades in one server call report the input, fuel and output in the replacement; a spectator's click leaves the block unchanged while a survival player's upgrades it."""

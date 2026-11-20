@@ -20,9 +20,9 @@ categories = ["utility", "management"]
 tags = ["homestead", "port"]
 
 [[versions]]
-version = "0.4.0"
+version = "0.4.1"
 published = "2026-11-20"
 game = "26.3"
 file = "mousewheelie.hmod"
-sha256 = "5dd0ae7af6a5d8253a279c736b1bc842dc492f6a8dc4324ebd32cd2f89b33f5d"
-changelog = "Built with the exact-build SDK dd67b76 (game modules and [[native.mixin]] patches), with LICENSE, NOTICE in the package. Replaces the retired .hnmod."
+sha256 = "85648c423f12b0a4ac03e087b5e01acb5ac4d17643312bf9033b16dfd5da1285"
+changelog = "0.4.1: restock takes only stacks with exactly the target's components and checks the real slot and cursor after each click; an incompatible item is never left on the cursor."

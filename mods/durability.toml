@@ -1,0 +1,28 @@
+id = "durability"
+kind = "native-mod"
+name = "Durability HUD"
+summary = "Shows remaining durability for your armour and held items."
+description = """Draws a small panel with the durability left on your armour and the item in your hand, so you know what to repair before it breaks.
+
+An original native mod for Horizon, written for this project (MIT). Source and licence: [`native/durability`](https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/durability).
+
+- One row per equipment slot, with the item's readable name and remaining durability.
+- Optional percentage.
+- Pick which corner it sits in; right-hand corners align to the screen edge.
+- Only reads your own equipment; it changes no game state."""
+authors = ["Jorungandr"]
+owners = ["Jorungandr"]
+owner_ids = [188995885]
+license = "MIT"
+source = "https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/durability"
+icon = "icons/durability.png"
+categories = ["utility", "equipment"]
+tags = ["hud", "durability", "equipment", "armour"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "durability-0.2.1.hmod"
+sha256 = "b70cbea3c1ecb2c31ba4823c4881cf1f93e6ba2fa517306dfa444687e6fb69a7"
+changelog = "Use the game's localised item names (e.g. 铜头盔) instead of hard-coded English labels; regenerate uses.json for the translate handles."

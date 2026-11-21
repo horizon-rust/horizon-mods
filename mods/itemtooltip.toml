@@ -1,0 +1,28 @@
+id = "itemtooltip"
+kind = "native-mod"
+name = "Item Tooltip+"
+summary = "Adds the item id, durability and stack size to item tooltips."
+description = """Adds a little more to item tooltips: the item id, current durability and max stack size, so you can tell similar items apart at a glance.
+
+An original native mod for Horizon, written for this project (MIT). Source and licence: [`native/itemtooltip`](https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/itemtooltip).
+
+- Item id line, e.g. `minecraft:diamond_pickaxe`.
+- Durability `current / max` for damageable items.
+- Stack size for stackable items.
+- Each line can be toggled in settings."""
+authors = ["Jorungandr"]
+owners = ["Jorungandr"]
+owner_ids = [188995885]
+license = "MIT"
+source = "https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/itemtooltip"
+icon = "icons/itemtooltip.png"
+categories = ["utility"]
+tags = ["tooltip", "items", "durability", "hud"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "itemtooltip-0.2.1.hmod"
+sha256 = "f2b2eed1b862e8c352b21a4ff16999edcd7a366ebc5cf919fcf15fffe356f2a2"
+changelog = "Tooltip lines are now fully opaque: the RGB palette was being passed as RGBA, which hid the item id and stack lines."

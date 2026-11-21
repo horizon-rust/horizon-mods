@@ -1,0 +1,29 @@
+id = "chathighlight"
+kind = "native-mod"
+name = "Chat Highlight"
+summary = "Highlights one of four built-in keyword packs in chat."
+description = """Highlights a built-in pack of keywords in chat so pings, greetings and warnings do not get lost in the scroll.
+
+An original native mod for Horizon, written for this project (MIT). Source and licence: [`native/chathighlight`](https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/chathighlight).
+
+- Pick one of four preset keyword packs: server, greetings, help or warning. Custom keyword lists are not available in this release.
+- Pick one of the preset highlight colours; the colour is applied to each match in place.
+- Case-sensitive or case-insensitive matching.
+- Works on the real chat line, including names and text inside the translation arguments.
+- Nothing leaves your computer; it only changes how chat is drawn."""
+authors = ["Jorungandr"]
+owners = ["Jorungandr"]
+owner_ids = [188995885]
+license = "MIT"
+source = "https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/chathighlight"
+icon = "icons/chathighlight.png"
+categories = ["social", "utility"]
+tags = ["chat", "highlight", "keywords", "filter"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-20"
+game = "26.3"
+file = "chathighlight-0.2.0.hmod"
+sha256 = "6c12c88ccbd293307cf17c4318f09a7d7315dff3ef82d7bbae9ad002b57690f7"
+changelog = "First release."

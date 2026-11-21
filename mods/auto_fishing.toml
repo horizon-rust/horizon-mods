@@ -1,0 +1,49 @@
+id = "auto_fishing"
+kind = "native-mod"
+name = "Auto Fishing"
+summary = "Client-side auto fishing from the vanilla bobber splash sound."
+description = """
+Auto Fishing detects the fishing bobber splash sound and automatically reels in, then recasts after a 5-tick delay (about 250 ms).
+Press F8 to toggle automation; the enabled state appears in local chat. Cast once with a fishing rod to start. Install this mod only on the client.
+Another player's bobber within 32 blocks can also trigger a reel while Auto Fishing is armed.
+"""
+authors = ["Schonggg"]
+owners = ["Schonggg"]
+owner_ids = [112318347]
+license = "MIT"
+source = "https://github.com/Schonggg/Horizon_Mod/tree/main/auto-fishing"
+icon = "icons/auto_fishing.png"
+categories = ["utility"]
+tags = ["fishing", "auto-fishing", "automation"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-20"
+game = "26.3"
+file = "auto_fishing-0.1.0.hmod"
+sha256 = "99932ed61cf09104879e6a48f2cf83900be6918ed184d36b86f519d552c57571"
+changelog = "Ported to the native Horizon SDK (API 0.2); automatic bite response and recasting are unchanged."
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-20"
+game = "26.3"
+file = "auto_fishing-0.1.1.hmod"
+sha256 = "0a3e293eab9e4683a4fddda25b904e1bb09cb51d273f7c46b84c31a2d73708ab"
+changelog = "Made the mod client-only and replaced custom network payloads with local splash-sound detection."
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-20"
+game = "26.3"
+file = "auto_fishing-0.1.2.hmod"
+sha256 = "4ad99bd980813457dc24a2619628a8842a07204b90abcf7dbd45137cd3d4022f"
+changelog = "Added local chat confirmation when F8 enables or disables Auto Fishing."
+
+[[versions]]
+version = "0.1.3"
+published = "2026-11-20"
+game = "26.3"
+file = "auto_fishing-0.1.3.hmod"
+sha256 = "152807273a57b7a77cd1b5b571206fede81c8ad9113380c1ee2dada801028ec2"
+changelog = "Increased the delay after reeling to 5 ticks (about 250 ms) before recasting."

@@ -41,3 +41,11 @@ game = "26.3"
 file = "storagedelight.hmod"
 sha256 = "991ffada5cf8b646226b4cf9db74a336a72ae4b1967d692c1867db398737869d"
 changelog = "First publication in the SDK format."
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "storagedelight.hmod"
+sha256 = "719980df2786c78cf1a239f6c3884ddb61a7187a9ce39d4df9d45b43af973ca3"
+changelog = """Slice 2, the remaining eleven wood families: every one of the 169 blocks upstream registers — the oak family the port already carried plus twelve more — each the same barrel template with one 27-slot container, its menu and its screen, plus the furnace-fuel data those blocks carry. Proven in game: 169 of 169 blocks place, open a 27-slot menu whose title is the block's own English name, show `open` while viewed and clear it when closed, and break with an axe for their drop; 141 wooden blocks burn as 300-tick fuel while a crimson stem does not; and all 169 carried recipes craft, consume their ingredients and empty the grid. Two upstream data defects were found and fixed: `pale_oak_cabinet` is the one registered block with no translation key (168 keys for 169 blocks) and the one wooden block missing from the fuel data map while its fourteen siblings burn 300 ticks — both one-line fixes worth an upstream report. A 0.2.0 note was also corrected by measurement: the menu title is the block's own name at this pin, not vanilla's, and that is now asserted for all 169."""

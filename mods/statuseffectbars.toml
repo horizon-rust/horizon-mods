@@ -1,0 +1,40 @@
+id = "statuseffectbars"
+kind = "native-mod"
+name = "statuseffectbars"
+summary = "A Horizon port of Status Effect Bars."
+description = """Exact 1:1 Rust translation of [Status Effect Bars](https://github.com/A5b84/status-effect-bars)
+(upstream Java, LGPL-3.0-or-later per fabric.mod.json; Modrinth lists LGPL-3.0-only),
+master @7c00964 (2026-06-18), by A5b84.
+
+Ported for the Horizon client by sparticle. Upstream credit: A5b84.
+
+- The fabric client entrypoint `StatusEffectBars` maps to the carrier's
+  client-init hook (`status_effect_bars::on_initialize_client`).
+- The ModMenu config-screen entrypoint joins the config-screen batch later,
+  as with the other ports.
+- Mixins: `HudMixin`, `EffectsInInventoryMixin`, `LivingEntityMixin`,
+  `MobEffectInstanceMixin` (adds the `maxDuration` attribute used for
+  rendering), all carried 1:1 with host seams.
+
+Build: `cargo test` (17 tests). Package: `ports/smooth-f5/tools/package.py`.
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: LGPL-3.0-or-later. Source: https://github.com/Sparticle62ops/horizon-status-effect-bars
+"""
+authors = ["A5b84", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-status-effect-bars"
+icon = "icons/statuseffectbars.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "statuseffectbars-1.0.0.hmod"
+sha256 = "f77682fe0c179b7cfbb3796f019bd456f190a406e6c0295e05751e76d7b3570c"
+changelog = "Initial registry submission"

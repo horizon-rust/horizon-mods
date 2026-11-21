@@ -1,0 +1,50 @@
+id = "auto_lectern"
+kind = "native-mod"
+name = "auto_lectern"
+summary = "A Horizon port of Auto Lectern."
+description = """An exact 1:1 Rust port of [Auto Lectern](https://github.com/capthehacker99/AutoLectern)
+(capthehacker99, CC-BY-NC-SA-4.0) for [Horizon](https://github.com/horizon-rust/horizon),
+which cycles librarian trades by breaking and replacing lecterns until an
+offered book matches your goal. The upstream license and credit carry with
+this port; see LICENSE.
+
+## Scope (1:1, upstream sys.exe.al)
+
+- src/state.rs, src/goal.rs, src/auto_lectern.rs: ALState, ALGoal,
+  ALAutoTrade, DummyInput and the AutoLectern main class 1:1 (state cycle,
+  goal matching with upstream's -1 sentinel quirks, the vanilla price
+  helpers, autolec.txt config load/save).
+- src/commands_seam.rs: the commands package 1:1 (AutoLec's register tree,
+  ClientCommandManager with the CommandSyntaxException context-line
+  rendering, FakeCommandSource) plus the Brigadier surface it drives
+  (StringReader, literal/required argument builders, IntegerArgumentType,
+  RegistryEntryReferenceArgumentType with registry fall-through,
+  CommandDispatcher) as a same-shape seam.
+- src/mixins.rs: the mixin package 1:1 (ClientCommonNetworkHandler send
+  redirect with the rotation spoof, GameRenderer render head,
+  MinecraftClient tick/stop, ClientPlayerInteractionManager breaking hooks,
+  ClientPlayNetworkHandler: merchant screen open/close, command tree
+  update, entity-tracker librarian switch, item pickup animation, and the
+  full trade pipeline: findCheapestTrade, checkTrades, attemptLockTrade,
+  determineTrades).
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: CC-BY-NC-SA-4.0. Source: https://github.com/Sparticle62ops/horizon-auto-lectern
+"""
+authors = ["capthehacker99", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "CC-BY-NC-SA-4.0"
+source = "https://github.com/Sparticle62ops/horizon-auto-lectern"
+icon = "icons/auto_lectern.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "auto_lectern-1.0.0.hmod"
+sha256 = "156cf7abfdd5f84c9b3a9e034109e3e48803fb17fcd9e92c92d0f7c54411570b"
+changelog = "Rebuilt on the f00125f native-mod API: the /autolec command tree and the tick hook wired through the seams, autolec.txt config load 1:1, full source package; description tail repaired"

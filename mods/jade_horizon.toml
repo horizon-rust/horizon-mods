@@ -1,0 +1,36 @@
+id = "jade_horizon"
+kind = "mod"
+name = "Jade for Horizon"
+summary = "Shows what you are looking at: the block or entity under the crosshair, its mod, and details like growth, health and contents."
+description = """
+An unofficial Horizon port of [Jade](https://github.com/Snownee/Jade) by Snownee. Jade is a Java NeoForge mod that can't run in Horizon: this port rewrites its main features in Rust, as a WebAssembly mod on the mod SDK.
+
+A tooltip at the top of the screen shows what the crosshair is on:
+
+- **Blocks**: icon, name, originating mod; crop growth; beehive honey and bees, composter level, respawn anchor charges, farmland moisture, egg hatching, cake slices; redstone power, repeater delay, comparator mode, lever state; note block, jukebox disc, spawner mob; container contents (merged by item, up to 18 icons); furnace and brewing stand progress; whether your held item can harvest the block; a mining progress bar.
+- **Entities**: name, health, originating mod; animal growth, breeding cooldown and love mode, time to the next egg; tamed animal owner; horse speed and jump height, llama strength; villager profession and level, zombie villager cure time; active effects; item frame contents; primed TNT fuse.
+
+Numpad 0 shows or hides the tooltip (rebindable in Options > Controls). Theme (Vanilla, Dark, Light, Waila), position, size and one toggle per kind of information are in Options > Mods > Jade for Horizon > Config.
+
+**What it does and doesn't do.** On the client it only reads what the player is looking at and draws on the HUD. Health, animal, villager and horse data, effects, container contents and furnace/brewing progress are only known to the server: when the mod is also installed on the server, the client asks for them a few times per second over the mod's own payloads (`jade_horizon:peek_entity` and `jade_horizon:peek_block`, answered with `jade_horizon:entity_info` and `jade_horizon:block_info`), only for a target within 24 blocks, and the server answers with that target's data. A locked container (vanilla `lock`, on it or on the other half of a double chest) has its contents left out, for every player. Nothing else is sent, and it makes no other network access. Without the mod on the server, the tooltip still works without those lines. It doesn't change the world or any block, item or entity.
+
+Not ported from Jade: its hundreds of integrations with other Java mods (Create, Mekanism…), which have no Horizon counterpart.
+
+Licence: CC BY-NC-SA 4.0, like Jade. Jade is the work of Snownee and contributors; the original licence and credits are in the package's LICENSE and NOTICE files. Not affiliated with Snownee.
+"""
+authors = ["Pierddev"]
+owners = ["Pierddev"]
+owner_ids = [139257364]
+license = "CC-BY-NC-SA-4.0"
+source = "https://github.com/Pierddev/jade-horizon"
+icon = "icons/jade_horizon.png"
+categories = ["utility"]
+tags = ["hud", "tooltip", "waila", "jade", "port", "qol"]
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-21"
+game = "26.3"
+file = "jade_horizon-0.1.1.hmod"
+sha256 = "5a5add34467793053d0e59d12e3d3da7efa422f46d99512983213192609a4aa5"
+changelog = "First release, for Horizon Nightly 0a875da. A locked container's contents are never sent."

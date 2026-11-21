@@ -1,0 +1,49 @@
+id = "savemykeybinds"
+kind = "native-mod"
+name = "savemykeybinds"
+summary = "A Horizon port of SaveMyKeybinds."
+description = """Save and load presets of your keybinds. A Rust port of
+[SaveMyKeybinds](https://github.com/MisterCheezeCake/SaveMyKeybinds)
+(by MisterCheezeCake, LGPL-3.0-or-later) for
+[Horizon](https://github.com/horizon-rust/horizon), a native mod built on
+horizon-mixins.
+
+## What it does
+
+- `/savemykeybinds save <name>` saves every keybind to a preset.
+- `/savemykeybinds load <name>` applies a preset. A strict preset (its JSON
+  says `"strict": true`) unbinds every key it does not name.
+- `/savemykeybinds delete <name>` deletes a preset.
+- `/savemykeybinds list` lists the presets. `/smkb` is a shorter alias.
+
+Presets live in a `savemykeybinds` folder in the config dir as
+`<name>.preset.json` and keep the original's JSON shape, so presets made with
+the original mod load here unchanged.
+
+The original adds its buttons to the options screen; Horizon native mods have
+no way to add buttons to that screen yet, so the commands stand in for them.
+
+## License
+
+LGPL-3.0-or-later, see LICENSE. The original mod is credited above.
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: LGPL-3.0-or-later. Source: https://github.com/Sparticle62ops/horizon-savemykeybinds
+"""
+authors = ["MisterCheezeCake", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-savemykeybinds"
+icon = "icons/savemykeybinds.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "savemykeybinds-1.0.0.hmod"
+sha256 = "74278792fb8bd4ab84b5f9fd7581f516db31218e26a6ee169879b29867e1c109"
+changelog = "Initial registry submission"

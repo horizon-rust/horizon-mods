@@ -1,0 +1,19 @@
+id = "nofog"
+kind = "mod"
+name = "NoFog"
+summary = "Press G to toggle fog removal in water, lava and powder snow."
+description = "Use G to switch fog removal on or off for all three environments."
+authors = ["C0lor4"]
+owners = ["C0lor4"]
+owner_ids = [264962272]
+license = "MIT"
+source = "https://github.com/C0lor4/NoFog"
+categories = ["utility"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "nofog.hmod"
+sha256 = "9783522651238534d9cd0a7014d335d4db6d8d13c0452814c164de41227016eb"
+changelog = "Initial release."

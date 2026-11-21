@@ -37,3 +37,11 @@ game = "26.3"
 file = "transfer_labels.hmod"
 sha256 = "0df45ce61119e36f3ec68b4aa5a8582412c162350100ab2f0279718506956a0e"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "transfer_labels.hmod"
+sha256 = "0d1504ad0a8324dd71da0ff97d88684ade73a1001547d79bb7a680eafe110e71"
+changelog = """Slice 2, the insert label: `itemstack_insert_transfer_label`, the other half of the mod's core mechanic, so both directions the jar ships now exist. Same carrier and same once-per-activation move as the extract label, with source and destination swapped: with a chest above and a labelled chest below, eleven items drop into the labelled one while the pair still holds exactly thirty-two between them, which is the invariant that proves nothing was created. The flow is saved and reads back as `flow=insert` after a relaunch, and an old saved label with no flow field reads as extract. Twelve carried recipes are crafted in game with their ingredients consumed and a wrong grid that makes nothing. Four fluid labels were deliberately left out: `enderstorage` measured that a tank write over the API is lost at this pin, so that half needs a re-measure, not a guess."""

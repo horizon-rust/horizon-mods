@@ -17,7 +17,7 @@ A port of [Baubley Heart Canisters](https://github.com/Traverse-Joe/Baubley-Hear
 - **Soul canisters count.** `getHeartCount` sums every stored canister, including the soul slot, so soul contributes 2 health each.
 - The amulet, the belt and the soul-heart variants beyond the canister are later slices.
 
-MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93.
+MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
 """
 authors = ["Traverse-Joe", "AdLf0208"]
 owners = ["AdLf0208"]
@@ -35,3 +35,11 @@ game = "26.3"
 file = "bhc.hmod"
 sha256 = "b33bd4b13114f268c580a7c270627dbdcb516721d990cc071e2505e8ad6d5fb1"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-20"
+game = "26.3"
+file = "bhc.hmod"
+sha256 = "3668bc07a06008cb75401ccf05920e958983edeef098051b67022ce890fda406"
+changelog = """Slice 2 in game: the mob-drop miniature hearts now have a launcher leg — ten heart items giveable, the zombie dropping 2, the cow none and the warden 2/2/2/0, the canister recipe crafted with its ingredients consumed (and an undeclared pattern, plus a heart with no carried recipe, crafting nothing), and the canister's health table. Defect fixed: the loot_drops guard skipped every call with an empty table, which the engine documents as the case where the block or mob has none."""

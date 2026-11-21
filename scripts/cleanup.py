@@ -86,16 +86,28 @@ def hashes(text):
     return {h.lower() for h in HEX.findall(text)} | named(parsed(text))
 
 
-def records(entries):
-    """SHA-256 -> [(tag, file)] of every [[versions]] record in mods/*.toml entries."""
-    out = {}
-    for path, text in entries.items():
-        entry = parsed(text) or {}
-        for v in entry.get("versions", []):
-            if isinstance(v, dict) and all(isinstance(v.get(k), str) for k in ("version", "file", "sha256")):
-                tag = f"{pathlib.PurePosixPath(path).stem}-{v['version']}"
-                out.setdefault(v["sha256"].lower(), []).append((tag, v["file"]))
-    return out
+def entry_records(path, text):
+    """Return ([(sha, tag, file)], protected_hashes) for one mods/*.toml entry.
+
+    Malformed TOML, a non-list `versions` field, or any hash in the entry outside a complete
+    `[[versions]]` record goes into `protected_hashes` so it stays kept independently of other entries.
+    """
+    entry = parsed(text)
+    if entry is None:
+        return [], hashes(text)
+    raw_versions = entry.get("versions", [])
+    if not isinstance(raw_versions, list):
+        return [], hashes(text)
+    recs, bad = [], set()
+    stem = pathlib.PurePosixPath(path).stem
+    for v in raw_versions:
+        if isinstance(v, dict) and all(isinstance(v.get(k), str) for k in ("version", "file", "sha256")):
+            recs.append((v["sha256"].lower(), f"{stem}-{v['version']}", v["file"]))
+        else:
+            bad |= named(v)
+    covered = {sha for sha, _, _ in recs}
+    bad |= hashes(text) - covered
+    return recs, bad
 
 
 def released(releases):
@@ -116,12 +128,11 @@ def pinned(entries, have):
     """The SHA-256s an open pull request's mods/*.toml entries keep in staging."""
     out = set()
     for path, text in entries.items():
-        entry = parsed(text)
-        if entry is None:
-            out |= hashes(text)
-        else:
-            versions = records({path: text})
-            out |= {h for h in named(entry) if unreleased(h, versions, have)}
+        recs, bad = entry_records(path, text)
+        out |= bad
+        for sha, tag, file in recs:
+            if (tag, file, f"sha256:{sha}") not in have:
+                out.add(sha)
     return out
 
 
@@ -129,7 +140,12 @@ def plan(now, main, assets, releases, heads):
     """[(id, name, why)] to delete, oldest first, and how many files each outcome had."""
     have = released(releases)
     entries = files(main, "mods", ENTRY.fullmatch)
-    listed, versions = set().union(*map(hashes, entries.values())), records(entries)
+    versions, protected = {}, set()
+    for path, text in entries.items():
+        recs, bad = entry_records(path, text)
+        protected |= bad
+        for sha, tag, file in recs:
+            versions.setdefault(sha, []).append((tag, file))
     archived = set().union(*map(hashes, files(main, "archive", lambda _: True).values()))
     pending = set().union(*(pinned(files(head, "mods", ENTRY.fullmatch), have) for head in heads))
     out, counts = [], {}
@@ -140,7 +156,9 @@ def plan(now, main, assets, releases, heads):
             why = "kept: an open pull request lists it"
         elif sha in archived:
             why = "kept: archive/ lists it"
-        elif sha in listed:
+        elif sha in protected:
+            why = "kept: published, entry could not be verified"
+        elif sha in versions:
             if unreleased(sha, versions, have):
                 why = "kept: published, its release doesn't have it yet"
             elif age < PUBLISHED_DAYS * DAY:

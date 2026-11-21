@@ -127,6 +127,17 @@ class Plan(unittest.TestCase):
         self.assertEqual(self.plan((f"{sha(4)}.hmod", 60), (f"{sha(10)}.hmod", 60), (f"{sha(5)}.hnmod", 60),
                                    (f"{sha(6)}.hmod", 60), (f"{sha(7)}.hnmod", 60)), {})
 
+    def test_malformed_versions_field_does_not_crash_and_keeps_hashes(self):
+        # A PR with a non-list `versions` field parses as TOML; it must not crash cleanup and must keep its hash.
+        self.heads = [self.commit({"mods/bad.toml": f'versions = 1\nsha256 = "{sha(11)}"\n'})]
+        self.assertEqual(self.plan((f"{sha(11)}.hmod", 60)), {})
+
+    def test_broken_main_entry_protects_hash_even_when_another_entry_is_released(self):
+        # mods/pack.toml already has a verified release for sha(1), but a broken main entry sharing sha(1)
+        # cannot be verified and must independently keep staging's copy.
+        self.main = self.commit({"mods/broken_twin.toml": version("1.0.0", "twin.zip", sha(1)) + "[broken\n"})
+        self.assertEqual(self.plan((f"{sha(1)}.zip", 30)), {})
+
     def test_oldest_first(self):
         rows = [["1", f"{sha(8)}.hmod", created(8)], ["2", f"{sha(7)}.hmod", created(9)]]
         out, _ = cleanup.plan(NOW, self.main, rows, "", [])

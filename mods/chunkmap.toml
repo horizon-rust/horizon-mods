@@ -1,0 +1,44 @@
+id = "chunkmap"
+kind = "mod"
+name = "Chunk Map"
+summary = "Minimap, full-screen world map with cave mode, waypoints with teleport, structure finder, and chunk claiming / force-loading."
+description = """
+A map and chunk-management mod for Horizon.
+
+- Minimap (square or round, optionally rotating) with coordinates, biome, entity dots and a compass. Ctrl+M toggles it.
+- Full-screen map (M): drag to pan, wheel to zoom, chunk grid (G); explored areas are saved per world and dimension.
+- Every dimension, modded ones included. Xaero-style cave mode (V: off / auto / on); Page Up / Page Down pick the cave
+  height, Home follows you again. The Nether shows its floor, not the roof; the End's void is black.
+- Waypoints: create, rename, recolour, hide, beam on/off, delete; death points; in-world beams and labels.
+  With cheats on (or as an operator) teleport to any waypoint, across dimensions.
+- Explore area: loads and generates the area around the map view and marks structures (villages, temples, trial chambers…)
+  with the game's own locate search. Generated chunks stay in the save, as if you had walked there.
+- Claim chunks (C on the map) and force-load them (Shift+click), up to 500 / 25 by default. Force-loaded chunks keep
+  ticking in any dimension, also while you are elsewhere, and come back after quitting and rejoining (single player).
+- Settings in `config/chunkmap-common.toml`. English and Simplified Chinese.
+
+Inspired by FTB Chunks; an independent reimplementation for Horizon, sharing no code or assets with it, and not affiliated with FTB.
+"""
+authors = ["HerculeWu"]
+owners = ["HerculeWu"]
+owner_ids = [44841149]
+license = "CC-BY-NC-SA-4.0"
+source = "https://github.com/GearBox-MC/chunkmap"
+icon = "icons/chunkmap.png"
+categories = ["utility", "management"]
+tags = ["minimap", "worldmap", "waypoints", "chunk-loading", "claims"]
+key = "RWRapkqQEYDU3Qu5u/gQXFBsuwySma44Vdip3KBIRhpd1ne9+VLbDEmO"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-19"
+game = "26.3"
+file = "chunkmap-0.1.0.hmod"
+sha256 = "ce8cfe7865dc5fb994574d89993ec01b286bd1918d04b1e2e9665083f5255656"
+signature = """
+untrusted comment: signature from rsign secret key
+RURapkqQEYDU3RS6pxWTusK8VEeHleObrUBRebIhpdkUoVl735E7pzdUtdlpfqxNWEqa5tW6gvBzSn5kpDHg6eXFJmS6y00NgQ8=
+trusted comment: timestamp:1795083264	file:chunkmap-0.1.0.hmod	prehashed
+TTvk+nHry4DCIwAlxm8TtOQkspOp1W+6Ktx1E1Orr4tjp532qdqjgjIrvqRNVSMHetO03mnH1Ys4HngrzPgUAg==
+"""
+changelog = "First release. Built for Nightly 2026-11-18 · dd67b76."

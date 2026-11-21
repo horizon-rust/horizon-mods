@@ -1,0 +1,44 @@
+id = "ping_wheel"
+kind = "native-mod"
+name = "ping_wheel"
+summary = "A Horizon port of Ping Wheel."
+description = """Exact 1:1 Rust translation of [Ping Wheel](https://modrinth.com/mod/ping-wheel)
+(LukenSkyne, MIT) for Horizon.
+
+Upstream logic carried 1:1 in `mixins/ping_wheel/runtime.rs` as a Horizon
+client runtime splice (`crates/horizon-client/src/game.rs`): all fourteen
+modules (`global`, `common_client`, `integration`, `screen`, `render`,
+`compat`, `config`, `network`, `math`, `util`, `resource`, `core`, `seams`)
+plus the test module, with `crate::` mapped to `super::` for the carrier.
+Screens (`SettingsScreen` with its nine options, channel EditBox and Done
+button), renderers (overlay, direction indicator, ping location), the network
+play channel, and the client integration (screen-factory seam, team-context
+ladder voice-chat / FTB / vanilla / none) match the upstream source 1:1.
+
+Ported by sparticle.
+
+## License
+
+Upstream Ping Wheel is MIT, Copyright (c) LukenSkyne. This port carries the
+upstream license and credit per the port policy.
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-ping-wheel
+"""
+authors = ["sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-ping-wheel"
+icon = "icons/ping_wheel.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "ping_wheel-1.0.0.hmod"
+sha256 = "d0a5f40fd1dd403ae6cbeaee840eb165025a8c40843ad7bc28298f4a2e2cf6d3"
+changelog = "Initial registry submission"

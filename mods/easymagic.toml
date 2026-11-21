@@ -1,0 +1,28 @@
+id = "easymagic"
+kind = "native-mod"
+name = "Easy Magic"
+summary = "Enchanting tables keep their items and can re-roll."
+description = """
+Enchanting tables keep their items and can re-roll.
+
+**Differences from the original:** The item left in an enchanting table isn't drawn above it, and hoppers and comparators don't work with the table. The dedicated re-roll slot and the full enchantment hint list are not available.
+
+A port of [Easy Magic](https://github.com/Fuzss/easymagic) 8.0.1 by Fuzs, published under its licence, MPL-2.0. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Fuzs"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MPL-2.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/easymagic"
+icon = "icons/easymagic.png"
+categories = ["magic"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.1"
+published = "2026-11-20"
+game = "26.3"
+file = "easymagic.hmod"
+sha256 = "00ce8c34a60d32e3aa242e00d9d4b5c5947afe8d3375b9396334b1faa2b82f98"
+changelog = "0.4.1: the re-roll button's sprites are original art drawn for this port, and button clicks on other menus go back to the engine."

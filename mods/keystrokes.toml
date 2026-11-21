@@ -25,6 +25,14 @@ categories = ["utility"]
 tags = ["keystrokes", "hud", "cps", "pvp"]
 
 [[versions]]
+version = "3.0.1"
+published = "2026-11-21"
+game = "26.3"
+file = "keystrokes-3.0.1.hmod"
+sha256 = "607f263b00e7321e053550198be8b0dd9a1707aef367393d1f0bdfff3dcd958d"
+changelog = "A mouse click and a key bound to attack or use in the same frame now count as two clicks per second, not one. Takes the old Horizon Extras settings again on the next start when one of them wasn't kept. Built on the 0a875da SDK."
+
+[[versions]]
 version = "3.0.0"
 published = "2026-11-20"
 game = "26.3"

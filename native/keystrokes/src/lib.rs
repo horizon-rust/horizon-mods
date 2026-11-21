@@ -98,16 +98,18 @@ pub trait ExtraSource {
     fn extra(&self) -> Vec<(String, String)>;
     /// Whether the mod has a file for the setting already.
     fn has_setting(&self, key: &str) -> bool;
-    fn set_setting(&self, key: &str, value: &str);
+    /// Keeps the setting; false when it didn't stick (it reads back as something else).
+    fn set_setting(&self, key: &str, value: &str) -> bool;
     /// Writes `extras-read`; false when it couldn't.
     fn mark_read(&self) -> bool;
 }
 
 /// The extra's old corner and clicks per second become the mod's own, for each the mod has no
 /// file for yet, so a choice made in an earlier version (or on the settings page) stays. The
-/// marker is written after the settings, and only when the game gave the extra's settings: with
-/// none (a player who never changed the extras, a file that couldn't be read) the next run asks
-/// again. True when the marker was written.
+/// marker is written after the settings, and only when the game gave the extra's settings and
+/// every one of them was kept: with none (a player who never changed the extras, a file that
+/// couldn't be read) or a write that didn't stick, the next run asks again (and keeps what did
+/// stick). True when the marker was written.
 pub fn seed_from_extra(source: &dyn ExtraSource) -> bool {
     if !source.unread() {
         return false;
@@ -116,12 +118,13 @@ pub fn seed_from_extra(source: &dyn ExtraSource) -> bool {
     if old.is_empty() {
         return false;
     }
+    let mut kept = true;
     for (key, value) in from_extra(&old) {
         if !source.has_setting(key) {
-            source.set_setting(key, &value);
+            kept &= source.set_setting(key, &value);
         }
     }
-    source.mark_read()
+    kept && source.mark_read()
 }
 
 /// A key's name as Controls shows it, in plain text: literal text as it is, a translation in the
@@ -270,14 +273,16 @@ pub fn shapes(v: &View, width: &dyn Fn(&str) -> f32) -> Vec<Shape> {
 /// come from `mouse_button_pre`, counted on the button pressed (attack on the right button counts
 /// on the right). A press that reaches the attack or use mapping another way (a key, a
 /// controller's trigger, `horizon-ctl mouse left down`) shows as the mapping going down in a frame
-/// with no window press at all, as the game's counter took those too; a mapping that goes down in
-/// a frame the window pressed a button is that press, whichever button it was.
+/// with no window press to stand for it, as the game's counter took those too. A mapping that goes
+/// down in a frame the window pressed a button is that press, whichever button it was, but each
+/// window press stands for one mapping only: a left click and a key bound to use in the same frame
+/// are two clicks.
 #[derive(Debug, Default)]
 pub struct Clicks {
     /// Press times in seconds, oldest first, per button.
     times: [VecDeque<f64>; 2],
-    /// Whether the window pressed either button since the last frame.
-    pressed: bool,
+    /// Which of the window's buttons were pressed since the last frame.
+    pressed: [bool; 2],
     /// Whether the mapping was held at the last frame.
     was_down: [bool; 2],
 }
@@ -297,18 +302,24 @@ impl Clicks {
     /// A press of the window's left (0) or right (1) button.
     pub fn press(&mut self, i: usize, now: f64) {
         self.add(i, now);
-        self.pressed = true;
+        self.pressed[i] = true;
     }
 
-    /// Once a frame: whether the attack and use mappings are held. A mapping that went down with
-    /// no press of either window button since the last frame is a click too.
+    /// Once a frame: whether the attack and use mappings are held. A mapping that went down is
+    /// the window's press of its own button if there was one, else of the other button if that
+    /// press isn't the other mapping's (a swapped binding); with no press left for it, it is a
+    /// click of its own.
     pub fn frame(&mut self, down: [bool; 2], now: f64) {
-        let pressed = std::mem::take(&mut self.pressed);
-        for (i, &down) in down.iter().enumerate() {
-            if down && !self.was_down[i] && !pressed {
+        let mut pressed = std::mem::take(&mut self.pressed);
+        let went_down: [bool; 2] = std::array::from_fn(|i| down[i] && !self.was_down[i]);
+        self.was_down = down;
+        // First each mapping takes its own button's press, then what is left over.
+        let unmatched: [bool; 2] =
+            std::array::from_fn(|i| went_down[i] && !std::mem::take(&mut pressed[i]));
+        for (i, _) in unmatched.iter().enumerate().filter(|(_, u)| **u) {
+            if !std::mem::take(&mut pressed[1 - i]) {
                 self.add(i, now);
             }
-            self.was_down[i] = down;
         }
     }
 
@@ -396,8 +407,10 @@ impl ExtraSource for HostExtras<'_> {
     fn has_setting(&self, key: &str) -> bool {
         self.host.setting(ID, key).is_some()
     }
-    fn set_setting(&self, key: &str, value: &str) {
+    fn set_setting(&self, key: &str, value: &str) -> bool {
+        // The host's write says nothing back: a read shows whether it was kept.
         self.host.set_setting(ID, key, value);
+        self.host.setting(ID, key).as_deref().map(str::trim) == Some(value)
     }
     fn mark_read(&self) -> bool {
         self.host
@@ -631,6 +644,8 @@ mod tests {
         broken: bool,
         /// The marker can't be written.
         mark_fails: bool,
+        /// This setting can't be written.
+        set_fails: Option<&'static str>,
         extra: Vec<(String, String)>,
         settings: std::cell::RefCell<Vec<(String, String)>>,
         log: std::cell::RefCell<Vec<String>>,
@@ -647,9 +662,13 @@ mod tests {
         fn has_setting(&self, key: &str) -> bool {
             self.settings.borrow().iter().any(|(k, _)| k == key)
         }
-        fn set_setting(&self, key: &str, value: &str) {
+        fn set_setting(&self, key: &str, value: &str) -> bool {
             self.log.borrow_mut().push(format!("set {key}={value}"));
+            if self.set_fails == Some(key) {
+                return false;
+            }
             self.settings.borrow_mut().push((key.into(), value.into()));
+            true
         }
         fn mark_read(&self) -> bool {
             self.log.borrow_mut().push("marker".into());
@@ -683,6 +702,30 @@ mod tests {
         game.log.borrow_mut().clear();
         assert!(!seed_from_extra(&game));
         assert!(game.log.borrow().is_empty());
+    }
+
+    #[test]
+    fn a_setting_that_did_not_stick_leaves_no_marker_and_is_tried_again() {
+        let mut game = FakeGame {
+            extra: extra(&[
+                ("keystrokesCorner", "bottom_right"),
+                ("keystrokesCps", "false"),
+            ]),
+            set_fails: Some("corner"),
+            ..FakeGame::default()
+        };
+        assert!(!seed_from_extra(&game));
+        assert_eq!(
+            *game.log.borrow(),
+            ["extra", "set corner=3", "set cps=false"],
+            "no marker after a failed write"
+        );
+        assert!(!game.marker.get());
+        // The next run writes only what is still missing, then the marker.
+        game.set_fails = None;
+        game.log.borrow_mut().clear();
+        assert!(seed_from_extra(&game));
+        assert_eq!(*game.log.borrow(), ["extra", "set corner=3", "marker"]);
     }
 
     #[test]
@@ -896,6 +939,26 @@ mod tests {
         let mut c = Clicks::default();
         c.press(0, 0.1);
         c.press(1, 0.1);
+        c.frame([true, true], 0.11);
+        assert_eq!(c.per_second(0.3), (1, 1));
+    }
+
+    #[test]
+    fn a_key_click_in_the_same_frame_as_a_mouse_click_counts_too() {
+        // A left click and use on a key in one frame: two clicks, not one.
+        let mut c = Clicks::default();
+        c.press(0, 0.1);
+        c.frame([true, true], 0.11);
+        assert_eq!(c.per_second(0.3), (1, 1));
+        // A right click and attack on a key.
+        let mut c = Clicks::default();
+        c.press(1, 0.1);
+        c.frame([true, true], 0.11);
+        assert_eq!(c.per_second(0.3), (1, 1));
+        // Swapped buttons, both clicked: still one each.
+        let mut c = Clicks::default();
+        c.press(1, 0.1);
+        c.press(0, 0.1);
         c.frame([true, true], 0.11);
         assert_eq!(c.per_second(0.3), (1, 1));
     }

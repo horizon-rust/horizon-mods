@@ -19,8 +19,8 @@ keys are drawn.
 
 The first time the keys are drawn, the extra's own settings in `horizon-extras.txt` (`keystrokesCorner`,
 `keystrokesCps`, through the SDK's `official_extra_settings`) fill in whichever of the two the mod has no file for yet;
-a choice made in an earlier version of the mod stays. Then `horizon-mod-data/keystrokes/extras-read` is written, so it
-happens once; while the game has no extra settings to give, it looks again (once) the next time you play. The extra's
+a choice made in an earlier version of the mod stays. Once every one of them is kept, `horizon-mod-data/keystrokes/extras-read` is
+written, so it happens once (a setting the game didn't keep is tried again the next time you play); while the game has no extra settings to give, it looks again (once) the next time you play. The extra's
 switch (`keystrokes`) isn't taken: the mod's switch in Options > Mods is the one that counts.
 
 While the debug screen (F3) is open the keys give way to it, as 2.0.0 did: none in the top corners (F3's two columns),
@@ -31,7 +31,8 @@ nor in a bottom corner while one of F3's charts is drawn there.
 Each press of the left or right mouse button while you play, in the last second, as the game counted them for the
 extra, on the button you pressed (with attack on the right button, the right column counts it). A key, a controller's
 trigger or a scripted press (`horizon-ctl mouse left down`) counts too: a press of the attack or use mapping in a frame
-with no mouse press counts once, when the mapping goes down. A press released before the next frame (`horizon-ctl
+with no mouse press for it counts once, when the mapping goes down. Each mouse press stands for one mapping only,
+so a left click and a key bound to use in the same frame are two clicks. A press released before the next frame (`horizon-ctl
 mouse left click`) is not seen.
 
 ## Build

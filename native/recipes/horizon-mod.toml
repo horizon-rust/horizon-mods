@@ -1,0 +1,10 @@
+id = "recipes"
+name = "Recipes"
+version = "3.0.0"
+description = "Every item beside your inventory, with a search box. R over an item shows its recipes, U its uses, and + fills the crafting grid with a recipe you know."
+authors = ["Horizon"]
+license = "MIT"
+homepage = "https://github.com/horizon-rust/horizon-mods/tree/main/native/recipes"
+api = "0.2"
+side = "client"
+capabilities = ["registries"]

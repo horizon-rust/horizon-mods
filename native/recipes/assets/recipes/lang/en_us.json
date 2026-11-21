@@ -1,0 +1,11 @@
+{
+  "recipes.setting.give": "Click gives items (creative)",
+  "recipes.setting.give.tooltip": "In creative mode, a click on an item in the panel gives you one, and a right click a stack, instead of showing its recipes.",
+  "recipes.key.recipe": "Show recipes",
+  "recipes.key.uses": "Show uses",
+  "recipes.page.recipes": "Recipes: %s",
+  "recipes.page.uses": "Uses: %s",
+  "recipes.page.cut": "%s (%s of %s)",
+  "recipes.note.shapeless": "Shapeless",
+  "recipes.note.cooking": "%s s, %s XP"
+}

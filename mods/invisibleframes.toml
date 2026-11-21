@@ -1,0 +1,26 @@
+id = "invisibleframes"
+kind = "native-mod"
+name = "Invisible Frames"
+summary = "Sneak-use an item frame to make it invisible."
+description = """
+Sneak-use an item frame to make it invisible.
+
+A port of [Invisible Frames](https://github.com/Roundaround/mc-fabric-invisible-frames) 1.1.0 by Roundaround, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Roundaround"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/invisibleframes"
+icon = "icons/invisibleframes.png"
+categories = ["decoration"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.1"
+published = "2026-11-20"
+game = "26.3"
+file = "invisibleframes.hmod"
+sha256 = "05270c50e46d3534a2ddca8cf9d74cb2fed73b92e759970f30c5fbe6500541fe"
+changelog = "0.4.1: visibility changes only after the engine has accepted the interaction; reveal-on-hit now covers accepted projectile hits too."

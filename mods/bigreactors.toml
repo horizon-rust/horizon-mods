@@ -1,27 +1,28 @@
 id = "bigreactors"
 kind = "native-mod"
-name = "bigreactors"
-summary = "A Horizon port of bigreactors."
+name = "Extreme Reactors"
+summary = "Extreme Reactors' basic reactor and energizer: the mod's own simulation, fuel, waste, heat and FE, ported."
 description = """
-A port of [Extreme Reactors](https://github.com/ZeroNoRyouki/ExtremeReactors2) for Horizon.
+A port of [Extreme Reactors](https://github.com/ZeroNoRyouki/ExtremeReactors2) for Horizon. The project was called *Big Reactors* before 1.9, and the jar's mod id — and the namespace of every block and item it registers, `bigreactors:basic_reactorcasing` — is still `bigreactors`; the registry id keeps that id so it matches the pack and the content namespace, while the listing uses the project's current name.
 
 **Implemented so far**
 
 - The smallest reactor the mod expresses end to end, with the jar's own numbers: a 3×3×3 basic reactor runs the upstream simulation, reaching ≈126.8 FE/t at steady state and burning ≈0.028 mB of fuel per tick (one ingot ≈ 35,700 ticks).
 - The six blocks the reactor is built from, carried from the jar: `basic_reactorcasing` (the shell), `basic_reactorcontroller` (the machine: fuel, waste, heat, energy, on/off), `basic_reactorfuelrod` (the fuel column), `basic_reactorcontrolrod` (the assembly cap) and `basic_reactorsolidaccessport` (where fuel goes in), plus the two items.
 - A declared FE buffer (API 142), a container, the formation check, and the controller's tick.
+- The **energizer**, the fourth multiblock: its 3×3×3 to 32-cubed forms, the cell count and capacity, the controller and its four blocks, on/off with FE in and out.
 - The e2e holds 100 ticks at 8,026 FE ± 60, turns 2 mB of fuel into 2 mB of waste, and reads a housing at ~410 °C.
 
 **Not yet ported**
 
-- **Turbine, reprocessor, energizer and fluidizer** — four more multiblocks, each its own machines slice; the reactor's active (steam) mode goes with the turbine.
+- **Turbine, reprocessor and fluidizer** — three more multiblocks, each its own machines slice; the reactor's active (steam) mode goes with the turbine.
 - **Fluids** — the 10 fluid blocks, coolants, steam, the fluid ports and the reactor's active cooling mode.
 - **Ores and the metal chain** — yellorite ore (worldgen), the ore blocks, raw yellorium and the reprocessor's cyanite → yellorium loop. The ingots are obtainable by `give` only until then.
 - **The reinforced variant** (1.0 efficiency, 1,000-block maximum, 30,000 FE part capacity), **control-rod insertion**, **solid moderators** and **waste ejection**.
 - **GUIs** — the controller's screen, the port's in/out mode, the redstone port and the computer ports; and the Patchouli guide book.
 - Only `bigreactors:yellorium_ingot` is accepted as fuel; the `c:ingots/yellorium` and `c:ingots/uranium` tag route upstream uses is not read.
 
-MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 1d63e0a and horizon-mixins 5a64af93.
+MIT: the original copyright and licence travel inside the bundle, not only in the source repository. Pinned to Horizon 0b14f8a and horizon-mixins e59da90.
 """
 authors = ["ZeroNoRyouki", "AdLf0208"]
 owners = ["AdLf0208"]
@@ -33,9 +34,24 @@ categories = ["utility"]
 tags = ["port", "horizon"]
 
 [[versions]]
+version = "0.2.4"
+published = "2026-11-20"
+game = "26.3"
+file = "extreme_reactors.hmod"
+sha256 = "c0168cedbb2a222886ec053ba0a4c6817956bb13ba5439eda04e9056e771c65b"
+changelog = """Slice 2 (the energizer), the bounded-tick-cost repair, and the budget fix. Adds the energizer, the fourth multiblock — its 3x3x3 to 32-cubed forms, the cell count and capacity, the controller and the four blocks, on/off with FE in and out — with four defects fixed (carried recipes named c: common tags Horizon never resolves; the blocks were missing from minecraft:mineable/pickaxe; the power tap pushed its buffer back into the reactor; two graphite_from_coalblock recipes were dead data). Structure work is bounded: scans are shared per component, invalidation is limited to the affected topology (inside the box always, the one-block ring only when a machine part sits there, another level never), and SCANS_PER_TICK = 4 is paid from a budget refilled at level_tick_post. This version closes the remaining bypass: a capability scan — an energizer tick asking an adjacent machine's capacity — was charged Budget::Once, so every such tick did an unbudgeted scan. The budget now opens at level_tick_pre and closes at level_tick_post, so in-tick capability scans come out of the same share, while clicks, commands and one-off capability calls still cost one scan and a cache hit is free in both. Proven in game: an energizer fills two adjacent reactors (9,253 -> 216,000 FE); one tick that invalidates five machines runs 4 fresh scans and the rest report not-formed; with the old policy the same scenario runs 7 (counterfactual EXIT:1); all five recover once the casings are replaced."""
+[[versions]]
 version = "0.2.1"
 published = "2026-11-10"
 game = "26.3"
 file = "bigreactors.hmod"
 sha256 = "f0875084ff184a137d337f93af72b57c74916c57f2bf86f639c8bf5da6cf0268"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.5"
+published = "2026-11-21"
+game = "26.3"
+file = "extreme_reactors.hmod"
+sha256 = "0f5f3698be82cf9f13d745ac0c960d0fc92a152355d80b0825aa6f3e3ac920f2"
+changelog = """The four findings of the review on this pull request, each reproduced against the delivered 0.2.4 before it was fixed. One formation record per machine: the shape is built once and shared through an Arc behind every block that answers for the machine, controllers and ports alike, so four controllers no longer hold four copies of a five-thousand-block shell, which was three hundred and eighty-one mebibytes of duplicated coordinates. Ports are visited once per machine per tick, claimed by a single master controller, and a switched-off machine visits none at all — asserted as a count of visits, not a wall time, so it cannot be satisfied by a faster machine. A port's capability access now re-derives its membership from the world instead of trusting a saved coordinate and a formed bit, so a port left outside after a machine is rebuilt smaller answers nothing; the in-game run shows the detached old port reading not formed while the new one works. And the reactor takes only the fuel its tank has room for, writing the remainder back into the slot, which the access port now shows as three ingots where the old package left it empty."""

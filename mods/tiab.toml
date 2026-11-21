@@ -34,3 +34,11 @@ game = "26.3"
 file = "tiab.hmod"
 sha256 = "af9399a5e6d02184bb1bd15646de114d253ffc33006ab365ddb2fe119f49f8d1"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "tiab.hmod"
+sha256 = "c5fcfe581c7bc0b0dc1e6bbefa4b2470d3588dcd6c7284d76a033ec50d5f1ab6"
+changelog = """Slice 2, the campfire family: campfires and soul campfires are now accelerated targets beside the furnace family. A lit campfire's four cooking timers advance by the game ticks plus the delivered ticks, an unlit one cools two ticks a tick, and a timer stops at its cooking time; the click acceptance, the tick check and the readout all name the family now, so a click on a chest is no longer claimed. Proven in game: over 105 game ticks the accelerated campfire's timer advanced 210 against the control's 134, the accelerated potato finished and dropped while the control was still cooking at 406, and the bottle recipe crafts with both controls empty. This version also corrects an over-tight assertion in the existing furnace leg: a cook that starts exactly at its cooking time completes and discards the increment it added, so the fast-forward can lose up to one tick per completed cook — measured as 59 of 60 sampled intervals exact and one short by exactly one — and the legs now bound by rate times cooks instead of demanding exactness. That is the honest shape, and it replaced an assertion that would have failed intermittently."""

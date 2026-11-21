@@ -1,0 +1,38 @@
+id = "betterhurtcam"
+kind = "native-mod"
+name = "betterhurtcam"
+summary = "A Horizon port of BetterHurtCam."
+description = """Horizon port of uku3lig/betterhurtcam (commit d0bf3d0, MIT, (c) 2022 uku): the full
+hurt cam experience as a native Rust mod. 1:1 logic core: the three bobHurt handler
+bodies (the intensity multiplier, the cancel when the mod is disabled, the hurt-cam
+type switch between old and yaw-based), the hearts-blink gate, the BHCConfig model
+and the HurtCamType enum, and the F6/F7/F8 keybind actions with the multiplier
+overlay text.
+
+Port by sparticle. Upstream: https://github.com/uku3lig/betterhurtcam
+
+Source-only .hmod built on the current SDK (Horizon f00125f). The config is wired
+as mod settings on Horizon's Options > Mods page (enabled, heartBlink, type, with
+the upstream lang keys; the multiplier stays in the config file, the way upstream
+ships it) and the three keys register on Options > Controls, read per client tick.
+The vanilla hurt cam, the hearts' blink argument and the action-bar overlay wait
+on horizon#19406, the hurt-cam surface.
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-betterhurtcam
+"""
+authors = ["uku3lig", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-betterhurtcam"
+icon = "icons/betterhurtcam.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-21"
+game = "26.3"
+file = "betterhurtcam-1.0.0.hmod"
+sha256 = "5d0601be85e62c6c59bfaafbe8765bd43c253cfe5011dabc6103ff9c4aa6657c"
+changelog = "Rebuilt on the mod API: the config is wired as the original settings on Options > Mods and the three keys on Options > Controls; 1:1 core unchanged (sha refreshed)."

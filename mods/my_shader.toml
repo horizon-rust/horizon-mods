@@ -1,0 +1,52 @@
+id = "my_shader"
+kind = "shaderpack"
+name = "Solistice Shader V1"
+summary = "A lightweight realistic shader that transforms Minecraft Vanilla into a beautiful, immersive world."
+description = """
+🌅 Solstice Shader V1
+
+Experience Minecraft like never before!
+
+Solstice Shader transforms Minecraft Vanilla into a beautiful, realistic, and immersive experience while keeping performance in mind.
+
+✨ Features
+
+- 🌊 Waving Water
+- 🌿 Animated Plants and Leaves
+- ☀️ Realistic Lighting
+- 🌧️ Improved Rain Effects
+- 🌲 Enhanced Biomes
+- ⛅ Realistic Clouds
+- 🌤️ Dynamic Weather
+- 🌑 Improved Shadows
+- 🌅 Beautiful Atmosphere
+- 💧 Enhanced Water Appearance
+- ⚡ Low-End Device Optimization
+
+📱 Compatibility
+
+- Minecraft Android
+- Horizon Android
+- Designed with performance optimization in mind
+
+🎯 Goal
+
+Deliver a satisfying realistic Minecraft experience without sacrificing too much FPS.
+
+Solstice Shader V1 — A brighter world, a better Minecraft."""
+authors = ["JerroNMC"]
+owners = ["JerronMC"]
+owner_ids = [310990255]
+license = "MIT"
+source = "https://github.com/JerronMC/Minecraft-Horizon-Shaders"
+icon = "icons/my_shader.png"
+categories = ["fantasy", "shadows", "low"]
+tags = ["visual"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-15"
+game = "26.3"
+file = "my_shader-1.0.0.zip"
+sha256 = "218d4bccdbe3d73ed36550d8ac9fd0d117f50c51ab44586d8d436652def83d3d"
+changelog = "A new Shader for only Low-end-device phone!"

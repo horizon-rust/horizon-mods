@@ -39,3 +39,11 @@ game = "26.3"
 file = "hostilenetworks.hmod"
 sha256 = "c76c0996af962e3d702c40760855aba385e82f954a4aec0e3339377a8f295522"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "hostilenetworks.hmod"
+sha256 = "8843ad1134f20f53917ad45fc873348b1cdf65cc4a260442ca09d65ee603c432"
+changelog = """Slice 2, training mode's model-data upgrades. A finished training run now upgrades the model by one data point, produces no base drop and no prediction, and costs the jar's 300 ticks at 1.2x — measured in game as an energy fall of exactly 299 ticks times 154 FE with the finishing tick free, `fail input`, and the model reading 20 to 21. A self-aware model refuses to start (`fail cannot_train`, runtime 0, input not consumed, energy unchanged), which is upstream's own rule. The slice also fixes a real defect: 0.2.1's training run produced the inference loot and left the model's data untouched. A flaw in the unpublished 0.2.2 is corrected too — it stamped an explicit `data: 0` on a model after an inference run, and the data write is now gated on a gain. Two gaps were checked against the artefact and deliberately left: the kill/break data path needs the Deep Learner's item container, and attunement is blocked because the entity-interact hooks carry no player at this pin. Proven in game: all three carried recipes craft with their ingredients consumed and two negative controls stay empty, every carried item gives and reads back with an unknown id refused, and both machines drop to a survival pickaxe beside a vanilla stone-to-cobblestone differential."""

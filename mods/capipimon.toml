@@ -1,0 +1,36 @@
+id = "capipimon"
+kind = "mod"
+name = "Capipimon Content"
+summary = "Textures and creature data for Capipimon. Needs the Capipimon listing too."
+description = """
+**Install both listings in the same instance:** Capipimon (the game code) and Capipimon Content (this one, textures and creature data). This listing does nothing on its own.
+
+It holds Capipimon's entity types, textures, language files and licence texts. Install, playing and server notes are on the Capipimon listing.
+
+The models, animations and textures come from Cobblemon and many community add-on packs, and each keeps its own licence. See CREDITS.md in the source for every author, licence and link. The icon shows Cobblemon's Buneary model and shiny texture (CC BY-NC 3.0) wearing Capipimon's original Bow hat.
+
+Talent NPCs on Capipimon servers wear skins of Minecraft accounts chosen by the server, loaded from Mojang's skin servers.
+
+Unofficial fan project, not affiliated with or endorsed by Nintendo, The Pokémon Company, Game Freak or Phase Connect. Pokémon and all related names are trademarks of their respective owners."""
+authors = ["Capippalist Trade Guild"]
+owners = ["Onii133"]
+owner_ids = [257615238]
+license = "GPL-3.0-only AND MIT AND MPL-2.0 AND CC-BY-NC-3.0 AND CC-BY-NC-4.0 AND CC-BY-NC-SA-4.0 AND CC-BY-SA-4.0"
+source = "https://github.com/Onii133/Capipimon"
+icon = "icons/capipimon.png"
+categories = ["game-mechanics", "adventure"]
+tags = ["pokemon", "cobblemon-models", "textures", "fan-made"]
+key = "RWQNf4ubpT1GUJAmgEeuroSrBMAT99qadRw95nD6pDbiONLOvoEqiIcz"
+
+[[versions]]
+version = "0.1.1"
+published = "2026-11-11"
+game = "26.3"
+file = "capipimon-0.1.1.hmod"
+sha256 = "43c1f508146c982d48ffc1aded15a871bfbd6fb037df56e571e460764aa1bcd6"
+signature = """
+untrusted comment: signature from minisign secret key\r
+RUQNf4ubpT1GUNsP4sSl6AAJMFzw64LkW4wg+J4/KWvQhmOzv49TnBNr9Gl0jfYwdxircbpJZNhs8hiUfGJlT0maJ+4T2CD8MAg=\r
+trusted comment: timestamp:1794421811\tfile:capipimon-0.1.1.hmod\thashed\r
+7C9Jbda1jpw/o5p7CiH6aw/zmeCh87htteIpIgpM4od8q+d+gTZkLs0Zdt3Sb5gBk6XHv7H+jV3t7BaymFgbCQ=="""
+changelog = "Same release as Capipimon 0.1.1 (fixes from the registry review). The content itself is unchanged; CREDITS.md now names the 36 _p3/_p4/_p5 recolours of Cobblemon textures (CC BY-NC 3.0), and the list of changes to Cobblemon files ships in the file."

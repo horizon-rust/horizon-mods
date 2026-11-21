@@ -37,3 +37,11 @@ game = "26.3"
 file = "fluxnetworks.hmod"
 sha256 = "9e4c845c1931599da64e82ae678a51ada7f715ef458057feb88b63b578c65d06"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "fluxnetworks.hmod"
+sha256 = "a6d7c93ecf4b9db2dcd81669bae99dc1194889a71ccbf79b24b94bd58e5f38b4"
+changelog = """Slice 2, the flux-dust source. Every one of the seven carried recipes — flux_core, flux_block, plug, point, controller, storage and configurator — required `fluxnetworks:flux_dust`, and nothing produced it, so the mod's entire content was unreachable in survival. The mechanic is now carried from the jar's own handler: click obsidian with redstone in the gap, over bedrock or a flux block two below, and each redstone becomes a dust (capped at 512), with the upstream chance deciding cobblestone versus the obsidian sliding down. Proven in game: all seven recipes craft with their declared id and count, their ingredients consumed, and two wrong patterns left empty; eight redstone make eight dust and the obsidian is consumed; a stone base refuses and keeps the redstone; 576 redstone leave 512 dust and one 64 stack; and flux_core consumes four of the dust the mechanic had just made."""

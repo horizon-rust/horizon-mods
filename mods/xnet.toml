@@ -35,3 +35,11 @@ game = "26.3"
 file = "xnet.hmod"
 sha256 = "f0522c24886eef6fe18f3288b288fecf582be08815a41ef5f3e0719b8e6d341d"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "xnet.hmod"
+sha256 = "305e8976a5982ae8ea17deae0267f85befb0f737bf1da7eebe52e439289dfb67"
+changelog = """Slice 2, the item channel's amount and destination policy: `SINGLE`/`STACK`/`COUNT` with `extractAmount`, the stock-keeping `count` on either end, and `PRIORITY`/`ROUNDROBIN` destinations — the rules upstream's `tickItemHandler` and `fetchItem` already carry, now saved per connector and surviving a relaunch. Three carried artefacts were dead and are fixed: the recipes were in the 1.21.1 `{"item": …}` form the pin rejects, so every one logged `invalid ingredient` and crafted nothing; the cable and connector loot tables dropped a block id that has no item, so breaking one gave nothing usable; and the recipes' `c:` tags were declared by no mod, so the four tags are carried with their vanilla members. Proven in game: stack mode moves 20 of 20 in one operation where single moves 1; a count of 16 moves 160 in 100 ticks; `stock 5` fills the target to 5 and `keep 5` leaves 5 at the source; round robin sends 10 east and 10 south where priority sends 0 and 20; an unknown mode is refused with the readout unchanged; and the settings survive a relaunch and keep moving items."""

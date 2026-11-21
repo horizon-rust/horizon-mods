@@ -1,0 +1,53 @@
+id = "capes"
+kind = "native-mod"
+name = "Capes"
+summary = "A Horizon port of Capes."
+description = """Exact 1:1 Rust translation of [Capes](https://modrinth.com/mod/capes)
+(CaelTheColher, LGPL-2.1) for Horizon.
+
+Other players' capes: the five providers (OptiFine, LabyMod, MinecraftCapes,
+Cosmetica, Cloaks+), each queried once per profile with its own URL shape, the
+cape selector screen with the live rotating player preview (cycle the type,
+drag to rotate, flip body/elytra), animated-cape frame stepping, and the elytra
+texture toggle. The client's own profile loads the configured provider's cape;
+every other profile tries each provider once.
+
+The package ships the full module tree (`capes_mod`, `config`, `handler`,
+`menus`, `render`, `util`, `tests`), matching source revision fe6f052 on main.
+The mod API wires the original's config as settings (the five provider toggles
+and the elytra toggle, same defaults, upstream labels) and runs the original's
+create-or-load against `config/capes.json5` on client setup; the PNG decoder is
+dimension- and arithmetic-bounded.
+
+Engine-stage seams, tracked: the skin and cape render hooks that apply capes in
+game wait on a surface (horizon-rust/horizon#15865); the `/capes debug` client
+command waits on the client-command surface (horizon-rust/horizon#19234);
+`clientCapeType` stays file-held (the settings page has no enum kind) and the
+selector screen drives it.
+
+Ported by sparticle.
+
+## License
+
+Upstream Capes is Copyright (C) CaelTheColher, LGPL-2.1-only. This port carries
+the upstream license and credit per the port policy.
+
+Pinned to Horizon f00125f and horizon-mixins e59da909; exact 1:1 Rust port
+tested against those revisions. Source: https://github.com/Sparticle62ops/horizon-capes
+"""
+authors = ["CaelTheColher", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-2.1-only"
+source = "https://github.com/Sparticle62ops/horizon-capes"
+icon = "icons/capes.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-21"
+game = "26.3"
+file = "capes-1.0.0.hmod"
+sha256 = "7602205a1c5228474a06ff077db69a976000e9d8a8f00a5dcb7ed1ba7e11959f"
+changelog = "Rebuilt on the current SDK (Horizon f00125f, mixins e59da909): mod API settings, full source in the package, bounded PNG decode."

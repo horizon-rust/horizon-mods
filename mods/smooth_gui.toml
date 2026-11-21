@@ -1,0 +1,28 @@
+id = "smooth_gui"
+kind = "native-mod"
+name = "smooth_gui"
+summary = "A Horizon port of Smooth Gui."
+description = """smooth-gui (Horizon Rust port), slice 1: the animation model. NOTE: the master repo keeps this port as src/lib.rs + modules; this bundle inlines the modules into one runtime.rs file, compile-equivalent, for the single-module .hnmod format.  1:1 port of the upstream logic core (MIT): screens ease in over a configurable duration with configurable slide/fade amounts; the animation state machine drives open, close and cancel (instantly closing a screen cancels without playing the close animation). Screen callbacks land in the next slice.
+
+Port by sparticle. Upstream: https://github.com/Ezzenix/SmoothGui (MIT).
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-smooth-gui
+"""
+authors = ["Ezzenix", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-smooth-gui"
+icon = "icons/smooth_gui.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "smooth_gui-1.0.0.hmod"
+sha256 = "62abe34e49618546c061e2618bba443e57f137a67a7ed88f63bb4877fab43634"
+changelog = "Initial registry submission"

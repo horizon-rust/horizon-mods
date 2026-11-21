@@ -1,0 +1,28 @@
+id = "show_me_your_skin"
+kind = "native-mod"
+name = "show_me_your_skin"
+summary = "A Horizon port of Show Me Your Skin!."
+description = """show_me_your_skin: exact 1:1 Rust port of enjarai/show-me-your-skin (Codeberg, MIT (c) 2022 enjarai), read upstream at dd4f63e. Every upstream class is translated code-for-code; Minecraft/Fabric surfaces (mixins, owo-net, CCA components, braid GUI, keybinds) sit behind `seams`, exactly where the Java mod calls into the engine.
+
+Port by sparticle. Upstream: https://codeberg.org/enjarai/show-me-your-skin (MIT).
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-show-me-your-skin
+"""
+authors = ["sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-show-me-your-skin"
+icon = "icons/show_me_your_skin.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "show_me_your_skin-1.0.0.hmod"
+sha256 = "6cbbeee540c7d3b67c6325190e653bcde3bb76ad8e306c4a65e51bbdaab48e35"
+changelog = "Initial registry submission"

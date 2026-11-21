@@ -1,0 +1,28 @@
+id = "world_play_time"
+kind = "native-mod"
+name = "world_play_time"
+summary = "A Horizon port of World Play Time."
+description = """World Play Time ported to Horizon on the mod API: the config model (six entries exactly as upstream's annotated WPTConfig, JSON at config/worldplaytime/config.json), the server play time manager (per-server tick counts), the client tick handler (one tick per connected tick, autosave every 6000), the play time formatter and the world-stats reader (upstream's LevelStorageSourceMixin). Upstream: github.com/Khajiitos/WorldPlayTime, MIT (c) Khajiitos. Ported 1:1.
+
+Port by sparticle. Upstream: https://github.com/Khajiitos/WorldPlayTime (MIT).
+
+Source-only .hmod built on the current SDK (Horizon f00125f/e59da90)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-world-play-time
+"""
+authors = ["Khajiitos", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-world-play-time"
+icon = "icons/world_play_time.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "world_play_time-1.0.0.hmod"
+sha256 = "b8b2e9f4d9a00c2db54439f9b7c7720b11c8d9692094a4820a85ddd4485ce921"
+changelog = "Rebuilt on the current SDK mod API (upstream LICENSE added, pins f00125f/e59da90)"

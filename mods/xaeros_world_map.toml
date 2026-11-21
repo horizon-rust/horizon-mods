@@ -1,0 +1,30 @@
+id = "xaeros_world_map"
+kind = "native-mod"
+name = "xaeros_world_map"
+summary = "A Horizon port of Xaero's World Map."
+description = """xaeros-world-map runtime (behavioral port of xaero96/Xaero's World Map, NOTE: the master repo keeps this port as src/lib.rs + modules; this bundle inlines the modules into one runtime.rs file, compile-equivalent, for the single-module .hnmod format. All Rights Reserved; no upstream code is included).  Ported 1:1 against the behavior the mod's page documents: the self-writing fullscreen map (M to open, mouse pan, wheel zoom), multiple maps per server address with manual or automatic switching, cave-dimension layers, the vanilla-maps mode and terrain shading flags, and "footsteps" showing the most recent path taken. The waypoint overlay rides the xaeros-minimap port's waypoint store; rendering and world reads ride Horizon (seams in the README).
+
+Port by sparticle. Upstream: https://modrinth.com/mod/xaeros-world-map (CC0-1.0).
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Behavioural port: the port contains no upstream code; upstream stays All Rights Reserved with its author and is credited here.
+
+Licence: CC0-1.0. Source: https://github.com/Sparticle62ops/horizon-xaeros-world-map
+"""
+authors = ["sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-xaeros-world-map"
+icon = "icons/xaeros_world_map.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "xaeros_world_map-1.0.0.hmod"
+sha256 = "271b09485bcf32b26745448c10698d4e536dcb8bc88eb89a348e37075a777d0f"
+changelog = "Initial registry submission"

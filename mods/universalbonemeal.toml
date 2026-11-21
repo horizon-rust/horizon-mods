@@ -1,0 +1,26 @@
+id = "universalbonemeal"
+kind = "native-mod"
+name = "Universal Bone Meal"
+summary = "Bone meal grows cactus, sugar cane, vines, flowers, coral, chorus and more."
+description = """
+Bone meal grows cactus, sugar cane, vines, flowers, coral, chorus and more.
+
+A port of [Universal Bone Meal](https://github.com/Fuzss/universalbonemeal-forge) 8.0.1 by Fuzs, published under its licence, MPL-2.0. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Fuzs"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MPL-2.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/universalbonemeal"
+icon = "icons/universalbonemeal.png"
+categories = ["game-mechanics"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.1"
+published = "2026-11-20"
+game = "26.3"
+file = "universalbonemeal.hmod"
+sha256 = "4494e8ef2d8e7ce06f8d705f460955264ffe517ebdca8c845375fe031d46d912"
+changelog = "0.4.1: chorus growth visits each stem once, so the work is bounded; the registry icon is new original art."

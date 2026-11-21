@@ -35,3 +35,11 @@ game = "26.3"
 file = "constructionstick.hmod"
 sha256 = "c26a23f8d2883533e7e7ad17cf115df05960d484b91a8ee1d209997bd593e175"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.5"
+published = "2026-11-21"
+game = "26.3"
+file = "constructionstick.hmod"
+sha256 = "73c1fd3e91f0bb0b2ecaa9c34650480dfda8c3cbb71d6bd4ccd54294076e4938"
+changelog = """Slice 2, the sticks' tier durability and stack size, so the wear finally trips, plus every carried recipe proven in a table. The items were on the stick template, so `max_damage` was 0 and nothing ever wore; each now declares its vanilla tier's uses — 59, 131, 250, 1,561 and 2,031 — and stacks one per slot, as upstream's do. Proven in game: all ten recipes craft with their result id and count and their ingredients consumed; two given sticks are two stacks of one; three blocks leave `minecraft:damage: 3` on the stack; and a stick at damage 58 places exactly one block and is gone. The slice also found a 26.3 collision the parity rule exists for: the jar's metal-stick pattern is exactly vanilla's `copper_spear` recipe, so vanilla won the identical grid and the four metal sticks were uncraftable — the tip moves to the centre with the same ingredients and result, recorded under upstream defects fixed. Two harness facts are noted: `worldborder set 60000000` is refused and leaves a narrow border that blocks a table, and `item replace … hotbar.0` overwrites the supply."""

@@ -43,3 +43,11 @@ game = "26.3"
 file = "cloudglass.hmod"
 sha256 = "af0a220fda3d19b06fe3803d56cacdd84d0140f50687bf8084476dd5f8effc5c"
 changelog = "Slice 2: the in-game leg, and with it the parity coverage — all 16 variants placed and read back, all 16 loot tables mined for their self-drop, all 31 carried recipes crafted with their ingredients consumed (two stick controls stay empty), the two content tags matched positively and negatively, and collision measured against vanilla glass. The eye tint remains a recorded gap."
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "cloudglass.hmod"
+sha256 = "bc86c31e60c7f540329ed01dbf3bf03c2a920b822084ba3763e59780e9fc6f06"
+changelog = """Slice 2, the eye overlay: standing in cloud glass now tints the whole frame, which is the one behaviour the port was missing and the only reason the mod exists visually. The colour is the block's own declared tint at half alpha, drawn over the frame. Proven where it has to be proven — in pixels, since no registry or command read can see an overlay: with cloud glass only at the player's eye the frame moves 154.8 toward the tint, with vanilla glass at the eye it stays at 222.3, and with cloud glass only at the feet it stays at 242.6, so an implementation that reads the wrong block position fails rather than looking plausible. The previous package fails the same assertion at the same spot. One honest deviation is recorded: the SDK has no layer above the camera overlays, so the fill draws in the crosshair layer in first person and the hotbar layer elsewhere, which is the same paint position as upstream's own choice."""

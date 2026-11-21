@@ -36,3 +36,11 @@ game = "26.3"
 file = "iceandfire.hmod"
 sha256 = "b4023b521155e131ae7f17005c79fab8c5735a0ccaf86e2702692fdb59712109"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "iceandfire.hmod"
+sha256 = "91b36a165ade990bb7b4b7b52554b6c768eceeef435e8248039ae53e32d1d769"
+changelog = """Slice 2, the dragon's bite: a wild dragon that reaches the target it hunts starts the jar's 35-tick bite animation and lands one hit for its attack damage (1.0 at age 0); a tamed dragon never does. The whole slice is rules the existing entity tick already runs, with the numbers read from upstream at this version. The port's first in-game leg rides with it and proves each family: four bites take the player from 20.0 to 16.0 one point at a time while a tamed dragon at three blocks leaves health unchanged; a killed dragon is removed; the egg item, block and an unknown id refused; the flame differential; the 7,200-tick hatch with its tamed flag and owner; and the egg's loot table beside a vanilla barrel. Two engine facts are recorded with their evidence: `EntityRef::tick_count` reads 0 inside the entity tick hook, so the animation counts its own ticks, and the SNBT parser refuses an unquoted namespaced key (`{iceandfire:Tamed:1b}`), so a harness must quote it. A port defect is fixed too: a killed dragon stayed in the world at 0 health because the port cancels the template's tick and the death tick is what removes a mob."""

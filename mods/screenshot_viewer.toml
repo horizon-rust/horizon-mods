@@ -1,0 +1,28 @@
+id = "screenshot_viewer"
+kind = "native-mod"
+name = "screenshot_viewer"
+summary = "A Horizon port of Screenshot Viewer."
+description = """screenshot-viewer (Horizon Rust port), slice 1: the gallery model. NOTE: the master repo keeps this port as src/lib.rs + modules; this bundle inlines the modules into one runtime.rs file, compile-equivalent, for the single-module .hnmod format.  1:1 port of the upstream logic core (MIT): screenshots are listed from the screenshot folder newest-first, paged through a fixed-size grid, and the selected one can be deleted or copied to the clipboard. The image render surface and clipboard OS hook land in the next slice.
+
+Port by sparticle. Upstream: https://github.com/LGatodu47/ScreenshotViewer (MIT).
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-screenshot-viewer
+"""
+authors = ["LGatodu47", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-screenshot-viewer"
+icon = "icons/screenshot_viewer.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "screenshot_viewer-1.0.0.hmod"
+sha256 = "46c05b05f13a6f784326fcc0d85f2b83d0e606bce63ff7a51bf5ddfe6ed3b1ab"
+changelog = "Initial registry submission"

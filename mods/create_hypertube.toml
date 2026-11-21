@@ -34,3 +34,11 @@ game = "26.3"
 file = "create_hypertube.hmod"
 sha256 = "1aee001be7caad5814d4ad8663357d778b2b7c6b24b6a71cdc6e5c28a95be001"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "create_hypertube.hmod"
+sha256 = "f824be2d0de77f5d65e4b0db2c1c7d52e32efbd9ab2af174542eaf9f65591699"
+changelog = """Slice 2, every living traveller rides: villagers and other living entities now travel the tube beside players, where only server players did. The rules are the jar's own — a default blacklist holding the wither and the ender dragon, living entities only, a spectator never riding, sneak refusing the pull, and a ride table keyed by entity UUID — with the entity sweep every ten ticks and a traveller standing in the cell its feet are in. Proven in game: the player reaches x 223.0 at half a block a tick while a villager follows from 199.5 to 223.0 on the same path, a dropped item and a wither stay put over forty ticks, sneaking holds the traveller at 199.5 until the key is released, and both the tube and the entrance recipes craft with their ingredients consumed while nine copper crafts nothing. The accelerators, junctions and funnel stay recorded gaps for a stated reason: they read Create's kinetic network, which cannot be linked at this pin, so carrying one would mean inventing a no-power speed; curves need the bezier renderer and a corner model a content block cannot express."""

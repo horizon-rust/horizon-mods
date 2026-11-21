@@ -1,0 +1,28 @@
+id = "mousewheelie"
+kind = "native-mod"
+name = "Mouse Wheelie"
+summary = "Scroll items between inventories, sort with the middle button, pick the right tool."
+description = """
+Scroll items between inventories, sort with the middle button, pick the right tool.
+
+**Differences from the original:** Wheel scrolling and modifier clicks only work with an empty cursor. Hotbar refill (covered by the separate Stack Refill port), bundle dragging, recipe book quick craft, creative tab scrolling and the config screen are left out. Sorting only touches the inventory and chest-like containers. Moves happen at once, without the Java mod's click rate limit.
+
+A port of [Mouse Wheelie](https://github.com/Siphalor/mouse-wheelie) 1.16.3 by Siphalor, published under its licence, Apache-2.0. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Siphalor"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "Apache-2.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/mousewheelie"
+icon = "icons/mousewheelie.png"
+categories = ["utility", "management"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.1"
+published = "2026-11-20"
+game = "26.3"
+file = "mousewheelie.hmod"
+sha256 = "85648c423f12b0a4ac03e087b5e01acb5ac4d17643312bf9033b16dfd5da1285"
+changelog = "0.4.1: restock takes only stacks with exactly the target's components and checks the real slot and cursor after each click; an incompatible item is never left on the cursor."

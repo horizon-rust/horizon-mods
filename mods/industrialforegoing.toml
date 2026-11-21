@@ -36,3 +36,11 @@ game = "26.3"
 file = "industrialforegoing.hmod"
 sha256 = "c10182f32584e6522b274855f6c8331793421237112d87acf804a4fb17752ed7"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "industrialforegoing.hmod"
+sha256 = "2672a80085cb0a258239408750b625fbee497f760693e473d823c0b947404826"
+changelog = """Repairs a published entry that could not load, and carries the machine's contents on its item. The 0.2.0 in the registry registered the same `Machine` type as both a block part and a block-entity part, and the engine refused the mod at load — `Mod parts refused: industrialforegoing::Machine is attached to industrialforegoing:water_condensator twice` — so it installed and never ran. A controlled copy with the redundant call restored reproduces that refusal at this pin (launch exit 3), while the delivered package launches with zero refused lines, gives the block and places it. On top of the repair, a broken machine keeps its energy, water and progress: `block_drops` writes the saved compound onto the dropped item as `minecraft:block_entity_data`, an empty machine's item stays plain, and on placement the item's contents are clamped to the three capacities so a hand-written give cannot overfill the buffer. Two carried-data defects were found in game and fixed: the recipe's ingredients were tag-or-fallback **lists**, which 26.3 rejects and which dropped the whole recipe, and the advancement carried an unknown load condition. Proven in game: the recipe crafts with every ingredient consumed and a wrong grid stays empty; a machine broken with 7,000 FE and 5,000 mB comes back with exactly those numbers, while the previous package fails that assertion with `the buffer the item carried is 0, expected 7000`."""

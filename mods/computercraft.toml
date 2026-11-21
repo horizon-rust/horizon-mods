@@ -35,3 +35,11 @@ game = "26.3"
 file = "computercraft.hmod"
 sha256 = "a92fc5ff2338dd3530049360b84b41f68eec37b40fbd3333a29b0058b3ecf4ff"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "computercraft.hmod"
+sha256 = "e364023e7be61bcc142f79ea7084aaa7b07f935ebb2c118a9fe517e764304c3d"
+changelog = """Slice 2, the computer block family: `computer_advanced` and `computer_command` become full members beside the basic one — block, twelve-state blockstate, generated textures and models, item model, recipe, loot table and creative tab — over the one block-entity type all three share, with a readout that names the block it actually read. Proven in game: three computers place and read back, `state=blinking` is accepted while `state=dancing` is refused, each boots its own terminal, a program on the advanced one leaves the other two unchanged, all three recipes craft with their output and consumed ingredients while the advanced pattern with stone for gold crafts nothing, each block mines in survival dropping exactly one, a computer can be placed by hand from two yaws, and the control game does not know the blocks. The Lua runtime stays a stated gap rather than a faked one: ROM, language and peripherals remain `blocked(no-lua-runtime)`, and this family needed none of it. Before writing the data, every shaped vanilla 26.3 recipe was resolved to its grid and compared with the three computer grids — zero collisions of 3,782 — so the constructionstick shadowing class was ruled out rather than discovered later."""

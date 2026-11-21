@@ -38,3 +38,11 @@ game = "26.3"
 file = "refinedstorage.hmod"
 sha256 = "7be4a4152b9d5ecab139b8c4f9ae87208788f4e9f6842c9d167fb4316830fd38"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "refinedstorage.hmod"
+sha256 = "3c26f5a4986847a1090f9582a65cd0341ee6e60efaad30687e86c678d99d1ad4"
+changelog = """Slice 2, the crafting chain: 14 items and the machine casing, with 21 recipes — the fifteen chain recipes plus the controller, twelve cable colours, disk drive, grid, 1k storage disk and the shapeless variant — and the fourteen `c:` tags they test. Until now every shipped family was creative-only because nothing produced `quartz_enriched_iron`, the processors, the cores or the storage parts; that gap is closed. Two carry defects were found by the differential rather than by reading: the `#c:stones` tag was missing cobblestone, and 26.3's loot shape is a singular `condition` on the pool — the first `conditions` list parsed to nothing and the casing broke empty. Proven in game: 21 of 21 carried recipes craft with their declared id and count, their ingredients are consumed, ten wrong-ingredient controls leave the result empty, `#c:stones` accepts cobblestone as well as stone, and the machine casing drops itself."""

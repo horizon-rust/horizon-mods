@@ -1,5 +1,5 @@
 id = "xtonesreworked"
-kind = "mod"
+kind = "native-mod"
 name = "Xtones Reworked"
 summary = """34 tone families of 16 decorative blocks, the xtone tile and the flat lamp"""
 description = """
@@ -29,3 +29,11 @@ game = "26.3"
 file = "xtonesreworked.hmod"
 sha256 = "5952a00793cfc9b1eb999569a3e69be7a5a1cd4e1fb6e4453e3c06ed1198ea00"
 changelog = "First publication in the SDK format."
+
+[[versions]]
+version = "1.1.2-1.21.1"
+published = "2026-11-21"
+game = "26.3"
+file = "xtonesreworked.hmod"
+sha256 = "2334f5e41cba8d2eef24d3d70e1696e32761010298cf724c4541a6d366d51ed7"
+changelog = """A directional-block fix, proven in the one place a declaration cannot reach: a flat lamp now takes its facing from where the player is looking when it is placed, instead of keeping the declared default north forever. The rule is a branch-for-branch port of the engine's own nearest-looking direction, so a click on a south face looking north yields south. The red is the published package itself: the same probe against it reads north for a north-looking click and north again for an east-looking one, which is exactly the complaint. Proven in game with four legs: two placements reading south and east where the old package read north and north, a selftest that inverts the expectation and fails, a control against the same Nightly without the package, and a negative run whose false assertion fails as required. The package also moves to the native format, so the content stays byte-identical to the previous release while one small rule is added on the server side. A trap worth knowing is recorded with it: the placement context sees the server's rotation one aim behind, so the scenario sets the heading and waits before clicking rather than trusting the click's own frame."""

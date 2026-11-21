@@ -36,3 +36,11 @@ game = "26.3"
 file = "refinedtypes.hmod"
 sha256 = "9dcbbd3af28e7578e383858352d6f3ce3b8762470132857bd95cf2b15b264606"
 changelog = "First publication in the SDK format."
+
+[[versions]]
+version = "0.1.2"
+published = "2026-11-21"
+game = "26.3"
+file = "refinedtypes.hmod"
+sha256 = "5360468e99254658545ba986e0ec12fde04b4ab738a997121d66d5726cfbca34"
+changelog = """Slice 2, the recipe family: 107 of the jar's 109 recipes carried and converted to the 26.3 dialect — 27 blocks, 27 shaped disks, 27 shapeless housing-based disks and 26 parts — now that the parent mod ships the machine casing, the processors, the storage housing, the 1k part and the common tags they need. The two left out are left out with their reason printed rather than faked: the network energizer needs a parent block this campaign has not ported, and the 64b source storage part needs a namespace that is not in the registry. Proven in game: every one of the 107 crafts with its declared output and count and consumes its ingredients, and 107 deliberate wrong-ingredient controls leave the result empty, so the recipe list is not passing on a loose match. The jar's own 109 files were in the 1.21.1 object form the 26.3 loader rejects, which is what made them dead data in the first place."""

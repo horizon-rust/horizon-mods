@@ -1,0 +1,26 @@
+id = "music_player"
+kind = "native-mod"
+name = "music_player"
+summary = "A Horizon port of Music Player."
+description = """Port by sparticle. Upstream: https://github.com/MC-U-Team/Music-Player (Apache-2.0).
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: Apache-2.0. Source: https://github.com/Sparticle62ops/horizon-music-player
+"""
+authors = ["MC-U-Team", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "Apache-2.0"
+source = "https://github.com/Sparticle62ops/horizon-music-player"
+icon = "icons/music_player.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "music_player-1.0.0.hmod"
+sha256 = "069ba9d90304963f313ac05d0d52498471bfa31421059a0b936343c80d6bdd32"
+changelog = "Rebuilt on the f00125f native-mod API: 8 settings on Options > Mods (upstream defaults), client_setup runs the entry 1:1, full decoded core in the package"

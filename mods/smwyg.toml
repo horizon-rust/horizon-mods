@@ -1,0 +1,28 @@
+id = "smwyg"
+kind = "native-mod"
+name = "Show Me What You Got"
+summary = "Ctrl+T over an item puts it in chat, with its tooltip on hover."
+description = """
+Ctrl+T over an item puts it in chat, with its tooltip on hover.
+
+**Differences from the original:** The shared line arrives as a server message, not as signed player chat. Sharing doesn't work from the creative inventory. If you edit the item name in the chat box, the message goes out as plain text.
+
+A port of [Show Me What You Got](https://github.com/apace100/show-me-what-you-got) 1.1.1 by Apace, published under its licence, MIT. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Apace"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "MIT"
+source = "https://github.com/lavoide/horizon-ports/tree/main/smwyg"
+icon = "icons/smwyg.png"
+categories = ["social"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.1"
+published = "2026-11-20"
+game = "26.3"
+file = "smwyg.hmod"
+sha256 = "b59c984be03fa773cd1c85d0d6d3233d0e7c637a5aece09c5fb8fd64c8733f16"
+changelog = "0.4.1: a share is now real player chat that goes through the game's own chat checks; the server only decorates a line that passed them, and only with what the typed line already says. No more `tellraw`, no client-name fallback."

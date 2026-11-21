@@ -1,0 +1,35 @@
+id = "better_ping_display"
+kind = "native-mod"
+name = "better_ping_display"
+summary = "A Horizon port of Better Ping Display [Fabric]."
+description = """Horizon port of vladmarica/better-ping-display (commit 8b34613, MIT, (c) 2020 Vlad Marica): the full
+ping display experience as a native Rust mod. 1:1 logic core: the smoothed per-player ping model,
+the threshold color ramp (start/mid/end at 0/150/300 ms), the color interpolation and hex/HSB
+helpers, the custom player list HUD builder, the config model with the upstream lang keys, and the
+render seam that appends the "+<ms> ms" text next to the vanilla bar in the player list.
+
+Port by sparticle. Upstream: https://github.com/vladmarica/better-ping-display
+
+Source-only .hmod built on the current SDK (Horizon f00125f). The config is wired as mod settings on
+Horizon's Options > Mods page (auto color ping text, render ping bars, ping text color) with the
+upstream translation keys; the ping text format string stays in the config file, as upstream ships it.
+The player-list render seam itself waits on horizon#19399, the tab-list render hook.
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-better-ping-display-fabric
+"""
+authors = ["vladmarica", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-better-ping-display-fabric"
+icon = "icons/better_ping_display.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-21"
+game = "26.3"
+file = "better_ping_display-1.0.0.hmod"
+sha256 = "1f2a9b5c0a85801bea31c08a552f2411aa56667d6da94a114f38f15fe998d697"
+changelog = "Rebuilt on the mod API: the config is wired as the original settings on Options > Mods; 1:1 core unchanged (sha refreshed)."

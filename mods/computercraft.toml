@@ -35,3 +35,11 @@ game = "26.3"
 file = "computercraft.hmod"
 sha256 = "a92fc5ff2338dd3530049360b84b41f68eec37b40fbd3333a29b0058b3ecf4ff"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "computercraft.hmod"
+sha256 = "0eab52fc8434915257eb5c74c1a9d853c41d429311f85139c4ac49fb5fcfdfe2"
+changelog = """Slice 3, the peripheral surface: a computer can now ask a block beside it what it is and call a method on it. A capability key of this package's own, a peripheral trait with a type name, a method list and one call at a time, the six-side geometry relative to the computer's facing, and the three interpreter builtins getType, getNames and call, with a harness block shipped as the probe. Proven in game with three neighbours at once: a harness on the right answers its type and its methods and round-trips a string and adds two numbers, while a plain stone on the left and air above answer nil for every call, and an unknown method is a named error rather than silence. The stone neighbour is asserted present before the call, so nil cannot be an empty side. A second carriage-return-shaped trap is recorded with it: the one-block terminal is sixteen columns, so the type wraps mid-name and the assertion compares the exact bytes rather than a substring. This is the surface a whole family of add-ons was waiting on; three deviations are stated rather than hidden, including that getNames answers one tab-separated line because the interpreter has no tables yet."""

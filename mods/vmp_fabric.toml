@@ -1,0 +1,49 @@
+id = "vmp_fabric"
+kind = "native-mod"
+name = "vmp_fabric"
+summary = "A Horizon port of Very Many Players (Fabric)."
+description = """Slice 1 of a Horizon port of [Very Many Players (Fabric)](https://github.com/RelativityMC/VMP-fabric)
+by ishland (MIT, upstream read at ver/26.1.1, commit 7e89476). Credits and
+license preserved; the upstream LICENSE is carried verbatim.
+
+## What slice 1 holds (1:1 logic core, 27 passing tests)
+
+- **Config model** (`config.rs`): the complete `vmp.properties` set with
+  upstream defaults, per-key fallback to the default on a missing or
+  malformed value, the normalized write-back under the "Configuration file
+  for VMP" comment, the java.util.Properties reader subset (comments,
+  =/:/whitespace separators, escapes, continuations), and the
+  `vmp:incompatibleConfig` forcing pass with upstream's exact warning
+  wording and the `vmp.ignoreIncompatibleConfig` override.
+- **Coordinate keys** (`mcutil.rs`): `MCUtil.getCoordinateKey/X/Z` and the
+  `ChunkPos` packed helpers the watching maps run on.
+- **SimpleObjectPool** (`pool.rs`): the fixed-size pool state machine
+  (alloc reuse, oversized fallback without the initializer, release no-op
+  when full). Upstream synchronizes access; this port is single-threaded,
+  wrap at the call site.
+- **AreaMap** (`area_map.rs`): the spatial index behind player watching,
+  with add/remove/update diffing, per-cell object sets, the sorted listener
+  walk by Chebyshev distance, and the same update-diff asymmetry upstream
+  ships (adds iterate the new square minus the old, removals the old minus
+  the new). Upstream's poo
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-vmp-fabric
+"""
+authors = ["Chebyshev distance", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-vmp-fabric"
+icon = "icons/vmp_fabric.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "vmp_fabric-1.0.0.hmod"
+sha256 = "fd77bd02b1166d804399d3ed6f2925b46d77d08a42c27c15a8f0d6531f9c04bf"
+changelog = "Initial registry submission"

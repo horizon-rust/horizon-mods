@@ -1,0 +1,40 @@
+id = "better_clouds"
+kind = "native-mod"
+name = "better_clouds"
+summary = "A Horizon port of Better Clouds."
+description = """Exact 1:1 Rust translation of [Better Clouds](https://github.com/Qendolin/better-clouds)
+(upstream Java, MPL-2.0), master @d6c33c0 (fix(b3d): make sure render pass is not closed),
+by Qendolin. Carries the upstream MPL-2.0 license and credit.
+
+Ported for the Horizon client by sparticle. Upstream credit: Qendolin.
+
+The bundle inlines the ported module tree into one `runtime.rs` (compile-equivalent;
+`generator/path.bin` is inlined as a byte literal in place of `include_bytes!`).
+
+Known seams (engine-stage, none are Horizon API gaps): the renderdoc full port
+(upstream `RenderDoc.java`/`RenderDocLoader.java`) is pending and rides the seam
+surface; CategoryTab/PlaceholderTab config-GUI widgets ride the tab-handle seam;
+the mixin carrier splice, ConfigManager serialized config load, EventHooks/ModLoader
+backend resolution and `PresetLoader.ALL_PRESETS` resource population wire in at
+engine stage.
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MPL-2.0. Source: https://github.com/Sparticle62ops/horizon-better-clouds
+"""
+authors = ["Qendolin", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MPL-2.0"
+source = "https://github.com/Sparticle62ops/horizon-better-clouds"
+icon = "icons/better_clouds.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "better_clouds-1.0.0.hmod"
+sha256 = "aaaa5b5181b5ec0952a7874d95ce773a9330cf29211de622612ebf537b391a6d"
+changelog = "Fixed the bundle imports to resolve under the game::better_clouds splice; pins aligned to Horizon f00125f / horizon-mixins e59da909"

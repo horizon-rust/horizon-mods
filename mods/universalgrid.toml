@@ -1,0 +1,24 @@
+id = "universalgrid"
+kind = "native-mod"
+name = "universalgrid"
+summary = "A Horizon port of universalgrid."
+description = """
+The first port of Universal Grid, a Refined Storage add-on with two items and no blocks, and it implements the family the mod exists for: the wireless universal grid, an energy-buffered item that opens a network's view from any distance. Bind it to a placed grid by right-clicking that block, then use it anywhere to open the same fifty-four slot network view as a native menu, withdrawing and depositing whole stacks while the parent's own grid tick stays the only writer to the network. The costs are the parent's: a thousand FE buffer, five to open and five per transfer, with the creative variant free. Proven in game with the parent installed: bind, walk twelve blocks away, open, and the view shows the stock it should while the energy falls from a thousand to nine hundred and eighty-five over three transfers and the network moves eight to five to seven items; a grid with three FE refuses to open, an unbound item refuses, the creative item opens at zero, and a broken grid is refused by its own name. Three behaviours the item would delegate to are recorded as blocked with their symbols, because the parent has not shipped the wireless grid, the wireless autocrafting monitor or the network-bound model property, and the jar's recipe is deliberately not carried since three of its five ingredients are those items and it could never match.
+"""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/universalgrid"
+icon = "icons/universalgrid.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-21"
+game = "26.3"
+file = "universalgrid.hmod"
+sha256 = "80e866ff4ea025da572bb8f3d4fce8545d7b33f8af8100dfe17855719a02946a"
+changelog = """The first port of Universal Grid, a Refined Storage add-on with two items and no blocks, and it implements the family the mod exists for: the wireless universal grid, an energy-buffered item that opens a network's view from any distance. Bind it to a placed grid by right-clicking that block, then use it anywhere to open the same fifty-four slot network view as a native menu, withdrawing and depositing whole stacks while the parent's own grid tick stays the only writer to the network. The costs are the parent's: a thousand FE buffer, five to open and five per transfer, with the creative variant free. Proven in game with the parent installed: bind, walk twelve blocks away, open, and the view shows the stock it should while the energy falls from a thousand to nine hundred and eighty-five over three transfers and the network moves eight to five to seven items; a grid with three FE refuses to open, an unbound item refuses, the creative item opens at zero, and a broken grid is refused by its own name. Three behaviours the item would delegate to are recorded as blocked with their symbols, because the parent has not shipped the wireless grid, the wireless autocrafting monitor or the network-bound model property, and the jar's recipe is deliberately not carried since three of its five ingredients are those items and it could never match."""

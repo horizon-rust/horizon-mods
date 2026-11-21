@@ -1,0 +1,28 @@
+id = "universalgraves"
+kind = "native-mod"
+name = "Universal Graves"
+summary = "Your items wait in a grave where you died."
+description = """
+Your items wait in a grave where you died.
+
+**Differences from the original:** The grave is a skeleton skull, not a gravestone with the player's name and timer. Right-clicking it gives everything back at once, and there is no grave screen. There is no death compass and no /graves command. The grave keeps vanilla's death experience instead of all of the player's experience.
+
+A port of [Universal Graves](https://github.com/Patbox/UniversalGraves) 3.0.3 by Patbox, published under its licence, LGPL-3.0-only. The original copyright and licence notices are kept in the file (COPYING, LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Patbox"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-only"
+source = "https://github.com/lavoide/horizon-ports/tree/main/universalgraves"
+icon = "icons/universalgraves.png"
+categories = ["utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.1"
+published = "2026-11-20"
+game = "26.3"
+file = "universalgraves.hmod"
+sha256 = "b29596dccd410f287e45877a2d2d57f74000686448d5a191437de30077802ae9"
+changelog = "0.4.1: spectators can't open graves, and the XP put in a grave is the dying player's own death drop."

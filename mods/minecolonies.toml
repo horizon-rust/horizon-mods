@@ -37,3 +37,11 @@ game = "26.3"
 file = "minecolonies.hmod"
 sha256 = "5c46f90c4e84c347eae117136235f97bb8c16febe1afd4d7d5a7a898f0d66186"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.4"
+published = "2026-11-21"
+game = "26.3"
+file = "minecolonies.hmod"
+sha256 = "d81dcd77b30d37f2c0291ee2b4ee736e03848754d04661f31dc7493960dac0aa"
+changelog = """Slice 2, the second and third jobs: the lumberjack fells a whole connected log cluster from the top and leaves every leaf standing, replanting a sapling on the stump's soil only when the colony's chest holds one; the miner sinks a one by one shaft straight down to the bedrock and collects every drop. Both are assignable with the same command the farmer uses, so the roster generalises rather than special-casing one job. Proven in game with a counterfactual before every assignment: an unemployed citizen beside the same tree and the same column leaves both whole, then the lumberjack leaves four logs in the chest and a sapling where the stump was, the second tree falls with bare soil because the chest held no sapling, eight logs in all, and the miner's shaft is one wide, eight deep, with the bedrock untouched and eight cobblestone collected. The leaf cap is placed persistent so that it staying put cannot be decay rather than restraint, and the depth assertion is inverted by a selftest that must fail. This version also fixes a defect in its own carried data: the scythe's recipe was exactly vanilla's iron hoe, so the crafting table produced a hoe and the scythe could not be obtained at all; the ingredient positions moved and all three carried recipes are now crafted in a real table with their ingredients consumed. No asset in this package comes from the jar: fifteen files re-render byte-identically from the generator, which is what the licence requires."""

@@ -34,3 +34,11 @@ game = "26.3"
 file = "rftoolsutility.hmod"
 sha256 = "7121e48f95642d568cd0561181c9cafbd4d458eb94fa4f5d0febdb1089710a5a"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "rftoolsutility.hmod"
+sha256 = "3e00917a88b3d284c2933c3a3a2a98b170a226bea8ed10970880eed3f6d07e3f"
+changelog = """Slice 2, the tank's contents travel with its item. `Hooks::block_drops` writes the tank's saved compound onto the dropped tank as vanilla `minecraft:block_entity_data` carrying the block entity's id, vanilla placement applies it, and `on_block_placed_by` clamps it to the capacity — so a tank can be moved without losing or gaining fluid. That closes, at this pin, the pattern `ARCHITECTURE.md` lists as impossible ("loot cannot carry a mod block entity"), and it is worth reusing for other storage blocks. Three inherited defects from 0.2.0 were found while proving it and are fixed: the bucket swap never happened in creative (the engine keeps a creative player's stack, so the port writes the hand itself and both modes swap); `/rftoolsutility tank <pos> <fluid> <mb>` was unparsable because `<fluid:id>` arrives as a string, so every call answered `Usage:`; and a refused click emptied the water bucket onto the ground because the item's own use still ran after a block part had answered. Proven in game: a full tank broken carries exactly its contents on the item, an empty tank carries nothing, a placed item is restored at its level, 99,999 mB is clamped to 32,000, and the unmodded game does not know the block."""

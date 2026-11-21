@@ -1,0 +1,24 @@
+id = "extended_industrialization"
+kind = "native-mod"
+name = "extended_industrialization"
+summary = "A Horizon port of extended_industrialization."
+description = """
+The first port of Extended Industrialization, and it opens with the electric canning machine's water half: a block entity with a 32,000 FE buffer, two item inputs, two item outputs and two 16,000 mB tanks, running the jar's two water recipes. Proven in game both ways round: filling takes the bottle from its slot and 350 mB from tank zero in one start, spends 200 EU and produces a water bottle, while emptying takes that water bottle back and returns a glass bottle plus 350 mB into the second tank; an awkward potion starts no run and consumes nothing, a machine with no energy takes nothing, and the buffer, both tanks and both slots survive a save and relaunch. A break in survival drops the machine itself. The port also fixes a defect in the jar's own data: its loot table uses the 1.21.1 plural condition array, which evaluates false at 26.3 so the block would drop nothing at all and report no error — the port ships the singular typed condition and proves it with that break. The GUI is a recorded deferral, and honey is recorded as blocked because a mod fluid cannot live in a tank at this pin. The families that need the parent's plates and ingots are recorded as not ported with their reason.
+"""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/extended_industrialization"
+icon = "icons/extended_industrialization.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-21"
+game = "26.3"
+file = "extended_industrialization.hmod"
+sha256 = "f5f04d87466bc8d188ba2e1bca7877a0228bf3c3f36e4e480482d9f8406d949c"
+changelog = """The first port of Extended Industrialization, and it opens with the electric canning machine's water half: a block entity with a 32,000 FE buffer, two item inputs, two item outputs and two 16,000 mB tanks, running the jar's two water recipes. Proven in game both ways round: filling takes the bottle from its slot and 350 mB from tank zero in one start, spends 200 EU and produces a water bottle, while emptying takes that water bottle back and returns a glass bottle plus 350 mB into the second tank; an awkward potion starts no run and consumes nothing, a machine with no energy takes nothing, and the buffer, both tanks and both slots survive a save and relaunch. A break in survival drops the machine itself. The port also fixes a defect in the jar's own data: its loot table uses the 1.21.1 plural condition array, which evaluates false at 26.3 so the block would drop nothing at all and report no error — the port ships the singular typed condition and proves it with that break. The GUI is a recorded deferral, and honey is recorded as blocked because a mod fluid cannot live in a tank at this pin. The families that need the parent's plates and ingots are recorded as not ported with their reason."""

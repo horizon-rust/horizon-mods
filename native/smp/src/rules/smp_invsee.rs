@@ -42,7 +42,7 @@ pub trait Stack: Clone + PartialEq {
 pub trait World<S> {
     /// A player's inventory and whether it is live (they are on): Err while
     /// they log in, are dead, or never played here.
-    fn read(&self, uuid: u128, kind: Kind) -> Result<(Vec<Option<S>>, bool), String>;
+    fn read(&mut self, uuid: u128, kind: Kind) -> Result<(Vec<Option<S>>, bool), String>;
     /// One stack from `from`'s slot, still exactly `expected`, into `to`'s
     /// inventory where it fits whole, or nothing moves.
     fn move_stack(
@@ -185,7 +185,7 @@ impl<S: Stack> Invsee<S> {
         target: u128,
         name: &str,
         kind: Kind,
-        world: &dyn World<S>,
+        world: &mut dyn World<S>,
     ) -> Result<(), String> {
         let (shown, online) = world.read(target, kind)?;
         self.views.insert(
@@ -238,7 +238,7 @@ impl<S: Stack> Invsee<S> {
     }
 
     /// Reads the target's inventory again: whether the menu changed.
-    pub fn refresh(&mut self, op: u128, world: &dyn World<S>) -> bool {
+    pub fn refresh(&mut self, op: u128, world: &mut dyn World<S>) -> bool {
         let Some(v) = self.views.get_mut(&op) else {
             return false;
         };
@@ -429,7 +429,7 @@ mod tests {
     }
 
     impl World<S> for Fake {
-        fn read(&self, uuid: u128, kind: Kind) -> Result<(Vec<Option<S>>, bool), String> {
+        fn read(&mut self, uuid: u128, kind: Kind) -> Result<(Vec<Option<S>>, bool), String> {
             if uuid == 2 {
                 match self.state {
                     State::LoggingIn => return Err("the player is logging in".into()),
@@ -476,8 +476,8 @@ mod tests {
 
     fn opened(kind: Kind) -> (Invsee<S>, Fake, Vec<Move>) {
         let mut i = Invsee::default();
-        let w = Fake::new();
-        i.open(1, 2, "Steve", kind, &w).unwrap();
+        let mut w = Fake::new();
+        i.open(1, 2, "Steve", kind, &mut w).unwrap();
         (i, w, Vec::new())
     }
 
@@ -586,7 +586,7 @@ mod tests {
         let before = w.total();
         // He leaves: his file, the same items, offline in the menu.
         w.state = State::Off;
-        assert!(i.refresh(1, &w));
+        assert!(i.refresh(1, &mut w));
         assert!(matches!(
             &i.layout(1)[INFO],
             Cell::Info { online: false, .. }

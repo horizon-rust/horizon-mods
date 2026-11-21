@@ -6,28 +6,22 @@
 // tick costs one atomic load while no menu is open. Added to the game as
 // `game::smp_invsee_glue`.
 
-use crate::game::{
-    Game,
-    native_inventories::NativeInventoryKind,
-    native_menus::native_menu_inventory_slot,
-    native_server::{NativeCommand, NativeServerPlayer},
+use crate::{
+    glue as smp_glue,
+    host::{Game, NativeInventoryKind, NativeServerPlayer, native_menu_inventory_slot},
     smp_economy::{Out, Player},
-    smp_glue,
     smp_invsee::{self, Cell, Invsee, Kind, Move},
     smp_store, smp_switch,
+    text::{self, Text, TextExt},
 };
-use horizon_client::{
-    items::ItemStack,
-    lan::data::component_nbt,
-    text::{self, Text},
-};
+use mod_api::{Command, ItemStack};
 use std::sync::{
     Mutex,
     atomic::{AtomicBool, AtomicU64, Ordering::Relaxed},
 };
 
 struct State {
-    invsee: Invsee<ItemStack>,
+    invsee: Invsee<Held>,
     /// Asked in a command, opened at the next tick: (operator, target UUID,
     /// real name, which).
     pending: Vec<(u128, u128, String, Kind)>,
@@ -47,18 +41,34 @@ fn state() -> std::sync::MutexGuard<'static, Option<State>> {
     s
 }
 
-impl smp_invsee::Stack for ItemStack {
+/// A stack with its item id and count, which the stack's own handle doesn't give without the game.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Held {
+    id: String,
+    count: u32,
+    stack: ItemStack,
+}
+
+impl smp_invsee::Stack for Held {
     fn id(&self) -> String {
-        self.item.to_string()
+        self.id.clone()
     }
     fn count(&self) -> u32 {
         self.count
     }
 }
 
+fn held(game: &Game<'_>, stack: ItemStack) -> Held {
+    Held {
+        id: game.item_id(&stack),
+        count: stack.count(),
+        stack,
+    }
+}
+
 fn native(kind: Kind) -> NativeInventoryKind {
     match kind {
-        Kind::Player => NativeInventoryKind::Player,
+        Kind::Player => NativeInventoryKind::Main,
         Kind::Ender => NativeInventoryKind::Ender,
     }
 }
@@ -66,25 +76,46 @@ fn native(kind: Kind) -> NativeInventoryKind {
 /// The game's inventories, for the rules.
 struct GameWorld<'a, 'g>(&'a mut Game<'g>);
 
-impl smp_invsee::World<ItemStack> for GameWorld<'_, '_> {
-    fn read(&self, uuid: u128, kind: Kind) -> Result<(Vec<Option<ItemStack>>, bool), String> {
-        self.0.native_inventory(uuid, native(kind)).map(|i| (i.slots, i.online))
+impl smp_invsee::World<Held> for GameWorld<'_, '_> {
+    fn read(&mut self, uuid: u128, kind: Kind) -> Result<(Vec<Option<Held>>, bool), String> {
+        let i = self.0.native_inventory(uuid, native(kind))?;
+        Ok((
+            i.slots
+                .into_iter()
+                .map(|s| s.map(|s| held(self.0, s)))
+                .collect(),
+            i.online,
+        ))
     }
-    fn move_stack(&mut self, from: (u128, Kind, usize), expected: &ItemStack, to: (u128, Kind)) -> Result<(), String> {
-        self.0.native_move_stack((from.0, native(from.1), from.2), expected, (to.0, native(to.1)))
+    fn move_stack(
+        &mut self,
+        from: (u128, Kind, usize),
+        expected: &Held,
+        to: (u128, Kind),
+    ) -> Result<(), String> {
+        self.0.native_move_stack(
+            (from.0, native(from.1), from.2),
+            &expected.stack,
+            (to.0, native(to.1)),
+        )
     }
 }
 
-pub fn commands(commands: &mut Vec<NativeCommand>) {
+pub fn commands(commands: &mut Vec<Command>) {
     for usage in ["invsee <player:word>", "endersee <player:word>"] {
-        commands.push(NativeCommand::op(usage, smp_invsee::LEVEL));
+        commands.push(Command::op(usage, smp_invsee::LEVEL));
     }
 }
 
 /// `/invsee` and `/endersee`; anything else is left to the SMP.
-pub(in crate::game) fn perform(game: &mut Game<'_>, player: &NativeServerPlayer, line: &str, ran: &mut bool) {
+pub(crate) fn perform(
+    game: &mut Game<'_>,
+    player: &NativeServerPlayer,
+    line: &str,
+    ran: &mut bool,
+) {
     let word = line.split(' ').next().unwrap_or_default();
-    if !smp_invsee::COMMANDS.contains(&word) || !game.native_on(smp_glue::ID) {
+    if !smp_invsee::COMMANDS.contains(&word) {
         return;
     }
     *ran = true;
@@ -117,35 +148,41 @@ pub(in crate::game) fn perform(game: &mut Game<'_>, player: &NativeServerPlayer,
     }
 }
 
-fn named(item: &str, name: &str, color: &str) -> ItemStack {
-    let mut stack = ItemStack {
-        item: item.into(),
-        count: 1,
-        damage: 0,
-        extra: None,
-    };
-    let title = serde_json::json!({ "text": name, "italic": false, "color": color });
-    stack.data_mut().custom_name = Some(component_nbt(&title));
-    stack
+fn named(g: &Game<'_>, item: &str, name: &str, color: &str) -> ItemStack {
+    g.button(item, name, color)
 }
 
-fn items(invsee: &Invsee<ItemStack>, op: u128) -> Vec<Option<ItemStack>> {
+fn items(g: &Game<'_>, invsee: &Invsee<Held>, op: u128) -> Vec<Option<ItemStack>> {
     invsee
         .layout(op)
         .into_iter()
         .map(|c| match c {
             Cell::Empty => None,
-            Cell::Stack(s) => Some(s),
-            Cell::Filler => Some(named("minecraft:gray_stained_glass_pane", " ", "gray")),
-            Cell::Label(l) => Some(named("minecraft:light_gray_stained_glass_pane", l, "gray")),
-            Cell::Close => Some(named("minecraft:barrier", "Close", "red")),
+            Cell::Stack(s) => Some(s.stack),
+            Cell::Filler => Some(named(g, "minecraft:gray_stained_glass_pane", " ", "gray")),
+            Cell::Label(l) => Some(named(
+                g,
+                "minecraft:light_gray_stained_glass_pane",
+                l,
+                "gray",
+            )),
+            Cell::Close => Some(named(g, "minecraft:barrier", "Close", "red")),
             Cell::Info { name, online, busy } => {
                 let line = match &busy {
                     Some(b) => format!("{name}: {b} (nothing moves now)"),
-                    None if online => format!("{name} (online): click theirs to take, yours to give"),
-                    None => format!("{name} (offline, their saved file): click theirs to take, yours to give"),
+                    None if online => {
+                        format!("{name} (online): click theirs to take, yours to give")
+                    }
+                    None => format!(
+                        "{name} (offline, their saved file): click theirs to take, yours to give"
+                    ),
                 };
-                Some(named("minecraft:player_head", &line, if busy.is_some() { "red" } else { "yellow" }))
+                Some(named(
+                    g,
+                    "minecraft:player_head",
+                    &line,
+                    if busy.is_some() { "red" } else { "yellow" },
+                ))
             }
         })
         .collect()
@@ -181,21 +218,28 @@ fn staff(game: &mut Game<'_>, op: u128, line: &str) {
     if let Some(dir) = game.native_world_dir() {
         use std::io::Write;
         let path = dir.join(smp_store::DIR).join("staff.log");
-        let stamp = chrono::Utc::now().format("%Y-%m-%dT%H:%M:%SZ");
-        if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(&path) {
+        let stamp = crate::util::stamp();
+        if let Ok(mut f) = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&path)
+        {
             let _ = writeln!(f, "{stamp} {line}");
         }
     }
     for p in game.native_server_players() {
         if p.uuid != op && p.permission >= smp_invsee::LEVEL {
-            game.native_tell(p.uuid, Text::literal(format!("[Staff] {line}")).with_color(text::GRAY));
+            game.native_tell(
+                p.uuid,
+                Text::literal(format!("[Staff] {line}")).with_color(text::GRAY),
+            );
         }
     }
 }
 
 /// Each tick: one load while nothing is open. Menus to open now; once a
 /// second, every open menu read again, and those of operators gone closed.
-pub(in crate::game) fn tick(game: &mut Game<'_>) {
+pub(crate) fn tick(game: &mut Game<'_>) {
     if !ACTIVE.load(Relaxed) {
         return;
     }
@@ -204,10 +248,15 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     let s = guard.as_mut().expect("made");
     let mut tell = Vec::new();
     for (op, target, name, kind) in std::mem::take(&mut s.pending) {
-        let opened = s.invsee.open(op, target, &name, kind, &GameWorld(game));
+        let opened = s.invsee.open(op, target, &name, kind, &mut GameWorld(game));
         match opened {
             Ok(()) => {
-                let window = game.native_open_menu(op, smp_invsee::ROWS, title(&name, kind), items(&s.invsee, op));
+                let window = game.native_open_menu(
+                    op,
+                    smp_invsee::ROWS,
+                    title(&name, kind),
+                    items(game, &s.invsee, op),
+                );
                 match window {
                     Some(w) => s.invsee.views.get_mut(&op).expect("opened").window = Some(w),
                     None => {
@@ -219,15 +268,23 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         }
     }
     let mut summaries = Vec::new();
-    if n % 20 == 0 {
-        let on: Vec<(u128, String)> = game.native_server_players().into_iter().map(|p| (p.uuid, p.name)).collect();
+    if n.is_multiple_of(20) {
+        let on: Vec<(u128, String)> = game
+            .native_server_players()
+            .into_iter()
+            .map(|p| (p.uuid, p.name))
+            .collect();
         let ops: Vec<u128> = s.invsee.views.keys().copied().collect();
         for op in ops {
             match on.iter().find(|p| p.0 == op) {
-                None => summaries.extend(s.invsee.close(op, &smp_store::uuid_string(op)).map(|l| (op, l))),
+                None => summaries.extend(
+                    s.invsee
+                        .close(op, &smp_store::uuid_string(op))
+                        .map(|l| (op, l)),
+                ),
                 Some(_) => {
-                    if s.invsee.refresh(op, &GameWorld(game)) {
-                        game.native_set_menu_items(op, items(&s.invsee, op));
+                    if s.invsee.refresh(op, &mut GameWorld(game)) {
+                        game.native_set_menu_items(op, items(game, &s.invsee, op));
                     }
                 }
             }
@@ -244,10 +301,20 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
 }
 
 /// A click in an `/invsee` menu: true when it was one.
-pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32, slot: i32, mode: i32) -> bool {
+pub(crate) fn menu_clicked(
+    game: &mut Game<'_>,
+    uuid: u128,
+    window: i32,
+    slot: i32,
+    mode: i32,
+) -> bool {
     let mut guard = state();
     let s = guard.as_mut().expect("made");
-    if s.invsee.views.get(&uuid).is_none_or(|v| v.window != Some(window)) {
+    if s.invsee
+        .views
+        .get(&uuid)
+        .is_none_or(|v| v.window != Some(window))
+    {
         return false;
     }
     let Some(dir) = game.native_world_dir() else {
@@ -273,12 +340,24 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
     let own = native_menu_inventory_slot(smp_invsee::SIZE, slot);
     let mut world = GameWorld(game);
     let result = match own {
-        Some(i) => match world.0.native_player_stacks(uuid).and_then(|st| st.get(i).cloned().flatten()) {
-            Some(stack) => s.invsee.click_own(uuid, i, &stack, &mut world, &mut record).map(|_| false),
+        Some(i) => match world
+            .0
+            .native_player_stacks(uuid)
+            .and_then(|st| st.get(i).cloned().flatten())
+        {
+            Some(stack) => {
+                let stack = held(world.0, stack);
+                s.invsee
+                    .click_own(uuid, i, &stack, &mut world, &mut record)
+                    .map(|_| false)
+            }
             None => Ok(false),
         },
         None => match usize::try_from(slot) {
-            Ok(m) if m < smp_invsee::SIZE => s.invsee.click_menu(uuid, m, &mut world, &mut record).map(|c| c == Some(true)),
+            Ok(m) if m < smp_invsee::SIZE => s
+                .invsee
+                .click_menu(uuid, m, &mut world, &mut record)
+                .map(|c| c == Some(true)),
             _ => Ok(false),
         },
     };
@@ -287,14 +366,25 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
     {
         log::error!("[smp] invsee audit: {err}");
     }
-    let name = game.native_server_players().into_iter().find(|p| p.uuid == uuid).map(|p| p.name);
+    let name = game
+        .native_server_players()
+        .into_iter()
+        .find(|p| p.uuid == uuid)
+        .map(|p| p.name);
     let close = matches!(result, Ok(true));
-    let summary = if close { s.invsee.close(uuid, name.as_deref().unwrap_or("?")) } else { None };
-    let refreshed = (!close).then(|| items(&s.invsee, uuid));
+    let summary = if close {
+        s.invsee.close(uuid, name.as_deref().unwrap_or("?"))
+    } else {
+        None
+    };
+    let refreshed = (!close).then(|| items(game, &s.invsee, uuid));
     ACTIVE.store(!s.invsee.views.is_empty() || !s.pending.is_empty(), Relaxed);
     drop(guard);
     if let Err(e) = &result {
-        game.native_tell(uuid, Text::literal(format!("Nothing moved: {e}.")).with_color(text::RED));
+        game.native_tell(
+            uuid,
+            Text::literal(format!("Nothing moved: {e}.")).with_color(text::RED),
+        );
     }
     if close {
         game.native_close_menu(uuid);
@@ -308,13 +398,21 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
 }
 
 /// An `/invsee` menu closed: true when it was one.
-pub(in crate::game) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32) -> bool {
+pub(crate) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32) -> bool {
     let mut guard = state();
     let s = guard.as_mut().expect("made");
-    if s.invsee.views.get(&uuid).is_none_or(|v| v.window != Some(window)) {
+    if s.invsee
+        .views
+        .get(&uuid)
+        .is_none_or(|v| v.window != Some(window))
+    {
         return false;
     }
-    let name = game.native_server_players().into_iter().find(|p| p.uuid == uuid).map(|p| p.name);
+    let name = game
+        .native_server_players()
+        .into_iter()
+        .find(|p| p.uuid == uuid)
+        .map(|p| p.name);
     let summary = s.invsee.close(uuid, name.as_deref().unwrap_or("?"));
     ACTIVE.store(!s.invsee.views.is_empty() || !s.pending.is_empty(), Relaxed);
     drop(guard);

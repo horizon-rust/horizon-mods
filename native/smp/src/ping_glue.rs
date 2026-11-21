@@ -5,15 +5,14 @@
 // were said in. A tick with nothing said costs two atomic loads. Added to
 // the game as `game::smp_ping_glue`.
 
-use crate::game::{
-    Game,
-    native_server::{NativeCommand, NativeServerPlayer},
+use crate::{
+    host::{Game, NativeServerPlayer},
     smp_economy::Out,
     smp_ping::{self, Pings, Said},
     smp_store,
+    text::{self, Text, TextExt},
 };
-use horizon_client::text::{self, Text};
-use horizon_protocol::packets::play::{self, Clientbound as C};
+use mod_api::{Command, SoundSource};
 use std::sync::Mutex;
 use std::sync::atomic::{AtomicBool, Ordering::Relaxed};
 
@@ -25,9 +24,9 @@ static WHISPERED: AtomicBool = AtomicBool::new(false);
 /// The most lines kept for one tick (a flood is not worth more pings).
 const MAX: usize = 64;
 
-pub(in crate::game) fn commands(commands: &mut Vec<NativeCommand>) {
+pub(crate) fn commands(commands: &mut Vec<Command>) {
     for usage in ["pingsound", "pingsound on", "pingsound off"] {
-        commands.push(NativeCommand::new(usage));
+        commands.push(Command::new(usage));
     }
 }
 
@@ -45,7 +44,7 @@ fn with_pings<R>(game: &Game<'_>, f: impl FnOnce(&mut Pings) -> R) -> Option<R> 
 }
 
 /// `/pingsound [on|off]` (`native_perform_command`).
-pub(in crate::game) fn perform(
+pub(crate) fn perform(
     game: &mut Game<'_>,
     player: &NativeServerPlayer,
     command: &str,
@@ -74,7 +73,7 @@ pub(in crate::game) fn perform(
 
 /// A command a player typed (`native_player_command`): a whisper is noted
 /// for the tick's pings.
-pub(in crate::game) fn command_heard(player: u128, command: &str) {
+pub(crate) fn command_heard(player: u128, command: &str) {
     let Some(name) = smp_ping::whisper_to(command) else {
         return;
     };
@@ -86,8 +85,8 @@ pub(in crate::game) fn command_heard(player: u128, command: &str) {
 }
 
 /// The end of a tick: the pings of what was said in it.
-pub(in crate::game) fn tick(game: &mut Game<'_>) {
-    let chat = horizon_client::smp_chat::take();
+pub(crate) fn tick(game: &mut Game<'_>) {
+    let chat = crate::smp_chat::take();
     let whispers = if WHISPERED.swap(false, Relaxed) {
         std::mem::take(&mut *WHISPERS.lock().unwrap_or_else(|e| e.into_inner()))
     } else {
@@ -98,7 +97,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     }
     let players = game.native_server_players();
     let online: Vec<(u128, String)> = players.iter().map(|p| (p.uuid, p.name.clone())).collect();
-    let now = chrono::Utc::now().timestamp_millis();
+    let now = crate::now_ms();
     let said = chat
         .into_iter()
         .map(|(s, line)| (s, Said::Chat(line)))
@@ -128,21 +127,9 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         if let Some(p) = players.iter().find(|p| p.uuid == uuid) {
             // At most one line each 3 s per player: the log shows pings work.
             log::info!("[smp] ping: {} by {}", p.name, name(sender));
-            game.native_send(uuid, ping_sound(p.position, now));
+            if let Some(target) = game.player_ref(uuid) {
+                let _ = target.play_sound(game.h, smp_ping::SOUND, SoundSource::Players, 1.0, 1.0);
+            }
         }
     }
-}
-
-/// The ping, for one player at `at` (the `player` sound source).
-fn ping_sound(at: [f64; 3], seed: i64) -> C {
-    C::Sound(play::Sound {
-        sound: (-1, Some((smp_ping::SOUND.to_owned(), None))),
-        source: 7,
-        x: (at[0] * 8.0) as i32,
-        y: (at[1] * 8.0) as i32,
-        z: (at[2] * 8.0) as i32,
-        volume: 1.0,
-        pitch: 1.0,
-        seed,
-    })
 }

@@ -6,17 +6,13 @@
 // console commands it builds are run by glue.rs once that lock is let go.
 // Added to the game as `game::smp_casino_glue`.
 
-use crate::game::{
-    Game,
-    native_server::NativeServerPlayer,
+use crate::{
+    host::{Game, NativeServerPlayer},
     smp_casino::{self, Casino, Color, Fx, Icon},
     smp_economy::{Economy, Out, Player},
+    text::{self, Text, TextExt},
 };
-use horizon_client::{
-    items::ItemStack,
-    lan::data::component_nbt,
-    text::{self, Text},
-};
+use mod_api::ItemStack;
 
 /// The crash's boss bars: one a player (a bar's players can't be a list of
 /// names, and tags don't reach a server's players), `smp:casino_crash_<i>`
@@ -32,7 +28,7 @@ fn bar_id(i: usize) -> String {
     format!("smp:casino_crash_{i}")
 }
 
-fn color(c: Color) -> u32 {
+fn color(c: Color) -> &'static str {
     match c {
         Color::White => text::WHITE,
         Color::Gray => text::GRAY,
@@ -45,24 +41,26 @@ fn color(c: Color) -> u32 {
     }
 }
 
-fn stack(icon: Icon) -> ItemStack {
-    let mut stack = ItemStack {
-        item: icon.item.into(),
-        count: u32::from(icon.count.clamp(1, 99)),
-        damage: 0,
-        extra: None,
-    };
-    let title =
-        serde_json::json!({ "text": icon.name, "italic": false, "color": icon.color.name() });
-    stack.data_mut().custom_name = Some(component_nbt(&title));
-    stack
+fn stack(game: &Game<'_>, icon: Icon) -> ItemStack {
+    game.named_stack(
+        icon.item,
+        u32::from(icon.count.clamp(1, 99)),
+        &icon.name,
+        icon.color.name(),
+    )
 }
 
-fn items(casino: &Casino, economy: &Economy, uuid: u128, now: i64) -> Vec<Option<ItemStack>> {
+fn items(
+    game: &Game<'_>,
+    casino: &Casino,
+    economy: &Economy,
+    uuid: u128,
+    now: i64,
+) -> Vec<Option<ItemStack>> {
     casino
         .layout(economy, uuid, now)
         .into_iter()
-        .map(|c| c.map(stack))
+        .map(|c| c.map(|icon| stack(game, icon)))
         .collect()
 }
 
@@ -72,7 +70,7 @@ fn open(game: &mut Game<'_>, casino: &mut Casino, economy: &Economy, uuid: u128,
     let Some(view) = casino.seats.get(&uuid).map(|s| s.view) else {
         return false;
     };
-    let items = items(casino, economy, uuid, now);
+    let items = items(game, casino, economy, uuid, now);
     let title = Text::literal(view.title()).with_color(text::DARK_GRAY);
     match game.native_open_menu(uuid, smp_casino::ROWS, title, items) {
         Some(w) => {
@@ -89,7 +87,7 @@ fn open(game: &mut Game<'_>, casino: &mut Casino, economy: &Economy, uuid: u128,
 }
 
 /// `/casino ...` (inside the player's command).
-pub(in crate::game) fn command(
+pub(crate) fn command(
     game: &mut Game<'_>,
     casino: &mut Casino,
     economy: &mut Economy,
@@ -111,7 +109,7 @@ pub(in crate::game) fn command(
 
 /// A click in a player's casino menu: the console commands its effects need,
 /// for after the SMP's lock.
-pub(in crate::game) fn clicked(
+pub(crate) fn clicked(
     game: &mut Game<'_>,
     casino: &mut Casino,
     economy: &mut Economy,
@@ -125,7 +123,7 @@ pub(in crate::game) fn clicked(
     if slot >= smp_casino::SIZE {
         return Vec::new();
     }
-    let now = chrono::Utc::now().timestamp_millis();
+    let now = crate::now_ms();
     economy.now = now;
     let fx = casino.click(economy, uuid, slot, shift, now);
     apply(game, casino, economy, fx, now)
@@ -133,7 +131,7 @@ pub(in crate::game) fn clicked(
 
 /// The casino's share of the server's tick: frames, rounds that end, the
 /// pot's float (once). The console commands, for after the lock.
-pub(in crate::game) fn tick(
+pub(crate) fn tick(
     game: &mut Game<'_>,
     casino: &mut Casino,
     economy: &mut Economy,
@@ -254,7 +252,7 @@ fn apply(
                     && casino.seats.get(&uuid).is_some_and(|s| s.window.is_some())
                 {
                     shown.push(uuid);
-                    let items = items(casino, economy, uuid, now);
+                    let items = items(game, casino, economy, uuid, now);
                     game.native_set_menu_items(uuid, items);
                 }
             }

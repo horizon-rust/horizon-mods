@@ -1,8 +1,6 @@
 # SMP (Horizon native server mod)
 
 > [!WARNING]
-> **Legacy.** This is the old `.hnmod` source. Launchers from 0.2.70 on can't load it. A port to the new mod SDK is tracked in [#1214](https://github.com/horizon-rust/horizon-mods/issues/1214).
-
 The official Horizon server's survival layer ([design](https://github.com/horizon-rust/horizon/blob/main/docs/smp.md)).
 It is **not** part of Horizon's own server: only a server that builds this mod into its engine has it. It isn't listed
 in the registry.
@@ -395,42 +393,42 @@ folder is untouched until the mod first runs on it; it changes no block and no p
 and when the world closes: a crash leaves the old file or the new one. If it can't be read, the economy stays off (the
 commands say so) rather than start from nothing.
 
-## Made on the hook points
+## Made on the mod API
 
-It hooks only Horizon's native hook points: `native_register_commands` and `native_perform_command` (API 8), the
-acting player's items (API 9), the server menus and `native_exchange_items` (API 10), the players' health and
-`native_run_command` (API 21), `native_destroy_block` (API 14), `native_right_click_block`, the acting player and the
-action bar (API 21), `native_block_spread`, `native_piston_move`, `native_explosion_detonate`, `native_fill_bucket` and
-`native_attack_entity` (API 22), `native_sidebar`, `native_tab_list` and `native_tick_stats` (API 49),
-`native_set_nickname` and `native_text_allowed` (API 62), `native_hide_player` (API 314, horizon#7003), the server tick and the world lifecycle.
-`compatibility.json` names `"hooks": 645`.
+SMP is a server-side trait mod. It uses the Horizon SDK for commands, inventories, menus, the sidebar, chunk
+tickets and protection hooks. The rules use the same world-side `horizon-smp/` directory and auction stack format.
 
 | File | What it is |
 |---|---|
-| `mixins/smp/horizon-mixin.toml` | The bundle: twenty-nine modules and the HEAD hooks |
-| `mixins/smp/smp_store.rs`, `smp_economy.rs`, `smp_market.rs`, `smp_recipes.rs`, `smp_shop.rs`, `smp_nick.rs`, `smp_trade.rs`, `smp_games.rs`, `smp_lottery.rs`, `smp_places.rs`, `smp_claims.rs`, `smp_board.rs`, `smp_presence.rs`, `smp_auction.rs`, `smp_report.rs`, `smp_market_prices.rs`, `smp_market_menu.rs`, `smp_market_chart.rs`, `smp_invsee.rs`, `smp_switch.rs`, `smp_vanish.rs` | The rules, no game types (a trade's stacks are a type parameter): added to the game as `game::smp_store`, `game::smp_economy`, `game::smp_market`, `game::smp_recipes`, `game::smp_shop`, `game::smp_nick`, `game::smp_trade`, `game::smp_games`, `game::smp_lottery`, `game::smp_places`, `game::smp_claims`, `game::smp_board`, `game::smp_presence`, `game::smp_auction`, `game::smp_report`, `game::smp_market_prices`, `game::smp_market_menu`, `game::smp_market_chart`, `game::smp_invsee`, `game::smp_switch`, `game::smp_vanish`; also this crate's modules (`src/lib.rs`), for their tests |
-| `mixins/smp/glue.rs` | The state for the open world and the edges to the game's types (`game::smp_glue`) |
-| `mixins/smp/{register,command,tick,lifecycle,menu_clicked,menu_closed,destroy_block,right_click_block,block_spread,piston_move,explosion_detonate,fill_bucket,attack_entity}.rs` | One small helper per hook |
-| `mixins/smp/smp_casino.rs`, `smp_casino_roulette.rs`, `smp_casino_slots.rs`, `smp_casino_crash.rs`, `smp_casino_blackjack.rs` | The casino's rules, menus and effects (`game::smp_casino*`) |
-| `mixins/smp/casino_glue.rs` | The casino's effects for a stock client: menu items, sounds, titles, fireworks, boss bars (`game::smp_casino_glue`) |
+| `horizon-mod.toml` | The manifest: id, version, `[native]` pins |
+| `src/lib.rs` | Server hook subscriptions, including the global dispenser hook |
+| `src/rules/smp_*.rs` | The rules, plain Rust with their own tests (no game types: a trade's stacks are a type parameter), the economy, market, shop, trades, games, lottery, places, claims, board, presence, auction, reports, market prices, menus and charts, `/invsee`, switches, vanish, and the casino (`smp_casino*.rs`) |
+| `src/host.rs` | What the old bundle's `game.native_*` helpers did, over the API's `ServerHost`: players, items and inventories, menus, tab list, chunk tickets |
+| `src/glue.rs` | The state for the open world and the edges between the game and the rules; `claims_glue.rs`, `invsee_glue.rs`, `ping_glue.rs` and `casino_glue.rs` do the same for claims, `/invsee`, chat pings and the casino's effects for a stock client (menu items, sounds, titles, fireworks, boss bars) |
+| `src/command_line.rs` | Command-tree usages and the rules for who can run each command |
+| `src/nbt_codec.rs` | Network NBT, for the auction house's stacks in `economy.json` (the same bytes as before) |
 | `proof.py` | A dedicated server built with the mod and two real clients, on fresh temporary data |
 | `proof_casino.py` | The casino's proof (`SMP_PROOF=casino`): both clients play every game through the menus |
 
 ## Build and prove
 
 ```sh
-(cd native/smp && cargo test)                          # the rules
-python3 native/tools/native.py check smp               # apply on the tested Horizon and cargo check the game
-python3 native/tools/native.py proof smp --resources /path/to/.local/horizon-client/26.3
+cd native/smp
+cargo horizon-mod check
+cargo test --locked
+horizon-launcher native-build . --instance "SMP" --trust-native-code
 ```
+
+`proof.py` and `proof_casino.py` drive a game built with the mod and two clients using `horizon-ctl`. They exercise
+a dedicated server with fresh temporary worlds.
 
 ## The official server's engine
 
 The server runs `horizon-server` as usual, with `[engine] path` pointing at a game built with this mod:
 
 ```sh
-NATIVE_NO_DEFAULT_FEATURES=1 python3 native/tools/native.py build smp --horizon <the release's commit>
+horizon-launcher native-build native/smp --instance "SMP" --trust-native-code
 ```
 
-prints the built `horizon-client` (`--no-default-features`: the server build, without audio and controllers). When
-to deploy it on the official server is the owners' decision.
+builds the mod against the prebuilt game of the commit `horizon-mod.toml` pins. When to deploy it on the official
+server is the owners' decision.

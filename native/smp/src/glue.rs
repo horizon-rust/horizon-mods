@@ -7,42 +7,36 @@
 // explosion_detonate.rs, fill_bucket.rs, attack_entity.rs) call it from the
 // hook points.
 
-use crate::game::{
-    Game,
+use crate::{
+    casino_glue as smp_casino_glue,
+    host::{Game, MAIN, NativeServerPlayer, native_menu_inventory_slot, plain},
     smp_admin::{self, LastPositions},
     smp_auction::{self, AuctionHouse},
-    smp_report::{self, Report},
-    smp_ledger,
-    smp_reports::{self, Reports},
-    native_server::{NativeCommand, NativeServerPlayer, NativeSidebar},
     smp_board::{self, Board, Line},
     smp_casino::{self, Casino},
-    smp_casino_glue,
     smp_claims::{self, Claims},
     smp_economy::{self, Economy, Out, Player},
     smp_games::{self, Games},
+    smp_ledger,
     smp_lottery::Lottery,
-    smp_places::{self, Body, Place, Places},
-    smp_presence::{self, Presence},
-    native_menus::native_menu_inventory_slot,
     smp_market::{self, Bag, Market},
     smp_market_chart, smp_market_menu, smp_market_prices,
     smp_nick::{self, Names as _, Nicks},
+    smp_places::{self, Body, Place, Places},
+    smp_presence::{self, Presence},
+    smp_report::{self, Report},
+    smp_reports::{self, Reports},
     smp_shop::{self, Shop},
     smp_store,
     smp_switch::{self, Part, Switches},
     smp_trade::{self, Act, Cell, Trades},
     smp_vanish::{self, Vanish},
+    text::{self, Text, TextExt},
 };
-use horizon_client::{
-    items::ItemStack,
-    lan::data::component_nbt,
-    text::{self, Text},
-};
+use mod_api::{Command, ItemStack};
 use std::{path::PathBuf, sync::Mutex};
 
 /// The mod's id, name and version.
-pub const ID: &str = "smp";
 pub const NAME: &str = "SMP";
 pub const VERSION: &str = "0.36.1";
 
@@ -162,7 +156,8 @@ static RTP: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(f
 const RTP_TICKET: &str = "smp:rtp";
 /// The players who left (`player_left`), with where they stood when the
 /// server still listed them, and when.
-static LEFT: Mutex<Vec<(u128, String, Option<Place>, i64)>> = Mutex::new(Vec::new());
+type Left = (u128, String, Option<Place>, i64);
+static LEFT: Mutex<Vec<Left>> = Mutex::new(Vec::new());
 /// Spawn news for `Places`, from the hooks: a join, a respawn, or a spawn point set (the cause).
 static SPAWNS: Mutex<Vec<(u128, &'static str)>> = Mutex::new(Vec::new());
 /// What each `/rtp`'s reads cost the Overworld's tick, by player: reads,
@@ -213,8 +208,14 @@ fn open(dir: PathBuf) -> Smp {
     if let Err(e) = &economy {
         log::error!("[smp] the economy is off: {e}");
     }
-    let auction = economy.as_ref().ok().map(|e| AuctionHouse::open(e, config.auction));
-    let report = economy.as_ref().ok().map(|e| Report::open(e, config.report));
+    let auction = economy
+        .as_ref()
+        .ok()
+        .map(|e| AuctionHouse::open(e, config.auction));
+    let report = economy
+        .as_ref()
+        .ok()
+        .map(|e| Report::open(e, config.report));
     let reports = Reports::open(&dir, config.reports);
     let places = Places::open(&dir, config.places);
     if let Err(e) = &places {
@@ -238,7 +239,10 @@ fn open(dir: PathBuf) -> Smp {
         log::error!("[smp] the sidebar is off: {e}");
     }
     // Players the economy knows were here before: no first-join welcome.
-    let known = economy.as_ref().map(|e| e.accounts().into_iter().map(|a| a.0).collect()).unwrap_or_else(|_| Vec::new());
+    let known = economy
+        .as_ref()
+        .map(|e| e.accounts().into_iter().map(|a| a.0).collect())
+        .unwrap_or_else(|_| Vec::new());
     let presence = Presence::open(&dir, config.presence, known);
     let mut nicks = Nicks::open(&dir, config.nicks);
     if let Err(e) = &nicks {
@@ -248,7 +252,9 @@ fn open(dir: PathBuf) -> Smp {
     if let Ok(n) = &mut nicks {
         let names = ServerNames::read(dir.parent().unwrap_or(&dir), economy.as_ref().ok());
         for (uuid, nick, why) in n.purge(&names) {
-            let real = names.name_of(uuid).unwrap_or_else(|| smp_store::uuid_string(uuid));
+            let real = names
+                .name_of(uuid)
+                .unwrap_or_else(|| smp_store::uuid_string(uuid));
             log::warn!("[smp] nickname {nick} of {real} taken off: {why}");
         }
         if let Err(e) = n.save() {
@@ -263,7 +269,11 @@ fn open(dir: PathBuf) -> Smp {
         log::error!("[smp] {e}: every part is on");
     }
     for p in Part::ALL.into_iter().filter(|&p| !switches.on(p)) {
-        log::warn!("[smp] {} is turned off (/smp on {} turns it on)", p.name(), p.name());
+        log::warn!(
+            "[smp] {} is turned off (/smp on {} turns it on)",
+            p.name(),
+            p.name()
+        );
     }
     let last = LastPositions::open(&dir);
     if let Err(e) = &last {
@@ -271,7 +281,9 @@ fn open(dir: PathBuf) -> Smp {
     }
     let (casino, problem) = Casino::open(&dir, config.casino, config.gambling.enabled);
     if let Some(e) = problem {
-        log::error!("[smp] casino.json can't be read, the day's ledger starts again (kept apart): {e}");
+        log::error!(
+            "[smp] casino.json can't be read, the day's ledger starts again (kept apart): {e}"
+        );
     }
     Smp {
         dir,
@@ -315,13 +327,13 @@ fn state(dir: PathBuf) -> std::sync::MutexGuard<'static, Option<Smp>> {
         *state = Some(open(dir));
     }
     if let Some(Ok(e)) = state.as_mut().map(|s| &mut s.economy) {
-        e.now = chrono::Utc::now().timestamp_millis();
+        e.now = crate::now_ms();
     }
     state
 }
 
 fn save(smp: &mut Smp) {
-    use horizon_client::spans::guard;
+    use crate::spans::guard;
     let _span = guard("smp_save");
     // The report's state is written with the balances, in the same file.
     {
@@ -351,7 +363,7 @@ fn save(smp: &mut Smp) {
     {
         let _s = guard("smp_save_places");
         if let Ok(p) = &mut smp.places
-            && let Err(err) = p.save(chrono::Utc::now().timestamp_millis())
+            && let Err(err) = p.save(crate::now_ms())
         {
             log::error!("[smp] {err}");
         }
@@ -416,7 +428,7 @@ fn save_now(smp: &mut Smp) {
 }
 
 /// The commands, for every player's command tree.
-pub fn commands(commands: &mut Vec<NativeCommand>) {
+pub fn commands(commands: &mut Vec<Command>) {
     for usage in [
         "balance [player:word]",
         "bal [player:word]",
@@ -492,7 +504,7 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "money stats",
         "report <player:word> [reason:text]",
     ] {
-        commands.push(NativeCommand::new(usage));
+        commands.push(Command::new(usage));
     }
     for usage in [
         "setspawn",
@@ -506,19 +518,30 @@ pub fn commands(commands: &mut Vec<NativeCommand>) {
         "ledger minted",
         "ledger <player:word> [page:integer]",
     ] {
-        commands.push(NativeCommand::op(usage, 3));
+        commands.push(Command::op(usage, 3));
     }
     for usage in smp_admin::USAGES {
-        commands.push(NativeCommand::op(usage, smp_admin::LEVEL));
+        commands.push(Command::op(usage, smp_admin::LEVEL));
     }
-    for usage in ["smp", "smp status", "smp on [part:word]", "smp off [part:word] [reason:text]"] {
-        commands.push(NativeCommand::op(usage, smp_switch::LEVEL));
+    for usage in [
+        "smp",
+        "smp status",
+        "smp on [part:word]",
+        "smp off [part:word] [reason:text]",
+    ] {
+        commands.push(Command::op(usage, smp_switch::LEVEL));
     }
     // Operators make money (an event prize, a bug refund: with a reason
     // everyone reads) and take a cheat's gains away.
     for name in ["eco", "money"] {
-        commands.push(NativeCommand::op(&format!("{name} give <player:word> <amount:integer> <reason:text>"), 3));
-        commands.push(NativeCommand::op(&format!("{name} take <player:word> <amount:integer> [reason:text]"), 3));
+        commands.push(Command::op(
+            &format!("{name} give <player:word> <amount:integer> <reason:text>"),
+            3,
+        ));
+        commands.push(Command::op(
+            &format!("{name} take <player:word> <amount:integer> [reason:text]"),
+            3,
+        ));
     }
 }
 
@@ -552,49 +575,60 @@ const MAX_STACK_DATA: usize = 32 * 1024;
 
 /// A stack as the auction house keeps it: `ItemStack.CODEC`'s NBT (id,
 /// count, components), as the game saves it in player files, in hex.
-fn encode_stack(stack: &ItemStack) -> Option<String> {
-    let tag = horizon_items::item_nbt::item_to_nbt(stack);
-    let bytes = horizon_world::nbt::write_network(&tag, horizon_world::nbt::Limits::saved()).ok()?;
+fn encode_stack(game: &Game<'_>, stack: &ItemStack) -> Option<String> {
+    let tag = stack.to_nbt(&*game.h)?;
+    let bytes = crate::nbt_codec::write_network(&mod_api::Tag::Compound(tag))?;
     Some(bytes.iter().map(|b| format!("{b:02x}")).collect())
 }
 
-fn decode_stack(data: &str) -> Option<ItemStack> {
-    if data.len() % 2 != 0 || data.len() > 2 * MAX_STACK_DATA {
+fn decode_stack(game: &Game<'_>, data: &str) -> Option<ItemStack> {
+    if !data.len().is_multiple_of(2) || data.len() > 2 * MAX_STACK_DATA {
         return None;
     }
     let bytes: Vec<u8> = (0..data.len())
         .step_by(2)
         .map(|i| u8::from_str_radix(data.get(i..i + 2)?, 16).ok())
         .collect::<Option<_>>()?;
-    let (tag, _) = horizon_world::nbt::read_network(&bytes, horizon_world::nbt::Limits::default()).ok()?;
-    horizon_items::item_nbt::item_from_nbt(&tag)
+    let mod_api::Tag::Compound(tag) = crate::nbt_codec::read_network(&bytes)? else {
+        return None;
+    };
+    ItemStack::from_nbt(&*game.h, &tag)
 }
 
-fn whole_of(stack: &ItemStack) -> Option<smp_auction::Whole> {
-    Some(smp_auction::Whole { item: stack.item.to_string(), count: stack.count, data: encode_stack(stack)? })
+fn whole_of(game: &Game<'_>, stack: &ItemStack) -> Option<smp_auction::Whole> {
+    Some(smp_auction::Whole {
+        item: game.item_id(stack),
+        count: stack.count(),
+        data: encode_stack(game, stack)?,
+    })
 }
 
 /// Why `stack` can't be listed whole, if it can't: only what comes back
 /// exactly as it went (every component read back the same) is taken.
-fn unsellable(stack: &ItemStack) -> Option<String> {
-    if &*stack.item == "minecraft:filled_map" && stack.data().and_then(|d| d.map_id).is_some_and(|m| m >= CHART_MAPS) {
+fn unsellable(game: &Game<'_>, stack: &ItemStack) -> Option<String> {
+    if game.item_id(stack) == "minecraft:filled_map"
+        && game.map_id(stack).is_some_and(|m| m >= CHART_MAPS)
+    {
         return Some("Market charts are free at /market: they can't be sold.".into());
     }
-    let Some(data) = encode_stack(stack) else {
+    let Some(data) = encode_stack(game, stack) else {
         return Some("That stack can't be listed: its data can't be written.".into());
     };
     if data.len() > 2 * MAX_STACK_DATA {
         return Some("That stack holds too much (books, contents...) to be listed.".into());
     }
-    if decode_stack(&data).as_ref() != Some(stack) {
-        return Some("That stack can't be listed whole: some of its data wouldn't come back the same.".into());
+    if decode_stack(game, &data).as_ref() != Some(stack) {
+        return Some(
+            "That stack can't be listed whole: some of its data wouldn't come back the same."
+                .into(),
+        );
     }
     None
 }
 
 /// The same stack but for the count.
 fn same_kind(a: &ItemStack, b: &ItemStack) -> bool {
-    a.item == b.item && a.damage == b.damage && a.extra == b.extra
+    a.same_item(b) && a.damage() == b.damage() && a.same_components(b)
 }
 
 /// Whether `stack` fits whole in `slots` (the 36 main slots), as
@@ -605,98 +639,103 @@ fn fits_in(slots: &[Option<ItemStack>], stack: &ItemStack, max: u32) -> bool {
         .take(36)
         .map(|s| match s {
             None => max,
-            Some(s) if same_kind(s, stack) => max.saturating_sub(s.count),
+            Some(s) if same_kind(s, stack) => max.saturating_sub(s.count()),
             Some(_) => 0,
         })
         .sum();
-    room >= stack.count
+    room >= stack.count()
 }
 
 /// `native_give_stack` for the auction house: what didn't fit, encoded
 /// again (all of it when the data can't be read: it waits in the mail).
-fn give_whole_to(game: &mut Game<'_>, uuid: u128, w: &smp_auction::Whole) -> Option<smp_auction::Whole> {
-    let Some(stack) = decode_stack(&w.data) else {
+fn give_whole_to(
+    game: &mut Game<'_>,
+    uuid: u128,
+    w: &smp_auction::Whole,
+) -> Option<smp_auction::Whole> {
+    let Some(stack) = decode_stack(game, &w.data) else {
         log::error!("[smp] auction house: a stack's data can't be read; it stays in the mail");
         return Some(w.clone());
     };
     let rest = game.native_give_stack(uuid, stack)?;
-    Some(whole_of(&rest).unwrap_or_else(|| w.clone()))
+    Some(whole_of(game, &rest).unwrap_or_else(|| w.clone()))
 }
 
 impl smp_auction::Hand for GameBag<'_, '_> {
-    /// The acting player's state is swapped into the game inside their
-    /// command, so the hand is the game's selected slot (no helper hands out
-    /// a whole stack yet).
+    /// The acting player's main hand (no helper hands out a whole stack yet).
     fn held_whole(&self) -> Option<Result<smp_auction::Whole, String>> {
-        let s = self.0.inventory.get(self.0.selected)?.as_ref()?;
-        if let Some(why) = unsellable(s) {
+        let me = self.0.acting?;
+        let slot = self.0.player_ref(me)?.selected_slot(&*self.0.h)?;
+        let stacks = self.0.native_player_stacks(me)?;
+        let s = stacks.get(slot)?.as_ref()?;
+        if let Some(why) = unsellable(self.0, s) {
             return Some(Err(why));
         }
-        whole_of(s).map(Ok)
+        whole_of(self.0, s).map(Ok)
     }
     fn take_held(&mut self, held: &smp_auction::Whole, count: u32) -> Option<smp_auction::Whole> {
-        self.0.player.as_ref()?;
-        let selected = self.0.selected;
-        let slot = self.0.inventory.get_mut(selected)?;
-        let s = slot.as_ref()?;
-        if count == 0 || count > s.count || encode_stack(s).as_deref() != Some(held.data.as_str()) {
+        let me = self.0.acting?;
+        let slot = self.0.player_ref(me)?.selected_slot(&*self.0.h)?;
+        let stacks = self.0.native_player_stacks(me)?;
+        let s = stacks.get(slot)?.as_ref()?;
+        if count == 0
+            || count > s.count()
+            || encode_stack(self.0, s).as_deref() != Some(held.data.as_str())
+        {
             return None;
         }
         let mut taken = s.clone();
-        taken.count = count;
-        let encoded = whole_of(&taken)?;
-        if count == s.count {
-            *slot = None;
-        } else if let Some(s) = slot.as_mut() {
-            s.count -= count;
-        }
+        taken.set_count(count).ok()?;
+        let encoded = whole_of(self.0, &taken)?;
+        let rest = (count < s.count()).then(|| {
+            let mut r = s.clone();
+            let _ = r.set_count(s.count() - count);
+            r
+        });
+        self.0.set_slot(me, slot, rest).ok()?;
         Some(encoded)
     }
     fn fits(&mut self, w: &smp_auction::Whole) -> bool {
-        let Some(stack) = decode_stack(&w.data) else {
+        let Some(stack) = decode_stack(self.0, &w.data) else {
             return false;
         };
-        let max = self.0.native_max_stack_size(&stack.item).unwrap_or(64).max(1);
-        fits_in(&self.0.inventory, &stack, max)
+        let max = self
+            .0
+            .max_stack_size(&self.0.item_id(&stack))
+            .unwrap_or(64)
+            .max(1);
+        let slots = self
+            .0
+            .acting
+            .and_then(|u| self.0.native_player_stacks(u))
+            .unwrap_or_default();
+        fits_in(&slots, &stack, max)
     }
     fn give_whole(&mut self, w: &smp_auction::Whole) -> Option<smp_auction::Whole> {
-        let Some(me) = self.0.native_acting_player() else {
+        let Some(me) = self.0.acting else {
             return Some(w.clone());
         };
-        give_whole_to(self.0, me.uuid, w)
+        give_whole_to(self.0, me, w)
     }
 }
 
 const COMMANDS: [&str; 16] = [
-    "balance", "bal", "pay", "baltop", "eco", "money", "worth", "sell", "buy", "shop", "market", "trade", "coinflip",
-    "lottery", "ah", "casino",
+    "balance", "bal", "pay", "baltop", "eco", "money", "worth", "sell", "buy", "shop", "market",
+    "trade", "coinflip", "lottery", "ah", "casino",
 ];
 
-/// The world border, from the Overworld's `world_border.dat` (the root's in
-/// older worlds), as the game last saved it; None without one (the default
-/// border, 60 million blocks wide).
-fn world_border(world: &std::path::Path) -> Option<smp_places::Bounds> {
-    let files = [
-        world.join("dimensions/minecraft/overworld/data/minecraft/world_border.dat"),
-        world.join("data/minecraft/world_border.dat"),
-    ];
-    let root = files
-        .iter()
-        .find_map(|f| horizon_world::datafix::files::read_saved_dat(f).ok().flatten())?;
-    let border = horizon_client::worldborder::WorldBorder::unpack(root.get("data")?);
-    Some(border.bounds())
+/// The world border of the Overworld, as the game has it now; None without a level (the default border, 60
+/// million blocks wide).
+fn world_border(game: &Game<'_>) -> Option<smp_places::Bounds> {
+    game.h.level(smp_places::OVERWORLD)?.world_border(&*game.h)
 }
 
 /// After a level's tick: in the Overworld, each `/rtp` that waits reads the
 /// chunk it loads (the game reads only the level it ticks), five times a
 /// second. Columns in another player's claim are never a spot.
-pub(in crate::game) fn level_ticked(game: &mut Game<'_>, dimension: &str) {
+pub(crate) fn level_ticked(game: &mut Game<'_>, overworld: bool) {
     use std::sync::atomic::Ordering::Relaxed;
-    if dimension != smp_places::OVERWORLD
-        || !RTP.load(Relaxed)
-        || TICKS.load(Relaxed) % 4 != 0
-        || !game.native_on(ID)
-    {
+    if !overworld || !RTP.load(Relaxed) || !TICKS.load(Relaxed).is_multiple_of(4) {
         return;
     }
     let Some(dir) = game.native_world_dir() else {
@@ -713,11 +752,18 @@ pub(in crate::game) fn level_ticked(game: &mut Game<'_>, dimension: &str) {
     // The columns an `/rtp` drew are asked about first, from the generator: no chunk is loaded for them, and
     // only the dry land's chunks are held.
     places.rtp_screen(&mut |columns| {
-        let seen = game.native_terrain_surface(smp_places::OVERWORLD, columns).ok()?;
+        let seen = game
+            .h
+            .terrain_surface(smp_places::OVERWORLD, columns)
+            .ok()?;
         Some(
             seen.into_iter()
                 .map(|c| {
-                    c.map(|c| smp_places::Terrain { block: c.block, water: c.water, biome: c.biome })
+                    c.map(|c| smp_places::Terrain {
+                        block: c.block,
+                        water: c.water,
+                        biome: c.biome,
+                    })
                 })
                 .collect(),
         )
@@ -744,19 +790,30 @@ fn read_chunk(
     uuid: u128,
     (cx, cz): (i32, i32),
 ) -> Option<smp_places::Ground> {
-    let columns: Vec<(i32, i32)> = (0..256).map(|i| (cx * 16 + i / 16, cz * 16 + i % 16)).collect();
+    let columns: Vec<(i32, i32)> = (0..256)
+        .map(|i| (cx * 16 + i / 16, cz * 16 + i % 16))
+        .collect();
     let read = game
-        .native_read_columns(
+        .h
+        .read_columns(
             smp_places::OVERWORLD,
             &columns,
-            crate::game::native_world_edit::NativeHeightmap::MotionBlockingNoLeaves,
+            mod_api::Heightmap::MotionBlockingNoLeaves,
             (1, 2),
         )
         .ok()?;
     if read.bases.iter().any(Option::is_none) {
         return None;
     }
-    let mut ground = smp_places::Ground { palette: read.palette, columns: Vec::new() };
+    let palette = read
+        .palette
+        .iter()
+        .map(|s| s.block().id(&*game.h))
+        .collect();
+    let mut ground = smp_places::Ground {
+        palette,
+        columns: Vec::new(),
+    };
     let claimed = claims
         .as_ref()
         .ok()
@@ -765,7 +822,9 @@ fn read_chunk(
     if !claimed {
         for (i, (&(x, z), base)) in columns.iter().zip(&read.bases).enumerate() {
             let b = &read.blocks[i * 3..i * 3 + 3];
-            ground.columns.push((x, z, base.unwrap_or_default(), [b[0], b[1], b[2]]));
+            ground
+                .columns
+                .push((x, z, base.unwrap_or_default(), [b[0], b[1], b[2]]));
         }
     }
     Some(ground)
@@ -806,7 +865,7 @@ fn heads() -> bool {
 }
 
 /// A player's command.
-pub(in crate::game) fn perform(
+pub(crate) fn perform(
     game: &mut Game<'_>,
     player: &NativeServerPlayer,
     line: &str,
@@ -826,7 +885,7 @@ pub(in crate::game) fn perform(
         &smp_ledger::COMMANDS,
         &smp_admin::COMMANDS,
     ];
-    if !game.native_on(ID) || !ours.iter().any(|c| c.contains(&word)) {
+    if !ours.iter().any(|c| c.contains(&word)) {
         return;
     }
     BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
@@ -841,14 +900,20 @@ pub(in crate::game) fn perform(
     // Survival and adventure: a creative player could sell what they made.
     let trades = matches!(player.game_mode, 0 | 2);
     let players = game.native_server_players();
-    let now = chrono::Utc::now().timestamp_millis();
+    let now = crate::now_ms();
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
     // A vanished player is out of reach (trades, teleports, bets) of those
     // who don't see them.
     let hidden: Vec<u128> = smp.vanish.as_ref().map_or_else(
         |_| Vec::new(),
-        |v| players.iter().filter(|p| !v.sees(me.level, p.uuid)).map(|p| p.uuid).collect(),
+        |v| {
+            players
+                .iter()
+                .filter(|p| !v.sees(me.level, p.uuid))
+                .map(|p| p.uuid)
+                .collect()
+        },
     );
     let online = |name: &str| {
         players
@@ -890,15 +955,34 @@ pub(in crate::game) fn perform(
         }
     }
     // A nickname where a command names a player: the player's name.
-    let names_a_player = matches!(word, "pay" | "tpa" | "trade" | "playtime" | "tpaccept" | "tpdeny" | "eco" | "money");
-    let resolved = smp.nicks.as_ref().ok().filter(|_| names_a_player).and_then(|n| {
-        let accounts = smp.economy.as_ref().map(|e| e.accounts()).unwrap_or_default();
-        let is_name = |w: &str| players.iter().any(|p| p.name.eq_ignore_ascii_case(w)) || accounts.iter().any(|a| a.1.eq_ignore_ascii_case(w));
-        let name_of = |u: u128| {
-            players.iter().find(|p| p.uuid == u).map(|p| p.name.clone()).or_else(|| accounts.iter().find(|a| a.0 == u).map(|a| a.1.clone()))
-        };
-        n.resolve(line, &is_name, &name_of)
-    });
+    let names_a_player = matches!(
+        word,
+        "pay" | "tpa" | "trade" | "playtime" | "tpaccept" | "tpdeny" | "eco" | "money"
+    );
+    let resolved = smp
+        .nicks
+        .as_ref()
+        .ok()
+        .filter(|_| names_a_player)
+        .and_then(|n| {
+            let accounts = smp
+                .economy
+                .as_ref()
+                .map(|e| e.accounts())
+                .unwrap_or_default();
+            let is_name = |w: &str| {
+                players.iter().any(|p| p.name.eq_ignore_ascii_case(w))
+                    || accounts.iter().any(|a| a.1.eq_ignore_ascii_case(w))
+            };
+            let name_of = |u: u128| {
+                players
+                    .iter()
+                    .find(|p| p.uuid == u)
+                    .map(|p| p.name.clone())
+                    .or_else(|| accounts.iter().find(|a| a.0 == u).map(|a| a.1.clone()))
+            };
+            n.resolve(line, &is_name, &name_of)
+        });
     let line = resolved.as_deref().unwrap_or(line);
     let mut admin = Vec::new();
     let out = if smp_admin::COMMANDS.contains(&word) {
@@ -906,13 +990,20 @@ pub(in crate::game) fn perform(
         let names = ServerNames::read(&dir, economy);
         let find = |n: &str| {
             let on = players.iter().find(|p| p.name.eq_ignore_ascii_case(n));
-            on.map(|p| (p.uuid, p.name.clone())).or_else(|| names.find(n))
+            on.map(|p| (p.uuid, p.name.clone()))
+                .or_else(|| names.find(n))
         };
         let name_of = |u: u128| {
             let on = players.iter().find(|p| p.uuid == u).map(|p| p.name.clone());
-            on.or_else(|| names.name_of(u)).unwrap_or_else(|| smp_store::uuid_string(u))
+            on.or_else(|| names.name_of(u))
+                .unwrap_or_else(|| smp_store::uuid_string(u))
         };
-        let online = |u: u128| bodies(&players).into_iter().find(|b| b.uuid == u).map(|b| b.at);
+        let online = |u: u128| {
+            bodies(&players)
+                .into_iter()
+                .find(|b| b.uuid == u)
+                .map(|b| b.at)
+        };
         let off = |what: &str| format!("{what} can't be read (see the server log)");
         let look = smp_admin::Lookup {
             claims: smp.claims.as_ref().map_err(|_| off("claims.json")),
@@ -925,18 +1016,26 @@ pub(in crate::game) fn perform(
         admin = smp_admin::command(&me, &look, now, line).unwrap_or_default();
         Vec::new()
     } else if smp_reports::COMMANDS.contains(&word) {
-        let staff: Vec<u128> = players.iter().filter(|p| p.permission >= smp_reports::LEVEL).map(|p| p.uuid).collect();
+        let staff: Vec<u128> = players
+            .iter()
+            .filter(|p| p.permission >= smp_reports::LEVEL)
+            .map(|p| p.uuid)
+            .collect();
         let economy = smp.economy.as_ref().ok();
         let find = |n: &str| {
             let on = players.iter().find(|p| p.name.eq_ignore_ascii_case(n));
-            on.map(|p| (p.uuid, p.name.clone())).or_else(|| ServerNames::read(&dir, economy).find(n))
+            on.map(|p| (p.uuid, p.name.clone()))
+                .or_else(|| ServerNames::read(&dir, economy).find(n))
         };
         let at = |u: u128| {
             let p = players.iter().find(|p| p.uuid == u)?;
             let [x, y, z] = p.position.map(|v| v.floor() as i64);
             Some(format!("{} {x} {y} {z}", p.dimension))
         };
-        let out = smp.reports.command(&me, &find, &at, &staff, now, line).unwrap_or_default();
+        let out = smp
+            .reports
+            .command(&me, &find, &at, &staff, now, line)
+            .unwrap_or_default();
         for l in smp.reports.logged.drain(..) {
             log::info!("[smp] {l}");
         }
@@ -945,13 +1044,27 @@ pub(in crate::game) fn perform(
         let economy = smp.economy.as_ref().ok();
         let find = |n: &str| {
             let on = players.iter().find(|p| p.name.eq_ignore_ascii_case(n));
-            on.map(|p| (p.uuid, p.name.clone())).or_else(|| economy?.find(n).map(|(u, a)| (u, a.name.clone())))
+            on.map(|p| (p.uuid, p.name.clone()))
+                .or_else(|| economy?.find(n).map(|(u, a)| (u, a.name.clone())))
         };
         let name_of = |u: u128| economy?.name_of(u).map(str::to_owned);
         let money = |n: i64| economy.map_or_else(|| n.to_string(), |e| e.money(n));
-        smp_ledger::command(&me, &smp.dir.join("audit.log"), &find, &name_of, &money, now, line).unwrap_or_default()
+        smp_ledger::command(
+            &me,
+            &smp.dir.join("audit.log"),
+            &find,
+            &name_of,
+            &money,
+            now,
+            line,
+        )
+        .unwrap_or_default()
     } else if smp_vanish::COMMANDS.contains(&word) {
-        let ops: Vec<u128> = players.iter().filter(|p| p.permission >= smp_vanish::LEVEL).map(|p| p.uuid).collect();
+        let ops: Vec<u128> = players
+            .iter()
+            .filter(|p| p.permission >= smp_vanish::LEVEL)
+            .map(|p| p.uuid)
+            .collect();
         match &mut smp.vanish {
             Ok(v) => {
                 let out = v.command(&me, &ops, line).unwrap_or_default();
@@ -965,16 +1078,21 @@ pub(in crate::game) fn perform(
                 }
                 out
             }
-            Err(_) => vec![Out::Error("/vanish is off: vanish.json can't be read (see the server log).".into())],
+            Err(_) => vec![Out::Error(
+                "/vanish is off: vanish.json can't be read (see the server log).".into(),
+            )],
         }
     } else if smp_nick::COMMANDS.contains(&word) {
         let names = ServerNames::read(&dir, smp.economy.as_ref().ok());
         match &mut smp.nicks {
             Ok(n) => {
                 let played = smp.places.as_ref().map_or(0, |p| p.played_seconds(me.uuid));
-                n.command(&me, &names, played, now, line).unwrap_or_default()
+                n.command(&me, &names, played, now, line)
+                    .unwrap_or_default()
             }
-            Err(_) => vec![Out::Error("Nicknames are off: nicks.json can't be read (see the server log).".into())],
+            Err(_) => vec![Out::Error(
+                "Nicknames are off: nicks.json can't be read (see the server log).".into(),
+            )],
         }
     } else if smp_presence::COMMANDS.contains(&word) {
         match &mut smp.presence {
@@ -1007,15 +1125,20 @@ pub(in crate::game) fn perform(
         match bodies(&players).into_iter().find(|b| b.uuid == me.uuid) {
             Some(b) => {
                 let (cx, cz) = ((b.at.x.floor() as i32) >> 4, (b.at.z.floor() as i32) >> 4);
-                smp.shows.insert(me.uuid, (b.at.dimension, cx, cz, now + 10_000));
+                smp.shows
+                    .insert(me.uuid, (b.at.dimension, cx, cz, now + 10_000));
                 vec![Out::Reply(
-                    "This chunk's border, for 10 s: green yours, red someone else's, white free.".into(),
+                    "This chunk's border, for 10 s: green yours, red someone else's, white free."
+                        .into(),
                 )]
             }
             None => vec![Out::Error("You are not in the world.".into())],
         }
     } else if smp_claims::COMMANDS.contains(&word) {
-        let at = bodies(&players).into_iter().find(|b| b.uuid == me.uuid).map(|b| b.at);
+        let at = bodies(&players)
+            .into_iter()
+            .find(|b| b.uuid == me.uuid)
+            .map(|b| b.at);
         let played = smp.places.as_ref().map_or(0, |p| p.played_seconds(me.uuid));
         let economy = smp.economy.as_ref().ok();
         let find = |n: &str| {
@@ -1029,7 +1152,9 @@ pub(in crate::game) fn perform(
                 .unwrap_or_else(|| smp_store::uuid_string(u))
         };
         match (&mut smp.claims, at) {
-            (Ok(c), Some(at)) => c.command(&me, &at, played, &find, &name_of, line).unwrap_or_default(),
+            (Ok(c), Some(at)) => c
+                .command(&me, &at, played, &find, &name_of, line)
+                .unwrap_or_default(),
             (Ok(_), None) => vec![Out::Error("You are not in the world.".into())],
             (Err(_), _) => vec![Out::Error(
                 "Claims are off: their file can't be read (see the server log).".into(),
@@ -1039,12 +1164,20 @@ pub(in crate::game) fn perform(
         match &mut smp.places {
             Ok(p) => {
                 if matches!(word, "rtp" | "wild") {
-                    p.border = world_border(&dir);
-                    RTP_COST.lock().unwrap_or_else(|e| e.into_inner()).retain(|c| c.0 != me.uuid);
+                    p.border = world_border(game);
+                    RTP_COST
+                        .lock()
+                        .unwrap_or_else(|e| e.into_inner())
+                        .retain(|c| c.0 != me.uuid);
                     BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
                 }
-                let seen: Vec<NativeServerPlayer> = players.iter().filter(|p| !hidden.contains(&p.uuid)).cloned().collect();
-                p.command(&me, &bodies(&seen), now, line).unwrap_or_default()
+                let seen: Vec<NativeServerPlayer> = players
+                    .iter()
+                    .filter(|p| !hidden.contains(&p.uuid))
+                    .cloned()
+                    .collect();
+                p.command(&me, &bodies(&seen), now, line)
+                    .unwrap_or_default()
             }
             Err(_) => vec![Out::Error(
                 "Homes and warps are off: their file can't be read (see the server log).".into(),
@@ -1062,34 +1195,37 @@ pub(in crate::game) fn perform(
                 e.seen(me.uuid, &me.name);
                 smp_casino_glue::command(game, &mut smp.casino, e, &me, now, line)
             }
-            Err(_) => vec![Out::Error("The economy is off: its file can't be read (see the server log).".into())],
+            Err(_) => vec![Out::Error(
+                "The economy is off: its file can't be read (see the server log).".into(),
+            )],
         }
     } else {
         match &mut smp.economy {
-        Ok(e) => {
-            e.seen(me.uuid, &me.name);
-            let on: Vec<(u128, String)> = players.iter().map(|p| (p.uuid, p.name.clone())).collect();
-            let mut bag = GameBag(game);
-            let report = smp.report.as_ref();
-            report
-                .and_then(|r| r.command(e, line))
-                .or_else(|| e.command(&me, &on, line))
-                .or_else(|| smp.market.command(e, &me, trades, &mut bag, line))
-                .or_else(|| {
-                    let (out, a) = smp.trades.command(e, &me, trades, &online, now, line)?;
-                    acts = a;
-                    Some(out)
-                })
-                .or_else(|| {
-                    let named = |n: &str| online(n).map(|(u, name, _)| (u, name));
-                    smp.games.command(e, &me, &named, now, &mut heads, line)
-                })
-                .or_else(|| smp.lottery.command(&smp.games.config, e, &me, now, line))
-                .unwrap_or_default()
-        }
-        Err(_) => vec![Out::Error(
-            "The economy is off: its file can't be read (see the server log).".into(),
-        )],
+            Ok(e) => {
+                e.seen(me.uuid, &me.name);
+                let on: Vec<(u128, String)> =
+                    players.iter().map(|p| (p.uuid, p.name.clone())).collect();
+                let mut bag = GameBag(game);
+                let report = smp.report.as_ref();
+                report
+                    .and_then(|r| r.command(e, line))
+                    .or_else(|| e.command(&me, &on, line))
+                    .or_else(|| smp.market.command(e, &me, trades, &mut bag, line))
+                    .or_else(|| {
+                        let (out, a) = smp.trades.command(e, &me, trades, &online, now, line)?;
+                        acts = a;
+                        Some(out)
+                    })
+                    .or_else(|| {
+                        let named = |n: &str| online(n).map(|(u, name, _)| (u, name));
+                        smp.games.command(e, &me, &named, now, &mut heads, line)
+                    })
+                    .or_else(|| smp.lottery.command(&smp.games.config, e, &me, now, line))
+                    .unwrap_or_default()
+            }
+            Err(_) => vec![Out::Error(
+                "The economy is off: its file can't be read (see the server log).".into(),
+            )],
         }
     };
     act(game, smp, acts);
@@ -1098,7 +1234,10 @@ pub(in crate::game) fn perform(
     // Inside the player's command: the sleep count changes at the next
     // second's tick (`native_sleep_ignored` works outside a player's hook).
     if !sleeps.is_empty() {
-        PENDING_SLEEP.lock().unwrap_or_else(|e| e.into_inner()).extend(sleeps);
+        PENDING_SLEEP
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .extend(sleeps);
     }
     before.extend(out);
     show(game, before);
@@ -1109,20 +1248,29 @@ pub(in crate::game) fn perform(
 /// there (or, for a claim, whose ground isn't known, puts the command in
 /// their chat box).
 fn show_admin(game: &mut Game<'_>, lines: Vec<smp_admin::Line>) {
-    use horizon_client::text::{ClickEvent, Style};
+    use mod_api::text::{TextClick, TextHover};
     for l in lines {
-        let color = if l.error { text::RED } else if l.go.is_some() { text::GREEN } else { text::GRAY };
+        let color = if l.error {
+            text::RED
+        } else if l.go.is_some() {
+            text::GREEN
+        } else {
+            text::GRAY
+        };
         let mut t = Text::literal(l.text).with_color(color);
         if let Some(go) = l.go {
             let (click, hover) = match &go {
-                smp_admin::Go::Exact(_) => (ClickEvent::RunCommand(go.command()), "Click to teleport there"),
-                smp_admin::Go::Column { .. } => (ClickEvent::SuggestCommand(go.command()), "Click to put the teleport in your chat box"),
+                smp_admin::Go::Exact(_) => (
+                    TextClick::RunCommand(go.command()),
+                    "Click to teleport there",
+                ),
+                smp_admin::Go::Column { .. } => (
+                    TextClick::SuggestCommand(go.command()),
+                    "Click to put the teleport in your chat box",
+                ),
             };
-            t = t.with_style(&Style {
-                click: Some(click),
-                hover: Some(Box::new(Text::literal(hover))),
-                ..Style::default()
-            });
+            t.style.click = Some(click);
+            t.style.hover = Some(TextHover::Text(Box::new(Text::literal(hover))));
         }
         game.native_feedback(t);
     }
@@ -1133,24 +1281,26 @@ fn show_admin(game: &mut Game<'_>, lines: Vec<smp_admin::Line>) {
 /// listed, so that place is exact; otherwise it is where the last second's
 /// look saw them. Queued for the next tick (or the save as the world
 /// closes): the hook may come while the SMP's state is held.
-pub(in crate::game) fn player_left(game: &mut Game<'_>, uuid: u128, name: &str) {
-    if !game.native_on(ID) {
-        return;
-    }
-    let listed = game.native_server_players().into_iter().find(|p| p.uuid == uuid);
+pub(crate) fn player_left(game: &mut Game<'_>, uuid: u128, name: &str) {
+    let listed = game
+        .native_server_players()
+        .into_iter()
+        .find(|p| p.uuid == uuid);
     let at = listed.map(|p| bodies(&[p]).remove(0).at);
-    let now = chrono::Utc::now().timestamp_millis();
-    LEFT.lock().unwrap_or_else(|e| e.into_inner()).push((uuid, name.to_owned(), at, now));
+    let now = crate::now_ms();
+    LEFT.lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .push((uuid, name.to_owned(), at, now));
     BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
 }
 
 /// A joining, respawning or spawn-setting player, for `/rtp`'s random start (`Places::arrived`, `respawned`,
 /// `spawn_point`).
-pub(in crate::game) fn spawn_news(game: &mut Game<'_>, uuid: u128, kind: &'static str) {
-    if !game.native_on(ID) {
-        return;
-    }
-    SPAWNS.lock().unwrap_or_else(|e| e.into_inner()).push((uuid, kind));
+pub(crate) fn spawn_news(uuid: u128, kind: &'static str) {
+    SPAWNS
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .push((uuid, kind));
     BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
 }
 
@@ -1182,8 +1332,8 @@ fn note_leavers(smp: &mut Smp) {
 /// A player breaks or right clicks the block at `pos`: canceled in a chunk
 /// claimed by someone who doesn't trust them (`native_destroy_block`,
 /// `native_right_click_block`).
-pub(in crate::game) fn guard(game: &mut Game<'_>, pos: [i32; 3], canceled: &mut bool) {
-    if *canceled || !game.native_on(ID) {
+pub(crate) fn guard(game: &mut Game<'_>, pos: [i32; 3], canceled: &mut bool) {
+    if *canceled || !true {
         return;
     }
     let (Some(who), Some(dir)) = (game.native_acting_player(), game.native_world_dir()) else {
@@ -1208,7 +1358,7 @@ pub(in crate::game) fn guard(game: &mut Game<'_>, pos: [i32; 3], canceled: &mut 
             .and_then(|e| e.name_of(u))
             .map_or_else(|| smp_store::uuid_string(u), str::to_owned)
     };
-    let now = chrono::Utc::now().timestamp_millis();
+    let now = crate::now_ms();
     if let Err(line) = claims.check(&me, &who.dimension, pos, &name_of, now) {
         *canceled = true;
         drop(guard);
@@ -1220,26 +1370,29 @@ pub(in crate::game) fn guard(game: &mut Game<'_>, pos: [i32; 3], canceled: &mut 
 /// A player hits the entity of type `kind` at `pos`: canceled when claims
 /// protect that type and the chunk is claimed by someone who doesn't trust
 /// them (`native_attack_entity`).
-pub(in crate::game) fn attack(game: &mut Game<'_>, kind: &str, pos: [f64; 3], canceled: &mut bool) {
-    if *canceled || !game.native_on(ID) {
+pub(crate) fn attack(game: &mut Game<'_>, kind: &str, pos: [f64; 3], canceled: &mut bool) {
+    if *canceled || !true {
         return;
     }
     let protected = STATE
         .lock()
         .unwrap_or_else(|e| e.into_inner())
         .as_ref()
-        .is_some_and(|s| s.switches.on(Part::Claims) && s.claims.as_ref().is_ok_and(|c| c.protects(kind)));
+        .is_some_and(|s| {
+            s.switches.on(Part::Claims) && s.claims.as_ref().is_ok_and(|c| c.protects(kind))
+        });
     if protected {
         guard(game, pos.map(|v| v.floor() as i32), canceled);
     }
 }
 
 /// The world's dimension id, as players' places name it.
-pub(in crate::game) fn dimension_id(dimension: crate::game::LevelDimension) -> &'static str {
+pub(crate) fn dimension_id(dimension: mod_api::LevelDimension) -> String {
     match dimension {
-        crate::game::LevelDimension::Overworld => "minecraft:overworld",
-        crate::game::LevelDimension::Nether => "minecraft:the_nether",
-        crate::game::LevelDimension::End => "minecraft:the_end",
+        mod_api::LevelDimension::Overworld => "minecraft:overworld".into(),
+        mod_api::LevelDimension::Nether => "minecraft:the_nether".into(),
+        mod_api::LevelDimension::End => "minecraft:the_end".into(),
+        other => format!("{other:?}"),
     }
 }
 
@@ -1247,11 +1400,15 @@ pub(in crate::game) fn dimension_id(dimension: crate::game::LevelDimension) -> &
 /// a piston's blocks): not into a claim from land of another owner. Asked
 /// on every flow: it only reads the claims already open, and allows while
 /// the SMP's state is busy (a hook inside the SMP's own call).
-pub(in crate::game) fn world_allows(dimension: &str, from: [i32; 3], to: &[[i32; 3]]) -> bool {
+pub(crate) fn world_allows(dimension: &str, from: [i32; 3], to: &[[i32; 3]]) -> bool {
     let Ok(state) = STATE.try_lock() else {
         return true;
     };
-    match state.as_ref().filter(|s| s.switches.on(Part::Claims)).map(|s| &s.claims) {
+    match state
+        .as_ref()
+        .filter(|s| s.switches.on(Part::Claims))
+        .map(|s| &s.claims)
+    {
         Some(Ok(c)) => to.iter().all(|&t| c.spread_allowed(dimension, from, t)),
         _ => true,
     }
@@ -1259,14 +1416,15 @@ pub(in crate::game) fn world_allows(dimension: &str, from: [i32; 3], to: &[[i32;
 
 /// An explosion is about to break `blocks`: claimed land is spared
 /// (`native_explosion_detonate`).
-pub(in crate::game) fn explosion(game: &Game<'_>, dimension: &str, blocks: &mut Vec<[i32; 3]>) {
-    if !game.native_on(ID) {
-        return;
-    }
+pub(crate) fn explosion(dimension: &str, blocks: &mut Vec<[i32; 3]>) {
     let Ok(state) = STATE.try_lock() else {
         return;
     };
-    if let Some(Ok(c)) = state.as_ref().filter(|s| s.switches.on(Part::Claims)).map(|s| &s.claims) {
+    if let Some(Ok(c)) = state
+        .as_ref()
+        .filter(|s| s.switches.on(Part::Claims))
+        .map(|s| &s.claims)
+    {
         c.spare(dimension, blocks);
     }
 }
@@ -1274,37 +1432,24 @@ pub(in crate::game) fn explosion(game: &Game<'_>, dimension: &str, blocks: &mut 
 /// `f` on the open claims, when claims are on: None while the SMP's state
 /// is busy (a hook inside the SMP's own call), before it opened, or with
 /// claims off (`smp_claims_glue`).
-pub(in crate::game) fn with_claims<R>(f: impl FnOnce(&Claims) -> R) -> Option<R> {
+pub(crate) fn with_claims<R>(f: impl FnOnce(&Claims) -> R) -> Option<R> {
     let state = STATE.try_lock().ok()?;
     let smp = state.as_ref().filter(|s| s.switches.on(Part::Claims))?;
     smp.claims.as_ref().ok().map(f)
 }
 
 /// Whether the SMP runs in this world.
-pub(in crate::game) fn claims_live(game: &Game<'_>) -> bool {
-    game.native_on(ID)
+pub(crate) fn claims_live() -> bool {
+    true
 }
 
 /// The server ticks counted so far: the same number all through one tick.
-pub(in crate::game) fn ticks() -> u64 {
+pub(crate) fn ticks() -> u64 {
     TICKS.load(std::sync::atomic::Ordering::Relaxed)
 }
 
-/// An item named `name` (not in italics, as a name the game gives).
-fn button(item: &str, name: &str, color: &str) -> ItemStack {
-    let mut stack = ItemStack {
-        item: item.into(),
-        count: 1,
-        damage: 0,
-        extra: None,
-    };
-    let title = serde_json::json!({ "text": name, "italic": false, "color": color });
-    stack.data_mut().custom_name = Some(component_nbt(&title));
-    stack
-}
-
 /// The trade menu's cells as items.
-fn menu_items(smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
+fn menu_items(g: &Game<'_>, smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
     let money = |n| match &smp.economy {
         Ok(e) => e.money(n),
         Err(_) => n.to_string(),
@@ -1315,38 +1460,38 @@ fn menu_items(smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
         .map(|cell| match cell {
             Cell::Empty => None,
             Cell::Stack(s) => Some(s),
-            Cell::Divider => Some(button("minecraft:gray_stained_glass_pane", " ", "gray")),
-            Cell::Money(true, n) => Some(button(
+            Cell::Divider => Some(g.button("minecraft:gray_stained_glass_pane", " ", "gray")),
+            Cell::Money(true, n) => Some(g.button(
                 "minecraft:gold_ingot",
                 &format!("Your money: {} (/trade money <amount>)", money(n)),
                 "gold",
             )),
-            Cell::Money(false, n) => Some(button(
+            Cell::Money(false, n) => Some(g.button(
                 "minecraft:gold_ingot",
                 &format!("Their money: {}", money(n)),
                 "gold",
             )),
-            Cell::Confirm(false) => Some(button(
+            Cell::Confirm(false) => Some(g.button(
                 "minecraft:lime_stained_glass_pane",
                 "Confirm the trade",
                 "green",
             )),
-            Cell::Confirm(true) => Some(button(
+            Cell::Confirm(true) => Some(g.button(
                 "minecraft:lime_concrete",
                 "Confirmed (click to take it back)",
                 "green",
             )),
-            Cell::Cancel => Some(button(
+            Cell::Cancel => Some(g.button(
                 "minecraft:red_stained_glass_pane",
                 "Cancel the trade",
                 "red",
             )),
-            Cell::Other(name, true) => Some(button(
+            Cell::Other(name, true) => Some(g.button(
                 "minecraft:lime_concrete",
                 &format!("{name} confirmed"),
                 "green",
             )),
-            Cell::Other(name, false) => Some(button(
+            Cell::Other(name, false) => Some(g.button(
                 "minecraft:gray_concrete",
                 &format!("{name} has not confirmed"),
                 "gray",
@@ -1360,8 +1505,13 @@ fn act(game: &mut Game<'_>, smp: &mut Smp, acts: Vec<Act>) {
     for a in acts {
         match a {
             Act::Show(uuid) => {
-                let items = menu_items(smp, uuid);
-                let Some(t) = smp.trades.open.iter_mut().find(|t| t.side_of(uuid).is_some()) else {
+                let items = menu_items(game, smp, uuid);
+                let Some(t) = smp
+                    .trades
+                    .open
+                    .iter_mut()
+                    .find(|t| t.side_of(uuid).is_some())
+                else {
                     continue;
                 };
                 let me = t.side_of(uuid).expect("found");
@@ -1386,7 +1536,11 @@ fn settle(game: &mut Game<'_>, smp: &mut Smp, uuid: u128) {
     };
     let [a, b] = &t.sides;
     let players = game.native_server_players();
-    let may = |u: u128| players.iter().any(|p| p.uuid == u && matches!(p.game_mode, 0 | 2));
+    let may = |u: u128| {
+        players
+            .iter()
+            .any(|p| p.uuid == u && matches!(p.game_mode, 0 | 2))
+    };
     let Ok(economy) = &mut smp.economy else {
         return;
     };
@@ -1396,20 +1550,21 @@ fn settle(game: &mut Game<'_>, smp: &mut Smp, uuid: u128) {
             .map(|s| Out::Tell(s.uuid, format!("The trade didn't go through: {why}.")))
             .collect()
     };
-    let stacks = |side: &smp_trade::Side<ItemStack>| -> serde_json::Value {
+    let stacks = |g: &Game<'_>, side: &smp_trade::Side<ItemStack>| -> serde_json::Value {
         side.offer
             .iter()
-            .map(|(_, s)| serde_json::json!({ "item": &*s.item, "count": s.count, "plain": s.damage == 0 && s.extra.is_none() }))
+            .map(|(_, s)| serde_json::json!({ "item": g.item_id(s), "count": s.count(), "plain": plain(s) }))
             .collect()
     };
+    let (a_items, b_items) = (stacks(game, a), stacks(game, b));
     let out = if !may(a.uuid) || !may(b.uuid) {
         fail("both must be here, in survival or adventure mode".into())
     } else if economy.balance(a.uuid) < a.money || economy.balance(b.uuid) < b.money {
         fail("one of you no longer has the money offered".into())
     } else if let Err(e) = economy.record(serde_json::json!({
         "kind": "trade",
-        "a": smp_store::uuid_string(a.uuid), "a_items": stacks(a), "a_money": a.money,
-        "b": smp_store::uuid_string(b.uuid), "b_items": stacks(b), "b_money": b.money,
+        "a": smp_store::uuid_string(a.uuid), "a_items": a_items, "a_money": a.money,
+        "b": smp_store::uuid_string(b.uuid), "b_items": b_items, "b_money": b.money,
     })) {
         fail(e)
     } else if let Err(e) = game.native_exchange_items(a.uuid, &a.offer, b.uuid, &b.offer) {
@@ -1436,14 +1591,24 @@ fn settle(game: &mut Game<'_>, smp: &mut Smp, uuid: u128) {
         let line = |me: &smp_trade::Side<ItemStack>, them: &smp_trade::Side<ItemStack>| {
             Out::Tell(
                 me.uuid,
-                format!("Trade with {} done: you gave {} stack(s), got {}.", them.name, me.offer.len(), them.offer.len()),
+                format!(
+                    "Trade with {} done: you gave {} stack(s), got {}.",
+                    them.name,
+                    me.offer.len(),
+                    them.offer.len()
+                ),
             )
         };
         show(game, vec![line(a, b), line(b, a)]);
         return;
     };
     // Not settled: both must confirm again.
-    if let Some(t) = smp.trades.open.iter_mut().find(|t| t.side_of(uuid).is_some()) {
+    if let Some(t) = smp
+        .trades
+        .open
+        .iter_mut()
+        .find(|t| t.side_of(uuid).is_some())
+    {
         for s in &mut t.sides {
             s.confirmed = false;
         }
@@ -1453,9 +1618,9 @@ fn settle(game: &mut Game<'_>, smp: &mut Smp, uuid: u128) {
 }
 
 /// A click in a native menu: a trade's, when it is one.
-pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32, slot: i32, mode: i32) {
+pub(crate) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32, slot: i32, mode: i32) {
     // A plain click or a shift-click; drags and double clicks are ignored.
-    if !game.native_on(ID) || !matches!(mode, 0 | 1) {
+    if !true || !matches!(mode, 0 | 1) {
         return;
     }
     let Some(dir) = game.native_world_dir() else {
@@ -1471,15 +1636,29 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
         tell(game, uuid, vec![refusal]);
         return;
     }
-    if smp.shop.views.get(&uuid).is_some_and(|v| v.0 == Some(window)) {
+    if smp
+        .shop
+        .views
+        .get(&uuid)
+        .is_some_and(|v| v.0 == Some(window))
+    {
         shop_clicked(game, smp, uuid, slot, mode == 1);
         return;
     }
-    if smp.market_menus.views.get(&uuid).is_some_and(|v| v.0 == Some(window)) {
+    if smp
+        .market_menus
+        .views
+        .get(&uuid)
+        .is_some_and(|v| v.0 == Some(window))
+    {
         market_clicked(game, smp, uuid, slot);
         return;
     }
-    if smp.auction.as_ref().is_some_and(|a| a.views.get(&uuid).is_some_and(|v| v.0 == Some(window))) {
+    if smp
+        .auction
+        .as_ref()
+        .is_some_and(|a| a.views.get(&uuid).is_some_and(|v| v.0 == Some(window)))
+    {
         ah_clicked(game, smp, uuid, slot);
         return;
     }
@@ -1487,7 +1666,8 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
         let Ok(economy) = &mut smp.economy else {
             return;
         };
-        let commands = smp_casino_glue::clicked(game, &mut smp.casino, economy, uuid, slot, mode == 1);
+        let commands =
+            smp_casino_glue::clicked(game, &mut smp.casino, economy, uuid, slot, mode == 1);
         if smp.casino.animating() {
             BUSY.store(true, std::sync::atomic::Ordering::Relaxed);
         }
@@ -1505,7 +1685,10 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
         return;
     }
     let (out, acts) = match native_menu_inventory_slot(smp_trade::SIZE, slot) {
-        Some(i) => match game.native_player_stacks(uuid).and_then(|s| s.get(i).cloned().flatten()) {
+        Some(i) => match game
+            .native_player_stacks(uuid)
+            .and_then(|s| s.get(i).cloned().flatten())
+        {
             Some(stack) => smp.trades.click(uuid, None, Some((i, stack))),
             None => (Vec::new(), Vec::new()),
         },
@@ -1522,17 +1705,26 @@ pub(in crate::game) fn menu_clicked(game: &mut Game<'_>, uuid: u128, window: i32
 /// The part whose menu `window` is, open for that player.
 fn menu_part(smp: &Smp, uuid: u128, window: i32) -> Option<Part> {
     let open = |v: Option<i32>| v == Some(window);
-    if smp.shop.views.get(&uuid).is_some_and(|v| open(v.0)) || smp.market_menus.views.get(&uuid).is_some_and(|v| open(v.0)) {
+    if smp.shop.views.get(&uuid).is_some_and(|v| open(v.0))
+        || smp.market_menus.views.get(&uuid).is_some_and(|v| open(v.0))
+    {
         return Some(Part::Market);
     }
-    if smp.auction.as_ref().is_some_and(|a| a.views.get(&uuid).is_some_and(|v| open(v.0))) {
+    if smp
+        .auction
+        .as_ref()
+        .is_some_and(|a| a.views.get(&uuid).is_some_and(|v| open(v.0)))
+    {
         return Some(Part::Auction);
     }
     if smp.casino.owns(uuid, window) {
         return Some(Part::Gambling);
     }
     let trade = smp.trades.trade_of(uuid);
-    trade.and_then(|t| t.side_of(uuid).map(|me| t.sides[me].window)).filter(|&w| open(w)).map(|_| Part::Trades)
+    trade
+        .and_then(|t| t.side_of(uuid).map(|me| t.sides[me].window))
+        .filter(|&w| open(w))
+        .map(|_| Part::Trades)
 }
 
 /// Parts turned off or on by `/smp`: what was under way in those turned off
@@ -1563,8 +1755,14 @@ fn switched(
         {
             log::error!("[smp] {err}");
         }
-        for p in players.iter().filter(|p| p.permission >= smp_switch::LEVEL && p.uuid != me.uuid) {
-            out.push(Out::Tell(p.uuid, format!("[SMP] {} turned {verb}: {}{reason}", me.name, names(parts))));
+        for p in players
+            .iter()
+            .filter(|p| p.permission >= smp_switch::LEVEL && p.uuid != me.uuid)
+        {
+            out.push(Out::Tell(
+                p.uuid,
+                format!("[SMP] {} turned {verb}: {}{reason}", me.name, names(parts)),
+            ));
         }
     }
     for part in changed.off {
@@ -1578,11 +1776,21 @@ fn switched(
                 }
             }
             Part::Market => {
-                let open: Vec<u128> = smp.shop.views.keys().chain(smp.market_menus.views.keys()).copied().collect();
+                let open: Vec<u128> = smp
+                    .shop
+                    .views
+                    .keys()
+                    .chain(smp.market_menus.views.keys())
+                    .copied()
+                    .collect();
                 open.into_iter().for_each(|u| game.native_close_menu(u));
             }
             Part::Auction => {
-                let open: Vec<u128> = smp.auction.as_ref().map(|a| a.views.keys().copied().collect()).unwrap_or_default();
+                let open: Vec<u128> = smp
+                    .auction
+                    .as_ref()
+                    .map(|a| a.views.keys().copied().collect())
+                    .unwrap_or_default();
                 open.into_iter().for_each(|u| game.native_close_menu(u));
             }
             // A round under way still ends and is paid when its menu closes
@@ -1591,7 +1799,10 @@ fn switched(
             Part::Places => {
                 if let Ok(p) = &mut smp.places {
                     for t in std::mem::take(&mut p.pending) {
-                        out.push(Out::Tell(t.uuid, "Teleport called off: teleporting was turned off.".into()));
+                        out.push(Out::Tell(
+                            t.uuid,
+                            "Teleport called off: teleporting was turned off.".into(),
+                        ));
                     }
                 }
             }
@@ -1631,7 +1842,7 @@ fn line_reason(switches: &Switches, changed: &smp_switch::Changed) -> String {
 }
 
 /// What a command of a part turned off answers.
-pub(in crate::game) fn refusal(part: Part) -> String {
+pub(crate) fn refusal(part: Part) -> String {
     match smp_switch::refusal(part) {
         Out::Error(s) | Out::Reply(s) | Out::Tell(_, s) | Out::All(s) => s,
     }
@@ -1639,28 +1850,37 @@ pub(in crate::game) fn refusal(part: Part) -> String {
 
 /// Whether a part of the SMP is on (`/smp off` turns them off), for the
 /// SMP's other glue (`/invsee`).
-pub(in crate::game) fn part_on(game: &Game<'_>, part: Part) -> bool {
+pub(crate) fn part_on(game: &Game<'_>, part: Part) -> bool {
     let Some(dir) = game.native_world_dir() else {
         return true;
     };
-    state(dir.join(smp_store::DIR)).as_ref().is_none_or(|s| s.switches.on(part))
+    state(dir.join(smp_store::DIR))
+        .as_ref()
+        .is_none_or(|s| s.switches.on(part))
 }
 
 /// A native menu closed: a trade's ends, nothing moved.
-pub(in crate::game) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32) {
-    if !game.native_on(ID) {
-        return;
-    }
+pub(crate) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32) {
     let Some(dir) = game.native_world_dir() else {
         return;
     };
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
-    if smp.shop.views.get(&uuid).is_some_and(|v| v.0 == Some(window)) {
+    if smp
+        .shop
+        .views
+        .get(&uuid)
+        .is_some_and(|v| v.0 == Some(window))
+    {
         smp.shop.views.remove(&uuid);
         return;
     }
-    if smp.market_menus.views.get(&uuid).is_some_and(|v| v.0 == Some(window)) {
+    if smp
+        .market_menus
+        .views
+        .get(&uuid)
+        .is_some_and(|v| v.0 == Some(window))
+    {
         smp.market_menus.views.remove(&uuid);
         return;
     }
@@ -1671,7 +1891,7 @@ pub(in crate::game) fn menu_closed(game: &mut Game<'_>, uuid: u128, window: i32)
         return;
     }
     // A round under way carries on and is paid all the same.
-    if smp.casino.closed(uuid, window, chrono::Utc::now().timestamp_millis()) {
+    if smp.casino.closed(uuid, window, crate::now_ms()) {
         return;
     }
     let Some(t) = smp.trades.trade_of(uuid) else {
@@ -1699,16 +1919,22 @@ struct MenuBag<'a, 'g> {
 
 impl MenuBag<'_, '_> {
     fn stacks(&self) -> Vec<Option<ItemStack>> {
-        self.game.native_player_stacks(self.uuid).unwrap_or_default()
+        self.game
+            .native_player_stacks(self.uuid)
+            .unwrap_or_default()
+            .into_iter()
+            .take(MAIN)
+            .collect()
     }
     /// Every stack of `item`, plain or not (`clear` takes any).
     fn total(&self, item: &str) -> u32 {
-        self.stacks().iter().flatten().filter(|s| &*s.item == item).map(|s| s.count).sum()
+        self.stacks()
+            .iter()
+            .flatten()
+            .filter(|s| self.game.item_id(s) == item)
+            .map(|s| s.count())
+            .sum()
     }
-}
-
-fn plain(s: &ItemStack) -> bool {
-    s.damage == 0 && s.extra.is_none()
 }
 
 impl Bag for MenuBag<'_, '_> {
@@ -1718,9 +1944,10 @@ impl Bag for MenuBag<'_, '_> {
     fn carried(&self) -> Vec<(String, u32)> {
         let mut out: Vec<(String, u32)> = Vec::new();
         for s in self.stacks().iter().flatten().filter(|s| plain(s)) {
-            match out.iter_mut().find(|(id, _)| **id == *s.item) {
-                Some((_, n)) => *n += s.count,
-                None => out.push((s.item.to_string(), s.count)),
+            let id = self.game.item_id(s);
+            match out.iter_mut().find(|(i, _)| *i == id) {
+                Some((_, n)) => *n += s.count(),
+                None => out.push((id, s.count())),
             }
         }
         out
@@ -1729,18 +1956,24 @@ impl Bag for MenuBag<'_, '_> {
     /// `clear` could take in their place.
     fn count(&mut self, item: &str) -> u32 {
         let stacks = self.stacks();
-        let of = || stacks.iter().flatten().filter(|s| &*s.item == item);
+        let of = || {
+            stacks
+                .iter()
+                .flatten()
+                .filter(|s| self.game.item_id(s) == item)
+        };
         if of().any(|s| !plain(s)) {
             return 0;
         }
-        of().map(|s| s.count).sum()
+        of().map(|s| s.count()).sum()
     }
     fn take(&mut self, item: &str, count: u32) -> u32 {
         if !smp_market::valid_id(item) || count == 0 {
             return 0;
         }
         let before = self.total(item);
-        self.game.native_run_command(&format!("clear {} {item} {count}", self.name));
+        self.game
+            .native_run_command(&format!("clear {} {item} {count}", self.name));
         before.saturating_sub(self.total(item))
     }
     fn room(&mut self, item: &str) -> u32 {
@@ -1748,7 +1981,9 @@ impl Bag for MenuBag<'_, '_> {
             .iter()
             .map(|s| match s {
                 None => smp_shop::STACK,
-                Some(s) if &*s.item == item && plain(s) => smp_shop::STACK.saturating_sub(s.count),
+                Some(s) if self.game.item_id(s) == item && plain(s) => {
+                    smp_shop::STACK.saturating_sub(s.count())
+                }
                 Some(_) => 0,
             })
             .sum()
@@ -1760,7 +1995,11 @@ impl Bag for MenuBag<'_, '_> {
             return 0;
         }
         let line = format!("give {} {item} {count}", self.name);
-        if self.game.native_run_command(&line) { count } else { 0 }
+        if self.game.native_run_command(&line) {
+            count
+        } else {
+            0
+        }
     }
 }
 
@@ -1772,10 +2011,14 @@ impl smp_auction::Hand for MenuBag<'_, '_> {
         None
     }
     fn fits(&mut self, w: &smp_auction::Whole) -> bool {
-        let Some(stack) = decode_stack(&w.data) else {
+        let Some(stack) = decode_stack(self.game, &w.data) else {
             return false;
         };
-        let max = self.game.native_max_stack_size(&stack.item).unwrap_or(64).max(1);
+        let max = self
+            .game
+            .max_stack_size(&self.game.item_id(&stack))
+            .unwrap_or(64)
+            .max(1);
         fits_in(&self.stacks(), &stack, max)
     }
     fn give_whole(&mut self, w: &smp_auction::Whole) -> Option<smp_auction::Whole> {
@@ -1784,7 +2027,7 @@ impl smp_auction::Hand for MenuBag<'_, '_> {
 }
 
 /// The shop menu's cells as items.
-fn shop_items(smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
+fn shop_items(g: &Game<'_>, smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
     let economy = smp.economy.as_ref().ok();
     let money = |n: i64| economy.map_or_else(|| n.to_string(), |e| e.money(n));
     let config = &smp.market.config;
@@ -1795,19 +2038,31 @@ fn shop_items(smp: &Smp, uuid: u128) -> Vec<Option<ItemStack>> {
             use smp_shop::Cell as C;
             Some(match cell {
                 C::Empty => return None,
-                C::Filler => button("minecraft:gray_stained_glass_pane", " ", "gray"),
-                C::Category(icon, name, n) => button(&icon, &format!("{name} ({n} items)"), "yellow"),
-                C::Item(id, price) => button(&id, &smp_shop::item_label(&id, price, &money), "white"),
-                C::Back => button("minecraft:arrow", "Back", "white"),
-                C::Prev => button("minecraft:arrow", "Previous page", "white"),
-                C::Next => button("minecraft:arrow", "Next page", "white"),
+                C::Filler => g.button("minecraft:gray_stained_glass_pane", " ", "gray"),
+                C::Category(icon, name, n) => {
+                    g.button(&icon, &format!("{name} ({n} items)"), "yellow")
+                }
+                C::Item(id, price) => {
+                    g.button(&id, &smp_shop::item_label(&id, price, &money), "white")
+                }
+                C::Back => g.button("minecraft:arrow", "Back", "white"),
+                C::Prev => g.button("minecraft:arrow", "Previous page", "white"),
+                C::Next => g.button("minecraft:arrow", "Next page", "white"),
                 C::Balance => {
                     let b = economy.map_or(0, |e| e.balance(uuid));
-                    button("minecraft:gold_ingot", &format!("Balance: {}", money(b)), "gold")
+                    g.button(
+                        "minecraft:gold_ingot",
+                        &format!("Balance: {}", money(b)),
+                        "gold",
+                    )
                 }
-                C::SellAll => button("minecraft:hopper", "Sell everything the market buys", "green"),
-                C::Help => button("minecraft:book", smp_shop::HELP_TEXT, "white"),
-                C::Close => button("minecraft:barrier", "Close", "red"),
+                C::SellAll => g.button(
+                    "minecraft:hopper",
+                    "Sell everything the market buys",
+                    "green",
+                ),
+                C::Help => g.button("minecraft:book", smp_shop::HELP_TEXT, "white"),
+                C::Close => g.button("minecraft:barrier", "Close", "red"),
             })
         })
         .collect()
@@ -1822,12 +2077,14 @@ fn open_shop(game: &mut Game<'_>, smp: &mut Smp, me: &Player) -> Vec<Out> {
         return vec![Out::Error("Finish or cancel your trade first.".into())];
     }
     smp.shop.views.insert(me.uuid, (None, smp_shop::Page::Main));
-    let items = shop_items(smp, me.uuid);
+    let items = shop_items(game, smp, me.uuid);
     let title = Text::literal(smp.shop_config.title.clone());
     let window = game.native_open_menu(me.uuid, smp_shop::ROWS, title, items);
     match window {
         Some(w) => {
-            smp.shop.views.insert(me.uuid, (Some(w), smp_shop::Page::Main));
+            smp.shop
+                .views
+                .insert(me.uuid, (Some(w), smp_shop::Page::Main));
             Vec::new()
         }
         None => {
@@ -1841,7 +2098,11 @@ fn open_shop(game: &mut Game<'_>, smp: &mut Smp, me: &Player) -> Vec<Out> {
 /// menu shows the new balance and limits.
 fn shop_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32, shift: bool) {
     use smp_shop::Click;
-    let Some(p) = game.native_server_players().into_iter().find(|p| p.uuid == uuid) else {
+    let Some(p) = game
+        .native_server_players()
+        .into_iter()
+        .find(|p| p.uuid == uuid)
+    else {
         return;
     };
     let me = Player {
@@ -1852,17 +2113,24 @@ fn shop_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32, shift
     // A click on a stack of the player's own sells it; one on the menu is
     // the shop's.
     let (sale, click) = match native_menu_inventory_slot(smp_shop::SIZE, slot) {
-        Some(i) => match game.native_player_stacks(uuid).and_then(|s| s.get(i).cloned().flatten()) {
+        Some(i) => match game
+            .native_player_stacks(uuid)
+            .and_then(|s| s.get(i).cloned().flatten())
+        {
             Some(s) if !plain(&s) => {
                 let why = "The market only takes plain items (not worn, named or enchanted).";
                 tell(game, uuid, vec![Out::Error(why.into())]);
                 return;
             }
-            Some(s) => (Some((s.item.to_string(), s.count)), Click::Nothing),
+            Some(s) => (Some((game.item_id(&s), s.count())), Click::Nothing),
             None => return,
         },
         None => match usize::try_from(slot) {
-            Ok(s) => (None, smp.shop.click(&smp.shop_config, &smp.market.config, uuid, s, shift)),
+            Ok(s) => (
+                None,
+                smp.shop
+                    .click(&smp.shop_config, &smp.market.config, uuid, s, shift),
+            ),
             Err(_) => return,
         },
     };
@@ -1878,14 +2146,16 @@ fn shop_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32, shift
     let mut out = Vec::new();
     let moves = sale.is_some() || matches!(click, Click::Buy(..) | Click::SellAll);
     if moves && !matches!(p.game_mode, 0 | 2) {
-        out.push(Out::Error("The market trades only with players in survival or adventure mode.".into()));
+        out.push(Out::Error(
+            "The market trades only with players in survival or adventure mode.".into(),
+        ));
     } else if moves {
         let Ok(economy) = &mut smp.economy else {
             let why = "The economy is off: its file can't be read (see the server log).";
             tell(game, uuid, vec![Out::Error(why.into())]);
             return;
         };
-        economy.now = chrono::Utc::now().timestamp_millis();
+        economy.now = crate::now_ms();
         economy.seen(uuid, &me.name);
         let mut bag = MenuBag {
             game: &mut *game,
@@ -1893,14 +2163,19 @@ fn shop_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32, shift
             name: me.name.clone(),
         };
         out = match (sale, click) {
-            (Some((id, n)), _) => smp.market.sell(economy, &me, &mut bag, &[&id, &n.to_string()]),
-            (None, Click::Buy(id, n)) => smp.market.buy(economy, &me, &mut bag, &[&id, &n.to_string()]),
+            (Some((id, n)), _) => smp
+                .market
+                .sell(economy, &me, &mut bag, &[&id, &n.to_string()]),
+            (None, Click::Buy(id, n)) => {
+                smp.market
+                    .buy(economy, &me, &mut bag, &[&id, &n.to_string()])
+            }
             _ => smp.market.sell(economy, &me, &mut bag, &["all"]),
         };
         // The menu shows the balance.
         out.retain(|o| !matches!(o, Out::Reply(s) if s.starts_with("Balance: ")));
     }
-    let items = shop_items(smp, uuid);
+    let items = shop_items(game, smp, uuid);
     game.native_set_menu_items(uuid, items);
     tell(game, uuid, out);
 }
@@ -1923,16 +2198,6 @@ fn write_later<T: serde::Serialize + Send + 'static>(path: PathBuf, value: T) {
     });
 }
 
-/// Lines under an item's name in a menu (white unless given, not italic).
-fn with_lore(mut stack: ItemStack, lines: &[(String, &str)]) -> ItemStack {
-    let lines = lines
-        .iter()
-        .map(|(text, color)| component_nbt(&serde_json::json!({ "text": text, "italic": false, "color": color })))
-        .collect();
-    stack.data_mut().set_other("minecraft:lore", Some(horizon_world::nbt::Tag::List(lines)));
-    stack
-}
-
 /// A change in percent as a coloured line part: `▲ 2.4%` green, `▼` red.
 fn change_line(label: &str, change: Option<f64>) -> (String, &'static str) {
     match change {
@@ -1946,23 +2211,35 @@ fn change_line(label: &str, change: Option<f64>) -> (String, &'static str) {
 /// An item's prices and moves, as lore lines.
 fn price_lines(smp: &Smp, id: &str, now: i64) -> Vec<(String, &'static str)> {
     let each = smp.market.each(id);
-    let each = smp.economy.as_ref().map_or_else(|_| format!("{each:.2}"), |e| smp_market::each_money(e, each));
+    let each = smp.economy.as_ref().map_or_else(
+        |_| format!("{each:.2}"),
+        |e| smp_market::each_money(e, each),
+    );
     let p = smp.market.base(id);
     let mut lines = Vec::new();
     match (p.buy > 0, p.sell > 0) {
         (true, true) => lines.push((format!("Price: {each} each, to buy or sell"), "gold")),
-        (true, false) => lines.push((format!("Price: {each} each (the market doesn't buy it)"), "gold")),
-        (false, true) => lines.push((format!("Price: {each} each (the market doesn't sell it)"), "gold")),
+        (true, false) => lines.push((
+            format!("Price: {each} each (the market doesn't buy it)"),
+            "gold",
+        )),
+        (false, true) => lines.push((
+            format!("Price: {each} each (the market doesn't sell it)"),
+            "gold",
+        )),
         (false, false) => {}
     }
     lines.push(change_line("1 h", smp.market.change(id, now, 60)));
     lines.push(change_line("24 h", smp.market.change(id, now, 24 * 60)));
-    lines.push((format!("Traded in 24 h: {}", smp.market.volume(id, now, 24)), "aqua"));
+    lines.push((
+        format!("Traded in 24 h: {}", smp.market.volume(id, now, 24)),
+        "aqua",
+    ));
     lines
 }
 
 /// The `/market` menu's cells as items.
-fn market_items(smp: &Smp, uuid: u128, now: i64) -> Vec<Option<ItemStack>> {
+fn market_items(g: &Game<'_>, smp: &Smp, uuid: u128, now: i64) -> Vec<Option<ItemStack>> {
     use smp_market_menu::{Cell as C, Chart};
     let economy = smp.economy.as_ref().ok();
     let money = |n: i64| economy.map_or_else(|| n.to_string(), |e| e.money(n));
@@ -1973,40 +2250,63 @@ fn market_items(smp: &Smp, uuid: u128, now: i64) -> Vec<Option<ItemStack>> {
         .map(|cell| {
             Some(match cell {
                 C::Empty => return None,
-                C::Filler => button("minecraft:gray_stained_glass_pane", " ", "gray"),
-                C::Category(icon, title, n) => {
-                    with_lore(button(&icon, &title, "yellow"), &[(format!("{n} items"), "gray")])
-                }
+                C::Filler => g.button("minecraft:gray_stained_glass_pane", " ", "gray"),
+                C::Category(icon, title, n) => g.with_lore(
+                    g.button(&icon, &title, "yellow"),
+                    &[(format!("{n} items"), "gray")],
+                ),
                 C::Item(id) => {
                     let mut lines = price_lines(smp, &id, now);
                     lines.push(("Click for its page".into(), "gray"));
-                    with_lore(button(&id, &name(&id), "white"), &lines)
+                    g.with_lore(g.button(&id, &name(&id), "white"), &lines)
                 }
                 C::Detail(id) => {
                     let mut lines = price_lines(smp, &id, now);
                     let base = smp.market.base(&id);
-                    lines.push((format!("Base price: {}", money(base.buy.max(base.sell))), "gray"));
-                    with_lore(button(&id, &name(&id), "white"), &lines)
+                    lines.push((
+                        format!("Base price: {}", money(base.buy.max(base.sell))),
+                        "gray",
+                    ));
+                    g.with_lore(g.button(&id, &name(&id), "white"), &lines)
                 }
                 C::Buy(id, n) => {
                     // What these n cost now, the price moving as they go.
                     let cost = smp.market.value(&id, n, true).0;
-                    let mut b = button("minecraft:lime_concrete", &format!("Buy {n} for {}", money(cost)), "green");
-                    b.count = n;
+                    let mut b = g.button(
+                        "minecraft:lime_concrete",
+                        &format!("Buy {n} for {}", money(cost)),
+                        "green",
+                    );
+                    let _ = b.set_count(n.max(1));
                     b
                 }
                 C::Sell(id, n) => {
                     let gets = smp.market.value(&id, n, false).0;
-                    let mut b = button("minecraft:red_concrete", &format!("Sell {n} for {}", money(gets)), "red");
-                    b.count = n;
+                    let mut b = g.button(
+                        "minecraft:red_concrete",
+                        &format!("Sell {n} for {}", money(gets)),
+                        "red",
+                    );
+                    let _ = b.set_count(n.max(1));
                     b
                 }
-                C::SellAll(id) => button("minecraft:hopper", &format!("Sell all your {}", name(&id)), "red"),
+                C::SellAll(id) => g.button(
+                    "minecraft:hopper",
+                    &format!("Sell all your {}", name(&id)),
+                    "red",
+                ),
                 C::Chart(id, chart) => {
-                    let span = if chart == Chart::Day { "24 hours" } else { "7 days" };
-                    with_lore(
-                        button("minecraft:map", &format!("Price chart, {span}"), "aqua"),
-                        &[(format!("Gives a map of {}'s price", name(&id)), "gray"), ("It updates each minute while you carry it".into(), "gray")],
+                    let span = if chart == Chart::Day {
+                        "24 hours"
+                    } else {
+                        "7 days"
+                    };
+                    g.with_lore(
+                        g.button("minecraft:map", &format!("Price chart, {span}"), "aqua"),
+                        &[
+                            (format!("Gives a map of {}'s price", name(&id)), "gray"),
+                            ("It updates each minute while you carry it".into(), "gray"),
+                        ],
                     )
                 }
                 C::News => {
@@ -2016,16 +2316,23 @@ fn market_items(smp: &Smp, uuid: u128, now: i64) -> Vec<Option<ItemStack>> {
                     } else {
                         lines
                     };
-                    with_lore(button("minecraft:paper", "Movers over 24 hours", "yellow"), &lines)
+                    g.with_lore(
+                        g.button("minecraft:paper", "Movers over 24 hours", "yellow"),
+                        &lines,
+                    )
                 }
-                C::Back => button("minecraft:arrow", "Back", "white"),
-                C::Prev => button("minecraft:arrow", "Previous page", "white"),
-                C::Next => button("minecraft:arrow", "Next page", "white"),
+                C::Back => g.button("minecraft:arrow", "Back", "white"),
+                C::Prev => g.button("minecraft:arrow", "Previous page", "white"),
+                C::Next => g.button("minecraft:arrow", "Next page", "white"),
                 C::Balance => {
                     let b = economy.map_or(0, |e| e.balance(uuid));
-                    button("minecraft:gold_ingot", &format!("Balance: {}", money(b)), "gold")
+                    g.button(
+                        "minecraft:gold_ingot",
+                        &format!("Balance: {}", money(b)),
+                        "gold",
+                    )
                 }
-                C::Close => button("minecraft:barrier", "Close", "red"),
+                C::Close => g.button("minecraft:barrier", "Close", "red"),
             })
         })
         .collect()
@@ -2038,7 +2345,12 @@ fn movers(smp: &Smp, now: i64) -> Vec<(String, &'static str)> {
         .config
         .items
         .keys()
-        .filter_map(|id| Some((smp_market::title_name(id), smp.market.change(id, now, 24 * 60)?)))
+        .filter_map(|id| {
+            Some((
+                smp_market::title_name(id),
+                smp.market.change(id, now, 24 * 60)?,
+            ))
+        })
         .filter(|(_, c)| c.abs() >= 1.0)
         .collect();
     moves.sort_by(|a, b| b.1.total_cmp(&a.1));
@@ -2063,13 +2375,23 @@ fn open_market(game: &mut Game<'_>, smp: &mut Smp, me: &Player, line: &str, now:
             let id = smp_market::item_id(item);
             match smp_market_menu::Menus::page_of(&smp.shop_config, &smp.market.config, &id) {
                 Some(p) => p,
-                None => return vec![Out::Error(format!("The market doesn't trade {}.", smp_market::item_name(&id)))],
+                None => {
+                    return vec![Out::Error(format!(
+                        "The market doesn't trade {}.",
+                        smp_market::item_name(&id)
+                    ))];
+                }
             }
         }
     };
     smp.market_menus.views.insert(me.uuid, (None, page.clone()));
-    let items = market_items(smp, me.uuid, now);
-    let window = game.native_open_menu(me.uuid, smp_market_menu::ROWS, Text::literal("Market"), items);
+    let items = market_items(game, smp, me.uuid, now);
+    let window = game.native_open_menu(
+        me.uuid,
+        smp_market_menu::ROWS,
+        Text::literal("Market"),
+        items,
+    );
     match window {
         Some(w) => {
             smp.market_menus.views.insert(me.uuid, (Some(w), page));
@@ -2085,7 +2407,11 @@ fn open_market(game: &mut Game<'_>, smp: &mut Smp, me: &Player, line: &str, now:
 /// A click in a player's `/market` menu: a page, a trade or a chart.
 fn market_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32) {
     use smp_market_menu::Click;
-    let Some(p) = game.native_server_players().into_iter().find(|p| p.uuid == uuid) else {
+    let Some(p) = game
+        .native_server_players()
+        .into_iter()
+        .find(|p| p.uuid == uuid)
+    else {
         return;
     };
     let me = Player {
@@ -2096,8 +2422,10 @@ fn market_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32) {
     let Ok(slot) = usize::try_from(slot) else {
         return;
     };
-    let now = chrono::Utc::now().timestamp_millis();
-    let click = smp.market_menus.click(&smp.shop_config, &smp.market.config, uuid, slot);
+    let now = crate::now_ms();
+    let click = smp
+        .market_menus
+        .click(&smp.shop_config, &smp.market.config, uuid, slot);
     let mut out = Vec::new();
     match click {
         Click::Nothing => return,
@@ -2109,7 +2437,9 @@ fn market_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32) {
         Click::Show => {}
         Click::Chart(id, chart) => out.extend(give_chart(game, smp, uuid, &id, chart, now)),
         Click::Buy(..) | Click::Sell(..) | Click::SellAll(..) if !matches!(p.game_mode, 0 | 2) => {
-            out.push(Out::Error("The market trades only with players in survival or adventure mode.".into()));
+            out.push(Out::Error(
+                "The market trades only with players in survival or adventure mode.".into(),
+            ));
         }
         trade => {
             let Ok(economy) = &mut smp.economy else {
@@ -2125,15 +2455,20 @@ fn market_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32) {
                 name: me.name.clone(),
             };
             out = match trade {
-                Click::Buy(id, n) => smp.market.buy(economy, &me, &mut bag, &[&id, &n.to_string()]),
-                Click::Sell(id, n) => smp.market.sell(economy, &me, &mut bag, &[&id, &n.to_string()]),
+                Click::Buy(id, n) => smp
+                    .market
+                    .buy(economy, &me, &mut bag, &[&id, &n.to_string()]),
+                Click::Sell(id, n) => {
+                    smp.market
+                        .sell(economy, &me, &mut bag, &[&id, &n.to_string()])
+                }
                 Click::SellAll(id) => smp.market.sell(economy, &me, &mut bag, &[&id]),
                 _ => Vec::new(),
             };
             out.retain(|o| !matches!(o, Out::Reply(s) if s.starts_with("Balance: ")));
         }
     }
-    let items = market_items(smp, uuid, now);
+    let items = market_items(game, smp, uuid, now);
     game.native_set_menu_items(uuid, items);
     tell(game, uuid, out);
 }
@@ -2142,7 +2477,11 @@ fn market_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32) {
 fn chart_of(smp: &Smp, map_id: i32) -> Option<(String, smp_market_menu::Chart)> {
     let n = usize::try_from(map_id.checked_sub(CHART_MAPS)?).ok()?;
     let id = smp.market.config.items.keys().nth(n / 2)?;
-    let chart = if n % 2 == 0 { smp_market_menu::Chart::Day } else { smp_market_menu::Chart::Week };
+    let chart = if n % 2 == 0 {
+        smp_market_menu::Chart::Day
+    } else {
+        smp_market_menu::Chart::Week
+    };
     Some((id.clone(), chart))
 }
 
@@ -2153,8 +2492,13 @@ fn chart_picture(smp: &Smp, id: &str, chart: smp_market_menu::Chart, now: i64) -
         smp_market_menu::Chart::Day => (Span::Minute, "24H", now - 24 * HOUR_MS),
         smp_market_menu::Chart::Week => (Span::Hour, "7D", now - 7 * 24 * HOUR_MS),
     };
-    let mut prices: Vec<f64> =
-        smp.market.history(id, span).iter().filter(|p| p.t >= since).map(|p| p.price).collect();
+    let mut prices: Vec<f64> = smp
+        .market
+        .history(id, span)
+        .iter()
+        .filter(|p| p.t >= since)
+        .map(|p| p.price)
+        .collect();
     if let Some(q) = smp.market.spot(id) {
         prices.push(q.mid);
     }
@@ -2173,36 +2517,59 @@ fn give_chart(
     let Some(index) = smp.market.config.items.keys().position(|k| k == id) else {
         return Vec::new();
     };
-    let Some(map_id) = i32::try_from(index * 2 + usize::from(chart == smp_market_menu::Chart::Week))
-        .ok()
-        .and_then(|n| CHART_MAPS.checked_add(n))
+    let Some(map_id) =
+        i32::try_from(index * 2 + usize::from(chart == smp_market_menu::Chart::Week))
+            .ok()
+            .and_then(|n| CHART_MAPS.checked_add(n))
     else {
         return Vec::new();
     };
-    let span = if chart == smp_market_menu::Chart::Day { "24 hours" } else { "7 days" };
+    let span = if chart == smp_market_menu::Chart::Day {
+        "24 hours"
+    } else {
+        "7 days"
+    };
     let name = smp_market::title_name(id);
-    let mut map = button("minecraft:filled_map", &format!("{name}: price over {span}"), "aqua");
-    map.data_mut().map_id = Some(map_id);
-    let map = with_lore(map, &[("Updates each minute while you carry it".into(), "gray")]);
+    let map = game.button(
+        "minecraft:filled_map",
+        &format!("{name}: price over {span}"),
+        "aqua",
+    );
+    let map = game.with_map_id(map, map_id);
+    let map = game.with_lore(
+        map,
+        &[("Updates each minute while you carry it".into(), "gray")],
+    );
     if game.native_give_stack(uuid, map).is_some() {
-        return vec![Out::Error("No room in your inventory for the chart.".into())];
+        return vec![Out::Error(
+            "No room in your inventory for the chart.".into(),
+        )];
     }
     let picture = chart_picture(smp, id, chart, now);
     game.native_send_map(uuid, map_id, &picture);
-    vec![Out::Reply(format!("Here is {name}'s chart. Hold it or put it in an item frame."))]
+    vec![Out::Reply(format!(
+        "Here is {name}'s chart. Hold it or put it in an item frame."
+    ))]
 }
 
 /// Once a minute when prices moved: open `/market` menus show the new
 /// prices, carried charts are drawn again, and the web page is written.
 fn market_minute(game: &mut Game<'_>, smp: &mut Smp, players: &[NativeServerPlayer], now: i64) {
-    let open: Vec<u128> = smp.market_menus.views.iter().filter(|v| v.1.0.is_some()).map(|v| *v.0).collect();
+    let open: Vec<u128> = smp
+        .market_menus
+        .views
+        .iter()
+        .filter(|v| v.1.0.is_some())
+        .map(|v| *v.0)
+        .collect();
     for uuid in open {
-        let items = market_items(smp, uuid, now);
+        let items = market_items(game, smp, uuid, now);
         game.native_set_menu_items(uuid, items);
     }
     // Charts carried (any slot): a scan of the players on, once a minute.
     {
-        let mut pictures: std::collections::HashMap<i32, Vec<u8>> = std::collections::HashMap::new();
+        let mut pictures: std::collections::HashMap<i32, Vec<u8>> =
+            std::collections::HashMap::new();
         for p in players {
             let Some(stacks) = game.native_player_stacks(p.uuid) else {
                 continue;
@@ -2210,24 +2577,30 @@ fn market_minute(game: &mut Game<'_>, smp: &mut Smp, players: &[NativeServerPlay
             let maps: Vec<i32> = stacks
                 .iter()
                 .flatten()
-                .filter(|s| &*s.item == "minecraft:filled_map")
-                .filter_map(|s| s.data().and_then(|d| d.map_id))
+                .filter(|s| game.item_id(s) == "minecraft:filled_map")
+                .filter_map(|s| game.map_id(s))
                 .filter(|m| *m >= CHART_MAPS)
                 .collect();
             for m in maps {
                 let Some((id, chart)) = chart_of(smp, m) else {
                     continue;
                 };
-                let picture = pictures.entry(m).or_insert_with(|| chart_picture(smp, &id, chart, now));
+                let picture = pictures
+                    .entry(m)
+                    .or_insert_with(|| chart_picture(smp, &id, chart, now));
                 game.native_send_map(p.uuid, m, picture);
             }
         }
     }
-    let currency = smp.economy.as_ref().map_or_else(|_| String::new(), |e| e.config.currency.clone());
-    let categories: Vec<(String, Vec<String>)> = smp_market_menu::categories(&smp.shop_config, &smp.market.config)
-        .into_iter()
-        .map(|(_, name, items)| (name, items))
-        .collect();
+    let currency = smp
+        .economy
+        .as_ref()
+        .map_or_else(|_| String::new(), |e| e.config.currency.clone());
+    let categories: Vec<(String, Vec<String>)> =
+        smp_market_menu::categories(&smp.shop_config, &smp.market.config)
+            .into_iter()
+            .map(|(_, name, items)| (name, items))
+            .collect();
     let view = smp.market.web_view();
     let path = smp.dir.join("web").join("market.json");
     let web = smp.web.clone();
@@ -2259,7 +2632,9 @@ fn push_pages(dir: &std::path::Path, web: &WebPush) {
     if web.token.trim().is_empty() || web.url.trim().is_empty() || PUSHING.swap(true, SeqCst) {
         return;
     }
-    let agent = ureq::AgentBuilder::new().timeout(std::time::Duration::from_secs(20)).build();
+    let agent = ureq::AgentBuilder::new()
+        .timeout(std::time::Duration::from_secs(20))
+        .build();
     for name in ["market.json", "economy.json"] {
         let bytes = {
             let _one = WRITES.lock().unwrap_or_else(|e| e.into_inner());
@@ -2271,7 +2646,7 @@ fn push_pages(dir: &std::path::Path, web: &WebPush) {
         let mut h = std::collections::hash_map::DefaultHasher::new();
         bytes.hash(&mut h);
         let hash = h.finish();
-        let sent = |pushed: &Vec<(&'static str, u64)>| pushed.iter().any(|p| *p == (name, hash));
+        let sent = |pushed: &Vec<(&'static str, u64)>| pushed.contains(&(name, hash));
         if sent(&PUSHED.lock().unwrap_or_else(|e| e.into_inner())) {
             continue;
         }
@@ -2293,7 +2668,9 @@ fn push_pages(dir: &std::path::Path, web: &WebPush) {
                 pushed.push((name, hash));
             }
             // The status and the address only, never the token.
-            Err(ureq::Error::Status(code, _)) => log::warn!("[smp] sending {name} to {url}: HTTP {code}"),
+            Err(ureq::Error::Status(code, _)) => {
+                log::warn!("[smp] sending {name} to {url}: HTTP {code}")
+            }
             Err(e) => log::warn!("[smp] sending {name} to {url}: {}", e.kind()),
         }
     }
@@ -2301,9 +2678,18 @@ fn push_pages(dir: &std::path::Path, web: &WebPush) {
 }
 
 /// `/ah ...`: the auction house's commands, or its menu.
-fn ah_command(game: &mut Game<'_>, smp: &mut Smp, me: &Player, trades: bool, now: i64, line: &str) -> Vec<Out> {
+fn ah_command(
+    game: &mut Game<'_>,
+    smp: &mut Smp,
+    me: &Player,
+    trades: bool,
+    now: i64,
+    line: &str,
+) -> Vec<Out> {
     let (Ok(e), Some(a)) = (&mut smp.economy, &mut smp.auction) else {
-        return vec![Out::Error("The economy is off: its file can't be read (see the server log).".into())];
+        return vec![Out::Error(
+            "The economy is off: its file can't be read (see the server log).".into(),
+        )];
     };
     e.seen(me.uuid, &me.name);
     let played = smp.places.as_ref().map_or(0, |p| p.played_seconds(me.uuid));
@@ -2327,8 +2713,13 @@ fn open_ah(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, page: smp_auction::Pa
         return Vec::new();
     };
     a.views.insert(uuid, (None, page.clone()));
-    let items = ah_items(smp, uuid);
-    let window = game.native_open_menu(uuid, smp_auction::ROWS, Text::literal("Auction house"), items);
+    let items = ah_items(game, smp, uuid);
+    let window = game.native_open_menu(
+        uuid,
+        smp_auction::ROWS,
+        Text::literal("Auction house"),
+        items,
+    );
     let a = smp.auction.as_mut().expect("checked");
     match window {
         Some(w) => {
@@ -2342,17 +2733,9 @@ fn open_ah(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, page: smp_auction::Pa
     }
 }
 
-/// An item stack of `count` (1 to 64) named `name`.
-fn named_stack(item: &str, count: u32, name: &str, color: &str) -> ItemStack {
-    let mut stack = button(item, name, color);
-    stack.count = count.clamp(1, 64);
-    stack
-}
-
-/// The auction house menu's cells as items; the cells are kept as what the
-/// player sees, so a click means the listing drawn in its slot.
-fn ah_items(smp: &mut Smp, uuid: u128) -> Vec<Option<ItemStack>> {
-    let now = chrono::Utc::now().timestamp_millis();
+/// Keep the cells that are drawn so an auction click uses the listing the player saw.
+fn ah_items(g: &Game<'_>, smp: &mut Smp, uuid: u128) -> Vec<Option<ItemStack>> {
+    let now = crate::now_ms();
     let Some(a) = &mut smp.auction else {
         return Vec::new();
     };
@@ -2366,47 +2749,67 @@ fn ah_items(smp: &mut Smp, uuid: u128) -> Vec<Option<ItemStack>> {
             use smp_auction::Cell as C;
             Some(match cell {
                 C::Empty => return None,
-                C::Filler => button("minecraft:gray_stained_glass_pane", " ", "gray"),
-                C::Category(icon, name, n) => button(&icon, &format!("{name} ({n} listings)"), "yellow"),
+                C::Filler => g.button("minecraft:gray_stained_glass_pane", " ", "gray"),
+                C::Category(icon, name, n) => {
+                    g.button(&icon, &format!("{name} ({n} listings)"), "yellow")
+                }
                 C::Listing(id) => {
                     let l = a.listing(id)?;
                     let color = if l.auction { "gold" } else { "white" };
                     let label = a.label(l, now, &money);
-                    match l.stack.as_deref().and_then(decode_stack) {
+                    match l.stack.as_deref().and_then(|d| decode_stack(g, d)) {
                         // The stack itself (its name, enchantments, contents
                         // in the tooltip), the listing's facts under it.
                         Some(stack) => {
-                            let lines: Vec<(String, &str)> = label.split(" · ").map(|p| (p.to_owned(), color)).collect();
-                            with_lore(stack, &lines)
+                            let lines: Vec<(String, &str)> =
+                                label.split(" · ").map(|p| (p.to_owned(), color)).collect();
+                            g.with_lore(stack, &lines)
                         }
-                        None => named_stack(&l.item, l.count, &label, color),
+                        None => g.named_stack(&l.item, l.count, &label, color),
                     }
                 }
                 C::Parcel(i) => {
                     let p = a.parcel(uuid, i)?;
-                    let name = format!("Claim {} {} ({})", p.count, smp_shop::title(&p.item), p.why);
-                    match p.stack.as_deref().and_then(decode_stack) {
-                        Some(stack) => with_lore(stack, &[(name, "green")]),
-                        None => named_stack(&p.item, p.count, &name, "green"),
+                    let name =
+                        format!("Claim {} {} ({})", p.count, smp_shop::title(&p.item), p.why);
+                    match p.stack.as_deref().and_then(|d| decode_stack(g, d)) {
+                        Some(stack) => g.with_lore(stack, &[(name, "green")]),
+                        None => g.named_stack(&p.item, p.count, &name, "green"),
                     }
                 }
                 C::Confirm(id) => {
                     let l = a.listing(id)?;
-                    button("minecraft:lime_concrete", &a.confirm_label(l, &money), "green")
+                    g.button(
+                        "minecraft:lime_concrete",
+                        &a.confirm_label(l, &money),
+                        "green",
+                    )
                 }
-                C::Cancel => button("minecraft:red_stained_glass_pane", "Back", "red"),
-                C::Back => button("minecraft:arrow", "Back", "white"),
-                C::Prev => button("minecraft:arrow", "Previous page", "white"),
-                C::Next => button("minecraft:arrow", "Next page", "white"),
-                C::Mine(n) => button("minecraft:chest", &format!("Your listings ({n}): click one to take it back"), "aqua"),
-                C::Mail(n) => button("minecraft:barrel", &format!("Your mail ({n} parcels)"), "aqua"),
-                C::ClaimAll => button("minecraft:hopper", "Claim everything", "green"),
+                C::Cancel => g.button("minecraft:red_stained_glass_pane", "Back", "red"),
+                C::Back => g.button("minecraft:arrow", "Back", "white"),
+                C::Prev => g.button("minecraft:arrow", "Previous page", "white"),
+                C::Next => g.button("minecraft:arrow", "Next page", "white"),
+                C::Mine(n) => g.button(
+                    "minecraft:chest",
+                    &format!("Your listings ({n}): click one to take it back"),
+                    "aqua",
+                ),
+                C::Mail(n) => g.button(
+                    "minecraft:barrel",
+                    &format!("Your mail ({n} parcels)"),
+                    "aqua",
+                ),
+                C::ClaimAll => g.button("minecraft:hopper", "Claim everything", "green"),
                 C::Balance => {
                     let b = economy.map_or(0, |e| e.balance(uuid));
-                    button("minecraft:gold_ingot", &format!("Balance: {}", money(b)), "gold")
+                    g.button(
+                        "minecraft:gold_ingot",
+                        &format!("Balance: {}", money(b)),
+                        "gold",
+                    )
                 }
-                C::Help => button("minecraft:book", smp_auction::HELP_TEXT, "white"),
-                C::Close => button("minecraft:barrier", "Close", "red"),
+                C::Help => g.button("minecraft:book", smp_auction::HELP_TEXT, "white"),
+                C::Close => g.button("minecraft:barrier", "Close", "red"),
             })
         })
         .collect()
@@ -2416,7 +2819,11 @@ fn ah_items(smp: &mut Smp, uuid: u128) -> Vec<Option<ItemStack>> {
 /// a withdrawal, a claim; then the menu is drawn again.
 fn ah_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32) {
     use smp_auction::Click;
-    let Some(p) = game.native_server_players().into_iter().find(|p| p.uuid == uuid) else {
+    let Some(p) = game
+        .native_server_players()
+        .into_iter()
+        .find(|p| p.uuid == uuid)
+    else {
         return;
     };
     // Clicks on the player's own inventory do nothing here.
@@ -2431,7 +2838,7 @@ fn ah_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32) {
         name: p.name.clone(),
         level: p.permission,
     };
-    let now = chrono::Utc::now().timestamp_millis();
+    let now = crate::now_ms();
     let cats = smp.shop_config.categories.clone();
     let (Ok(e), Some(a)) = (&mut smp.economy, &mut smp.auction) else {
         return;
@@ -2476,7 +2883,7 @@ fn ah_clicked(game: &mut Game<'_>, smp: &mut Smp, uuid: u128, slot: i32) {
     {
         v.1 = (**back).clone();
     }
-    let items = ah_items(smp, uuid);
+    let items = ah_items(game, smp, uuid);
     game.native_set_menu_items(uuid, items);
     tell(game, uuid, out);
 }
@@ -2512,12 +2919,12 @@ fn show(game: &mut Game<'_>, out: Vec<Out>) {
 
 /// The end of each server tick: accounts for the players on (once a second)
 /// and the files that changed.
-pub(in crate::game) fn tick(game: &mut Game<'_>) {
+pub(crate) fn tick(game: &mut Game<'_>) {
     use std::sync::atomic::Ordering::Relaxed;
     let n = TICKS.fetch_add(1, Relaxed);
     // An idle tick costs a counter: the rest runs once a second, or each
     // tick while something waits on it.
-    if n % 20 != 0 && !BUSY.load(Relaxed) {
+    if !n.is_multiple_of(20) && !BUSY.load(Relaxed) {
         return;
     }
     let Some(dir) = game.native_world_dir() else {
@@ -2526,15 +2933,15 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
     let warming = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty());
-    let players = if n % 20 == 0 || warming {
+    let players = if n.is_multiple_of(20) || warming {
         game.native_server_players()
     } else {
         Vec::new()
     };
-    let now = chrono::Utc::now().timestamp_millis();
+    let now = crate::now_ms();
     let mut out = Vec::new();
     // Where each player stands, for where they leave from (once a second).
-    if n % 20 == 0 {
+    if n.is_multiple_of(20) {
         for b in bodies(&players) {
             smp.standing.insert(b.uuid, b.at);
         }
@@ -2545,10 +2952,10 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     // restart), and the subtitle sent to each vanished player on.
     let vanished = smp.vanish.as_ref().map(|v| v.quiet()).unwrap_or_default();
     let (mut subtitles, mut unvanished) = (Vec::new(), Vec::new());
-    if n % 20 == 0
+    if n.is_multiple_of(20)
         && let Ok(v) = &mut smp.vanish
     {
-        let _span = horizon_client::spans::guard("smp_vanish");
+        let _span = crate::spans::guard("smp_vanish");
         for (uuid, hidden) in v.changes() {
             game.native_hide_player(uuid, hidden.then_some(smp_vanish::LEVEL));
         }
@@ -2568,14 +2975,18 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     // With places off only the playtime counts.
     let places_on = smp.switches.on(Part::Places);
     if let Ok(p) = &mut smp.places
-        && (n % 20 == 0 || warming)
+        && (n.is_multiple_of(20) || warming)
     {
-        let _span = horizon_client::spans::guard("smp_places");
-        if n % 20 == 0 {
+        let _span = crate::spans::guard("smp_places");
+        if n.is_multiple_of(20) {
             let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
             p.played(&on, now);
         }
-        let (o, go) = if places_on { p.tick(&bodies(&players), now) } else { Default::default() };
+        let (o, go) = if places_on {
+            p.tick(&bodies(&players), now)
+        } else {
+            Default::default()
+        };
         out.extend(o);
         for t in go {
             // `.3`: a whole number would be a block's centre to `tp`.
@@ -2598,11 +3009,18 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
             }
             if t.what == "a random spot" {
                 let mut cost = RTP_COST.lock().unwrap_or_else(|e| e.into_inner());
-                let (_, n, total, max) = cost.iter().find(|c| c.0 == t.uuid).copied().unwrap_or_default();
+                let (_, n, total, max) = cost
+                    .iter()
+                    .find(|c| c.0 == t.uuid)
+                    .copied()
+                    .unwrap_or_default();
                 cost.retain(|c| c.0 != t.uuid);
                 log::info!(
                     "[smp] /rtp: {} to {:.1} {:.1} {:.1} ({n} chunk reads on the tick: {total} µs, longest {max} µs)",
-                    t.name, t.to.x, t.to.y, t.to.z
+                    t.name,
+                    t.to.x,
+                    t.to.y,
+                    t.to.z
                 );
             }
             out.push(Out::Tell(t.uuid, t.done.clone()));
@@ -2618,14 +3036,14 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         RTP.store(p.rtp_searching(), Relaxed);
     }
     if let Ok(e) = &mut smp.economy
-        && n % 20 == 0
+        && n.is_multiple_of(20)
     {
-        let _span = horizon_client::spans::guard("smp_economy");
+        let _span = crate::spans::guard("smp_economy");
         for p in &players {
             e.seen(p.uuid, &p.name);
         }
         // Once a second: coinflips nobody took, and those of players gone.
-        out.extend(smp.games.expire(e, chrono::Utc::now().timestamp_millis()));
+        out.extend(smp.games.expire(e, crate::now_ms()));
         let gone: Vec<u128> = smp
             .games
             .offers
@@ -2654,7 +3072,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         if let Some(r) = &mut smp.report
             && r.due(now)
         {
-            let _span = horizon_client::spans::guard("smp_report");
+            let _span = crate::spans::guard("smp_report");
             let (o, web) = r.tick(e, now);
             out.extend(o);
             if web {
@@ -2662,7 +3080,10 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 let path = smp.dir.join("web").join("economy.json");
                 std::thread::spawn(move || {
                     let made = path.parent().map_or(Ok(()), std::fs::create_dir_all);
-                    if let Err(err) = made.map_err(|e| e.to_string()).and_then(|()| smp_store::write_json(&path, &doc)) {
+                    if let Err(err) = made
+                        .map_err(|e| e.to_string())
+                        .and_then(|()| smp_store::write_json(&path, &doc))
+                    {
                         log::warn!("[smp] web/economy.json: {err}");
                     }
                 });
@@ -2671,14 +3092,14 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     }
     // The market's minute: prices move, open menus and carried charts
     // follow, the files are written by threads; once a day, the movers.
-    if n % 20 == 0 {
-        let _span = horizon_client::spans::guard("smp_market");
+    if n.is_multiple_of(20) {
+        let _span = crate::spans::guard("smp_market");
         for w in smp.market.warnings.drain(..) {
             log::warn!("[smp] market: {w}");
         }
         let moved = smp.market.tick(now);
         if moved || now - smp.market_web >= 5 * 60_000 {
-            let _span = horizon_client::spans::guard("smp_market_minute");
+            let _span = crate::spans::guard("smp_market_minute");
             smp.market_web = now;
             market_minute(game, smp, &players, now);
         }
@@ -2708,15 +3129,19 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 act(game, smp, acts);
             }
             Some(stacks) if smp.trades.refresh(uuid, &stacks) => {
-                let other = smp.trades.trade_of(uuid).and_then(|t| {
-                    t.sides.iter().find(|s| s.uuid != uuid).map(|s| s.uuid)
-                });
+                let other = smp
+                    .trades
+                    .trade_of(uuid)
+                    .and_then(|t| t.sides.iter().find(|s| s.uuid != uuid).map(|s| s.uuid));
                 act(game, smp, vec![Act::Show(uuid)]);
                 if let Some(o) = other {
                     act(game, smp, vec![Act::Show(o)]);
                     out.push(Out::Tell(o, format!("{name}'s offer changed.")));
                 }
-                out.push(Out::Tell(uuid, "A stack you offered changed: it left your offer.".into()));
+                out.push(Out::Tell(
+                    uuid,
+                    "A stack you offered changed: it left your offer.".into(),
+                ));
             }
             Some(_) => {}
         }
@@ -2724,21 +3149,31 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     // Welcomes, daily rewards and AFK, once a second.
     let mut sleeps = std::mem::take(&mut *PENDING_SLEEP.lock().unwrap_or_else(|e| e.into_inner()));
     let economy_on = smp.switches.on(Part::Economy);
-    if n % 20 == 0
+    if n.is_multiple_of(20)
         && smp.switches.on(Part::Presence)
         && let Ok(pr) = &mut smp.presence
     {
-        let _span = horizon_client::spans::guard("smp_presence");
+        let _span = crate::spans::guard("smp_presence");
         let seen: Vec<smp_presence::Seen> = players
             .iter()
             .map(|p| smp_presence::Seen {
                 uuid: p.uuid,
                 name: p.name.clone(),
-                pose: [p.position[0], p.position[1], p.position[2], f64::from(p.yaw), f64::from(p.pitch)],
+                pose: [
+                    p.position[0],
+                    p.position[1],
+                    p.position[2],
+                    f64::from(p.yaw),
+                    f64::from(p.pitch),
+                ],
             })
             .collect();
-        let today = chrono::Utc::now().format("%Y-%m-%d").to_string();
-        let rules = smp.places.as_ref().map(|p| p.config.rules.clone()).unwrap_or_default();
+        let today = crate::util::today();
+        let rules = smp
+            .places
+            .as_ref()
+            .map(|p| p.config.rules.clone())
+            .unwrap_or_default();
         let (o, acts) = pr.tick(&seen, &today, now, &rules);
         out.extend(o);
         let reward = pr.config.daily_reward;
@@ -2749,7 +3184,10 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                         && economy_on
                     {
                         match e.adjust("daily_reward", uuid, reward, "") {
-                            Ok(_) => out.push(Out::Tell(uuid, format!("Daily reward: {}.", e.money(reward)))),
+                            Ok(_) => out.push(Out::Tell(
+                                uuid,
+                                format!("Daily reward: {}.", e.money(reward)),
+                            )),
                             Err(err) => log::warn!("[smp] daily reward: {err}"),
                         }
                     }
@@ -2759,19 +3197,26 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         }
     }
     // `/report`: operators who came on hear of the last day's reports.
-    if n % 20 == 0 {
+    if n.is_multiple_of(20) {
         let on: Vec<(u128, u8)> = players.iter().map(|p| (p.uuid, p.permission)).collect();
         out.extend(smp.reports.staff_joined(&on, now));
     }
     // `/claim show`: the border once a second, to that player only.
     let mut particles = Vec::new();
-    if n % 20 == 0 {
+    if n.is_multiple_of(20) {
         smp.shows.retain(|_, s| s.3 > now);
         for (uuid, (dimension, cx, cz, _)) in &smp.shows {
-            let Some(p) = players.iter().find(|p| p.uuid == *uuid && p.dimension == *dimension) else {
+            let Some(p) = players
+                .iter()
+                .find(|p| p.uuid == *uuid && p.dimension == *dimension)
+            else {
                 continue;
             };
-            let relation = smp.claims.as_ref().ok().and_then(|c| c.relation(dimension, cx * 16, cz * 16, *uuid));
+            let relation = smp
+                .claims
+                .as_ref()
+                .ok()
+                .and_then(|c| c.relation(dimension, cx * 16, cz * 16, *uuid));
             let color = match relation {
                 Some(true) => "0,1,0",
                 Some(false) => "1,0,0",
@@ -2790,11 +3235,11 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
     let mut sidebars = Vec::new();
     let mut tab = None;
     let (nicks, places) = (&smp.nicks, &smp.places);
-    if n % 20 == 0
+    if n.is_multiple_of(20)
         && smp.switches.on(Part::Board)
         && let Ok(b) = &mut smp.board
     {
-        let _span = horizon_client::spans::guard("smp_board");
+        let _span = crate::spans::guard("smp_board");
         let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
         if let Ok(e) = &smp.economy
             && b.due(now, e.revision())
@@ -2808,7 +3253,12 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 .ok()
                 .and_then(|n| n.nick_of(uuid))
                 .map(|n| format!("~{n}"))
-                .or_else(|| players.iter().find(|p| p.uuid == uuid).map(|p| p.name.clone()))
+                .or_else(|| {
+                    players
+                        .iter()
+                        .find(|p| p.uuid == uuid)
+                        .map(|p| p.name.clone())
+                })
                 .unwrap_or_default(),
             played_seconds: places.as_ref().map_or(0, |p| p.played_seconds(uuid)),
         };
@@ -2824,14 +3274,15 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         }
     }
     // Nicknames: the changes asked for, then those of players who came on.
-    if n % 20 == 0
+    if n.is_multiple_of(20)
         && smp.switches.on(Part::Nicks)
         && let Ok(nicks) = &mut smp.nicks
     {
-        let _span = horizon_client::spans::guard("smp_nicks");
+        let _span = crate::spans::guard("smp_nicks");
         let pending = std::mem::take(&mut nicks.pending);
         // The files behind the real names are read only when a change waits.
-        let names = (!pending.is_empty()).then(|| ServerNames::read(&dir, smp.economy.as_ref().ok()));
+        let names =
+            (!pending.is_empty()).then(|| ServerNames::read(&dir, smp.economy.as_ref().ok()));
         for change in pending {
             let names = names.as_ref().expect("read above");
             let real = names.name_of(change.uuid).unwrap_or_default();
@@ -2857,22 +3308,27 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
                 smp.nicks_shown.insert(p.uuid);
             }
         }
-        smp.nicks_shown.retain(|u| players.iter().any(|p| p.uuid == *u) || nicks.nick_of(*u).is_none());
+        smp.nicks_shown
+            .retain(|u| players.iter().any(|p| p.uuid == *u) || nicks.nick_of(*u).is_none());
     }
     // The casino: its frames and rounds each tick while one moves (5
     // pictures a second at most), otherwise once a second for the sweep.
     let mut casino = Vec::new();
-    let casino_span = horizon_client::spans::guard("smp_casino");
+    let casino_span = crate::spans::guard("smp_casino");
     if let Ok(e) = &mut smp.economy
-        && (n % 20 == 0 || smp.casino.animating())
+        && (n.is_multiple_of(20) || smp.casino.animating())
     {
         e.now = now;
         let on: Vec<u128> = players.iter().map(|p| p.uuid).collect();
-        let online = (n % 20 == 0).then_some(&on[..]);
+        let online = (n.is_multiple_of(20)).then_some(&on[..]);
         casino = smp_casino_glue::tick(game, &mut smp.casino, e, now, online);
     }
-    drop(casino_span);
-    let title = smp.board.as_ref().map(|b| b.config.title.clone()).unwrap_or_default();
+    let _ = casino_span;
+    let title = smp
+        .board
+        .as_ref()
+        .map(|b| b.config.title.clone())
+        .unwrap_or_default();
     let busy = smp.places.as_ref().is_ok_and(|p| !p.pending.is_empty())
         || !smp.trades.open.is_empty()
         || smp.casino.animating();
@@ -2904,7 +3360,10 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
         game.native_sidebar(uuid, Some(&sidebar(&title, &lines)));
     }
     if let Some((to, (header, footer))) = tab {
-        let (header, footer) = (Text::literal(header).with_color(text::GOLD), Text::literal(footer).with_color(text::GRAY));
+        let (header, footer) = (
+            Text::literal(header).with_color(text::GOLD),
+            Text::literal(footer).with_color(text::GRAY),
+        );
         for uuid in to {
             game.native_tab_list(uuid, &header, &footer);
         }
@@ -2914,7 +3373,7 @@ pub(in crate::game) fn tick(game: &mut Game<'_>) {
 
 /// One line in the SMP's audit log (`/invsee`'s moves), outside a command:
 /// an Err when the log can't be written, or the economy is off.
-pub(in crate::game) fn audit(dir: &std::path::Path, entry: serde_json::Value) -> Result<(), String> {
+pub(crate) fn audit(dir: &std::path::Path, entry: serde_json::Value) -> Result<(), String> {
     let mut guard = state(dir.join(smp_store::DIR));
     let smp = guard.as_mut().expect("opened");
     match &mut smp.economy {
@@ -2925,8 +3384,12 @@ pub(in crate::game) fn audit(dir: &std::path::Path, entry: serde_json::Value) ->
 
 /// A player who has played here, by name (any case): online first, then
 /// the economy's accounts and `usercache.json`.
-pub(in crate::game) fn find_player(game: &Game<'_>, name: &str) -> Option<(u128, String)> {
-    if let Some(p) = game.native_server_players().into_iter().find(|p| p.name.eq_ignore_ascii_case(name)) {
+pub(crate) fn find_player(game: &Game<'_>, name: &str) -> Option<(u128, String)> {
+    if let Some(p) = game
+        .native_server_players()
+        .into_iter()
+        .find(|p| p.name.eq_ignore_ascii_case(name))
+    {
         return Some((p.uuid, p.name));
     }
     let dir = game.native_world_dir()?;
@@ -2959,14 +3422,19 @@ impl ServerNames {
                 .unwrap_or_default()
         };
         for e in list("usercache.json") {
-            if let (Some(name), Some(uuid)) = (e["name"].as_str(), e["uuid"].as_str().and_then(smp_store::parse_uuid))
-                && !names.iter().any(|(u, _)| *u == uuid)
+            if let (Some(name), Some(uuid)) = (
+                e["name"].as_str(),
+                e["uuid"].as_str().and_then(smp_store::parse_uuid),
+            ) && !names.iter().any(|(u, _)| *u == uuid)
             {
                 names.push((uuid, name.to_owned()));
             }
         }
         let ops_file = list("ops.json");
-        let ops = ops_file.iter().filter_map(|e| e["name"].as_str().map(str::to_owned)).collect();
+        let ops = ops_file
+            .iter()
+            .filter_map(|e| e["name"].as_str().map(str::to_owned))
+            .collect();
         let levels = ops_file
             .iter()
             .filter_map(|e| {
@@ -2980,25 +3448,41 @@ impl ServerNames {
 
 impl smp_nick::Names for ServerNames {
     fn known(&self) -> Vec<(Option<u128>, String)> {
-        self.names.iter().map(|(u, n)| (Some(*u), n.clone())).chain(self.ops.iter().map(|n| (None, n.clone()))).collect()
+        self.names
+            .iter()
+            .map(|(u, n)| (Some(*u), n.clone()))
+            .chain(self.ops.iter().map(|n| (None, n.clone())))
+            .collect()
     }
     fn find(&self, name: &str) -> Option<(u128, String)> {
-        self.names.iter().find(|(_, n)| n.eq_ignore_ascii_case(name)).cloned()
+        self.names
+            .iter()
+            .find(|(_, n)| n.eq_ignore_ascii_case(name))
+            .cloned()
     }
     fn name_of(&self, uuid: u128) -> Option<String> {
-        self.names.iter().find(|(u, _)| *u == uuid).map(|(_, n)| n.clone())
+        self.names
+            .iter()
+            .find(|(u, _)| *u == uuid)
+            .map(|(_, n)| n.clone())
     }
     fn level(&self, uuid: u128) -> u8 {
-        self.levels.iter().find(|(u, _)| *u == uuid).map_or(0, |(_, l)| *l)
+        self.levels
+            .iter()
+            .find(|(u, _)| *u == uuid)
+            .map_or(0, |(_, l)| *l)
     }
 }
 
 /// A player's sidebar lines as the game shows them.
-fn sidebar(title: &str, lines: &[Line]) -> NativeSidebar {
+fn sidebar(title: &str, lines: &[Line]) -> crate::host::NativeSidebar {
     let lines = lines
         .iter()
         .map(|l| match l {
-            Line::Name(name) => (Text::literal(name.clone()).with_color(text::GREEN).bold(), None),
+            Line::Name(name) => (
+                Text::literal(name.clone()).with_color(text::GREEN).bold(),
+                None,
+            ),
             Line::Stat { label, value } => {
                 let color = match *label {
                     "Balance" => text::GOLD,
@@ -3014,7 +3498,7 @@ fn sidebar(title: &str, lines: &[Line]) -> NativeSidebar {
             Line::Footer(address) => (Text::literal(address.clone()).with_color(text::AQUA), None),
         })
         .collect();
-    NativeSidebar {
+    crate::host::NativeSidebar {
         title: Text::literal(title).with_color(text::GOLD).bold(),
         lines,
     }
@@ -3022,7 +3506,7 @@ fn sidebar(title: &str, lines: &[Line]) -> NativeSidebar {
 
 /// The market's prices written now, when they changed (the world closes).
 fn flush_book(smp: &mut Smp) {
-    if let Some((path, book)) = smp.market.book_to_write(chrono::Utc::now().timestamp_millis(), true) {
+    if let Some((path, book)) = smp.market.book_to_write(crate::now_ms(), true) {
         let _one = WRITES.lock().unwrap_or_else(|e| e.into_inner());
         if let Err(e) = smp_store::write_json_compact(&path, &book) {
             log::error!("[smp] {e}");

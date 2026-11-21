@@ -1,0 +1,23 @@
+id = "ender_undertow_focus"
+kind = "shader"
+name = "Ender Undertow Focus"
+summary = "After an Enderman grabs you, your sight returns from the center as the edges drift back into focus."
+description = "Select this optional shader with Ender Undertow Cinematic installed and its encounter enabled. The effect follows the native encounter cues.\n\n[Try the encounter preview on Michado](https://michado.dk/projects/ender-undertow/)."
+authors = ["Fnux8890"]
+owners = ["Fnux8890"]
+owner_ids = [21344589]
+license = "MIT"
+icon = "icons/ender_undertow_focus.png"
+categories = ["atmosphere"]
+tags = ["enderman", "mining", "survival", "teleportation"]
+key = "RWTXlLLUSOJS7XRVRqmgOEH3c0rwDY/1CqXd64/Debkiy6bJOe0mzt4K"
+source = "https://github.com/Fnux8890/ender-undertow/tree/8e18280557d6d830e8111a696c39d1567636819b"
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-21"
+game = "26.3"
+file = "ender_undertow_focus.hshader"
+sha256 = "be38af0e8bebf5810f688b17b223cc250c2207aece93fc13a2beb999a3906b34"
+changelog = "First Horizon 26.3 cinematic beta."
+signature = "untrusted comment: signature from minisign secret key\nRUTXlLLUSOJS7X/XOoeeonOiaEsv7p/bWLhuuZVI/gb3LobNo0EWBm7gFrxaOoia90THYUd8MJDj40b7zAnrj4jbgISSNCiAsgE=\ntrusted comment: timestamp:1795260625\tfile:ender_undertow_focus.hshader\thashed\nXHVM6lmrcySO2671/vPy3a3UHt0TPiQcrlUF/OjiVPcpWT5KSRS+CfEEGkaHx0eDNKtdnfBmN1AbbAm+V1znAQ==\n"

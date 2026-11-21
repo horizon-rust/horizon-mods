@@ -1,0 +1,23 @@
+id = "ender_undertow_cinematic"
+kind = "native-mod"
+name = "Ender Undertow Cinematic"
+summary = "Feel an underground Enderman lift you, turn you toward its scream and leave you blinking in another cave."
+description = "Install the Ender Undertow beta world data pack for encounters and opt in with `/trigger eu.scene set 1`. Add Ender Undertow Resources for voices and wardrobe, and Ender Undertow Focus for blur and warble. This native beta targets Horizon 26.3 Nightly 2026-11-20.\n\n[Try the encounter preview on Michado](https://michado.dk/projects/ender-undertow/)."
+authors = ["Fnux8890"]
+owners = ["Fnux8890"]
+owner_ids = [21344589]
+license = "MIT"
+icon = "icons/ender_undertow_cinematic.png"
+categories = ["game-mechanics"]
+tags = ["enderman", "mining", "survival", "teleportation"]
+key = "RWTXlLLUSOJS7XRVRqmgOEH3c0rwDY/1CqXd64/Debkiy6bJOe0mzt4K"
+source = "https://github.com/Fnux8890/ender-undertow/tree/8e18280557d6d830e8111a696c39d1567636819b"
+
+[[versions]]
+version = "0.1.0-beta.1"
+published = "2026-11-21"
+game = "26.3"
+file = "ender_undertow_cinematic.hmod"
+sha256 = "076412edc29b1998b170676fcf624c47c62bdac367d6b08ca1c75432f469a060"
+changelog = "First Horizon 26.3 cinematic beta."
+signature = "untrusted comment: signature from minisign secret key\nRUTXlLLUSOJS7eRU1I3q275W8DNN6paCxUuakmkRmEslZChExOveTNFlkw+vtcp6aB1XtoPh7jjejdfIqNLsQ/j29BRyaxhg+gc=\ntrusted comment: timestamp:1795260625\tfile:ender_undertow_cinematic.hmod\thashed\ny8ZdRQfgbDJj1Hwa9zf+iPpdCJU+dl4aykYq41z6u8Qy7hvxyDeLNDTfVkAF4Zov5uUqVpCub0iPEU8BfVyECA==\n"

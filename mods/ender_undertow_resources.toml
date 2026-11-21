@@ -1,0 +1,23 @@
+id = "ender_undertow_resources"
+kind = "resourcepack"
+name = "Ender Undertow Resources"
+summary = "The Gentleman brings his bowler hat, moustache and a very polite apology to Ender Undertow."
+description = "Enable this companion resource pack alongside the Ender Undertow beta world data pack for the encounter sounds and wardrobe.\n\n[Try the encounter preview on Michado](https://michado.dk/projects/ender-undertow/)."
+authors = ["Fnux8890"]
+owners = ["Fnux8890"]
+owner_ids = [21344589]
+license = "MIT"
+icon = "icons/ender_undertow_resources.png"
+categories = ["audio", "entities"]
+tags = ["enderman", "mining", "survival", "teleportation"]
+key = "RWTXlLLUSOJS7XRVRqmgOEH3c0rwDY/1CqXd64/Debkiy6bJOe0mzt4K"
+source = "https://github.com/Fnux8890/ender-undertow/tree/8e18280557d6d830e8111a696c39d1567636819b"
+
+[[versions]]
+version = "0.1.0-beta.1"
+published = "2026-11-21"
+game = "26.3"
+file = "ender-undertow-horizon-resources-26.3-beta.1.zip"
+sha256 = "64a812c779fa5d8d308c02f3a77e1ce522e61714d6a9b220e92ee5543b851351"
+changelog = "First Horizon 26.3 cinematic beta."
+signature = "untrusted comment: signature from minisign secret key\nRUTXlLLUSOJS7dbL7fSiNbI0yzFLa0Nqgbx/ApGg6sLwVhWp/A4QAZ/EBF2uORBmmbqE8Ut0BZWyvypNqQRjlXHdLjNf4T6CMQ4=\ntrusted comment: timestamp:1795260625\tfile:ender-undertow-horizon-resources-26.3-beta.1.zip\thashed\nGDjKSzkL9qpUXOXWwRh4ospFHa7zwSBfcWfo3bhmpSvqxIhtuVg/qsC1LkNm+LY7jWRO702dKGajqKHF1hjBDw==\n"

@@ -1,0 +1,71 @@
+id = "horizonmatica"
+kind = "native-mod"
+name = "Horizonmatica"
+summary = "Litematica for Horizon: schematics as ghost blocks, a verifier, material lists and a printer that builds the missing blocks for you."
+description = """
+Horizonmatica is a re-creation of **Litematica** (with its **printer**) for Horizon. Load a schematic, see it as ghost blocks in your world, check your build against it, get a material list, and let the printer place the missing blocks.
+
+## Features
+- **Formats:** `.litematic` (versions 1–7, several regions), `.schem` (Sponge v1–v3: WorldEdit, FAWE, Amulet, Axiom), `.schematic` (MCEdit / WorldEdit up to 1.12) and vanilla structure `.nbt`. Older files are upgraded with Horizon's data fixer, the same way old worlds are.
+- **Overlay:** missing blocks as translucent real block models (chests, banners, heads and other block entities included), optionally visible through walls.
+- **Verifier:** wrong block (red), wrong state (orange), extra block (pink), plus a progress HUD.
+- **Layers:** all / one layer / above / below / range.
+- **Placements:** several at once; move, rotate, mirror, show or hide each; a move mode for mouse wheel and arrow keys. The placements are remembered per world and dimension and restored when you join again.
+- **Save your own:** select an area with the selection tool (a stick: left and right click set the corners, the wheel grows and moves the box) and save it as a `.litematic` (blocks and their states), chunk by chunk as in Litematica: chunks not loaded yet show as frames to fly to.
+- **Material list:** missing, total and carried, with item icons, in the HUD or in the menu, and copied to the clipboard as a table for spreadsheets.
+- **Menu (M):** a screen of its own, drawn with the game's widgets. Every action is a key mapping of the game, bound in Options › Controls; the settings are on the mod's page in Options › Mods too.
+- **Pick block:** middle-click a ghost block to take that block in hand, for building by hand.
+- **Easy place:** look at a ghost block and its block is taken in hand; hold the right mouse button to place it, facing the right way. While it is on, only the schematic's blocks can be placed. Its own *air place* option (off by default) places ghost blocks without a neighbour.
+- **Highlights:** mark missing and wrong blocks through everything, however far away, for all items or just one you pick in the material list.
+- **Printer:** places one missing block within reach every few ticks, from the bottom up. It only clicks when Horizon's own placement logic says the click produces exactly the wanted state (stairs, slabs, logs, furnaces…). Redstone-aware order, repeater, comparator and note block setup after placing, double slabs and stacks, chests, falling blocks. The camera never moves.
+
+Usage: put schematics into `schematics/` next to `options.txt` of your instance (`/hm folder` shows the path), then `/hm load <name>` or press **M**. All commands and keys are in the [README](https://github.com/keksi2k/horizonmatica#usage).
+
+## What it does and doesn't do
+- **Reads** only files in the instance's `schematics/` folder, and creates that folder if it's missing.
+- **Writes** only the `.litematic` files you save (`/hm save`), into that folder. Settings go through Horizon's mod settings, remembered placements into the mod's own data folder that Horizon gives it.
+- **Network:** no connections of its own. The only thing sent to a server is what the printer and easy place do: the same block-placing clicks a player would make (with the matching look direction), and hotbar slot changes.
+- **"Open folder"** in the menu (and `/hm folder`) starts the system's file manager on the schematics folder (`explorer`, `open` or `xdg-open`); nothing else is ever started.
+- No telemetry, no downloads, no code run from schematic files. Schematics are parsed as data only.
+
+⚠️ On other people's servers, automatic placing may break the rules or trip anti-cheat. The printer is off until you turn it on (`K` or `/hm printer on`). The *air place* options of the printer and easy place (off by default) are noticed by anti-cheat plugins such as Grim.
+
+**Version:** Horizonmatica is a `.hmod` on Horizon's mod API. The overlay, the printer and easy place also use game internals, so it is pinned to one Horizon build (currently Nightly 2026-11-20, `0a875da`). A new Nightly needs a new release.
+
+## Credits
+The idea, the way it's used, the file format and the behaviour come from **[Litematica](https://github.com/maruohon/litematica)** by masa (maruohon), maintained by **[Sakura-Ryoko](https://github.com/sakura-ryoko/litematica)**, and from **[Litematica Printer](https://github.com/aleksilassila/litematica-printer)** by aleksilassila. Horizonmatica is not an official project of these authors, isn't made or endorsed by them, and contains none of their code. Only the file format and the behaviour are re-created. If you like it, go and support the originals.
+
+MIT licensed.
+"""
+authors = ["keksi2k"]
+owners = ["keksi2k"]
+owner_ids = [32579030]
+license = "MIT"
+source = "https://github.com/keksi2k/horizonmatica"
+icon = "icons/horizonmatica.png"
+categories = ["utility"]
+tags = ["schematics", "litematica", "building", "printer", "material-list", "port"]
+key = "RWS+BRoCJslNCFapck3cbG2VFQcjlr1MUH5m3+CWA8zhJecoBoja7X94"
+
+[[versions]]
+version = "0.4.0"
+published = "2026-11-21"
+game = "26.3"
+file = "horizonmatica-0.4.0.hmod"
+sha256 = "394d0b1de4bcbb9e25568ac26c3b06cd2d82b3ad10e549b114bab356564f4b20"
+signature = """
+untrusted comment: signature from minisign secret key
+RUS+BRoCJslNCKQZWtaOx6sAuYoWrTIXmi5h0lG6uArttLmzcX4VtUcdGUkDSEVNA83OMNdZkF8dp6YrYqS5HxbVzyhVY4s+uQA=
+trusted comment: timestamp:1795256786	file:horizonmatica-0.4.0.hmod	hashed
+jMFdDfcju8qONwcTuw5WGLCuRsoAXG6YYeALtj03reNxG5l1PuDrqvh+kgtCiyA0XbXAjxydKF/TTDCvskg2DA==
+"""
+changelog = """
+### Changed
+- Horizonmatica is now a `.hmod` built on Horizon's mod API (`horizon-mod.toml`). Launchers from 0.2.70 on load only `.hmod` packages, so 0.3.x (`.hnmod`) no longer installs there.
+- Commands, chat output and completions, the HUD, settings, keys, mouse input and the menu go through the mod API. Game internals are used only where the API has nothing for it: the overlay (the game's renderer and full block models), the printer and easy place (clicking a chosen face, the game's placement prediction) and the data fixer for older schematics.
+- Keys are now the game's key mappings: bind them in Options › Controls. The menu's Keys tab is gone, and keys bound there in 0.3 are not carried over (the defaults are the same).
+- The menu (M) is a mod screen of its own instead of borrowing the Debug Options screen; **1–7** switch its tabs.
+- Settings are registered with Horizon and also shown on the mod's page in Options › Mods. Settings and remembered placements from 0.3 are carried over.
+
+Built for Horizon Nightly 2026-11-20 (0a875da).
+"""

@@ -35,3 +35,11 @@ game = "26.3"
 file = "createaddition.hmod"
 sha256 = "16ce1dec5e002333871794ca3839e837b6d3b04a7b0139d2c1d52ca36926d50c"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "createaddition.hmod"
+sha256 = "3f64f672d86bf90da7d43643399e565d4851b280f43c8b4c3923d62f88dc137c"
+changelog = """Slice 2, the modular accumulator multiblock, plus three carried-data errors of the 1.21.1 dialect. The accumulator now forms a tower up to 3×3 wide and 5 high anchored at its lowest corner, with capacity `width² × height × 2,000,000 FE`; every block answers the energy capability with the whole pool (`Registrar::block_capability_before_game`, since the static buffer cannot express a multiblock), charge stays per block — fill lowest-first, drain highest-first — and the jar's `top`/`bottom` bits gate output so a tower never feeds itself. Three dead-content errors fixed: all three block loot tables were in the 1.21.1 array form with `bonus_rolls` and `1.0` rolls, so they dropped nothing (a broken connector dropped 0 of itself); the harvest tag was never carried, so `requires_tool` had no pickaxe membership and a real break left nothing on the ground; and the carry script now derives both, so `--check` catches a regression. Proven in game: a 1×3 tower reads 6,000,000 FE from the bottom while 5,000,000 sits in the top; breaking the top re-forms it at 4,000,000/4,000,000; a tower moves 116,000 FE to a sink and conserves the total; separated blocks stay single at 2,000,000; and all three blocks now break and drop themselves."""

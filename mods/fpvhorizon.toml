@@ -34,6 +34,22 @@ categories = ["transportation", "game-mechanics"]
 tags = ["fpv", "drone", "quadcopter", "simulator"]
 
 [[versions]]
+version = "1.2.0"
+published = "2026-11-21"
+game = "26.3"
+file = "fpvhorizon.hmod"
+sha256 = "176d1e4e042e896424a597f5ea47cb4a297b0563819965585253b68a5227e542"
+changelog = "1.2. Flies through a simulated flight controller, and adds the setup screen (J) for drones, rates and camera. Built for Nightly 2026-11-20 (0a875da)."
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-20"
+game = "26.3"
+file = "fpvhorizon.hmod"
+sha256 = "e186bb6070a69c2ea62bc111abef995aac18643b2e426a4132604ed6bc6bb8ad"
+changelog = "1.0. Fisheye lens option for the FPV camera, gamepad button art in the OSD hints (following Nintendo letter mode), and built for Nightly 2026-11-20 (0a875da)."
+
+[[versions]]
 version = "0.9.0"
 published = "2026-11-19"
 game = "26.3"

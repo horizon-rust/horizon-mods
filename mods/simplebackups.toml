@@ -45,3 +45,11 @@ game = "26.3"
 file = "simplebackups.hmod"
 sha256 = "6565f5acd73b5c03f2f49f3009b8a520cf945b25daec1f08d9f7869448b978a2"
 changelog = "First publication in the SDK format."
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "simplebackups.hmod"
+sha256 = "2edec94439b83c8d030786f737a27e9edfee2649996a81b8dd28bacc96bf8661"
+changelog = """Slice 2, the disk cap: `max_disk_size`, upstream's 25 GB default in binary units, enforced after each successful backup by deleting the oldest archives until the folder is under the cap and never the last one. Until now the setting did not exist, so `keep` alone bounded the count and ten large archives could fill any volume. The port also refuses to delete a file it did not write, which upstream does not: a foreign file's bytes still count toward the total, but the cap only ever removes `<world>_*.zip`. Proven in game, server-side and headless: with the cap set to one byte, a second backup removes the oldest archive and keeps the newest, while the same scene with a one-terabyte cap keeps both — the counterfactual that proves the assertion can fail, with `keep` left at three so the removal is the cap's and not the retention rule's. The status reply gained `disk=`, `cap=` and `over=`."""

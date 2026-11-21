@@ -36,3 +36,11 @@ game = "26.3"
 file = "buildinggadgets2.hmod"
 sha256 = "de10c06860205d2d70c7bd93e5901aa1809a298043721be181d2d9079282b3cb"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "buildinggadgets2.hmod"
+sha256 = "eed5258a64b413a462c28416fb14f17e64e4459f29bda97e5e7c44766d169920"
+changelog = """Slice 2, the mode family: all eight building-gadget modes and their selection, where the port was fixed to one. `build_to_me` is now the default as upstream has it, and `vertical_wall`, `vertical_column`, `surface`, `horizontal_wall`, `stairs`, `horizontal_row` and `grid` each come from their own upstream class, with two quirks kept and pinned by tests: `horizontal_wall`'s centre-cell column gate and `stairs`' own sign rule. `/buildinggadgets2 mode` and `placeontop` store beside range and selection. Proven in game: every mode's phase asserts the exact cell set and one stone consumed per cell, the mode, range and placeontop replies are read from the parsed action bar, the carried recipe crafts with its ingredients consumed and a wrong-ingredient control matching nothing, and the control game refuses the gadget. Anchor, undo, energy, preview, the bound inventory and the GUI stay recorded gaps rather than being half-built."""

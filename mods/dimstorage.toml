@@ -43,3 +43,11 @@ game = "26.3"
 file = "dimstorage.hmod"
 sha256 = "18641dc422a34eadab58d4f049e23f6642a7307bb4513f450765e0a84d4884d6"
 changelog = "First release: slice 1 of the port, with the full licence and corresponding source in the port repository"
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "dimstorage.hmod"
+sha256 = "0ef5637cb09c57f989f275c2cc067006f0403e382ef540e94fd12192913d741c"
+changelog = """Slice 2, the dimensional tank: a block entity holding 16,000 mB of one fluid per frequency, shared by every tank on that frequency in any dimension, reachable through the block's own fluid capability. A bucket fills and drains through vanilla's own item exchange — no bucket special case — the seventeenth bucket is refused at the cap, item and fluid channels stay separate as upstream's type suffix does, and a tank keeps its fluid through a break because the channel is the store, not the block. Proven in game: the tank recipe crafts with its grid emptied, a bucket on one channel is read from a sibling tank, lava holds on a second channel, both reach 16,000 of 16,000 with the next bucket refused, a survival break drops into a hopper, and both channels survive a relaunch with `t public,1 minecraft:water 16000` and `t public,2 minecraft:lava 1000`. The slice also fixed the merge rule the in-game leg exposed — a mirroring sibling wrote the amount with an empty fluid id, and two tanks filling one shared tank now add instead of overwriting — and four carried defects: the tank's advancement showed the tablet's title and text, its recipe and loot were in the 1.21.1 dialect, `c:glass_blocks` has no 26.3 tag so the port ships it, and the tank was in no mineable tag while requiring a tool."""

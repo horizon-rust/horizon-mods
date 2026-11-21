@@ -36,3 +36,11 @@ game = "26.3"
 file = "industrialforegoing.hmod"
 sha256 = "c10182f32584e6522b274855f6c8331793421237112d87acf804a4fb17752ed7"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "industrialforegoing.hmod"
+sha256 = "819f00fc54dd6a2623406681494a3842f57331207d60e620b2f597ef66559e7c"
+changelog = """Slice 3, the augment family: the two augment slots Titanium gives a machine, the component the addons carry, and the arithmetic the machine reads from it. A speed augment makes the bar fall four a tick where an empty machine falls one, and an efficiency augment shortens the whole bar to eighty percent and its cooldown with it, which is exactly the pair of numbers a player feels. The measurement is taken against the readout's own tick counter rather than a wall clock, so chat latency cannot flatter it: eighty-four to fifty-two over eight ticks is four times eight. A second augment of the same type is refused and stays in the hand, and the augments travel on the machine's own item, so a broken and re-placed machine comes back with its speed four and its efficiency at eighty percent. Four addon items ship with their textures and names, and the component is read the way Titanium reads it, speed before efficiency. This is also the surface two stopped add-ons were waiting for: their items bound to an augment system this port did not have. What remains for them is the machine that consumes the augments and the parent's own item set, which is the next slice."""

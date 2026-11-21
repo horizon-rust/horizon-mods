@@ -36,3 +36,11 @@ game = "26.3"
 file = "framedblocks.hmod"
 sha256 = "c1fa1450fd3a25b8335a55bd0bec5c3c58544caa85140e7b4772fe89cdc2a225"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "framedblocks.hmod"
+sha256 = "aea0763a00cc2239a3e014ef1554b8af85f3e9133c361008336b680666887983"
+changelog = """Slice 2, the camo is a block state. The block entity now stores the full state — block id plus properties — where slice 1 stored only an id and drew that block's default; `/framedblocks camo <x> <y> <z> [state]` sets and reads it and refuses anything that is not a block state. The render differential is the proof: with `minecraft:grass_block[snowy=false]` the screenshot holds 153 snow pixels and with `[snowy=true]` 20,870, so the state is what is drawn, not just what is saved. Breaking a frame drops both the frame and its camo block. This version also closes a parity hole the port had since slice 1: both carried recipes now craft in game, the frame giving four with the grid consumed and the hammer one. A local `Held::Block` variant is renamed `Held::BlockItem` because the fit scanner read it as the SDK's non-exhaustive `Block` and reported a false failure — the rules and tests are untouched. Three command-parser facts are recorded: a literal may not follow arguments at this pin, `word` cannot carry a state (`Expected whitespace to end one argument`), and a greedy optional `text` last node works."""

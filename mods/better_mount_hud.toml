@@ -1,0 +1,45 @@
+id = "better_mount_hud"
+kind = "native-mod"
+name = "better_mount_hud"
+summary = "A Horizon port of Better Mount HUD."
+description = """Exact 1:1 Rust translation of [better-mount-hud](https://github.com/Lortseam/better-mount-hud)
+(Lortseam, GPL-3.0) for Horizon.
+
+Upstream logic: `mixin/HudMixin.java` (62 lines), carried 1:1 in
+`src/hud_mixin.rs` on the current mod API. The mixin's five injections into
+`Hud` (extractVehicleHealth / extractPlayerHealth / getAirBubbleYLine /
+nextContextualInfoState / extractHotbarAndDecorations) run their exact handler
+bodies against a `HudMixinEnv` seam that supplies the shadowed `Hud` state
+(`minecraft`, `getPlayerVehicleWithHealth`, `getVehicleMaxHearts`) and the
+player/game-mode surface the handlers read.
+
+Upstream has no config and no client entrypoints, so the registration is
+empty, matching the original.
+
+Ported by sparticle.
+
+The handlers are HUD injections into vanilla's `Hud` extraction pipeline and
+wait on a HUD-injection surface in the mod API (tracked on
+horizon-rust/horizon).
+
+Source-only .hmod built on the current SDK (Horizon f00125f,
+horizon-mixins e59da909). Full GPL-3.0 licence text verbatim from upstream.
+
+Licence: GPL-3.0-or-later. Source: https://github.com/Sparticle62ops/horizon-better-mount-hud
+"""
+authors = ["Lortseam", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "GPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-better-mount-hud"
+icon = "icons/better_mount_hud.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-19"
+game = "26.3"
+file = "better_mount_hud-1.0.1.hmod"
+sha256 = "bd72c997af76909aa00d1666c0d74218e843eb7d60c2d280744ca91cabd8c10c"
+changelog = "Rebuilt on the current SDK mod API: upstream HudMixin handlers 1:1 (hud_mixin.rs), empty registration (upstream has no config or entrypoints), full GPL-3.0 verbatim; pins aligned to Horizon f00125f / horizon-mixins e59da909"

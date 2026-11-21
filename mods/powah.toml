@@ -48,3 +48,11 @@ game = "26.3"
 file = "powah.hmod"
 sha256 = "9b600446d7457809af1583b3f478881de5b066add4035c0d18ba14ae414bcdf3"
 changelog = """Slice 2: the dielectric and capacitor family — six items and eight recipes — so the three carried machine recipes finally craft. The leg drives a real crafting table through all eleven: paste, rods, casing, both capacitors, the furnator, the energy cell and the cables, asserting each result's id and count and that every ingredient is consumed (the lava bucket leaving its bucket), with an off-pattern grid leaving the result empty."""
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "powah.hmod"
+sha256 = "e9583d4306b09f6a0eece9cff714de136bfff427b93afb5cd89357ab869b3b9c"
+changelog = """Slice 3, the cable network. Upstream's cables share one buffer across a connected run and forward an insertion through it in one call; the port moved FE one hop per tick between adjacent block entities, so a run of two or more cables never relayed. The cable's tick now plans the whole connected run — the source's rate is spent once, not once per cable — and the rotation starts at another port so a network cannot starve one side. Proven in game: a source cell of 100,000 FE fills a sink across three cables to 500 while a cell off the network stays at 0, and breaking the middle cable leaves the two cells summing to exactly 100,000, so no energy is created or lost. The previous package fails the same scenario: `a three-cable network did not relay FE into the cell`."""

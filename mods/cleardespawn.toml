@@ -1,0 +1,33 @@
+id = "cleardespawn"
+kind = "native-mod"
+name = "cleardespawn"
+summary = "A Horizon port of ClearDespawn."
+description = """cleardespawn (Horizon Rust port): item entities blink out as they near their despawn time.
+
+Exact 1:1 Rust translation of ClearDespawn (upstream Java, MIT) by StrikerRockers-Mods,
+carrying the upstream license and credit. Inside the last flashStartTime seconds of an
+item entity's lifetime the extended item entity renderer drops the item's draw on the
+flash schedule, and when urgentFlash is on the blink period shrinks with the remaining
+time so the flashing accelerates toward despawn. Port by sparticle.
+Upstream: https://github.com/StrikerRockers-Mods/ClearDespawn (MIT).
+
+Source-only .hmod built on the current SDK (Horizon f00125f, mixins e59da909, mod api 0.2).
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-cleardespawn
+"""
+authors = ["StrikerRocker", "Guntram Blohm", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-cleardespawn"
+icon = "icons/cleardespawn.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-21"
+game = "26.3"
+file = "cleardespawn-1.0.1.hmod"
+sha256 = "fb2a2ae701a4f1bc7db5f8f0868cc22c0cac8b830965c739b881472b01be9bf9"
+changelog = "Rebuilt as the exact 1:1 port on the current SDK: full module tree (constants, config, config_helper, services, render_item_entity_extended, clear_despawn, mod_menu, seams), the original's three config entries as settings with upstream's lang keys, the despawn-flash renderer entry wired on client setup, MIT notices carried in the repo and package."

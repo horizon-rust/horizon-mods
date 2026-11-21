@@ -1,0 +1,28 @@
+id = "brb"
+kind = "native-mod"
+name = "brb"
+summary = "A Horizon port of Better Recipe Book."
+description = """Better Recipe Book -> Horizon native mod, 1:1 core on the mod API. Upstream: https://github.com/mrshmllow/BetterRecipeBook (Modrinth slug 'brb'), commit ea7c787 (2024-07-07), MIT (c) 2021 marshamallow. LICENSE carried verbatim in this mod's repo. src/lib.rs wires the original's config fields as settings (Options > Mods page, same defaults) and runs the mod entry 1:1 with BetterRecipeBook.init(): load config/brb.toml (the upstream autoconfig Toml4jConfigSerializer's file, a correction of the earlier slice-1 modeling that read config/brb.json), read brb.pins, initialize the pinned-recipe and instant-craft managers, queuedScroll = 0, isFilteringNone = true, then sync the settings into the live config cells. src/runtime.rs is the 1:1 core: config/{Config,NewRecipes,InstantCraft,AlternativeRecipes,Scrolling}.java, InstantCraftingManager.java (pending-craft bookkeeping, container-id guard, QUICK_MOVE click trigger), PinnedRecipeManager.java (brb.pins JSON array). Remaining: the recipe-book GUI half (generic components and group buttons, brewing-stand and smithing books, toast suppression, scrollable pages, keep-centered) and the pin keybind need screen/menu/keybind surfaces the pinned mod API has not got; the brewing and smithing books also cannot be declared on the vanilla menus while menu book declarations are limited to the registering mod's own menus.
+
+Port by sparticle. Upstream: https://github.com/mrshmllow/BetterRecipeBook (MIT).
+
+Source-only .hmod built on the current SDK (Horizon f00125f6, mixins e59da909)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-brb
+"""
+authors = ["mrshmllow", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-brb"
+icon = "icons/brb.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "brb-1.0.0.hmod"
+sha256 = "f6f6bd1fa31049cb36309ee5cd361a6231a7c9595c933c9d71a5538be2324b22"
+changelog = "Initial registry submission"

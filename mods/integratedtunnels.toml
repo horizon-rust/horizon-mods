@@ -44,3 +44,11 @@ game = "26.3"
 file = "integratedtunnels.hmod"
 sha256 = "87ab0b4b23892527a1c8ba6550a7b084d3fe058384f35ce860c5427e1639bfaa"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "integratedtunnels.hmod"
+sha256 = "1dbd235c13792d22c1478643cc79b1b4f09bf418144f74883125d576dc176fa9"
+changelog = """Slice 2, the fluid tunnel: a fluid importer and a fluid exporter on a tunnel cable face, plus a slotless fluid channel beside the item store. It is the jar's own face-mounted protocol — the same carrier and the same once-per-part tick move — with the rate defaulting to 1,000 mB. The energy half is deliberately not taken: the pin has no vanilla FE block to feed or drain, so a transfer could not be given a fail-capable in-game assertion, and an untestable transfer is worse than a stated gap. Proven in game: a full water cauldron behind a fluid importer drains into the channel as 1,000 mB and the source becomes an empty cauldron; a fluid exporter fills an empty cauldron to level 3 with the channel back to zero and the thousand millibuckets conserved; removing the exporter leaves the channel full and the sink empty while removing the importer leaves a refilled source full; both fluid part ids give and read back; and the carried loot table rolls the cable. The readout had to become marker-based because the chat history caps at a hundred lines and the old count-based wait saturated once the fluid phases ran."""

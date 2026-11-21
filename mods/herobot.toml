@@ -1,0 +1,57 @@
+id = "herobot"
+kind = "native-mod"
+name = "herobot"
+summary = "A Horizon port of HeroBot."
+description = """Server-side framework for player bots that can fight, plus a block-based
+AI editor. Upstream: HerobaneNair/HeRoBot (Modrinth herobot, 1.78M
+downloads), license CC-BY-NC-4.0 (LICENSE.txt copied verbatim).
+
+## Upstream layout
+
+- herobot-common, 52 files: the AI script engine, a block-based script
+  language: BlockDef registry, expressions, runtime variables, branches.
+- herobot-mod, 181 files: the server-side bot framework - BotPlayer,
+  pathing with placement and stepping, remote control, networking
+  payloads - plus the client half: AI editor screen, movement recorder,
+  skins.
+- herobot-plugin, 89 files: a Paper/Velocity plugin backend for the
+  same framework.
+
+## Port status
+
+- settings.rs: HeroBotSettings + Rule registry ported 1:1, same names,
+  defaults, bounds and descriptions, ordered as upstream. The /herobot
+  command wiring lands with the server command module.
+- ai.rs: the AI script model ported and rustc-clean: VarType,
+  VarDecl, FuncDecl, Comment with per-char style flags, Wire,
+  BlockInstance, AiScript graph with the nextId allocator. AiHexCodec
+  (deflate+hex framing) is next; the horizon workspace already depends
+  on flate2 so the codec ports to it. AiScriptCodec JSON follows.
+- Bot framework, BotPlayer and pathing: BLOCKED on Horizon features,
+  see below. Porting resumes behind them.
+
+## Horizon feature gaps, to file on horizon-rust/horizon
+
+1. Server-side fake players. HeroBot's core is spawning and driving
+   player entities w
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: CC-BY-NC-SA-4.0. Source: https://github.com/Sparticle62ops/horizon-herobot
+"""
+authors = ["sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "CC-BY-NC-SA-4.0"
+source = "https://github.com/Sparticle62ops/horizon-herobot"
+icon = "icons/herobot.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "herobot-1.0.0.hmod"
+sha256 = "739f614827fae2417086f3ab5028207dc63970018e8394a6c5850eacbac68503"
+changelog = "Initial registry submission"

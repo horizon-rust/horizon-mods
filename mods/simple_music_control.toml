@@ -1,0 +1,28 @@
+id = "simple_music_control"
+kind = "native-mod"
+name = "simple_music_control"
+summary = "A Horizon port of Simple Music Control."
+description = """Simple Music Control ported to Horizon as a native mod. Slice 1: config, situational music picker, jukebox tracker, keybinds, music-note color tick, and sound-engine pause control. 1:1 from pajicadvance/simple-music-control commit d59f4b9 (MIT (c) 2026 pajic).  Game-facing calls (music manager start/stop, sound engine channels, key input, screens, level state) sit behind the `MusicManager` trait and `ClientView` snapshot; Horizon surfaces for those are tracked in the repo README and the horizon-rust/horizon degradation issue.
+
+Port by sparticle. Upstream: https://github.com/pajicadvance/simple-music-control (MIT).
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-simple-music-control
+"""
+authors = ["pajicadvance", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-simple-music-control"
+icon = "icons/simple_music_control.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "simple_music_control-1.0.0.hmod"
+sha256 = "1cef87b2fc7999cf29ac230323f3a29d2b744680cb09845ac31857f3e7f17d3d"
+changelog = "Initial registry submission"

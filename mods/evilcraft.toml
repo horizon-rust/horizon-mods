@@ -37,3 +37,11 @@ game = "26.3"
 file = "evilcraft.hmod"
 sha256 = "dc620c8b8de282fd8ee2edca590774059a5ffa53866477942035469ffd1cfb0c"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "evilcraft.hmod"
+sha256 = "3c1dbf04f7de8a96898b6c52e305ac4a16359777405bc8d43e742831f14ab277"
+changelog = """Slice 2, the Blood Infuser: the jar's central blood machine. A block entity with seven slots and a 10,000 mB tank, a content menu with three data slots, its own recipe type read as data from nine of the jar's forty files, and the tier gate that makes a tier-three recipe need a tier-three machine, with the promise items carried as the upgrades that set it. Proven in game: the menu shows seven slots and a tier-three promise raises the machine to tier three; a bone infuses into one blaze rod for 2,500 mB over 500 ticks with the product taken from the result slot; the same bone at tier zero is untouched with all 10,000 mB unspent; all nine recipes run with their own counts and consumed inputs and blood; a filled extractor moves its 1,000 mB into the tank; and a survival break drops both machines. Two upstream defects are recorded from the artefact rather than copied: a rotten-flesh to leather recipe is unreachable because a higher-tier spider-eye recipe wins the same input, and a creeper-head to wither-skeleton-skull recipe asks for 25,000 mB of a 10,000 mB tank. Slice 1's chest was also repaired — it required a tool but sat in no mineable tag, so a survival break dropped nothing."""

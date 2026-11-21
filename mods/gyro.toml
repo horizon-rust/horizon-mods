@@ -1,0 +1,43 @@
+id = "gyro"
+kind = "native-mod"
+name = "Do a Barrel Roll"
+summary = "Fly an elytra like an aircraft, with banked turns and adjustable camera roll."
+description = """
+Fly an elytra like an aircraft. Do a Barrel Roll swaps Horizon's locked horizon for six-degree-of-freedom control: bank into a roll, pull through it to carve a turn, push the nose past vertical and loop.
+
+An independent implementation for Horizon, named after the Java Edition mod that popularised elytra aerobatics. It is not that mod and shares no code, assets or data with it: this is written from scratch against Horizon's native hook points, with its own flight model.
+
+| While gliding | What it does |
+|---|---|
+| Mouse left / right | Roll, with no snap-back |
+| Mouse up / down | Pitch through your current bank, so a wing-down pull carves a turn |
+| `A` / `D` | Rudder yaw for fine heading corrections |
+
+In third person your avatar, elytra and held item stay pinned to the camera while the world rolls around you. When you stop gliding, the view eases back to level and the mouse is an ordinary camera again.
+
+**Options > Mods > Do a Barrel Roll > Config** now has real settings: Invert Y, Bank strength and Max bank. The old fake keybind rows are gone. Invert Y negates only the pitch input, so it works with the banked flight model instead of fighting it.
+
+This is a native `.hmod` pinned to Horizon `0b14f8acfd97fa2c750e42795249dcc981178ca4` and horizon-mixins `e59da9094f0c2fdda6c627fe9eff22dec6a906f0`. Native mods are unsandboxed code running with your account's permissions; install only from authors you trust.
+
+Source and build guide: https://github.com/CGRLabs/gyro/tree/v1.9.0-hmod/hmod
+"""
+authors = ["CGRLabs"]
+owners = ["CGRLabs"]
+license = "MIT"
+source = "https://github.com/CGRLabs/gyro/tree/v1.9.0-hmod/hmod"
+icon = "icons/gyro.png"
+categories = ["transportation"]
+tags = ["elytra", "flight", "barrel-roll", "camera", "settings", "invert-y"]
+key = "RWSjKGIJUKKXHvvhxzNN2VPPrXSEr47JXVgGpCwrOOHoneuQjTWWvk1g"
+
+[[versions]]
+version = "1.9.0"
+published = "2026-11-21"
+game = "26.3"
+file = "gyro-1.9.0.hmod"
+sha256 = "b97476f41427c0883c9e2651bad13a02d758456c8a236313c0ad3b8c3bf07d5c"
+signature = """untrusted comment: signature from minisign secret key
+RUSjKGIJUKKXHvN9PtEp+fksELpGkecAx246ZM35u2Tfa9MGhjWnJD/43I2R+hTkm8eCpKvFM2j5fu6QGapEWopLFZbPttyKzgc=
+trusted comment: timestamp:1795258299	file:gyro-1.9.0.hmod	hashed
+4l7WceIl7+THm894FCxHuBnN7qd5WnnyaudGa8inE9F4xJSxCEcng0A6xEZ4N2pzCbe+6aszCUQpEq98mxk7CQ=="""
+changelog = "Reactivates the archived id as a native `.hmod`, now listed as Do a Barrel Roll. Replaces fake keybind rows with real settings, adds an Invert Y toggle, corrects the mixin paths for the current `.game-area` layout, and pins the exact SDK and mixins revisions. The invert-Y mixin now negates all three `yo` reads of `turn_player` (studio freecam, look rotation, held-lead history) instead of declaring one and failing the access count. The package ships the MIT licence notice. 6/6 unit tests, source check and signed package check pass."

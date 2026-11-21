@@ -1,0 +1,29 @@
+id = "appleskin_hzn"
+kind = "native-mod"
+name = "AppleSkin (Horizon)"
+summary = "Shows the saturation hidden behind your hunger bar, and what a food item will restore."
+description = """Vanilla keeps your saturation invisible: you see twenty hunger points and nothing about the buffer sitting behind them. AppleSkin draws it, so you can tell when a golden carrot is worth eating and when it is wasted.
+
+- Saturation in gold along the top of the hunger bar, half an icon per point, filling right to left as the hunger icons do.
+- Food values in tooltips: `Hunger +N` and `Saturation +N.N`, read from the item's own `minecraft:food` component, so food from content mods shows its numbers too.
+- Settings under Options > Mods > AppleSkin: the mod on or off, the saturation overlay, the tooltip lines.
+
+It only reads the numbers the game already has and draws on the HUD. Nothing leaves your computer, and it works on any server because it is entirely client-side.
+
+An independent MIT implementation that follows [AppleSkin](https://github.com/squeek502/AppleSkin) by squeek502 (The Unlicense) without copying its code or artwork; see the NOTICE in the source."""
+authors = ["Jorungandr"]
+owners = ["Jorungandr"]
+owner_ids = [188995885]
+license = "MIT"
+source = "https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/appleskin"
+icon = "icons/appleskin_hzn.png"
+categories = ["food", "utility"]
+tags = ["hud", "food", "saturation", "hunger", "tooltip"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-20"
+game = "26.3"
+file = "appleskin_hzn-0.2.0.hmod"
+sha256 = "e3d367acdd4de948dad3385b781d7c284d8a6989edd42a32be1dab22643b3c62"
+changelog = "First release: saturation on the hunger bar, food values in item tooltips."

@@ -26,3 +26,11 @@ game = "26.3"
 file = "trinkets.hmod"
 sha256 = "7aa2881a7b1f38fc4222073c2e902dcbbf753c09e2b604f0d1459d556b8a1bf2"
 changelog = "0.4.1: a consumed worn totem, and the death drop, now clear only their own slots in the trinkets:worn attachment; entries for other slots, items not installed and unknown keys are kept."
+
+[[versions]]
+version = "0.4.2"
+published = "2026-11-21"
+game = "26.3"
+file = "trinkets.hmod"
+sha256 = "d936bfc5627f5030d659d221310fe1bb9b555356a10239ab2b055ba77a5df8f0"
+changelog = "0.4.2: the follow-ups from the 0.4.1 merge review. Repeated menu-open requests no longer rebuild an open menu, and the tooltip names the key the player actually bound."

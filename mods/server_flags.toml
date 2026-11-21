@@ -13,7 +13,7 @@ A small flag beside each server in your Multiplayer list for the country it's ho
 
 Settings in Mods > Server Flags > Config: lookups on/off, flag position, hover tooltip, codes for countries without a flag.
 
-**Privacy:** to know where a server is, the mod resolves its address and sends only that IP address to https://api.country.is (open source, no account or key), which answers with a country code. Once per server per game session, in the background, only while "Look up server locations" is on; a lookup that couldn't get through (an ad blocker, no connection) is tried again a minute later, three times at most, so the same IP can be sent up to three more times. Nothing about you, your account or your other servers is sent; with the setting off, nothing is sent at all.
+**Privacy:** to know where a server is, the mod resolves its address and sends only that IP address to https://api.country.is (open source, no account or key), which answers with a country code. Once per server per game session, in the background, only while "Look up server locations" is on; a lookup that couldn't get through (an ad blocker, no connection) is tried again a minute later, three times at most, so the same IP can be sent up to three more times. Nothing about you, your account or your other servers is sent, and local-network addresses (also IPv4 written as IPv6) are never looked up. Switching the setting off stops new lookups; one already on its way may still finish. The request runs the system's curl with --disable, so the user's own curl config (.curlrc) is not used.
 
 The request is made by the system's `curl` program (built into Windows 10 and 11, macOS and most Linux systems), run with only the service address and the server's IP. Rust's HTTPS libraries bring a second copy of a native library the game already has, which a mod may not link.
 
@@ -32,9 +32,9 @@ categories = ["utility", "social"]
 tags = ["servers", "multiplayer", "flags", "country", "client-side"]
 
 [[versions]]
-version = "2.0.1"
-published = "2026-11-20"
+version = "2.0.2"
+published = "2026-11-21"
 game = "26.3"
-file = "server_flags-2.0.1.hmod"
-sha256 = "e0bcd0e774343afd00015e59a19e347b89c83a4ef4611c592650fee622a29464"
-changelog = "Rebuilt on Horizon's new mod API (the .hmod SDK) for Nightly 2026-11-19 5ef7734, with its game patches checked for that build. Settings now open from Mods > Server Flags > Config and start from the defaults once."
+file = "server_flags-2.0.2.hmod"
+sha256 = "84fd36d13caf97372effa5dfefd9fd8a1dcc659b456095aca6dcb7f76cc303b2"
+changelog = "Rebuilt on Horizon's new mod API (the .hmod SDK) for Nightly 2026-11-19 5ef7734, with its game patches checked for that build. Settings now open from Mods > Server Flags > Config and start from the defaults once. The country lookup ignores the user's own curl config, never sends local-network addresses written as IPv6, and stops if lookups are switched off while it resolves."

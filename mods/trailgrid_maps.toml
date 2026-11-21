@@ -1,0 +1,33 @@
+kind = "native-mod"
+name = "trail"
+summary = "Explore with a configurable minimap, a persistent world map, waypoint groups, and entity radar."
+description = """
+Explore with a minimap and a world map that remembers visited terrain. Find waypoints by name, organize them into groups, and jump to their map locations from the waypoint list.
+
+- **M** opens the world map, **N** opens the waypoint list, **B** adds a waypoint, and **Y** opens map settings.
+- Filter waypoints by dimension, share waypoint links, and enable automatic death waypoints. Import tools read supported map, settings, and waypoint formats from existing Xaero data.
+- English is the default. The interface also follows supported game languages.
+- Requires Horizon Nightly 2026-11-20 (`0a875da`) and Minecraft Java Edition 26.3.
+
+Based on [Minimap, Worldmap and waypoints reworked](https://github.com/Gurov08ruS/Minimap-Worldmap-and-waypoints-reworked) by daniliammo and Gurov08ruS.
+"""
+authors = ["daniliammo", "Gurov08ruS"]
+owners = ["groznen95"]
+owner_ids = [273570573]
+source = "https://github.com/groznen95/TailgridMaps"
+license = "GPL-3.0-only"
+icon = "icons/trailgrid_maps.png"
+screenshots = [
+  "screenshots/trailgrid_maps/settings.png",
+  "screenshots/trailgrid_maps/waypoints.png",
+]
+categories = ["utility", "adventure"]
+tags = ["map", "minimap", "navigation", "waypoints"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-21"
+game = "26.3"
+file = "trailgrid_maps-0.1.0.hmod"
+sha256 = "0ec0f3cc57e1d1565e76b67ba787a7b5fc45827a2cf728676c17b175b71b8b93"
+changelog = "First release with English-first presentation, an original icon, in-game map settings, and a searchable waypoint list."

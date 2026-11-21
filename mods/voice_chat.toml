@@ -1,0 +1,48 @@
+id = "voice_chat"
+kind = "native-mod"
+name = "Voice Chat"
+summary = "Simple Voice Chat client for Horizon: proximity voice, positional audio, groups, push-to-talk, and voice activation."
+description = """
+An unofficial native client for the [Simple Voice Chat](https://github.com/henkelmax/simple-voice-chat) protocol on Horizon. Join a compatible Minecraft server and talk with other players through proximity voice or private groups.
+
+- Proximity voice with distance attenuation and stereo positioning.
+- Push-to-talk and voice activation with a live microphone meter.
+- Password-protected groups and a group member roster.
+- Per-player and per-source volume controls, including compatible modded audio sources.
+- Input and output device selection without rejoining the server.
+- Speaking indicators, player heads, and group icons in the HUD and name tags.
+- A localized in-game menu with vanilla-style controls and feedback sounds.
+
+Simple Voice Chat 2.6.x and 2.7 are supported. The server must run Simple Voice Chat and expose its voice UDP port.
+
+While voice chat is enabled, the microphone remains open for the live level meter. Push-to-talk sends audio only while PTT or Whisper is held, plus a short release tail. Disable Voice Chat closes the audio streams and clears queued microphone samples. Audio is not written to disk.
+
+Voice traffic uses client-server UDP only, with no peer-to-peer connections. The server selects the voice host and port, with a fallback to the game server's address. Local storage contains audio/interface preferences, device names, per-player/source UUID volume overrides, and per-server protocol versions. It does not contain audio, group passwords, or voice encryption secrets.
+
+This is a native source package: Horizon Launcher builds it against the pinned SDK. Native code is not sandboxed and runs with the player's permissions.
+
+Not affiliated with Max Henkel or the Simple Voice Chat project.
+"""
+authors = ["JKearnsl"]
+owners = ["JKearnsl"]
+owner_ids = [76239707]
+license = "MIT"
+source = "https://github.com/JKearnsl/voice-chat"
+icon = "icons/voice_chat.png"
+categories = ["utility", "social"]
+tags = ["voice", "voicechat", "simple-voice-chat", "proximity-chat", "groups", "opus", "multiplayer", "client-side"]
+screenshots = [
+  "screenshots/voice_chat/1.png",
+  "screenshots/voice_chat/2.png",
+  "screenshots/voice_chat/3.png",
+  "screenshots/voice_chat/4.png",
+  "screenshots/voice_chat/5.png",
+]
+
+[[versions]]
+version = "1.0.3"
+published = "2026-11-20"
+game = "26.3"
+file = "voice_chat.hmod"
+sha256 = "09bf106420f68795d0932ec6e58a7914097d53fbdb3ee5d564d1fdc2f5b4d301"
+changelog = "Targets Horizon Nightly 0a875da. Includes the audio lifecycle and documentation fixes from 1.0.2."

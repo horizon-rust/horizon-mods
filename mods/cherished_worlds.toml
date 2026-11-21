@@ -1,0 +1,33 @@
+id = "cherished_worlds"
+kind = "native-mod"
+name = "cherished_worlds"
+summary = "A Horizon port of Cherished Worlds."
+description = """Exact 1:1 Horizon Rust port of [Cherished Worlds](https://github.com/illusivesoulworks/cherishedworlds)
+by Illusive Soulworks (LGPL-3.0-or-later). Every upstream Java class maps to
+one Rust module with the same names, logic, defaults, and control flow; the
+Minecraft client / SpectreLib / MixinExtras surfaces the engine binds sit in
+`src/seams.rs` with one seam per upstream call.
+
+Port: sparticle. Upstream license and credit carried: the crate is
+LGPL-3.0-or-later, copyright (C) 2018-2026 Illusive Soulworks.
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: LGPL-3.0-or-later. Source: https://github.com/Sparticle62ops/horizon-cherished-worlds
+"""
+authors = ["Illusive Soulworks", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-cherished-worlds"
+icon = "icons/cherished_worlds.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-21"
+game = "26.3"
+file = "cw-1.0.0.hmod"
+sha256 = "db25e89931893c394a21d0de00da1e92ff668554a03a5b4d5a582b58e5de3926"
+changelog = "Rebuilt on the current SDK (Horizon f00125f, mixins e59da909): full source package with the LGPL and GPL texts, mod API settings for backupWorldType."

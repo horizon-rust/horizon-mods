@@ -44,3 +44,11 @@ game = "26.3"
 file = "chisel.hmod"
 sha256 = "57f859dabdcf79db3808c3c411c8c78fca41454c62204bd5f561a522d9f06206"
 changelog = """Slice 2: the blackstone family. Its variants are carried and the chisel walks the whole group — blackstone, polished, chiseled polished, polished bricks, cracked bricks and the mod's pillar — on a different base template, while the andesite family keeps converting and a block can never leave its own family. The chisel's own recipe is crafted in game with its ingredients consumed, and an id the jar never registers is refused. 1,376 of the mod's 1,409 blocks remain the recorded slice boundary."""
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "chisel.hmod"
+sha256 = "a4169ab73a4e04b427d2fc0f0eb834c72fd70182891f88d5a7bca1bed6c44dd5"
+changelog = """The chisel's bundle contents. The item now carries `minecraft:bundle_contents`, and a block inside it locks the conversion to that block's material: a chisel holding `minecraft:polished_andesite` converts andesite to `panel/andesite`, a blackstone lock refuses an andesite block, and the array family wins when the lock names another variant of the same family. The custom 1.21.1 window is mapped to the game's own bundle inventory at this pin — the port ships the component and no screen, recorded in notes.md. Proven in game: a locked chisel writes the locked variant, a mismatched material is left alone, and an unlocked chisel still walks the family."""

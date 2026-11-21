@@ -8,8 +8,7 @@ The server half of proximity voice chat on a Horizon dedicated server. Players w
 messages) talk to the players near them, or to their group from anywhere. Players without one join and play as on
 any server: the server sends them nothing.
 
-- **The handshake** goes over Horizon's mod messages (`native_net_from_client` / `native_net_send_to_player`, the
-  `horizon:mod_net` channel) on `voicechat:` channel names, the same messages and layouts as Simple Voice Chat 2.6.x
+- **The handshake** goes over Horizon's mod messages (raw play channels declared with `play_raw`, sent with `PlayerRef::send_payload`) on `voicechat:` channel names, the same messages and layouts as Simple Voice Chat 2.6.x
   (compatibility version 20). A client gets a fresh 16-byte secret when it asks; nothing is sent to anyone before.
 - **Voices** go over UDP, through the server, never from player to player: no player learns another's address.
   Each player's packets are sealed with their own secret (AES-128-GCM). The server relays a voice to the players
@@ -28,7 +27,7 @@ any server: the server sends them nothing.
 
 ## Config
 
-`config/voicechat-server.json`, beside `server.properties`, written with its defaults the first time a client asks:
+`config/voicechat_server.json`, beside `server.properties`, written with its defaults the first time a client asks:
 
 | Key | Default | |
 |---|---|---|
@@ -46,11 +45,14 @@ any server: the server sends them nothing.
 
 | File | What it is |
 |---|---|
-| `mixins/voicechat_server/horizon-mixin.toml` | The bundle: the relay crate, the glue module and four HEAD hooks (mod messages, server tick, player logged out, world closing) |
-| `mixins/voicechat_server/relay/` | The relay crate (`voicechat_server_relay`): the wire format (`proto.rs`), the handshake, groups and UDP relay (`lib.rs`) and its tests over real UDP sockets (`tests.rs`). Depends on `ring` (AES-GCM) and `serde`, both in Horizon's `Cargo.lock` |
-| `mixins/voicechat_server/glue.rs` | Added to the game as `game::voicechat_server`: the config, starting the relay, the players each tick |
+| `horizon-mod.toml` | The manifest: a native mod on Horizon's mod API, server side |
+| `src/lib.rs` | The hooks: `server_tick`, `player_logged_out`, `server_stopped`, and the channels declared in `register` |
+| `src/glue.rs` | The config, starting the relay, the players each tick |
+| `relay/` | The relay crate (`voicechat_server_relay`): the wire format (`proto.rs`), the handshake, groups and UDP relay (`lib.rs`) and its tests over real UDP sockets (`tests.rs`). Depends on `ring` (AES-GCM) and `serde` |
 
-It needs horizon-mixins 0.6.0 (bundle crates) and hook points API 57. Tests: `cargo test` here.
+It builds with the mod API `0.2` on the Horizon commit pinned in `horizon-mod.toml`. Relay tests: `cargo test` in `relay/`.
+Upgrading from 1.0.0: the config file is now `config/voicechat_server.json` (a mod keeps files named after its id);
+copy the old `voicechat-server.json` over.
 
 Not made with or endorsed by Simple Voice Chat or its author: it speaks the same protocol, written from its packet
 layouts, with none of its code.

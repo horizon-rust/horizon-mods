@@ -37,3 +37,11 @@ game = "26.3"
 file = "securitycraft.hmod"
 sha256 = "9bb21d4c189066b6b1720f8df235b3056e0d0047586b59f260a04c0aed490830"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "securitycraft.hmod"
+sha256 = "3497bfcca16344bb6d6f4dd03b48ae6e125aabfcbb1d7d87023a0ab445681d11"
+changelog = """Slice 3, the harming module and the keypad owner it needs. A keypad now saves its owner when it is placed, and only that owner may install a module (one item leaves the hand, kept in creative). With the harming module in, a wrong code costs two hearts through the mod's own `securitycraft:incorrect_passcode` damage type at 4.0, the right code still heals the usual amount, and breaking the keypad drops the module and the keypad item. Proven in game: the recipe crafts with its grid emptied, the module installs to `modules=harming owner=set`, a wrong code takes 20.0 health to 16.0 while the right code returns 16.83 to 18.67, a wrong code without the module leaves health unchanged, and the break drops both items."""

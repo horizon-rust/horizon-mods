@@ -35,3 +35,11 @@ game = "26.3"
 file = "mekmm.hmod"
 sha256 = "b72a04acdb28029962bc23a0aaae14df2a93fa505ec54ab17886ac94610c1e42"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "mekmm.hmod"
+sha256 = "086d1d51d7da4bda8f20fe69a0ca92f94b319f57b35f7d9ab6eb7eefbdb0bf1f"
+changelog = """Slice 2, the recycling factory at every tier the jar registers: advanced, elite and ultimate beside the basic one, each with its own process count, energy buffer and container. The buffer is the jar's own formula — half the machine's storage or its usage, whichever is larger, times the tier's processes — giving 30,000, 50,000, 70,000 and 90,000 FE, which corrects slice 1's figure of 20,000 for the basic factory: that was a single machine's storage, not a factory's. The five extra tiers the mod names are recorded `blocked(evolvedmekanism-not-ported)` rather than faked, because the jar appends them only when Evolved Mekanism is loaded and it is not in the registry. Proven in game: each tier stalls at its own process count on 10,000 FE — advanced at forty units five times, elite at twenty-nine three times and twenty-eight four times, ultimate at twenty-three twice and twenty-two seven times — then finishes every process on exactly the energy it had left with one scrap each and a zero buffer; the four containers open nine, eighteen, eighteen and twenty-seven slots; and a survival break drops the ultimate factory beside a vanilla stone break as the differential. The tier roll measured the real seventeen percent, which the scenario had only pinned for the basic tier."""

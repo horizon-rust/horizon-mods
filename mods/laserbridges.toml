@@ -40,3 +40,11 @@ game = "26.3"
 file = "laserbridges.hmod"
 sha256 = "f8820b1a85a47b85bc88964ae77ed13083e86b707ea696c007957d508d9b8ed8"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "laserbridges.hmod"
+sha256 = "192d58ff59c5fa038cefa8dcdc0dcfccb0ad71189ce376fd4e29af707b983656"
+changelog = """Slice 2, the two receivers: the attached receiver and its fence variant now power on a laser and copy its colour, where slice 1 carried only the sources. A receiver lights the lamp above it and leaves the one behind it dark — upstream's signal-face rule — clears both when the beam goes, stays off when it faces away, does not power from an unpowered source in front, and reports light 0 or a per state like the attached sources do. The fence variant refuses the side a plain stone accepts. Proven in game: all twelve carried recipes craft with their ingredients consumed, both receivers and sources drop themselves on a survival break, and 168 declared states are accepted. One upstream defect is recorded and not reproduced: `IReceiverBlock.updateState` computes "is it looking into me?" from its own state, so its guard can never fire, and the port implements the effective rule instead. The colour tint stays a recorded client-side gap — the state and the signal are asserted, never a visual."""

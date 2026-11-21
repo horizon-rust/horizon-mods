@@ -40,3 +40,11 @@ game = "26.3"
 file = "sushigocrafting.hmod"
 sha256 = "c0f681c76551d96e71cb0f1929e72fc7009303e6ba05b9e59ab5d4183ea2c0e6"
 changelog = "Fix the cutting board's knife tag: the cleaver is declared under both `c:tools/knife` (the tag upstream's code tests) and `c:tools/knives` (the tag upstream ships), so the mod's own knife cuts without Farmer's Delight; the archive also carries its licence notices."
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "sushigocrafting.hmod"
+sha256 = "f187e3cf604de5b90586b983cc597728f08b3847cce276d339794d09e8264bb3"
+changelog = """Slice 2, the fermentation barrel: the port's first machine with a fluid in it. One input, one output, a 2,000 mB tank and a 100-tick bar; a soy bean or an empty slot picks the soy or the cheese recipe, the tank must hold the recipe's own fluid and enough of it, an output already holding the item rolls up to its cap, and finishing drains a batch and rolls the output. It is the machine of the four whose own recipe is all-vanilla, so it is the one that can be crafted in a bare 26.3. Proven in game: the block places from its item and reads back; 7 oak planks, a pressure plate and a furnace craft exactly one barrel with the grid consumed, and the same ingredients in another pattern craft nothing; milk through a bucket and a soy bean through the menu reach the tank and the slot, and 100 ticks turn them into cheese and soy sauce with the buffers asserted before and after; a bean with no water runs 120 ticks and produces nothing; and `/sushigocrafting tank` clamps 2,500 to 2,000. Two engine facts are recorded rather than worked around: milk is not a fluid Horizon models, so the port moves that bucket itself while water and lava go through the engine path, and `Action.FILL` is taken at its word so a bucket never drains the tank."""

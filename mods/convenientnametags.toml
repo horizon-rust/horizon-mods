@@ -1,0 +1,28 @@
+id = "convenientnametags"
+kind = "native-mod"
+name = "Convenient Name Tags"
+summary = "Name tags drop on death, can be sheared off and renamed."
+description = """
+Name tags drop on death, can be sheared off and renamed.
+
+**Differences from the original:** There is no rename screen, so name tags are renamed in an anvil at the normal cost. Shearing a name off and the name tag drop on death don't work on armor stands.
+
+A port of [Convenient Name Tags](https://www.curseforge.com/projects/662763) 1.1.0 by Mim1q, published under its licence, Apache-2.0. The original copyright and licence notices are kept in the file (LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Mim1q"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "Apache-2.0"
+source = "https://github.com/lavoide/horizon-ports/tree/main/convenientnametags"
+icon = "icons/convenientnametags.png"
+categories = ["utility"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.1"
+published = "2026-11-20"
+game = "26.3"
+file = "convenientnametags.hmod"
+sha256 = "03a00a4ea42396ed6218f794f850c3b0f8a6bdd0c8ebbba6382eea7fb59d08df"
+changelog = "0.4.1: a returned tag keeps the mob's full custom-name component (colour and style), and renames compare the structured names, so a formatting-only rename counts as a change."

@@ -1,0 +1,40 @@
+id = "server_flags"
+kind = "native-mod"
+name = "Server Flags"
+summary = "A flag beside each server in the Multiplayer list for the country it's hosted in"
+description = """
+A small flag beside each server in your Multiplayer list for the country it's hosted in. Hover the flag for the country's name, and pick servers close to you for a better ping at a glance.
+
+- **Pixel-art flags** after each server's name, or on its icon when the name is long.
+- **67 drawn flags**, the countries servers are most often hosted in; any other country shows its two-letter code.
+- **Country name on hover**, like "Germany (DE)".
+- Servers on your own network are never looked up.
+- A grey **?** marks a server whose location can't be shown; hover it for why (an ad blocker blocking the lookup, DDoS protection, or a wrong address).
+
+Settings in Mods > Server Flags > Config: lookups on/off, flag position, hover tooltip, codes for countries without a flag.
+
+**Privacy:** to know where a server is, the mod resolves its address and sends only that IP address to https://api.country.is (open source, no account or key), which answers with a country code. Once per server per game session, in the background, only while "Look up server locations" is on; a lookup that couldn't get through (an ad blocker, no connection) is tried again a minute later, three times at most, so the same IP can be sent up to three more times. Nothing about you, your account or your other servers is sent, and local-network addresses (also IPv4 written as IPv6) are never looked up. Switching the setting off stops new lookups; one already on its way may still finish. The request runs the system's curl with --disable, so the user's own curl config (.curlrc) is not used.
+
+The request is made by the system's `curl` program (built into Windows 10 and 11, macOS and most Linux systems), run with only the service address and the server's IP. Rust's HTTPS libraries bring a second copy of a native library the game already has, which a mod may not link.
+
+Horizon has no hook for the server list, so besides the mod API this mod patches one game function (draw_title_screen_with_post_hook) to draw the flags. It works on the Horizon build it is made for.
+
+Source: https://github.com/selfmonoraque5/server-flags
+
+Inspired by Server Country Flags by Khajiitos (https://modrinth.com/mod/server-country-flags). Written from scratch for Horizon: it contains none of its code or images (the flags are drawn in code) and is not made or endorsed by Khajiitos. Locations by country.is."""
+authors = ["selfmonoraque5"]
+owners = ["selfmonoraque5"]
+owner_ids = [86315101]
+license = "MIT"
+source = "https://github.com/selfmonoraque5/server-flags"
+icon = "icons/server_flags.png"
+categories = ["utility", "social"]
+tags = ["servers", "multiplayer", "flags", "country", "client-side"]
+
+[[versions]]
+version = "2.0.2"
+published = "2026-11-21"
+game = "26.3"
+file = "server_flags-2.0.2.hmod"
+sha256 = "84fd36d13caf97372effa5dfefd9fd8a1dcc659b456095aca6dcb7f76cc303b2"
+changelog = "Rebuilt on Horizon's new mod API (the .hmod SDK) for Nightly 2026-11-19 5ef7734, with its game patches checked for that build. Settings now open from Mods > Server Flags > Config and start from the defaults once. The country lookup ignores the user's own curl config, never sends local-network addresses written as IPv6, and stops if lookups are switched off while it resolves."

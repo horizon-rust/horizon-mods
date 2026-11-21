@@ -46,3 +46,11 @@ game = "26.3"
 file = "integratedcrafting.hmod"
 sha256 = "0798935ecaaaff52301b2160ae580deae33f34b1daf927d25b2170b9d479d4fc"
 changelog = "First publication in the SDK format."
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "integratedcrafting.hmod"
+sha256 = "d69d48d54a4ec2f0ba3c937dfb92c8e5044c4d19d63a806d439bc99371082ebc"
+changelog = """Slice 2, the job dependency graph: a request that needs a crafted intermediate now plans the intermediate first instead of refusing with missing ingredients. A request for four sticks from one log plans planks, then sticks, and the log's surplus feeds back into the simulation; a dependency failure aborts with the pieces it lacked, and a recursive chain is refused. The rewrite follows the jar's semantics — dependencies resolved before the parent exists — with the deviations stated rather than hidden: a chain is the steps of one job, there is no network across interfaces, and the depth bound is eight. This version also fixes a real duplication bug the exact-count assertions exposed: the mirror held the pre-write container state and the result slots were never merged back, so a hopper under the interface refilled and drained the same stack every tick, and an eight-plank job reported twelve planks. Both halves now merge against the written state and the counts are pinned at eight, four and one. Proven in game: the plan is accepted, the sticks are crafted from the planned planks, the chest holds exactly one of the requested item, and the same run with the parent item present crafts the carried interface recipe from its tag ingredients."""

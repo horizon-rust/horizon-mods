@@ -1,0 +1,30 @@
+id = "dark_loading_screen"
+kind = "native-mod"
+name = "dark_loading_screen"
+summary = "A Horizon port of Dark Loading Screen."
+description = """Exact 1:1 Rust translation of [Dark Loading Screen](https://modrinth.com/mod/dark-loading-screen) by A5b84
+(upstream [A5b84/dark-loading-screen](https://github.com/A5b84/dark-loading-screen), tag v1.6.20),
+ported for the Horizon mod loader. Licensed LGPL-3.0-only, upstream license and credit carried.
+
+Port by sparticle.
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Upstream licence: LGPL-3.0-only (Modrinth); port licence as stated in the source repo: LGPL-3.0-or-later. Source: https://github.com/Sparticle62ops/horizon-dark-loading-screen
+"""
+authors = ["A5b84", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-dark-loading-screen"
+icon = "icons/dark_loading_screen.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.6.20"
+published = "2026-11-19"
+game = "26.3"
+file = "dark_loading_screen-1.6.20.hmod"
+sha256 = "1dc07cab57505de58a490f920a279e0f8ba57983a8be29191dc8ef299cda8148"
+changelog = "Initial registry submission"

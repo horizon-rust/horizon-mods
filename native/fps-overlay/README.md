@@ -18,8 +18,8 @@ the box is drawn.
 
 The first time the box is drawn (from 3.0.1), the extra's own settings in `horizon-extras.txt` (`fpsCorner`,
 `fpsLows`, through the SDK's `official_extra_settings`) fill in whichever of the two the mod has no file for yet; a
-choice made in an earlier version of the mod stays. Then `horizon-mod-data/fps_overlay/extras-read` is written, so it
-happens once; while the game has no extra settings to give, it looks again (once) the next time you play. The extra's
+choice made in an earlier version of the mod stays. Once every one of them is kept, `horizon-mod-data/fps_overlay/extras-read` is
+written, so it happens once (a setting the game didn't keep is tried again the next time you play); while the game has no extra settings to give, it looks again (once) the next time you play. The extra's
 switch (`fps`) isn't taken: the mod's switch in Options > Mods is the one that counts.
 
 While the debug screen (F3) is open the box gives way to it, as 2.0.0 did: none in the top corners (F3's two columns),

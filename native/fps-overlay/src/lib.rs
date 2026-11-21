@@ -87,16 +87,18 @@ pub trait ExtraSource {
     fn extra(&self) -> Vec<(String, String)>;
     /// Whether the mod has a file for the setting already.
     fn has_setting(&self, key: &str) -> bool;
-    fn set_setting(&self, key: &str, value: &str);
+    /// Keeps the setting; false when it didn't stick (it reads back as something else).
+    fn set_setting(&self, key: &str, value: &str) -> bool;
     /// Writes `extras-read`; false when it couldn't.
     fn mark_read(&self) -> bool;
 }
 
 /// The extra's old corner and lows become the mod's own, for each the mod has no file for yet, so
 /// a choice made in an earlier version (or on the settings page) stays. The marker is written
-/// after the settings, and only when the game gave the extra's settings: with none (a player who
-/// never changed the extras, a file that couldn't be read) the next run asks again. True when the
-/// marker was written.
+/// after the settings, and only when the game gave the extra's settings and every one of them was
+/// kept: with none (a player who never changed the extras, a file that couldn't be read) or a write
+/// that didn't stick, the next run asks again (and keeps what did stick). True when the marker was
+/// written.
 pub fn seed_from_extra(source: &dyn ExtraSource) -> bool {
     if !source.unread() {
         return false;
@@ -105,12 +107,13 @@ pub fn seed_from_extra(source: &dyn ExtraSource) -> bool {
     if old.is_empty() {
         return false;
     }
+    let mut kept = true;
     for (key, value) in from_extra(&old) {
         if !source.has_setting(key) {
-            source.set_setting(key, &value);
+            kept &= source.set_setting(key, &value);
         }
     }
-    source.mark_read()
+    kept && source.mark_read()
 }
 
 /// What the box says: frames in the last second, then the slowest frame and the 1% low.
@@ -230,8 +233,10 @@ impl ExtraSource for HostExtras<'_> {
     fn has_setting(&self, key: &str) -> bool {
         self.host.setting(ID, key).is_some()
     }
-    fn set_setting(&self, key: &str, value: &str) {
+    fn set_setting(&self, key: &str, value: &str) -> bool {
+        // The host's write says nothing back: a read shows whether it was kept.
         self.host.set_setting(ID, key, value);
+        self.host.setting(ID, key).as_deref().map(str::trim) == Some(value)
     }
     fn mark_read(&self) -> bool {
         self.host
@@ -392,6 +397,8 @@ mod tests {
         broken: bool,
         /// The marker can't be written.
         mark_fails: bool,
+        /// This setting can't be written.
+        set_fails: Option<&'static str>,
         extra: Vec<(String, String)>,
         settings: std::cell::RefCell<Vec<(String, String)>>,
         log: std::cell::RefCell<Vec<String>>,
@@ -408,9 +415,13 @@ mod tests {
         fn has_setting(&self, key: &str) -> bool {
             self.settings.borrow().iter().any(|(k, _)| k == key)
         }
-        fn set_setting(&self, key: &str, value: &str) {
+        fn set_setting(&self, key: &str, value: &str) -> bool {
             self.log.borrow_mut().push(format!("set {key}={value}"));
+            if self.set_fails == Some(key) {
+                return false;
+            }
             self.settings.borrow_mut().push((key.into(), value.into()));
+            true
         }
         fn mark_read(&self) -> bool {
             self.log.borrow_mut().push("marker".into());
@@ -441,6 +452,27 @@ mod tests {
         game.log.borrow_mut().clear();
         assert!(!seed_from_extra(&game));
         assert!(game.log.borrow().is_empty());
+    }
+
+    #[test]
+    fn a_setting_that_did_not_stick_leaves_no_marker_and_is_tried_again() {
+        let mut game = FakeGame {
+            extra: extra(&[("fpsCorner", "bottom_right"), ("fpsLows", "true")]),
+            set_fails: Some("corner"),
+            ..FakeGame::default()
+        };
+        assert!(!seed_from_extra(&game));
+        assert_eq!(
+            *game.log.borrow(),
+            ["extra", "set corner=3", "set lows=true"],
+            "no marker after a failed write"
+        );
+        assert!(!game.marker.get());
+        // The next run writes only what is still missing, then the marker.
+        game.set_fails = None;
+        game.log.borrow_mut().clear();
+        assert!(seed_from_extra(&game));
+        assert_eq!(*game.log.borrow(), ["extra", "set corner=3", "marker"]);
     }
 
     #[test]

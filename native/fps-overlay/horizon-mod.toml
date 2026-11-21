@@ -1,6 +1,6 @@
 id = "fps_overlay"
 name = "FPS Counter"
-version = "3.0.1"
+version = "3.0.2"
 description = "Frames per second in a corner of the screen, with the slowest frame and the 1% low if you like."
 authors = ["Horizon"]
 license = "MIT"
@@ -10,5 +10,5 @@ side = "client"
 capabilities = ["registries"]
 
 [wasm]
-sha512 = "f1899c404b1de61f74d8c62169c82cf13d06ee99073db267f3f23d2e4a7b5df699fb00a2d9ba8e68dc1072080ce9ddb642e546846d5e20b6a1642e52d6225763"
+sha512 = "e1014f875d0eada61d639a36dd3363d58e0e659b58ccadc615c46fbf2de8a7ca891fe47bf1b30e5bc12a3aba7df103cc23fd2be61c9f278b9438dfb9db6a66c8"
 toolchain = "1.99.1 58cf8f9c35b355199727627d07ae34a4e2846d67"

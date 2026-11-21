@@ -1,0 +1,30 @@
+id = "elytraslot"
+kind = "native-mod"
+name = "Elytra Slot"
+summary = "Glide with an elytra worn in the trinket cape slot."
+description = """
+Glide with an elytra worn in the trinket cape slot.
+
+**Needs** [trinkets](https://playhorizon.dev/mods/trinkets) 0.4.x installed too (declared as a dependency, so the game names it if it's missing).
+
+**Differences from the original:** Only your own player shows the wings of an elytra worn in the trinket slot. Other players' wings from that slot are not drawn. On LAN, the server's movement check only looks at a guest's armour and hands, so a guest gliding with an elytra in the trinket slot may be pulled back.
+
+A port of [Elytra Slot](https://github.com/illusivesoulworks/elytraslot) 6.4.4 by Illusive Soulworks, published under its licence, LGPL-3.0-or-later. The original copyright and licence notices are kept in the file (COPYING, COPYING.LESSER, LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "Illusive Soulworks"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/lavoide/horizon-ports/tree/main/elytraslot"
+icon = "icons/elytraslot.png"
+categories = ["equipment"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.1"
+published = "2026-11-20"
+game = "26.3"
+file = "elytraslot.hmod"
+sha256 = "aece17a35767f763363c55e8b38937b9b3d6aea2ea0d33541c742cd66cf35c9c"
+changelog = "0.4.1: wings and the elytra look-up use the attachment of the player being drawn, not the local player's, so remote avatars no longer show your own cape-slot elytra."

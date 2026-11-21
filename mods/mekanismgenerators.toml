@@ -39,3 +39,11 @@ game = "26.3"
 file = "mekanismgenerators.hmod"
 sha256 = "93074380504c2feb932c6a1ee9ace3898bdb225bb47aa18c7147f23a13181add"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "mekanismgenerators.hmod"
+sha256 = "c68cf4f1cd3318083da0169be1d8ee192bce74cbdeca918124f0e28647192ad9"
+changelog = """Slice 2, energy output: the heat generator now pushes its buffer into the block on the face its state names, which is the half of the tick that was missing — it filled its own buffer and nothing ever left. Upstream's rule is the one carried: emit to the front face only, up to twice the production rate, taking only what that neighbour accepts, inside one transaction. Proven in game on a two-mod game with our own mekanism parent: the generator held 56,432 FE and the cube on its facing face went 15,300 to 71,888 while the generator fell to zero, the cube on the opposite face stayed at zero, the steady rate measured 12,096 FE over about a hundred ticks, and with the front cube removed the generator stored 11,984 itself. The red leg is the same scenario with the emit call removed: the buffered FE did not reach the front cube, plus nothing. One thing is recorded rather than claimed: the carried recipe stays `blocked(no c:ingots/osmium provider)` because the game rejects its tag, so it is not counted as crafted. The slice also fixed its own repin properly — the manifest bump alone leaves the old SDK in `.horizon/sdk`, which is now a documented trap."""

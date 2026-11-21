@@ -14,11 +14,16 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # stage.yml's staging group: no upload starts between reading what open pull requests list and the deletes.
+    concurrency:
+      group: staging
+      queue: max
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
-      # Every request counts against the repository's hourly API budget (1000 for this token), which every
-      # check, staging and publish run shares: a backlog is deleted over several days, oldest first.
+      # Every request counts against the repository's hourly API budget, which every check, staging and publish
+      # run shares: a backlog is deleted over several days, oldest first.
       MAX_DELETES: 300
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -26,23 +31,60 @@ jobs:
         run: |
           set -euo pipefail
           python3 -I scripts/test_cleanup.py
-          # Hashes open pull requests add. A diff that can't be read stops the run: its files would look abandoned.
-          : > pending.txt
-          # --limit: gh lists 30 by default, and a file only an older open pull request lists would be deleted.
-          # Its own line: a listing that fails inside `for ... in $(...)` would leave every pull request's files out.
-          prs="$(gh pr list --state open --limit 1000 --json number --jq '.[].number')"
-          for pr in $prs; do
-            diff="$(gh pr diff "$pr")" || { echo "::error::#$pr's diff can't be read: nothing deleted"; exit 1; }
-            grep -o '^+sha256 = "[0-9a-f]\{64\}"' <<< "$diff" | cut -d'"' -f2 >> pending.txt || true
+          # Open pull requests as `<number> <head sha>` lines. Its own command: a listing that fails inside
+          # `for ... in $(...)` would leave every pull request's files out.
+          heads() {
+            gh pr list --state open --limit 1000 --json number,headRefOid \
+              --jq '.[] | "\(.number) \(.headRefOid)"' | sort -n
+          }
+          # Main as it is now and each open pull request's head, as git objects only (never checked out), a
+          # hundred refs a fetch. A ref that can't be fetched stops the run unless its pull request has closed.
+          fetch() {
+            git fetch -q --no-tags --depth=1 origin +refs/heads/main:refs/cleanup/main
+            mapfile -t prs < <(cut -d' ' -f1 heads.txt)
+            for ((i = 0; i < ${#prs[@]}; i += 100)); do
+              specs=()
+              for n in "${prs[@]:i:100}"; do specs+=("+refs/pull/$n/head:refs/cleanup/$n"); done
+              git fetch -q --no-tags --depth=1 origin "${specs[@]}" && continue
+              for n in "${prs[@]:i:100}"; do
+                git fetch -q --no-tags --depth=1 origin "+refs/pull/$n/head:refs/cleanup/$n" && continue
+                # Its own line: a failed lookup must stop the run, not read as closed.
+                state="$(gh pr view "$n" --json state --jq .state)"
+                if [ "$state" = OPEN ]; then
+                  echo "::error::#$n's head can't be fetched: nothing deleted"
+                  exit 1
+                fi
+              done
+            done
+          }
+          # Reads everything, then lists the open pull requests again: if any opened, closed or moved meanwhile,
+          # it reads again (three times at most) rather than delete a file one of them may list now.
+          for attempt in 1 2 3; do
+            heads > heads.txt
+            fetch
+            : > commits.txt
+            while read -r n sha; do
+              got="$(git rev-parse -q --verify "refs/cleanup/$n^{commit}")" || continue  # closed since
+              if [ "$got" = "$sha" ]; then echo "$sha" >> commits.txt; fi
+            done < heads.txt
+            gh api "repos/$GH_REPO/releases/tags/staging" --jq '.assets[] | [.id, .name, .created_at] | @tsv' \
+              > assets.tsv
+            # One listing of the releases, not a request per version (publish.yml does the same).
+            gh api --paginate "repos/$GH_REPO/releases?per_page=100" \
+              --jq '.[] | {tag_name, draft, assets: [.assets[] | {name, state, digest}]}' > releases.jsonl
+            python3 -I scripts/cleanup.py "$(date +%s)" refs/cleanup/main assets.tsv releases.jsonl commits.txt \
+              > delete.tsv
+            heads > again.txt
+            if cmp -s heads.txt again.txt && [ "$(wc -l < commits.txt)" = "$(wc -l < heads.txt)" ]; then
+              settled=1
+              break
+            fi
+            echo "open pull requests changed while staging was read: reading again"
           done
-          # main as it is now: a pull request merged since the checkout is in neither list otherwise.
-          git fetch -q --depth=1 origin main
-          git checkout -q FETCH_HEAD -- mods archive
-          gh api "repos/$GH_REPO/releases/tags/staging" --jq '.assets[] | [.id, .name, .created_at] | @tsv' > assets.tsv
-          # One listing of the releases, not a request per version (publish.yml does the same).
-          gh api --paginate "repos/$GH_REPO/releases?per_page=100" \
-            --jq '.[] | {tag_name, draft, assets: [.assets[] | {name, state, digest}]}' > releases.jsonl
-          python3 -I scripts/cleanup.py "$(date +%s)" . assets.tsv releases.jsonl pending.txt > delete.tsv
+          if [ -z "${settled:-}" ]; then
+            echo "::warning::open pull requests kept changing: nothing deleted"
+            exit 0
+          fi
           head -n "$MAX_DELETES" delete.tsv | while IFS=$'\t' read -r id name why; do
             echo "Deleting $name ($why)"
             gh api -X DELETE "repos/$GH_REPO/releases/assets/$id"

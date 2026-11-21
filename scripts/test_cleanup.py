@@ -1,6 +1,8 @@
 import importlib.util
 import json
+import os
 import pathlib
+import subprocess
 import tempfile
 import unittest
 
@@ -22,8 +24,8 @@ def created(days):
     return when.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def version(v, file, h):
-    return f'[[versions]]\nversion = "{v}"\nfile = "{file}"\nsha256 = "{h}"\n'
+def version(v, file, h, quote='"'):
+    return f'[[versions]]\nversion = "{v}"\nfile = "{file}"\nsha256 = {quote}{h}{quote}\n'
 
 
 class Plan(unittest.TestCase):
@@ -31,20 +33,37 @@ class Plan(unittest.TestCase):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         self.root = pathlib.Path(temp.name)
-        (self.root / "mods").mkdir()
-        (self.root / "archive" / "api-0.1" / "mods").mkdir(parents=True)
-        (self.root / "mods" / "pack.toml").write_text(
-            'id = "pack"\n' + version("1.0.0", "pack.zip", sha(1)) + version("2.0.0", "pack2.zip", sha(2)))
-        (self.root / "archive" / "api-0.1" / "mods" / "old.toml").write_text(version("1.0.0", "old.hnmod", sha(3)))
+        self.git("init", "-q")
+        os.environ["GIT_DIR"] = str(self.root / ".git")
+        self.addCleanup(os.environ.pop, "GIT_DIR")
+        pack = version("1.0.0", "pack.zip", sha(1)) + version("2.0.0", "pack2.zip", sha(2))
+        self.main = self.commit({
+            "mods/pack.toml": 'id = "pack"\n' + pack,
+            "archive/api-0.1/mods/old.toml": version("1.0.0", "old.hnmod", sha(3)),
+        })
+        self.heads = []
         self.releases = [{"tag_name": "pack-1.0.0", "draft": False,
                           "assets": [{"name": "pack.zip", "state": "uploaded", "digest": f"sha256:{sha(1)}"}]},
                          {"tag_name": "staging", "draft": False,
                           "assets": [{"name": "pack2.zip", "digest": f"sha256:{sha(2)}"}]}]
 
-    def plan(self, *assets, pending=()):
+    def git(self, *args):
+        return subprocess.run(["git", "-C", str(self.root), "-c", "user.name=t", "-c", "user.email=t@t", *args],
+                              check=True, capture_output=True, text=True).stdout.strip()
+
+    def commit(self, files):
+        for path, text in files.items():
+            target = self.root / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(text, newline="\n")
+        self.git("add", "-A")
+        self.git("commit", "-qm", "c", "--allow-empty")
+        return self.git("rev-parse", "HEAD")
+
+    def plan(self, *assets):
         rows = [[str(n), name, created(days)] for n, (name, days) in enumerate(assets)]
         text = "".join(json.dumps(r) + "\n" for r in self.releases)
-        out, _ = cleanup.plan(NOW, self.root, rows, text, set(pending))
+        out, _ = cleanup.plan(NOW, self.main, rows, text, self.heads)
         return {name: why for _, name, why in out}
 
     def test_published_goes_after_a_day_once_its_release_has_it(self):
@@ -64,7 +83,7 @@ class Plan(unittest.TestCase):
                 self.assertEqual(self.plan((f"{sha(1)}.zip", 30)), {})
 
     def test_every_record_with_the_hash_needs_its_release(self):
-        (self.root / "mods" / "twin.toml").write_text(version("1.0.0", "pack.zip", sha(1)))
+        self.main = self.commit({"mods/twin.toml": version("1.0.0", "pack.zip", sha(1))})
         self.assertEqual(self.plan((f"{sha(1)}.zip", 30)), {})
 
     def test_abandoned_goes_after_a_week_and_a_retired_hnmod_at_once(self):
@@ -72,13 +91,45 @@ class Plan(unittest.TestCase):
                          {f"{sha(8)}.hmod": "deleted: abandoned",
                           f"{sha(7)}.hnmod": "deleted: abandoned, retired format"})
 
-    def test_pending_and_archived_are_kept(self):
-        self.assertEqual(self.plan((f"{sha(9)}.hnmod", 60), (f"{sha(1)}.zip", 60), pending=[sha(9), sha(1)]), {})
-        self.assertEqual(self.plan((f"{sha(3)}.hnmod", 60)), {})
+    def test_open_pull_requests_and_archive_keep_theirs(self):
+        self.heads = [self.commit({"mods/new.toml": version("1.0.0", "new.hnmod", sha(9))})]
+        self.assertEqual(self.plan((f"{sha(9)}.hnmod", 60), (f"{sha(3)}.hnmod", 60)), {})
+
+    def test_a_pull_request_keeps_only_records_without_their_releases_copy(self):
+        # Every pull request carries main's pack.toml: its released 1.0.0 doesn't keep staging's copy. The same
+        # bytes as a new version, or in another id, have no release of their own yet: fetch.sh reads staging.
+        main = (self.root / "mods" / "pack.toml").read_text()
+        self.heads = [self.commit({"mods/pack.toml": main + version("1.0.1", "pack.zip", sha(1))})]
+        self.assertEqual(self.plan((f"{sha(1)}.zip", 30)), {})
+        self.git("reset", "-q", "--hard", self.main)
+        self.heads = [self.commit({"mods/other.toml": version("1.0.0", "pack.zip", sha(1))})]
+        self.assertEqual(self.plan((f"{sha(1)}.zip", 30)), {})
+        self.git("reset", "-q", "--hard", self.main)
+        self.heads = [self.commit({"README.md": "x"})]
+        self.assertEqual(self.plan((f"{sha(1)}.zip", 30)), {f"{sha(1)}.zip": "deleted: published in its release"})
+
+    def test_only_a_pull_requests_entries_keep_files(self):
+        self.heads = [self.commit({"README.md": version("1.0.0", "x.hmod", sha(9)),
+                                   "mods/sub/x.toml": version("1.0.0", "x.hmod", sha(8))})]
+        self.assertEqual(set(self.plan((f"{sha(9)}.hmod", 60), (f"{sha(8)}.hmod", 60))),
+                         {f"{sha(9)}.hmod", f"{sha(8)}.hmod"})
+
+    def test_any_way_of_writing_the_hash_keeps_it(self):
+        # Single quotes, a unicode escape, and an entry that isn't valid TOML: in main's mods/ (no release yet),
+        # main's archive/ and an open pull request.
+        escaped = sha(10)[:-1] + "\\u00" + sha(10)[-1].encode().hex()
+        broken = version("1.0.0", "b.hmod", sha(6)) + "this is not toml\n"
+        self.main = self.commit({"mods/single.toml": version("1.0.0", "s.hmod", sha(4), "'"),
+                                 "mods/escaped.toml": version("1.0.0", "e.hmod", escaped),
+                                 "archive/native-v1/mods/single.toml": version("1.0.0", "a.hnmod", sha(5), "'"),
+                                 "mods/broken.toml": broken})
+        self.heads = [self.commit({"mods/pr.toml": version("1.0.0", "p.hnmod", sha(7), "'") + "[broken\n"})]
+        self.assertEqual(self.plan((f"{sha(4)}.hmod", 60), (f"{sha(10)}.hmod", 60), (f"{sha(5)}.hnmod", 60),
+                                   (f"{sha(6)}.hmod", 60), (f"{sha(7)}.hnmod", 60)), {})
 
     def test_oldest_first(self):
         rows = [["1", f"{sha(8)}.hmod", created(8)], ["2", f"{sha(7)}.hmod", created(9)]]
-        out, _ = cleanup.plan(NOW, self.root, rows, "", set())
+        out, _ = cleanup.plan(NOW, self.main, rows, "", [])
         self.assertEqual([r[0] for r in out], ["2", "1"])
 
 

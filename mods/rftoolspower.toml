@@ -1,0 +1,24 @@
+id = "rftoolspower"
+kind = "native-mod"
+name = "rftoolspower"
+summary = "A Horizon port of rftoolspower."
+description = """
+The first port of RFTools Power, and it opens with the coal generator: a machine whose whole loop closes inside one block — fuel in, burn, FE out, and a `lit` state that mirrors the burn. Upstream's numbers, not invented ones: 60 FE a tick, 600 ticks for a coal and 5,400 for a coal block, a 500,000 FE buffer, one insert-only slot. Proven in game across thirteen phases: a fresh generator reads 0 of 500,000 and unlit; one coal puts 780 FE in the buffer at 587 of 600 burn and empties the player's hand; the energy gain equals exactly sixty times the burn delta over fifty-three ticks; the store freezes when the burn ends; stone is refused and charcoal burns for its own 600; a hopper feeds the slot with no click at all; the full store survives a save and relaunch; and a generator broken in survival drops an item carrying its 3,000 FE, which restores on placing while a doctored 999,999 is clamped to the 500,000 ceiling. Two deviations are recorded rather than hidden: there is no GUI, so a right click fuels the machine, and the lit state is the same cube because the parent's glow overlay cannot run at this pin. The powercell family is recorded as blocked on the smart wrench, which the parent port does not carry.
+"""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/rftoolspower"
+icon = "icons/rftoolspower.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-21"
+game = "26.3"
+file = "rftoolspower.hmod"
+sha256 = "33a0c6c0961bf39a86d1ef9ac613dd8a16050b4fd5ca18f4e7588f09450ecf99"
+changelog = """The first port of RFTools Power, and it opens with the coal generator: a machine whose whole loop closes inside one block — fuel in, burn, FE out, and a `lit` state that mirrors the burn. Upstream's numbers, not invented ones: 60 FE a tick, 600 ticks for a coal and 5,400 for a coal block, a 500,000 FE buffer, one insert-only slot. Proven in game across thirteen phases: a fresh generator reads 0 of 500,000 and unlit; one coal puts 780 FE in the buffer at 587 of 600 burn and empties the player's hand; the energy gain equals exactly sixty times the burn delta over fifty-three ticks; the store freezes when the burn ends; stone is refused and charcoal burns for its own 600; a hopper feeds the slot with no click at all; the full store survives a save and relaunch; and a generator broken in survival drops an item carrying its 3,000 FE, which restores on placing while a doctored 999,999 is clamped to the 500,000 ceiling. Two deviations are recorded rather than hidden: there is no GUI, so a right click fuels the machine, and the lit state is the same cube because the parent's glow overlay cannot run at this pin. The powercell family is recorded as blocked on the smart wrench, which the parent port does not carry."""

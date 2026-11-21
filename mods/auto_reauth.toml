@@ -1,0 +1,55 @@
+id = "auto_reauth"
+kind = "native-mod"
+name = "auto_reauth"
+summary = "A Horizon port of Auto Reauth."
+description = """Automatically refreshes a Microsoft-account session when it expires, so a long
+play session does not end at the token's expiry. A Rust port of
+[Auto Reauth](https://github.com/Basicprogrammer10/auto-reauth) by Connor
+(MIT), built on Horizon's native mod API.
+
+## Usage
+
+- `/autoreauth login` opens the Microsoft sign-in page in your browser and
+  stores the tokens when you finish it (the same OAuth client as the original,
+  so logins carry over). Finish the sign-in, then run `/autoreauth status`.
+- `/autoreauth status` checks the stored session against the Minecraft session
+  service and reports `Online`, `Invalid`, `Offline` or `Unknown`.
+- `/autoreauth reauth` refreshes the stored tokens through the
+  Microsoft -> Xbox -> XSTS -> Minecraft chain.
+- `/autoreauth auto on|off` toggles the automatic refresh (on by default):
+  when a status check finds the game's session token stale and a stored
+  account exists, the mod refreshes and re-signs the chat keys on its own.
+- `/reauth` is a short alias for `/autoreauth status`.
+
+Tokens are stored in `<config dir>/auto-reauth/config.json`, the same folder
+the game keeps its other config in. Like the original warns: that file holds
+live authentication tokens, so treat it like a password.
+
+## What is faithful
+
+The whole Microsoft authentication chain, the session status check, the
+stored-account flow and the auto toggle work as in the original, and the
+stored tokens are compatible with its OAuth client.
+
+## Packaging
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-auto-reauth
+"""
+authors = ["Connor", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-auto-reauth"
+icon = "icons/auto_reauth.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "auto_reauth-1.0.0.hmod"
+sha256 = "6b246592b1e9af620a49ec7f2f98d367802b0cf4a79bdc70945216c85497dbfc"
+changelog = "Rebuilt on the f00125f native-mod API: auto + debug settings with 1:1 config load, full OAuth/XSTS/Minecraft core with the outbound-IO host seam; package drops the generated Cargo.lock"

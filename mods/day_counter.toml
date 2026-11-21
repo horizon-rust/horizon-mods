@@ -1,0 +1,36 @@
+id = "day_counter"
+kind = "mod"
+name = "Day Counter"
+summary = "The day of the world, on the action bar."
+description = """
+How long have you been out here? Day Counter puts the day of the world above your hotbar,
+so you always know.
+DAY 12
+On the first day it reads DAY 0; the day after that, DAY 1. It is the same number
+/time query day gives — the world's own clock — and it moves when you sleep.
+Nothing else. No items, no blocks, no screens, no settings, nothing to configure. It is data
+only: two small functions and two tag files. It cannot break anything, because there is nothing
+to break.
+It works everywhere your world does. The counter runs where the world is simulated — single
+player, a LAN host, or a server that has the mod installed."""
+authors = ["CGRLabs"]
+owners = ["CGRLabs"]
+owner_ids = [213680048]
+license = "MIT"
+source = "https://github.com/CGRLabs/day-counter"
+icon = "icons/day_counter.png"
+categories = ["utility"]
+tags = ["hud", "day", "counter", "quality-of-life", "action-bar"]
+key = "RWRiGjU5z15nz08GagVi7PEavoOfCGsZEqUL5NdQkkilVp7lkOdJtGmk"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-21"
+game = "26.3"
+file = "day_counter-1.0.0.hmod"
+sha256 = "fd07ec5e5e316756e95600523f3ad5d664e5fabcf1c1b42c6fc3b3af3835f5f5"
+signature = """
+untrusted comment: signature from rsign secret key
+RURiGjU5z15nz5yfqdpGSd4FB7aPiIz4G3Z0AKw6QGIug6nB+s1OHDSpPDjUhgAXV+omwVMFt47Nbc/DyYvjctZ49B0XrCvz+A0=
+trusted comment: day_counter 1.0.0
+GTOiEooqTXksMpHEJYdjLf974tvj/mjBOasSn87Uk2fUseGASDYSAUS/O+xE1QXS94gVWOCH0tYKPl7jd7BHBg=="""

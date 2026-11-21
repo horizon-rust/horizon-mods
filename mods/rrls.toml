@@ -1,0 +1,52 @@
+id = "rrls"
+kind = "native-mod"
+name = "rrls"
+summary = "A Horizon port of Remove Reloading Screen."
+description = """Exact 1:1 Rust translation of [Remove Reloading Screen](https://github.com/dima-dencep/rrls)
+by dima_dencep (OSL-3.0), per Danil's port policy (2026-11-12): never clean-room,
+always exact code. License + upstream credit carried.
+
+**Status: complete.** Translated (98/98 tests passing):
+
+- `Rrls.java` -> `rrls.rs` (MOD_ID, logger, MOD_RELOADERS_FUTURE as an
+  epoch-locked slot with set/complete semantics)
+- `config/` -> `config/` (AprilFool with Calendar month/day math,
+  DoubleLoad.is_load, HideType.affect_initial + can_hide matrix, Type,
+  RrlsConfig defaults)
+- `utils/Ease.java` -> `utils/ease.rs` (34 variants, upstream enum ids incl.
+  the 2..=5 gap, easeIn/easeOut/easeInOut wrappers)
+- `utils/Easing.java` -> `utils/easing.rs` (sine/cubic/quadratic/pow/exp/
+  circle/back/elastic/bounce/step with the binary-search loop/catmullRom,
+  formulas transcribed literally)
+- `utils/RainbowUtils.java` -> `utils/rainbow.rs` (makeChannel, rainbowColor
+  with nanos injectable, ARGB packing)
+- `utils/WaitingSharedState.java` -> `utils/waiting_shared_state.rs`
+  (failed-future fallback for future-typed keys)
+
+Complete: every upstream file is translated 1:1, including
+`utils/DummyGuiGraphics`, `utils/GuiGraphicsGenerator`, `utils/OverlayHelper`,
+`utils/TextureUtils`, `utils/AtlasUtils`, the `services/` reloader,
+`screens/`, and the full mixin set (core, animation, compat, workaround
+including the vulkan/opengl/textures subgroups, accessors). 98 unit tests on
+the t
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: OSL-3.0. Source: https://github.com/Sparticle62ops/horizon-rrls
+"""
+authors = ["dima-dencep", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "OSL-3.0"
+source = "https://github.com/Sparticle62ops/horizon-rrls"
+icon = "icons/rrls.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "rrls-1.0.0.hmod"
+sha256 = "f50c85d6df4ea0c2972dbd2abe8746c52777d8aa7bafe413a5ee99703e331874"
+changelog = "Initial registry submission"

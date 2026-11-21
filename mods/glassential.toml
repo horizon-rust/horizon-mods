@@ -36,3 +36,11 @@ game = "26.3"
 file = "glassential.hmod"
 sha256 = "ea2478abbcf37e715eacffe89f5a21dcfdc722489fedeb0e8b7ac70b42640b7c"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "glassential.hmod"
+sha256 = "2728a87ba5c469623230c137d16e0b1ca9b7e72ab99e1c836f16277e9f44fe92"
+changelog = """Slice 3, the clear-fluid glass's face connections: its six up/down/east/west/north/south booleans are now derived at placement and on every neighbour change, where before all 128 of those states were dead data reachable only by `/setblock`. A face links only to the same block, which is upstream's own rule, and the block owns the state like the smart glass owns its powered flag. Proven in game: an isolated pane connects to nothing; a second pane links both ways; a middle pane links on both sides; a stacked pane links up and down; breaking one clears the end face again; and the differential — a clear *fake* glass beside it — links neither way. The second half of the gap line stays blocked and is recorded as such: fluid-face occlusion needs an occlusion shape that content 0.2 cannot declare, and the hook gives no direction or position. No upstream defect was fixed: the jar's placement sets NORTH twice, but the redundancy changes no behaviour, so it is documented rather than corrected."""

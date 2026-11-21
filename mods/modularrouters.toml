@@ -44,3 +44,11 @@ game = "26.3"
 file = "modularrouters.hmod"
 sha256 = "28892b6a3e074d0f1da71a633d9c3fec769706436f7cc9057c995411708debbc"
 changelog = """Slice 2, the carried recipes and the content/loot proof: the mod's whole crafting progression — blank module, router, puller and sender — plus the router's own drop. Both were dead in 26.3, and neither error was upstream's: the carried JSON was still in the 1.21.1 dialect. The recipes used the `{"item": …}` / `{"tag": …}` ingredient form, which 26.3 rejects, so the game logged `invalid ingredient` and every recipe returned nothing; the loot table used `"conditions": [ … ]`, while 26.3 wants a singular `"condition"`, so a broken router dropped nothing. Both are converted, and the port gains two fail-capable nets: `tools/data_shape.py` checks the dialect on the built package, and `tools/craft_check.py` crafts each recipe in a real table. Proven in game: the four recipes craft with their declared counts and consume their ingredients, two wrong-ingredient controls return nothing, the router drops itself, and the log has zero `invalid ingredient` lines."""
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "modularrouters.hmod"
+sha256 = "33461229aba38b7da9b2d9522ba9bf915bae94a3869c28fa0702a4c4d5e6c72c"
+changelog = """Slice 3, the registered module path: a module this port does not implement is now carried instead of destroyed. A router keeps the foreign id in its saved list, reports it, and leaves it alone on the tick, so a module from a mod this campaign never ported survives an install, a rewrite and a relaunch. The install path accepts either a module id this port knows or an item in the modules tag, and the refusal now names both. Proven in game with the old refusal quoted as the red: the shipped 0.2.2 package answers that only puller and sender modules may be installed and has already dropped the entry, while 0.2.3 keeps a foreign id written straight into the entity, shows it as two of nine, and never erases it. One platform limit is measured and recorded rather than worked around silently: a content mod loaded for development cannot add to another namespace's data, so the tag harness in the test world is a world data pack, and the port's own side stays independent of it."""

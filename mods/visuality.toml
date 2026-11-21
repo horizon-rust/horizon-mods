@@ -1,0 +1,49 @@
+id = "visuality"
+kind = "native-mod"
+name = "visuality"
+summary = "A Horizon port of Visuality."
+description = """Rust port of [Visuality](https://github.com/PinkGoosik/visuality) by PinkGoosik,
+MIT, read upstream at commit fd8e592. Upstream is 27 Java files / 1,277 lines.
+
+## Scope ported (logic core, 1:1)
+
+- config/VisualityConfig: all defaults verbatim (hit particle, shiny armor and
+  shiny block entry lists, water-circles density 10 / radius 16, slime color
+  8978297) plus WaterCirclesConfigOption.
+- registries: HitParticleRegistry entry parsing ("entity/particle"), shiny
+  armor/block lists with # tag entries and isShiny matching.
+- CirclesOnWaterEvent.onTick: shown() gate order (config, paused, particle
+  status, player, underwater, overworld, raining, biome), density roll
+  nextInt(density) + density/2, radius-offset scan, heightmap + water-below /
+  air-above / fluid-amount-8 spawn condition, WATER_CIRCLE at +0.05.
+- LivingEntityMixin: hurtClient hit particles (attacker attribute-modifier
+  ATTACK_DAMAGE count = (int)(amount*0.5), default nextInt(3), 10-tick delay,
+  chicken cold/warm variant feathers), spawnHitParticles height formula and
+  capped loop, tick sparkles (slot heights 0.25/0.65/1.1/1.65-while-sneaking
+  else 1.85, chance nextInt(20 - 2*count) == 0, self-player first-person gate,
+  baby zombie skip).
+- EntityMixin sprint soul puffs (1 in 5 over wither-summon base blocks),
+  BlockMixin randomDisplayTick (soul above wither bases nextFloat > 0.995,
+  shiny-block sparkles nextFloat > 0.8 with the axis fixed-offset math
+  0.5 + 0.5625*step), Am
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-visuality
+"""
+authors = ["PinkGoosik", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-visuality"
+icon = "icons/visuality.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "visuality-1.0.0.hmod"
+sha256 = "e1a91a5bfa42026f13abfc5386ecd0b4a6fbb5673eed6fd607376b23a5f36d80"
+changelog = "Initial registry submission"

@@ -46,3 +46,11 @@ game = "26.3"
 file = "actuallyadditions.hmod"
 sha256 = "0ce6483c0e7fbcbfac4bb3c8c74ff9f0fbb2aacfddd5ac52e78834aa43110854"
 changelog = "First release: the Coal Generator and the Crusher."
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "actuallyadditions.hmod"
+sha256 = "483f4e112a6277cdb7e49026a01e6bb4faeb69811614eeff64c6cde32fe253ad"
+changelog = """Slice 2, a broken machine keeps its saved state: its energy, its burn and its burn maximum, and a crusher's progress. `block_drops` writes the block entity's saved compound onto the dropped item as `minecraft:block_entity_data` tagged with the entity type, and the block item clamps what vanilla restores on placement — the buffer to 60,000, the burn to its maximum, and a crusher's progress to 99 so a restored machine can never finish an operation on the tick it is placed. Proven in game: a generator broken at 1,800 FE and burning 1,510 of 1,600 comes back at 2,840 FE burning 1,458, while a harness-given machine reads 0 and burns 0; the counterfactual flips the assertion and exits 1. The operator-readout leg is also repaired: it was vacuous — `deop` cannot run in an integrated server, so the old grep matched the failed command's own refusal — and it is now a level-0 LAN-guest differential where `/help` and `/list` answer the same guest and the mod's readout is refused. Attempting the machine screen first was itself worth recording: a block-entity menu opens with zero slots in single player at this pin because `open_native_screen` is only called from the remote client's path, so the code was reverted and the gap recorded rather than shipping an empty window."""

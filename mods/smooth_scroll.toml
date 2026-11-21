@@ -1,0 +1,41 @@
+id = "smooth_scroll"
+kind = "native-mod"
+name = "smooth_scroll"
+summary = "A Horizon port of Smooth Scrolling."
+description = """Exact 1:1 Rust translation of [Smooth Scrolling](https://modrinth.com/mod/smooth-scroll)
+(upstream Java: SmajloSlovakian/Minecraft-Smooth-Scrolling @639d45b), which makes
+scrolling in lists, inventories and the chat smooth instead of jumping slot to slot.
+
+Upstream copyright (C) SmajloSlovakian, licensed under GPL-3.0-only:
+https://www.gnu.org/licenses/gpl-3.0.txt
+
+The Rust translation carries the same GPL-3.0-only license and credits the
+upstream author in the LICENSE shipped alongside. It is a Horizon native mod:
+mixins/smooth_scroll/runtime.rs is a runtime splice of the full 1:1 module set
+(src/), with crate:: mapped to super:: for the carrier, built against the
+revisions pinned in compatibility.json (Minecraft 26.3, Horizon
+3fb4c3138e0c5d8fdd2fdb555cf31368e8897497, Horizon Mixins
+d9c83d7096b7ea5b83678da2efdfd6161f74997e).
+
+Ported by sparticle.
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Upstream licence: GPL-3.0-only (Modrinth); port licence as stated in the source repo: GPL-3.0-or-later. Source: https://github.com/Sparticle62ops/horizon-smooth-scroll
+"""
+authors = ["sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "GPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-smooth-scroll"
+icon = "icons/smooth_scroll.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "smooth_scroll-1.0.0.hmod"
+sha256 = "349fde1a1995d306e19445e2f876548f601a55331e0a1ce246ceddb89f05741f"
+changelog = "Initial registry submission"

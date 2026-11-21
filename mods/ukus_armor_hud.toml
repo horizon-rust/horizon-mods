@@ -1,0 +1,50 @@
+id = "ukus_armor_hud"
+kind = "native-mod"
+name = "ukus_armor_hud"
+summary = "A Horizon port of uku's Armor HUD."
+description = """A Rust port of [uku's Armor HUD](https://github.com/uku3lig/armor-hud)
+(uku3lig, MIT; a fork of BerdinskiyBear's Armor HUD): a minimalist
+vanilla-like widget showing your armor pieces and a low-durability warning.
+
+## Scope of this commit (phase 1: config + geometry, 1:1)
+
+Read upstream at commit 233932b (ArmorHudConfig.java 134 ln,
+ArmorHudMod.java 214 ln of 974 total). The 1:1 core lives in
+mixins/ukus_armor_hud/runtime.rs:
+
+- The full config model with upstream defaults (anchor HOTBAR, side LEFT,
+  style HOTBAR, orientation HORIZONTAL, widget_shown NOT_EMPTY, offhand
+  ADHERE, durability BAR, off-hand durability on, main-hand off, push
+  bossbars/status icons/subtitles on, icons/warning/break-sound on,
+  minDurabilityValue 20, minDurabilityPercentage 0.1, warningBobIntensity 3).
+- The enum tables (Anchor, Side, Style, Orientation, WidgetShown with
+  shouldDrawEmptySlots, OffhandSlotBehavior, DurabilityDisplay).
+- ArmorHudMod's layout constants (STEP 20, SIZE 22, HOTBAR_OFFSET 98,
+  OFFHAND_OFFSET 29, ATTACK_INDICATOR_OFFSET 23, WARNING_SIZE 8).
+- getWidgetRect's geometry 1:1: the side multipliers (hotbar+left or
+  non-hotbar+right flip), the addedHotbarOffset switch (ALWAYS_IGNORE /
+  ALWAYS_LEAVE_SPACE / ADHERE with attack-indicator and offhand checks),
+  the X switches per anchor (hotbar uses center + offsets) and the Y
+  switches (bottom/hotbar minus safe area, top = offsetY, vertical center).
+- The warning gate (min value or min percent
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-ukus-armor-hud
+"""
+authors = ["uku3lig", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-ukus-armor-hud"
+icon = "icons/ukus_armor_hud.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "ukus_armor_hud-1.0.0.hmod"
+sha256 = "196176568d04a827539f495d94bd4428d3ea8e308a22045aa57d1d5f267db8ef"
+changelog = "Initial registry submission"

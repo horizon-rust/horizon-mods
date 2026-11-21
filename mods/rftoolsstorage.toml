@@ -35,3 +35,11 @@ game = "26.3"
 file = "rftoolsstorage.hmod"
 sha256 = "32f0505ef59a5eb1aa476578430a024bb02e9913edca853cf342bd5d9320a0f6"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "rftoolsstorage.hmod"
+sha256 = "fd5d7213bc29cd1ee3fb6bacc3b16a9d5115d58f36d9793ceaa9777125c8fc82"
+changelog = """Slice 2, the storage's own menu: a right click opens a 100-slot grid with the jar's slot rules, its screen and the padlock button. A slot accepts a stack only when the storage is locked and the slot is empty or holds the same kind — upstream's `Slot.mayPlace` — and the padlock needs a module before it toggles. The list controls (search, sort, compact, cycle) and the module and card slots remain gaps, unchanged. Proven in game: a plain click opens a 100-container-slot menu at the panel origin; with no module nothing stores; unlocked, the grid refuses the stack; pressing the padlock locks it and a locked slot stores 64 of 6400; dirt is refused by stone's slot and taken by the grid's last slot; filling all 99 slots reads 6400/6400, further clicks move nothing, and a withdrawal drops it to 6336; the state survives a relaunch; and a vanilla barrel's 27-slot menu accepts the stack the storage refuses, so the 100-slot grid and the locked-only rule are the port's own."""

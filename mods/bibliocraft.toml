@@ -37,3 +37,11 @@ game = "26.3"
 file = "bibliocraft.hmod"
 sha256 = "48544f9e8306b7ffa4c2934e0f6c46756aaf40eb29540d9dc2f99e9fae33105e"
 changelog = "First publication in the SDK format."
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "bibliocraft.hmod"
+sha256 = "fe1eba2d6982952cdba1041874471857f3cbddfccdda2dfae454e61572e88185"
+changelog = """Slice 2, the bookcase and the shelf become storage. The bookcase takes 16 slots of books only and answers a comparator with the highest slot holding a redstone book; the shelf takes 4 slots of anything; both are reachable by hoppers on every face, spill their contents when broken, and the redstone book item ships with its shapeless recipe. Proven in game with the values read from the world rather than the code: the bookcase menu shows 16 slots, a plain book in slot 5 leaves the wire at 0 while a redstone book in slot 3 raises it to 3 and moving it to slot 1 drops it back to 0, the bookcase refuses stone where the shelf accepts it, a hopper moves three books and the break drops two, and a vanilla barrel beside it shows 27 slots and takes the stone the bookcase refused. The enchanting bonus is left as a measured gap rather than faked: the pin declares the hook but the game never calls it and counts a static tag of provider blocks instead, so putting the bookcase in that tag would make an empty bookcase worth a whole bookshelf — the leg asserts the gap so it fails when the pin fixes it. Two findings are recorded for other ports: opening a mod container needs the mod's own `right_click_block` calling `open_menu`, because a plain click opens nothing even with the menu declared, and a block whose contents the engine already spills must not also carry `block_entity_data` or it double-carries."""

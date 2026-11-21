@@ -1,0 +1,24 @@
+id = "industrialforegoingsouls"
+kind = "native-mod"
+name = "industrialforegoingsouls"
+summary = "A Horizon port of industrialforegoingsouls."
+description = """
+The first port of Industrial Foregoing Souls, and the three blocks are one mechanic: a laser base that turns a warden in range into souls, pipes that move them, and a surge that spends them to accelerate a block. The gate is the parent's own: the base produces nothing until a blue laser lens sits in its catalyst slot, which is exactly how the jar gates it. Proven in game with that differential in one run: sixty ticks with no lens leaves the bar at zero and the warden at full health, seating the lens makes four operations land sixteen damage and eight souls, and pulling the lens freezes the tank for the next sixty ticks. The pipes move four and then eight souls at one transfer a tick, and the surge takes a wheat crop from age zero to age four with random ticks disabled while its own counter falls from two hundred and ninety-three to two hundred and merely waits while it has no signal. Three recipes craft with their ingredients consumed and each block drops itself. Two of the agent's own expectations were wrong against upstream and were corrected in the test rather than in the code, which is the right way round: a nearly full tank still fires and clamps, and a surge facing nothing still spends its ticks.
+"""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/industrialforegoingsouls"
+icon = "icons/industrialforegoingsouls.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-21"
+game = "26.3"
+file = "industrialforegoingsouls.hmod"
+sha256 = "9169cbc45d0e60c2fdb74f2d75fcbdf541b1f9b94a4509a0b0566f1495f91533"
+changelog = """The first port of Industrial Foregoing Souls, and the three blocks are one mechanic: a laser base that turns a warden in range into souls, pipes that move them, and a surge that spends them to accelerate a block. The gate is the parent's own: the base produces nothing until a blue laser lens sits in its catalyst slot, which is exactly how the jar gates it. Proven in game with that differential in one run: sixty ticks with no lens leaves the bar at zero and the warden at full health, seating the lens makes four operations land sixteen damage and eight souls, and pulling the lens freezes the tank for the next sixty ticks. The pipes move four and then eight souls at one transfer a tick, and the surge takes a wheat crop from age zero to age four with random ticks disabled while its own counter falls from two hundred and ninety-three to two hundred and merely waits while it has no signal. Three recipes craft with their ingredients consumed and each block drops itself. Two of the agent's own expectations were wrong against upstream and were corrected in the test rather than in the code, which is the right way round: a nearly full tank still fires and clamps, and a surge facing nothing still spends its ticks."""

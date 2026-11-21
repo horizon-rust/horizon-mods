@@ -36,3 +36,11 @@ game = "26.3"
 file = "elevatorid.hmod"
 sha256 = "3d3ef0d422981c94de59939ce4ab824eba1d8c530ff80a7429f913cf814ea71a"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "elevatorid.hmod"
+sha256 = "f17dcbc7f3f4df8aec1392fef3cb40af93bff7d4ba1e80df8317ea3a7048de0e"
+changelog = """Slice 2, the arrival view: the `facing` and `directional` states and the landing rule. A plain elevator keeps the player's yaw and pitch; a directional one turns them to the block's face and levels the pitch, which is upstream's own rule and was previously always passed through from the jump. Proven in game on the same block with only `directional` flipped: a plain ride lands at yaw 33 and pitch 40, and a directional ride at yaw 270 and pitch 0. This version also closes the parity rule's sharpest hole in the port: 32 recipe files had shipped and not one had ever been crafted, and a new phase crafts all 16 — the shaped white and the fifteen shapeless redyes — asserting each output and that its ingredients were consumed, with eight wool and no pearl as the control. Four harness facts are recorded: `ctl click-slot`/`screen`/`ui` need `--offscreen` and hang headless, `ctl state` puts the view under `.player.yaw`/`.pitch`, `ctl block` puts the state at `.state` and needs a tick after `setblock`, and a forwarded run can overwrite a fresh log with the far box's copy."""

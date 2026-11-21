@@ -37,3 +37,11 @@ game = "26.3"
 file = "pocketstorage.hmod"
 sha256 = "d79212c6e573aa6b69a784d77dc1ca0e68bdf30454ec16e32f4514a9bfea62c0"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.5"
+published = "2026-11-21"
+game = "26.3"
+file = "pocketstorage.hmod"
+sha256 = "4c9e6b3330d130fc0d859bf796e6689be1857300143c0d9e4586a98a3a3a0971"
+changelog = """Slice 2, tiers 2 to 4 and the three upgrade recipes. Tiers 2, 3 and 4 are now carried — 16 by 4,095, 32 by 65,535 and 64 by 1,048,575 — and the upgrade path is authored as data, with `pocketstorage:upgrade` copying the old unit's contents onto the next tier so nothing is lost. The port's own gap note said the pin had no custom recipe type a port could register; that was stale — at this pin a mod registers a crafting kind (`CraftingRecipeKind` plus `register_crafting_recipe_serializer`) and the engine loads it into the crafting table, so the recipes are real data rather than a code special case. Proven in game: tier 1 crafts; gold around it makes a tier 2 that carries the 30 diamonds the old unit held; the same step reaches tier 3 and tier 4, whose readout is one of 64 kinds with 30 items and 1,048,575 each at most; a fourth step produces nothing; and every craft consumes its ingredients. The counterfactual flips the "the upgraded unit kept its 30 diamonds" assertion and exits 1."""

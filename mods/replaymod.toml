@@ -1,0 +1,50 @@
+id = "replaymod"
+kind = "native-mod"
+name = "replaymod"
+summary = "A Horizon port of ReplayMod."
+description = """A Rust port of [ReplayMod](https://github.com/ReplayMod/replaymod) (GPL-3.0)
+and its [ReplayStudio](https://github.com/ReplayMod/ReplayStudio) pathing
+library (LGPL-3.0) to Horizon's native mod API. Goal: real ReplayMod
+`.mcpr` replays and `.pttr` timelines load and play on Horizon.
+
+## What is ported (1:1, tested)
+
+- **Timeline model** (ReplayStudio `pathing`): Timeline/Path/Keyframe/
+  PathSegment, all interpolators (linear, cubic spline, Catmull-Rom,
+  polynomial spline), property groups, and the full undo change system.
+- **Serialization**: `.pttr` JSON byte-compatible with upstream, including
+  the legacy-timeline converter for old files.
+- **SPTimeline**: the simple-pathing layer (TIME/POSITION paths, position
+  properties) on top of the model.
+- **Replay container**: `.mcpr` zip reading/writing (hand-rolled RFC 1951
+  inflate, CRC32, entry change management) and the replay file metadata
+  format (file format version 14).
+- **Replay sender**: sync packet replay, the packet rewriter's
+  `processPacket` dispatch (login/play transitions, camera entity, spectator
+  gamemode, position limits, `replaymod:restrict` channel, resource-pack
+  handling, bad-packet filtering) and the entity re-homing / vehicle settle
+  logic that runs when a chunk unloads.
+- **Keyframe path preview**: camera path sampling, spectator lines, the
+  speed colour blend with its exponential easing, keyframe points.
+- **Timeline players**: AbstractTimelinePlayer + RealtimeTimeline
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: GPL-3.0-or-later. Source: https://github.com/Sparticle62ops/horizon-replaymod
+"""
+authors = ["ReplayMod", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "GPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-replaymod"
+icon = "icons/replaymod.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "0.1.0"
+published = "2026-11-19"
+game = "26.3"
+file = "replaymod-0.1.0.hmod"
+sha256 = "52fb5e4291966f9e1bd4a015963c167a2700781b4379e8314a14aa7ec72ad476"
+changelog = "Initial registry submission"

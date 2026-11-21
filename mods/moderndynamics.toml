@@ -43,3 +43,11 @@ game = "26.3"
 file = "moderndynamics.hmod"
 sha256 = "af740f062fc54a97489f5d52dd01fd931e4987098a72083ba479c9622807f976"
 changelog = "First release: slice 1 of the port, with the full licence and corresponding source in the port repository"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "moderndynamics.hmod"
+sha256 = "2b848091f46272db89c2d7ed2a91e6a075c63486b3898704a746f5e8b940bf05"
+changelog = """Slice 2, the attractor: upstream's reverse of the extractor, pulling out of the pipe network into the inventory on its own side, four items per operation, nearest first, and never from another attractor. That is the half that lets a pipe feed a machine, which nothing else in the port did. The design is upstream's own and the proof is a direction differential: the same geometry with an extractor moves four items the other way, and two attractors move nothing. Proven in game: every carried recipe crafts with its ingredients consumed and a wrong pattern crafts nothing, right-click places both kinds, the attractor fills its own chest in four operations, a pipe broken in survival drops itself, the admin attach costs one item and a detach clears the side, and a missing item or an unknown kind is refused by name. The port also had a dead loot table in the 1.21.1 array form, so a broken pipe dropped nothing; it is rewritten to 26.3's typed condition and proved by that survival break."""

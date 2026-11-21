@@ -1,0 +1,42 @@
+id = "inventory_blur"
+kind = "native-mod"
+name = "inventory_blur"
+summary = "A Horizon port of Inventory Blur."
+description = """A Rust port of [Inventory Blur](https://github.com/Enchanted-Games/inventory-blur)
+(Enchanted_Games / ioblackshaw, CC BY-NC 4.0): applies the 1.20.5+ menu
+background blur to in-world inventories (chests, the player inventory and
+other Screen-extended menus) instead of the vanilla dark gradient.
+
+The 1:1 core (ModConstants, the Logging wrapper, ModEntry, the loader
+entrypoints and ScreenMixin's renderTransparentBackground replacement:
+skip the vanilla dark gradient entirely, apply the blur once per frame
+when the render state's first stratum after blur is still unset, then
+tile the bundled inworld_inventory_background.png over the menu) runs
+inside the mod API wiring (Horizon f00125f61f, mixins e59da909, api 0.2).
+Upstream holds no config file, so there are no settings to register.
+
+The draw itself waits on horizon-rust/horizon#19349, the screen-render
+hook the port needs (first filed as #10131, closed 2026-11-06 without
+the surface landing in the SDK). Until it lands the screens draw
+vanilla's gradient.
+
+Source-only .hmod with the full port source and the texture asset.
+
+Licence: CC-BY-NC-4.0. Source: https://github.com/Sparticle62ops/horizon-inventory-blur
+"""
+authors = ["Enchanted-Games", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "CC-BY-NC-4.0"
+source = "https://github.com/Sparticle62ops/horizon-inventory-blur"
+icon = "icons/inventory_blur.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "inventory_blur-1.0.0.hmod"
+sha256 = "b1ec82e02c02672576b707bf46f0280c21d0205f161273fdae44d1606e483789"
+changelog = "Initial registry submission"

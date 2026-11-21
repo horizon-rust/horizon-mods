@@ -1,0 +1,56 @@
+# VeinSweep 的 Horizon 官方注册表条目（草稿）
+# 目标仓库：https://github.com/horizon-rust/horizon-mods
+# 放到：mods/veinsweep.toml；图标放到：icons/veinsweep.png
+#
+# 作者与 owner 已回填：ChangGengCN（GitHub 数字 ID 41566656）。
+# 源码仓库：https://github.com/ChangGengCN/VeinSweep（公开，MIT）。
+# 提交 PR 前仍需：把 veinsweep-0.6.1.hmod 上传到该仓库的 GitHub Release，
+# 并在 PR 描述里给出 release 下载地址。
+# 可选：签名。生成 minisign 密钥后，把公钥（RW… 开头）填进 key，
+# 并在每个版本的 signature 里放 .minisig 文本；之后每个新版本都必须签名。
+id = "veinsweep"
+kind = "native-mod"
+name = "VeinSweep"
+summary = "按住潜行键（默认，可在控制中改）挖掉一个方块，与它相连的同种方块会一起被挖掉。矿脉和原木整条带走，泥土、石头等普通方块在附近连成不规则的一片。只在同种方块内扩散，与手里拿什么无关；可随时关闭。"
+description = """
+VeinSweep 是一个连锁挖掘模组：按住潜行键（默认，可在 选项 → 控制 → VeinSweep 中改）
+挖掉一个方块，与它相连的**同种方块**会一起被挖掉。
+
+- **两种挖法**：矿脉和原木会整条带走，包括只靠边角相接的部分；
+  泥土、石头、沙子等普通方块则在附近连成一片不规则的小区域，每次形状都不同。
+- **触发方式**：只有一个可自定义的按键，按住它破坏方块才连锁；
+  设置页另有总开关，关闭后连锁完全停用，挖方块只破坏手动那一个。
+- **适用全部可破坏方块**：矿石、原木、泥土、石头、木板、玻璃等都能连锁；
+  基岩这类挖不动的方块，以及箱子、熔炉这类带内容物的方块不参与。
+- **只在同种方块内部扩散**：橡木原木的不同朝向互相连锁，但不会蔓延到其他原木；
+  泥土不会蔓延到草方块，沙子不会蔓延到砂砾。
+- **黑名单**：`/veinsweep blacklist add <方块>`、`remove <方块>`、`list`、`clear`，
+  支持 Tab 补全，保存后重启仍有效；黑名单优先判定，起点和相邻方块都会被拦住。
+- **与手持物无关**：连锁只看“按住触发键 + 破坏方块”，空手、拿木头、拿镐走同一套规则；
+  工具类型与等级都不改变连锁结果。掉落仍按原版（木镐挖钻石矿会连锁，但钻石矿不掉落）。
+- **设置页**（选项 → 模组 → VeinSweep → Config）：连锁破坏总开关（默认开）、
+  最大方块数（8–256，默认 32）、掉落直接入包（默认关）、
+  保留工具耐久（0–10，默认 0）、创造模式连锁（默认关）。
+- **触发键**：在 选项 → 控制 → VeinSweep 里改，默认是潜行键（左 Shift）；可绑键盘键或鼠标键。
+- **创造模式默认不连锁**：创造模式下单击破坏只破一块；在设置里打开“创造模式连锁”
+  后才连锁，且仍要满足触发键。开启后按创造规则不掉落、不耗耐久；
+  旁观者始终不触发。
+- **适用范围**：连锁由客户端按住触发键发起，只在单人游戏或自己主持的局域网世界里生效；
+  专用服务器上没有客户端的按键输入，连锁不会触发（服务端仍可正常加载）。
+"""
+authors = ["ChangGengCN"]
+owners = ["ChangGengCN"]
+owner_ids = [41566656]
+license = "MIT"
+source = "https://github.com/ChangGengCN/VeinSweep"
+icon = "icons/veinsweep.png"
+categories = ["game-mechanics", "utility"]
+tags = ["vein-mining", "chain-mining", "mining", "blacklist"]
+
+[[versions]]
+version = "0.6.1"
+published = "2026-11-21"
+game = "26.3"
+file = "veinsweep-0.6.1.hmod"
+sha256 = "af5b5d6bfd2ee7a9cc800246083c46e3d8db3b91ff1542496afc8642170ae70c"
+changelog = "构建固定为 Nightly 2026-11-20（0a875da）与 Horizon Mixins e59da90；其他构建未验证。模组介绍改为简体中文在上、英文在下的组合文本，在游戏内模组列表里直接显示两种语言；界面设置、提示与命令反馈的语言切换不受影响。游戏内行为与 0.6.0 相同。"

@@ -1,0 +1,53 @@
+id = "polymorph"
+kind = "native-mod"
+name = "polymorph"
+summary = "A Horizon port of Polymorph."
+description = """Exact 1:1 Rust translation of [Polymorph](https://github.com/IllusiveSoulworks/polymorph)
+by Illusive Soulworks (LGPL-3.0-or-later), per the port policy (2026-11-12):
+never clean-room, always exact code. The upstream license and copyright are
+carried in the sources; ported by sparticle.
+
+Polymorph resolves recipe conflicts: when several recipes produce the same
+item from different ingredient layouts, the crafter picks between them instead
+of the menu silently taking the first match.
+
+## What the port carries
+
+The full upstream logic tree, translated 1:1:
+
+- `RecipePair` / `RecipeCache` / `RecipeData` / `BlockEntityRecipeData` /
+  `PlayerRecipeData` - the conflict keying (per-block-entity and per-player
+  selected recipe), cache invalidation, and data write-back.
+- `RecipeManager` - the lookup ladder (`get_player_recipe` then
+  `get_block_entity_recipe`), `PolymorphApiSeam` for the engine-facing
+  recipe access.
+- `wrappers.rs` - `IngredientWrapper` / `RecipeWrapper` /
+  `CraftingRecipeWrapper` with the shaped/shapeless conflict comparison
+  (`conflicts`) transcribed from upstream.
+- `network.rs` - all seven packets (C2S: `PlayerRecipeSelection`,
+  `BlockEntityListener`, `PersistentRecipeSelection`; S2C:
+  `PlayerRecipeSync`, `RecipesList`, `HighlightRecipe`, `UpdatePreview`)
+  with their `FriendlyByteBuf` field order, `ServerPacketEnv` /
+  `ClientPacketEnv` seams, and the client handler ladder.
+- `block_entity_ticker.rs` - the ticker-side liste
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: LGPL-3.0-or-later. Source: https://github.com/Sparticle62ops/horizon-polymorph
+"""
+authors = ["Illusive Soulworks", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-polymorph"
+icon = "icons/polymorph.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "polymorph-1.0.0.hmod"
+sha256 = "2d2ed5375a0ad8ae6ca81df378a131ac87edfe45176c38b300ae15581cc80d8b"
+changelog = "Initial registry submission"

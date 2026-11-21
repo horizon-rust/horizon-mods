@@ -1,0 +1,20 @@
+id = "blazeandcaves_advancements"
+kind = "datapack"
+name = "BlazeAndCave's Advancements"
+summary = "Um Data Pack de progressos! ;)"
+description = "Atinja novos Progressos a qualquer momento! Muitas novas abas de progressos."
+authors = ["Cavinator1"]
+owners = ["LoadPlayer3"]
+owner_ids = [173828794]
+license = "MIT"
+source = "https://github.com/LoadPlayer3/MyMod/releases"
+icon = "icons/blazeandcaves_advancements.png"
+categories = ["adventure", "game-mechanics", "utility"]
+screenshots = ["screenshots/blazeandcaves_advancements/1.png"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-14"
+game = "26.3"
+file = "blazeandcaves_advancements-1.0.0.zip"
+sha256 = "ce391fe46846d7fb357b7fbdd42387d260ae1a9516c601d1ba9ab09c584971d7"

@@ -1,0 +1,28 @@
+id = "crosshair_indicator"
+kind = "native-mod"
+name = "crosshair_indicator"
+summary = "A Horizon port of Crosshair Indicator."
+description = """crosshair-indicator (Horizon Rust port), slice 1: the progress model. NOTE: the master repo keeps this port as src/lib.rs + modules; this bundle inlines the modules into one runtime.rs file, compile-equivalent, for the single-module .hnmod format.  1:1 port of the upstream logic core (CC0-1.0): the crosshair swaps between variants (vanilla cross, attack-indicator arc, break-progress arc) based on what the player is doing, and colors follow the vanilla attack strength. Render hooks land in the next slice behind the same seam.
+
+Port by sparticle. Upstream: https://modrinth.com/mod/crosshair-indicator (CC0-1.0).
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: CC0-1.0. Source: https://github.com/Sparticle62ops/horizon-crosshair-indicator
+"""
+authors = ["sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-crosshair-indicator"
+icon = "icons/crosshair_indicator.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "crosshair_indicator-1.0.0.hmod"
+sha256 = "b85986eb8a5f5058a168c31007d3b2acb34c8f040fd31bb76a32c91e43130244"
+changelog = "Initial registry submission"

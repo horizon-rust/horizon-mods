@@ -1,5 +1,5 @@
 id = "silentgems"
-kind = "mod"
+kind = "native-mod"
 name = "Silent's Gems"
 summary = "21 gems with storage blocks and 84 ores, plus overworld, nether and end worldgen."
 description = """
@@ -50,3 +50,11 @@ game = "26.3"
 file = "silentgems.hmod"
 sha256 = "cd47ec932c984e81ce5b9450a65eeec8ac3b3c48206cc468a63d9979eee0343b"
 changelog = "First release: the slice described above."
+
+[[versions]]
+version = "5.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "silentgems.hmod"
+sha256 = "c500c8212d540cf2642f633b3fcc7a37ddc838ad8389b2a0aae30fcd691e4c42"
+changelog = """Slice 3, the gem lamps, and the port's migration to the flat SDK package. Each gem now has its four lamp states — off, on, inverted-on and inverted-off — 84 blocks and 42 items, with the unpowered item-bearing form as the drop and the jar's own two recipes per gem; a neighbour signal switches the state and the light follows, and the inverted pair works the other way. The family is carried from the jar's own generated files, not inferred, and 462 lamp files come with it. Proven in game: 84 of 84 blocks bind with hand-set states reverting, 42 of 42 items give with the two item-less states refused, `ruby_lamp` at light 0 becomes `ruby_lamp_on` at 15 with a redstone block and reverts on removal, the inverted pair does the opposite, both lamp recipes and both compression recipes craft and consume their ingredients with empty controls, and an unmodded game reads air where the package places a lamp. One pin-level finding is recorded rather than worked around: mod worldgen features are inert at this pin — the content overlay leaves `features.json` a symlink to the vanilla bundle while placed features are merged and then skipped as unknown references — and a minimal one-feature probe reproduces it, so it is the pin and not this port. The files stay in the package, the leg asserts the gap, and the notes mark the family `blocked(configured-feature-not-registered)`."""

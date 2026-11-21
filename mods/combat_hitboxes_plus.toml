@@ -1,0 +1,49 @@
+id = "combat_hitboxes_plus"
+kind = "native-mod"
+name = "combat_hitboxes_plus"
+summary = "A Horizon port of Combat Hitboxes+."
+description = """A Rust port of [Combat Hitboxes Plus](https://github.com/TrueWulf/combat-hitboxes-plus)
+(TrueWulf, Apache-2.0) for [Horizon](https://github.com/horizon-rust/horizon):
+colored hitboxes for every mob and player in view.
+
+Ported 1:1 (the full upstream tree, 14 Java files to 8 Rust modules):
+
+- Hitbox outlines for mobs and players with the reach color (red inside the
+  weapon's 3.0-block reach to the box's nearest point, white outside) and the
+  original's out-of-range dimming past its 72-block render distance.
+- A shield color while the target blocks, ender pearls colored by owner
+  (own / other / unknown), the eye-height slab, the vehicle seat box, the
+  dragon's parts, and the look-direction line with its 2-block extension.
+- Line width falls with distance (base 2.0 to a 0.5 floor, red boxes a
+  little thicker); the weapon filter decides from the held weapon whether
+  hitboxes render; stuck arrows hide with the arrow and stinger counts.
+- The original's 60 config entries are registered as mod settings with the
+  upstream lang labels and tooltips (en_us shipped), and the original's
+  entry (Main.onInitializeClient) runs on client setup.
+
+Pinned to Horizon f00125f61f and horizon-mixins e59da909; exact 1:1 Rust port tested against those revisions.
+
+Known seams (engine-stage; tracked against Horizon): the mod API has no
+surface to cancel an existing debug renderer's draw (the vanilla hitbox
+draw) and no client read for the per-view entity set or the local player's
+reads, so the draw path runs on the seams until one lands. Dropped-item
+hitboxes wait on a client enumeration of dropped items.
+
+Licence: Apache-2.0 (the full upstream text ships in the package). Source: https://github.com/Sparticle62ops/horizon-combat-hitboxes-plus
+"""
+authors = ["TrueWulf", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "Apache-2.0"
+source = "https://github.com/Sparticle62ops/horizon-combat-hitboxes-plus"
+icon = "icons/combat_hitboxes_plus.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "combat_hitboxes_plus-1.0.0.hmod"
+sha256 = "fdbde1e84f917683814a33be2f899d058d41170d70e0d885c8fb5fa0efa39eb1"
+changelog = "Initial registry submission"

@@ -36,3 +36,11 @@ game = "26.3"
 file = "industrialforegoing.hmod"
 sha256 = "c10182f32584e6522b274855f6c8331793421237112d87acf804a4fb17752ed7"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.4"
+published = "2026-11-21"
+game = "26.3"
+file = "industrialforegoing.hmod"
+sha256 = "567432307d9365e3f70dd2702b720b2ec879cfa1fa81d6b4f6f9affac223947f"
+changelog = """Slice 4, the item set the pack's stopped add-ons name: four machine frames as blocks and items with their tier tags, the three gears and their convention tags, plastic, and the sixteen laser lenses with their recolour recipes. The condensator's recipe goes back to naming the real tags instead of the stand-ins, which is what slice two had promised when the frames arrived. Proven in game by crafting that recipe from the tags and getting one condensator while the old stand-in grid leaves the result empty, by reading back all twenty-four ids and placing the four frames, by refusing an unregistered id by name, by breaking a frame and getting exactly one drop, and by crafting every one of the sixteen lens recolours with the player's counts read before and after each. Two things the artefact corrected against the brief are recorded: there are sixteen lenses and not thirty-two, because the inverted models in the jar are orphaned files that no item or code names, and sixteen fake ids were not invented to match a guess. And a real dialect rule was caught: a sixteen-alternative ingredient list drops the whole recipe at 26.3, so the recolours now match on one lens tag instead."""

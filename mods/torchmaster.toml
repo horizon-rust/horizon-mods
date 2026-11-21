@@ -36,3 +36,11 @@ game = "26.3"
 file = "torchmaster.hmod"
 sha256 = "b06aa76f34b344b9ba3834b09ec8a6e73a6eeb39ddb01d244ec4e74793025707"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "torchmaster.hmod"
+sha256 = "0e5f301e8cd292e0e20402b6e99916207abe37473ce7a58fb625736fb2eb4066"
+changelog = """Carry-dialect repair: two recipes and two loot tables were in the 1.21.1 dialect. `megatorch` used the object ingredient form 26.3 rejects, so the mod's centrepiece could not be crafted, and both tables carried the array `"conditions"`, so the blocks dropped nothing. Converted. Proven in game: `megatorch` crafts with a diamond consumed and drops itself, while the pre-fix package failed both — `expected 1 torchmaster:megatorch, got None` and `dropped 0 of torchmaster:megatorch`."""

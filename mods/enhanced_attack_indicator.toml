@@ -1,0 +1,28 @@
+id = "enhanced_attack_indicator"
+kind = "native-mod"
+name = "enhanced_attack_indicator"
+summary = "A Horizon port of Enhanced Attack Indicator."
+description = """enhanced-attack-indicator (Horizon Rust port), slice 1: the indicator model. NOTE: the master repo keeps this port as src/lib.rs + modules; this bundle inlines the modules into one runtime.rs file, compile-equivalent, for the single-module .hnmod format.  1:1 port of the upstream logic core (MIT): the vanilla attack indicator is replaced by selectable variants (the horizontal bar under the crosshair, or the circumferential arc around it), driven by the vanilla attack cooldown with the mod's charge/fill colors. Render hooks land in the next slice.
+
+Port by sparticle. Upstream: https://github.com/Minenash/Enhanced-Attack-Indicator (MIT).
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-enhanced-attack-indicator
+"""
+authors = ["Minenash", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-enhanced-attack-indicator"
+icon = "icons/enhanced_attack_indicator.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "enhanced_attack_indicator-1.0.0.hmod"
+sha256 = "92eb808f2cc01f1004f6b66f713ba7a3f54dd2777c5f103fabc5b27e7976be53"
+changelog = "Initial registry submission"

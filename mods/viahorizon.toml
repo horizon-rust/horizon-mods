@@ -1,0 +1,35 @@
+id = "viahorizon"
+kind = "native-mod"
+name = "ViaHorizon"
+summary = "Connect to older Minecraft servers using Horizon 26.3."
+description = """
+Connect Horizon 26.3 to Minecraft Release servers from 1.7.2 through 26.3: an unofficial Rust port of
+[ViaFabricPlus](https://github.com/ViaVersion/ViaFabricPlus), as a native mod.
+
+- In Options > Mods > ViaHorizon > Config, choose **Auto detect** or the version your server runs.
+- Existing `config.json` settings and per-server overrides are preserved. Online servers use Horizon's account and session-service authentication.
+- This native `.hmod` is built for the November 20 Nightly (`0a875da`). Native code runs with the game's permissions.
+
+The source's third-party notices credit ViaFabricPlus, ViaVersion, ViaLegacy and the origin of the protocol data."""
+authors = ["hhhhsffd"]
+owners = ["hhhhsffd"]
+owner_ids = [90867279]
+license = "GPL-3.0-or-later"
+source = "https://github.com/hhhhsffd/viahorizon"
+icon = "icons/viahorizon.png"
+categories = ["utility", "social"]
+tags = ["multiplayer", "protocol", "old-servers", "viafabricplus", "port"]
+
+[[versions]]
+version = "0.9.0-dev"
+published = "2026-11-21"
+game = "26.3"
+file = "viahorizon-0.9.0-dev.hmod"
+sha256 = "3feb4e65559c37aeaa37a4eb46de15416cdea7351bf161858e4f5b6c3ce5abed"
+changelog = """
+- Migrate to the native `.hmod` SDK format. The launcher builds the mod and its replacement functions against the prebuilt November 20 Nightly (`0a875da`).
+- Use an in-process connection bridge for older servers. The game still uses Horizon's sign-in and session service for authenticated joins.
+- Choose the server protocol on the mod's Config page, or keep the selection and per-server overrides in `config.json`.
+
+Validated in-game on local vanilla 1.7.2, 1.19.2 and 26.3 servers. Live Microsoft authentication was not tested.
+Validation: https://github.com/hhhhsffd/viahorizon/blob/v0.9.0-dev/docs/validation/0.9.0/summary.json"""

@@ -39,3 +39,11 @@ game = "26.3"
 file = "modern_industrialization.hmod"
 sha256 = "e495ddae3a5d63d81555b209a85dd5e9617267566fa3015f35397da6922f8a14"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "modern_industrialization.hmod"
+sha256 = "7308bcf29c29cabca7def755bb99837a8617ffdb3813c10d4e658fd22dcd5289"
+changelog = """Slice 2, the coke oven: the first multiblock, built as a shell template, a controller that matches it, and recipes that run only while it is formed. The shape is upstream's own, block for block, and the surprise worth stating is that the shell is vanilla brick rather than the mod's machine casing, because that is what the jar's own simple member names. Proven in game from unformed to formed and back: a fresh controller reads missing twenty-five and does nothing for six hundred ticks, the twenty-five bricks turn it to formed, one operation costs exactly twelve thousand FE over six hundred ticks and yields one coke, a player breaking a single brick flips it to missing one and freezes both the energy and the progress bar, a macerator in the gap does not re-form it because the shell is block-specific, and putting the brick back resumes the run to the same finished state. A second recipe yields coke dust, and the oven's state survives a save and load. Steam is modelled as FE at one to ten, the controller carries the item slots because hatches are not ported, and the creosote output is recorded as blocked rather than faked. This is the surface the industrial add-on family was waiting on: its machines are multiblocks, and the engine had no multiblock surface at all."""

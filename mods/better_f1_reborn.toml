@@ -1,0 +1,28 @@
+id = "better_f1_reborn"
+kind = "native-mod"
+name = "better_f1_reborn"
+summary = "A Horizon port of Better F1 Reborn."
+description = """Better F1 Reborn ported to Horizon on the mod API: HUD state machine with F1 keybind handling, client_setup wiring, and global state store. Upstream: github.com/MovTery/Better-F1-Reborn (commit 62824ad, 2026-07-21), MIT (c) 2024 MovTery. Ported 1:1 from common/src/main/java/com/movtery/betterf1.
+
+Port by sparticle. Upstream: https://github.com/MovTery/Better-F1-Reborn (MIT).
+
+Source-only .hmod built on the current SDK (Horizon f00125f/e59da90)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-better-f1-reborn
+"""
+authors = ["MovTery", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-better-f1-reborn"
+icon = "icons/better_f1_reborn.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "better_f1_reborn-1.0.0.hmod"
+sha256 = "f827151f9b9f69d1c23e160470a227a749f32b023243eef3dd1ff944479b87b2"
+changelog = "Rebuilt on the current SDK mod API (upstream LICENSE added, pins f00125f/e59da90)"

@@ -39,3 +39,11 @@ game = "26.3"
 file = "bellsandwhistles.hmod"
 sha256 = "b0b240ef02790d9da2d5ebafe1e07b0ceecde0aafb45bad84c1d50b885cdb986"
 changelog = "First publication in the SDK format."
+
+[[versions]]
+version = "0.3.0"
+published = "2026-11-21"
+game = "26.3"
+file = "bellsandwhistles.hmod"
+sha256 = "f0ed2230ec123b016e617b0132f56f71c29e5e1c6090c9ded967e564dde0d0ca"
+changelog = """Slice 2, the carried-recipe family: 44 files were carried and only 6 had ever been crafted, with all 10 stonecutting files unexercised. Every one now crafts in a real game — 30 through a crafting table and 10 through the stonecutter menu — asserting the output id and count and that the inputs were consumed. Four real defects surfaced on the way. Upstream names `c:ingots/brass` and `c:ingots/copper`, and the carry mapped both to copper, so four brass grids were byte-identical to their copper counterparts and one could never win; brass now maps to gold, one-to-one with copper. Four `*_pilot_from_cut` files were byte-duplicates of their base file and are dropped. Andesite's door step filled vanilla's `andesite_slab` grid, which is the vanilla-shadow class, and now uses a two-wide pattern; the validator gained a rule that fails any such grid. And the headlight pair is kept as one grid with a test pinning it. The harness fact is recorded too: a station must be opened with `interact` beside it, not `use`, or every slot click silently misses."""

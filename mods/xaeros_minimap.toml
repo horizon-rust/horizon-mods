@@ -1,0 +1,50 @@
+id = "xaeros_minimap"
+kind = "native-mod"
+name = "xaeros_minimap"
+summary = "A Horizon port of Xaero's Minimap."
+description = """A behavioral port of **Xaero's Minimap** (by xaero96, All Rights Reserved, no
+source published) to [Horizon](https://github.com/horizon-rust/horizon). This
+crate holds the mod's client-side logic: the widget math, the cave-mode
+detector, the waypoint store, and the entity radar, ported 1:1 against the
+behavior the mod's page documents. Rendering and world access ride Horizon.
+
+## Ported behavior (from the mod's documented feature set)
+
+- Vanilla-styled minimap, **square or circle** shape, multiple sizes including
+  automatic, and multiple zoom levels (each step doubles the covered blocks).
+- Any-pixel positioning via the config offsets, 1-pixel shifts included.
+- **Lock north**: the map stops rotating and the facing direction shows as an
+  arrow instead (the marker angle then follows the player's yaw).
+- **Automatic cave mode** with the documented "solid roof" search: a solid roof
+  of the configured size (3x3 and above by default) above the player activates
+  cave mode; a lone tree canopy does not.
+- **Waypoints** per world/server and dimension: coordinates, name, color,
+  symbol, temporary entries (death position), distance sorting, disabled state.
+- **Entity radar**: surrounding entities as dots with a custom per-category
+  color, or icons, with per-category toggles (players, mobs, items).
+- Vanilla vs **accurate** color modes, biome colors inside the vanilla mode,
+  and terrain depth / slopes shading flags.
+- The **enlarge keybi
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Behavioural port: the port contains no upstream code; upstream stays All Rights Reserved with its author and is credited here.
+
+Licence: CC0-1.0. Source: https://github.com/Sparticle62ops/horizon-xaeros-minimap
+"""
+authors = ["xaero96", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-xaeros-minimap"
+icon = "icons/xaeros_minimap.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "xaeros_minimap-1.0.0.hmod"
+sha256 = "87b0e784857609807dd490ade9666954fd50fe2fc2deba76504513a0972c18ea"
+changelog = "Initial registry submission"

@@ -1,0 +1,56 @@
+id = "authme"
+kind = "native-mod"
+name = "authme"
+summary = "A Horizon port of Auth Me."
+description = """Exact 1:1 Rust translation of [Auth Me](https://github.com/axieum/authme)
+(upstream Java, MIT, v9.3.0+26.3, master @78db0f5), by axieum.
+
+Ported for the Horizon client by sparticle. Upstream credit: axieum (MIT).
+
+- The fabric entrypoint `AuthMeFabric` maps to the carrier's client-init hook
+  (`authme::on_initialize`): old `config/authme.json5` migration, then
+  `AuthMe::init()`.
+- The Mojang/Fabric auth chain (`MicrosoftUtils`: browser auth-code login with
+  a local callback server, the Microsoft -> Xbox -> XSTS -> Minecraft token
+  chain, profile fetch) is carried 1:1 with HTTP host seams.
+- GUI: the five auth screens (`AuthScreen` base, `OfflineAuthScreen`,
+  `AuthMethodScreen`, `MicrosoftAuthScreen`) plus the draggable
+  `AuthButtonWidget` on the multiplayer screen, ported 1:1 with host seams.
+- Mixins: the five accessors (`JoinMultiplayerScreen`, `ReportingContext`,
+  `SplashManager`, `RealmsAvailability`, `RealmsClient`, `Minecraft`
+  offline-developer-mode), the relogin buttons on the Realms generic-error and
+  disconnected screens (upstream's user-related key classifiers verbatim), and
+  the multiplayer-screen auth button, all carried 1:1.
+- The ModMenu/resourcefulconfig config screen joins the config-screen batch
+  later, as with the other ports.
+
+Build: `cargo test` (25 tests). Package: `tools/package.py` (source-only
+`.hnmod`, pinned to Horizon revision 3fb4c3138e0c5d8fdd2fdb555cf31368e8897497).
+
+Source-only .hmod built on the current SDK (Horizon f00125f61f, mixins e59da909, mod API 0.2)
+
+- Mod API wiring: the original's config fields as settings on Horizon's
+  Options > Mods page (auth button position and draggable flag, the
+  Microsoft OAuth callback port), same defaults as the annotated statics;
+  `client_setup` runs the fabric entrypoint 1:1 with AuthMeFabric.onInitialize
+  (the old config/authme.json5 migration, then AuthMe#init), then syncs the
+  settings into the live config cells the mixins and screens read.
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-auth-me
+"""
+authors = ["axieum", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-auth-me"
+icon = "icons/authme.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "authme-1.0.0.hmod"
+sha256 = "509979405c12dd45b42e4c288abe01e62bbd91eb9b79196120cd90e0b5b7d04c"
+changelog = "Initial registry submission"

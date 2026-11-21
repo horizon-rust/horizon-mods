@@ -1,0 +1,43 @@
+id = "enchantment_descriptions"
+kind = "native-mod"
+name = "enchantment_descriptions"
+summary = "A Horizon port of Enchantment Descriptions."
+description = """A short description right under each enchantment on the hovered item's
+tooltip, dark gray, including an enchanted book's stored enchantments. Port
+of [Enchantment-Descriptions](https://modrinth.com/mod/enchantment-descriptions)
+by Darkhax (LGPL-2.1-only, 39.7M downloads); the vanilla descriptions come
+from the original's own en_us lang file.
+
+Degradations from the original:
+
+- The config screen and its toggles (enchanting-table-only, books-only,
+  require-keybind, per-entry indent) are not ported; the compiled-in
+  defaults match upstream's defaults (shown wherever the tooltip shows, no
+  keybind, no indent).
+- Upstream reads descriptions from lang keys so resource packs and other
+  mods can add or change them; the port ships the vanilla set compiled in,
+  so modded enchantments get no description.
+- Lines are matched by rendered name text (Horizon's tooltip lines carry
+  plain text, not translation keys), so an item custom-named to an
+  enchantment's name could gain a stray description line.
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Upstream licence: LGPL-2.1-only (Modrinth); port licence as stated in the source repo: LGPL-3.0-or-later. Source: https://github.com/Sparticle62ops/horizon-enchantment-descriptions
+"""
+authors = ["Darkhax", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "LGPL-3.0-or-later"
+source = "https://github.com/Sparticle62ops/horizon-enchantment-descriptions"
+icon = "icons/enchantment_descriptions.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "enchantment_descriptions-1.0.0.hmod"
+sha256 = "f7dde9488bb1966d0892de1f40ea9070b052a359c1bf505ccc3882f18abf9769"
+changelog = "Initial registry submission"

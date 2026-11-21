@@ -1,0 +1,11 @@
+[package]
+name = "mod-fpsdisplay"
+version = "5.2.0"
+edition = "2024"
+license = "MIT"
+publish = false
+description = "FPS Display, a native mod: an FPS readout."
+
+[dependencies]
+horizon-mod-api = { path = ".horizon/sdk/api/crates/horizon-mod-api" }
+

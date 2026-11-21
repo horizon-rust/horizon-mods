@@ -1,0 +1,15 @@
+id = "fpsdisplay"
+name = "FPS Display"
+version = "5.2.0"
+description = "An FPS readout: current frames per second, and with advanced stats the minimum, average and maximum of the last seven seconds, at your chosen corner, size, colour and alpha. A 1:1 Rust port of fpsdisplaymod (MIT); Horizon's Options > Mods page holds the settings."
+authors = ["sparticle"]
+license = "MIT"
+homepage = "https://github.com/Sparticle62ops/horizon-fpsdisplay"
+api = "0.2"
+side = "client"
+capabilities = ["registries"]
+
+[native]
+game = "26.3"
+horizon = "f00125f61f794aaa3d4e950d301f353b35b6ee3d"
+mixins = "e59da9094f0c2fdda6c627fe9eff22dec6a906f0"

@@ -1,0 +1,14 @@
+{
+  "setting.fpsdisplay.enabled": "Show the FPS readout",
+  "setting.fpsdisplay.advanced_stats": "Advanced stats",
+  "setting.fpsdisplay.advanced_stats.tooltip": "Show the minimum, average and maximum of the last seven seconds beside the current fps.",
+  "setting.fpsdisplay.text_size": "Text size",
+  "setting.fpsdisplay.text_color": "Text colour",
+  "setting.fpsdisplay.text_alpha": "Text opacity",
+  "setting.fpsdisplay.text_shadows": "Text shadow",
+  "setting.fpsdisplay.offset_top": "Offset from the top",
+  "setting.fpsdisplay.offset_left": "Offset from the left",
+  "setting.fpsdisplay.keybind_mode": "Keybind mode",
+  "setting.fpsdisplay.keybind_mode.toggle": "Toggle",
+  "setting.fpsdisplay.keybind_mode.push_to_show": "Push to show"
+}

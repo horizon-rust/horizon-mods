@@ -1,0 +1,24 @@
+id = "mekanismcovers"
+kind = "native-mod"
+name = "mekanismcovers"
+summary = "A Horizon port of mekanismcovers."
+description = """
+The first port of Mekanism Covers, two items and a component that let a transmitter wear a block. Right-click a universal cable with a cover to make it look like stone, glass or anything else you can craft a cover from, and the choice is written into the cable's own saved data, so it survives a save and reload and can be replaced by a second cover or stripped back off. Proven in game on a game carrying both this package and the parent, since the cable's block entity is the parent's code: the shaped recipe crafts four empty covers and consumes all nine cells, the special recipe fills one and the held stack's components name the block, the cable has no such key before the click and names the block afterwards while still holding it forty ticks later, a second cover replaces the first, sneaking with an empty cover strips it and returns both the cover and the block, and a plain stone block or a torch is refused by name. The tests count the cover consumed in survival and untouched in creative, which is the difference between the two hands. The appearance half is recorded as blocked with its symbols: the cover is carried but not yet drawn, because the API has no per-position appearance, shape or dynamic-light hook.
+"""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MPL-2.0"
+source = "https://github.com/AdLf0208/mekanismcovers"
+icon = "icons/mekanismcovers.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-21"
+game = "26.3"
+file = "mekanismcovers.hmod"
+sha256 = "2cf0fa6f5b8a2ba48de455bf10c36920276b33a21be68ab4b85e0c89c374eade"
+changelog = """The first port of Mekanism Covers, two items and a component that let a transmitter wear a block. Right-click a universal cable with a cover to make it look like stone, glass or anything else you can craft a cover from, and the choice is written into the cable's own saved data, so it survives a save and reload and can be replaced by a second cover or stripped back off. Proven in game on a game carrying both this package and the parent, since the cable's block entity is the parent's code: the shaped recipe crafts four empty covers and consumes all nine cells, the special recipe fills one and the held stack's components name the block, the cable has no such key before the click and names the block afterwards while still holding it forty ticks later, a second cover replaces the first, sneaking with an empty cover strips it and returns both the cover and the block, and a plain stone block or a torch is refused by name. The tests count the cover consumed in survival and untouched in creative, which is the difference between the two hands. The appearance half is recorded as blocked with its symbols: the cover is carried but not yet drawn, because the API has no per-position appearance, shape or dynamic-light hook."""

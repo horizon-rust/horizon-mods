@@ -1,0 +1,33 @@
+id = "blur_plus"
+kind = "native-mod"
+name = "Blur+"
+summary = "Port of Motschen's Blur: the screens blur behind a gradient background with the fade and easing the original config has."
+description = """Horizon port of Motschen/Blur (commit 7f57397, MIT, (c) 2017 tterrag): the full
+blur menu experience as a native Rust mod. 1:1 logic core: config + v3
+migration, the ten easing curves, the animation state machine (blur radius,
+background alpha, gradient), the HSB/hex color math, the render-pass flow
+(onRender / renderBackground / onRenderEnd), the screen gates from every
+upstream mixin, the options coefficient, and the debug HUD renderer.
+
+Port by sparticle. Upstream: https://github.com/Motschen/Blur
+
+Source-only .hmod built on the current SDK (Horizon f00125f). The config is wired as mod settings on Horizon's Options > Mods page (which screens blur, the gradient colors and alphas, the fade times, the ten animation curves). The blurred draw itself waits on horizon#19349, the screen-render hook.
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-blur-plus
+"""
+authors = ["Motschen", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-blur-plus"
+icon = "icons/blur_plus.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "blur_plus-1.0.0.hmod"
+sha256 = "66d7de0348e64a97c539d181e711cde1374b3f9ed09077d0c496171e4206ccf0"
+changelog = "Rebuilt on the mod API: the config is wired as the original settings on Options > Mods; 1:1 core unchanged (sha refreshed)."

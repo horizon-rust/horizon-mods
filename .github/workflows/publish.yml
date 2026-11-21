@@ -91,14 +91,17 @@ jobs:
           done
       - name: Download counts
         run: |
-          # Each version's file is the asset at its URL: a project's downloads
-          # are its files' counts, every version together. A release made by
-          # this run isn't in the listing and has no downloads yet.
-          jq '.[].assets[] | {key: .browser_download_url, value: .download_count}' releases.json \
-            | jq -s from_entries > counts.json
+          # Each release is one version's file, tagged <id>-<version>: a project's
+          # downloads are every release of its id, the versions an entry lists
+          # now and those it no longer does (an archived project brought back
+          # with a new version keeps the counts of its old ones). An id has no
+          # "-", so the tag's text before the first "-" is the id. A release
+          # made by this run isn't in the listing and has no downloads yet.
+          jq -n '[inputs[] | (.tag_name | split("-")[0]) as $id | .assets[] | {id: $id, n: .download_count}]
+            | group_by(.id) | map({key: .[0].id, value: (map(.n) | add)}) | from_entries' releases.json > counts.json
           jq --slurpfile counts counts.json '
             .projects |= map(
-              ([.versions[].file.url | $counts[0][.] // 0] | add) as $n
+              ($counts[0][.id] // 0) as $n
               | if $n > 0 then .downloads = $n else . end)' site/index.json > index.counted.json
           mv index.counted.json site/index.json
           jq -r '.projects[] | "\(.id) \(.downloads // 0)"' site/index.json

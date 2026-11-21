@@ -37,3 +37,11 @@ game = "26.3"
 file = "enderstorage.hmod"
 sha256 = "38aa56337e172376ca638088617f26e40a728781e6303ea38a11fccfd5d586ac"
 changelog = "Review fixes: sibling-mirror commit and reach-gated readout, hand exchange in the tank transaction, and the load-time double Part attach. The tank fluid gap at 0b14f8a is now measured and stated."
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "enderstorage.hmod"
+sha256 = "9ad59a8b9d0981471497eea8e26196b1b1460e0327b7bb298148c3229a8f62b7"
+changelog = """Carry-dialect repair: two recipes were in the 1.21.1 object ingredient form 26.3 rejects, so the ender chest and the tank could not be crafted at all. Converted to bare ids. Proven in game: `ender_chest` crafts with its ender pearl consumed and the grid emptied. Both loot tables were already in the 26.3 shape and are untouched."""

@@ -36,3 +36,11 @@ game = "26.3"
 file = "functionalstorage.hmod"
 sha256 = "9b7d86b920c0d6d09fc292cce3296792150915f7830c3f08ef6b2672cd845854"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.2"
+published = "2026-11-21"
+game = "26.3"
+file = "functionalstorage.hmod"
+sha256 = "244f5b8aed23b1fe98cf2bbd348bb011df470bcd2fdc32087df6718f767d1df0"
+changelog = """Slice 2: the faithful left-click take, and the locked drawer's kind. The 0.1.0 ruling — that a block-entity write from `left_click_block` was reverted, so a take would duplicate — was re-checked at the new pin, as the campaign requires for a blocked item, and it no longer holds: the write persists. So upstream's take is back: one item, a whole stack while sneaking, the front panel only, inside a three-tick window; and a locked drawer keeps its kind when it is emptied, then takes its own kind back. Proven in game: a left click moves the drawer 68 to 67 with one stone in hand; a sneaking click takes the locked drawer's ten; the emptied locked drawer still reads its kind; and all ten drawer recipes craft, consume their ingredients and refuse a wrong shape."""

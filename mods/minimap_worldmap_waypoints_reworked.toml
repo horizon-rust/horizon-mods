@@ -26,9 +26,9 @@ An adaptive minimap and a full world map for Horizon, with a persistent per-worl
 - Each of the 67 vanilla biomes has an individual 16×16 icon. Waypoint colours can be edited, and Show on map centres the world map on a selected waypoint.
 - World, actual-render/LOD and chunk-render borders have hover labels; right-click outlines the selected chunk and region.
 
-- Map caches lists world/server names and available local icons, file sizes and compatibility. Rebuild derived images without deleting saved terrain; old image revisions offer an update. Compression and canonical-format conversion are future work.
+- Map caches lists world/server names and available local icons, file sizes and compatibility. View saved terrain and player position, switch saved layers, manage waypoints or move to coordinates from the main menu. Confirm deletion of idle caches or rebuild derived images while retaining saved terrain.
 - Distant terrain uses snow-aware climate/height approximation, fixed world-space biome blending and shared water opacity: snowy taiga and mangrove water retain their expected appearance. Detailed terrain remains authoritative; fresh LOD samples gradually refresh legacy colours.
-- Version 0.7.0 is a flat source .hmod for the signed native SDK, pinned to Nightly 2026-11-18 (0b14f8a), Minecraft 26.3 and SDK Rust 1.99.1; tested with launcher 0.2.78. Existing scoped waypoints, settings and terrain containers remain in use.
+- Version 0.7.9 is a flat source .hmod for the signed native SDK, pinned to Nightly 2026-11-20 (0a875da), Minecraft 26.3 and SDK Rust 1.99.1. Existing scoped waypoints, settings and terrain containers remain in use.
 
 Created by daniliammo and continued by Gurov08ruS after the original account was removed from GitHub.
 
@@ -52,6 +52,14 @@ screenshots = [
 categories = ["utility", "adventure"]
 tags = ["minimap", "map", "world-map", "waypoints", "navigation", "hud", "portals", "biome"]
 
+
+[[versions]]
+version = "0.7.9"
+published = "2026-11-20"
+game = "26.3"
+file = "minimap_worldmap_waypoints_reworked-0.7.9.hmod"
+sha256 = "f6d296779917597edb47c43acff69ac5f3a2f2520ed057865f527e10ac5d99e9"
+changelog = "Offline cache maps with progressive terrain loading, saved Nether layers and waypoint editing. Safe cache deletion, retry after a busy lease, release on disconnect, and title Options and controller routing. Adds coloured icons and precise waypoint teleport. Requires Nightly 2026-11-20 (0a875da)."
 
 [[versions]]
 version = "0.7.0"

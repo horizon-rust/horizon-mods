@@ -36,3 +36,11 @@ game = "26.3"
 file = "restrictions.hmod"
 sha256 = "8b0a40025b49341cea7e8310f9abc1b2b821a0330f6beb4d0709f88ecbef8dc4"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "restrictions.hmod"
+sha256 = "895d8b2058dce2588d7582aebaa81f4d952d42ca4d41899f7ee68a4d88f40e4e"
+changelog = """Slice 2, the sweep is every entity rather than only mobs. Upstream pulls everything the host can move — dropped items, arrows, boats, minecarts, experience orbs — and the port's filter was a leftover from the retired hook that moved only mobs. The exclusion is now a player, whose client owns its motion, and the per-cell budget covers every kind. Proven in game with a differential on the same lane: a powered attractor pulls a dropped item from 3.5 blocks to 1.125 and an experience orb from 5.5 to 1.25, while both unpowered controls stay at their starting distance to four decimals. This version also fixes a defect in the port's own shipped data: both mover loot tables named a component from a library this package does not carry, so a real pickaxe break copied nothing and the block dropped nothing at all — the modifier is gone and a break now drops one block with a pickaxe and one by hand, with vanilla stone as the differential. One pin limitation is recorded rather than papered over: the needs-stone-tool tag has no tier gate at this pin, so a wooden pickaxe still drops the block. Every carried recipe is now crafted from the delivered package's own JSON, with ingredients consumed and the grid left empty."""

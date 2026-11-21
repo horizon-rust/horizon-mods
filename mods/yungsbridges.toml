@@ -1,0 +1,28 @@
+id = "yungsbridges"
+kind = "native-mod"
+name = "YUNG's Bridges"
+summary = "Bridges over rivers."
+description = """
+Bridges over rivers.
+
+**Differences from the original:** Bridges are added to river chunks after the terrain has generated, once the chunks around them are loaded, not during generation. Bridge positions don't match a Java world with the same seed.
+
+A port of [YUNG's Bridges](https://github.com/yungnickyoung/YUNGs-Bridges) 4.0.3 by YUNGNICKYOUNG, published under its licence, LGPL-3.0-only. The original copyright and licence notices are kept in the file (COPYING, LICENSE, NOTICE).
+
+No Minecraft code is included."""
+authors = ["lavoide", "YUNGNICKYOUNG"]
+owners = ["lavoide"]
+owner_ids = [38075742]
+license = "LGPL-3.0-only"
+source = "https://github.com/lavoide/horizon-ports/tree/main/yungsbridges"
+icon = "icons/yungsbridges.png"
+categories = ["worldgen"]
+tags = ["homestead", "port"]
+
+[[versions]]
+version = "0.4.1"
+published = "2026-11-20"
+game = "26.3"
+file = "yungsbridges.hmod"
+sha256 = "3c3b46a4d1dd0fb9a2deb254519dc7c2f6cc161fd935270ef6e1f4c16e2a6c79"
+changelog = "0.4.1: every block a bridge would write is checked before any is changed, and bridges only go into freshly generated chunks."

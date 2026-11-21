@@ -1,0 +1,28 @@
+id = "centered_crosshair"
+kind = "native-mod"
+name = "centered_crosshair"
+summary = "A Horizon port of Centered Crosshair."
+description = """centered-crosshair, ported 1:1 to Horizon from JustAlittleWolf/centered-crosshair (MIT (c) 2023 JustAlittleWolf, https://github.com/JustAlittleWolf/centered-crosshair).  Upstream is entirely render-side and tiny (4 Java files, 176 LOC). Vanilla draws the crosshair with integer blit coordinates, `x = (w - 15) / 2` in gui-scaled pixels, where `w` is an integer that already lost its fraction to `floor(windowWidth / guiScale)`. When the gui-scaled size is even the sprite lands half a pixel off the true window centre. This port keeps the sprite centred at the real centre, computed from the raw window size, quantised to quarter pixels, and drawn through a subpixel textured-quad path with the sprite's u/v nudged by a 1/32768 half-texel so linear sampling reads the sprite edges cleanly.  Upstream structure mapped 1:1:
+
+Port by sparticle. Upstream: https://github.com/JustAlittleWolf/centered-crosshair (MIT).
+
+Source-only .hmod built on the current SDK (Horizon f00125f)
+
+Licence: MIT. Source: https://github.com/Sparticle62ops/horizon-centered-crosshair
+"""
+authors = ["JustAlittleWolf", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "MIT"
+source = "https://github.com/Sparticle62ops/horizon-centered-crosshair"
+icon = "icons/centered_crosshair.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "centered_crosshair-1.0.0.hmod"
+sha256 = "c7c6aa26408385c927598b4f6ccb42cc9d431907c28e83d07ad380cd325ac156"
+changelog = "Initial registry submission"

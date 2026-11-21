@@ -5,9 +5,17 @@ summary = "Drops the frame rate while the window is in the background, so Horizo
 description = """Alt-tabbing out of Horizon leaves it rendering as fast as it can into a window you cannot see. Dynamic FPS answers the game's own frame-rate hook and lowers the cap while the window is not the one in front.
 
 - In the background: the cap you pick (1, 5, 10, 15, 20 or 30 FPS), 10 by default.
-- Minimised: down to 1 FPS by default.
-- A lower cap you set yourself is never raised, and the game is never pushed below one frame, so input, ticks and the network keep running.
+- Minimised: 1, 5 or 10 FPS, 1 by default. Horizon already caps a minimised window at
+  10 FPS before this mod's hook runs, so higher values would have no effect and are not
+  offered.
+- A lower cap you set yourself is never raised, and the game is never pushed below one
+  frame, so input, ticks and the network keep running.
 - Settings under Options > Mods > Dynamic FPS.
+
+1 FPS is a power-saving trade-off, not a performance setting: at one frame per second the
+client cannot keep up with a 20 TPS world. Ticks, chat and the network still run, but the
+picture updates only once a second until the window is focused again; use 10 FPS if you
+need the client to stay in step.
 
 This is what Horizon's `framerate_limit` hook documents itself for, and what the game's Battery Mode uses. Nothing is drawn and nothing is sent: it only returns a number.
 
@@ -20,6 +28,14 @@ source = "https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/dynam
 icon = "icons/dynamicfps.png"
 categories = ["utility"]
 tags = ["fps", "performance", "background", "power", "client"]
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "dynamicfps-0.2.1.hmod"
+sha256 = "31d4e99f35b1644740d2caf75a7864b917d4a52863b7d908a3c9351a82ce4e7b"
+changelog = "Removes the ineffective 20 FPS minimised option (Horizon already caps minimised windows at 10 FPS before this hook) and documents the 1 FPS power-saving trade-off. Background caps are unchanged."
 
 [[versions]]
 version = "0.2.0"

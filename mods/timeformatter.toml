@@ -1,0 +1,28 @@
+id = "timeformatter"
+kind = "native-mod"
+name = "Time Formatter"
+summary = "Turns Discord-style <t:...> tags in chat into readable times."
+description = """Rewrites Discord-style `<t:1234567890:t>` tags in chat into readable local times, so shared game times and event times make sense wherever you are.
+
+An unofficial Rust port of [TimeFormatter](https://github.com/m3z0id/TimeFormatter) by M3z0id (MIT), written for Horizon's native mod API. The original's copyright and MIT licence are kept in the package and in [`native/timeformatter`](https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/timeformatter).
+
+- All seven Discord styles are supported (`t`, `T`, `d`, `D`, `f`, `F`, `R`), with `f` as the default.
+- Time zone: local time on Windows; this release shows UTC on other platforms.
+- Accepts `now`, `yesterday`, `tomorrow`, and the doubled literal `<`<t:...>`>` form is left untouched.
+- Per-component styling is preserved, so colours around a tag survive (the Java original flattened the line)."""
+authors = ["M3z0id", "Jorungandr"]
+owners = ["Jorungandr"]
+owner_ids = [188995885]
+license = "MIT"
+source = "https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/timeformatter"
+icon = "icons/timeformatter.png"
+categories = ["social", "utility"]
+tags = ["chat", "timestamp", "discord", "port"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-20"
+game = "26.3"
+file = "timeformatter-0.2.0.hmod"
+sha256 = "ee97ffc6d8ae8f3445f37ae2ac5017244ba8623b7cdd5f250c6138de28a71501"
+changelog = "First release."

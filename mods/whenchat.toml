@@ -1,0 +1,27 @@
+id = "whenchat"
+kind = "native-mod"
+name = "WhenChat"
+summary = "Prefixes an [HH:MM:SS] stamp on every chat message."
+description = """Adds a local-time `[HH:MM:SS]` stamp to the front of every incoming chat line, so you can tell when something was said.
+
+This is an unofficial Rust port of [WhenChat](https://github.com/ErikEdits/WhenChat) by ErikEdits (MIT), written against Horizon's native mod API. The original's credit and MIT licence are kept in the package and in [`native/whenchat`](https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/whenchat).
+
+- The stamp follows your computer's clock on Windows; on other platforms this release displays UTC instead of local time.
+- Nothing is sent anywhere; it only changes how chat is drawn.
+- It has no settings yet: every chat line gets the stamp, your own messages included. Action-bar (overlay) text is left alone."""
+authors = ["ErikEdits", "Jorungandr"]
+owners = ["Jorungandr"]
+owner_ids = [188995885]
+license = "MIT"
+source = "https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/whenchat"
+icon = "icons/whenchat.png"
+categories = ["social", "utility"]
+tags = ["chat", "timestamp", "port", "whenchat"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-20"
+game = "26.3"
+file = "whenchat-0.2.0.hmod"
+sha256 = "54a09cf8395878b61ca586d1a7d47e33f59d4f2a7aa0a334c24d6fa19f51cd82"
+changelog = "First release."

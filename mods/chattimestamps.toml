@@ -1,0 +1,30 @@
+id = "chattimestamps"
+kind = "native-mod"
+name = "Chat Timestamps"
+summary = "Chat timestamps with six preset formats and optional hover."
+description = """Stamps every chat message with a time or date chosen from six built-in presets, with an optional hover stamp.
+
+An unofficial Rust port of [Plague's Chat Timestamps](https://github.com/PlagueTR/ChatTimestamps) by PlagueTR (MIT), rebuilt on Horizon's native mod API. The original's copyright and MIT licence are kept in the package and in [`native/chattimestamps`](https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/chattimestamps).
+
+- Six presets: `[HH:mm:ss]`, `[HH:mm]`, a dark-grey bracketed time, date + time, 12-hour time, and off. Arbitrary `SimpleDateFormat` strings are not exposed in this release.
+- Colours are fixed by the chosen preset (grey / dark grey), matching the original's look; there is no custom colour picker.
+- Optional hover applies the selected preset to the original message; it has no separate full-date format.
+- Settings use Horizon's native settings UI instead of the original's Cloth Config.
+
+It is the fuller sibling of **WhenChat**: pick this one when you want preset formats and hover, or WhenChat for a plain fixed stamp."""
+authors = ["PlagueTR", "Jorungandr"]
+owners = ["Jorungandr"]
+owner_ids = [188995885]
+license = "MIT"
+source = "https://github.com/Jorungandr/horizon-rust-mods/tree/main/native/chattimestamps"
+icon = "icons/chattimestamps.png"
+categories = ["social", "utility"]
+tags = ["chat", "timestamp", "port", "configurable"]
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-20"
+game = "26.3"
+file = "chattimestamps-0.2.0.hmod"
+sha256 = "8941f9b1c78d500ab1580740e8635607c27b77727d1f16147ec88c676467945f"
+changelog = "First release."

@@ -1,0 +1,10 @@
+[package]
+name = "mod-smooth_f5"
+version = "1.0.1"
+edition = "2024"
+license = "CC0-1.0"
+publish = false
+description = "Smooth F5, a native mod: the camera glides between perspectives."
+
+[dependencies]
+horizon-mod-api = { path = ".horizon/sdk/api/crates/horizon-mod-api" }

@@ -1,0 +1,65 @@
+id = "smooth_f5"
+kind = "native-mod"
+name = "smooth_f5"
+summary = "A Horizon port of Countered's Smooth F5."
+description = """A 1:1 Rust port of [Countered's Smooth F5](https://modrinth.com/mod/smooth-f5)
+(CC0-1.0): the camera glides between perspectives instead of cutting, with the
+original's mode (transition, movement, always, never), the position and
+rotation springs and the return duration. The package is the .hmod source: a
+native mod built against the pinned Horizon SDK (api 0.2, game 26.3).
+
+## Behavior (the original's, kept)
+
+- The smoothing state machine is the original's two Camera.update hooks run
+  as one: the mode-change head logic, the springs, the transition and the
+  front-view fall-flying snap, then the pose delta.
+- Modes: transition (only the F5 cut smooths), movement (third person stays
+  springy), always, never.
+- The settings are the original's config fields, held on Horizon's
+  Options > Mods page, and /smoothf5 (short form /sf5) keeps the original's
+  command surface: mode, pos, rot, stiffness pos|rot, return and status.
+
+## Wiring
+
+- camera_pose (client): the state machine runs once a frame after vanilla
+  places the camera and the eased position offset rides the camera's right,
+  up and back into the pose the game draws from.
+- register: the original's config fields registered as settings, same
+  defaults, labels in assets/smooth_f5/lang/.
+- command + register_client_commands: /smoothf5, answered locally, written
+  back through the settings, shown as a chat line, and consumed.
+
+## Horizon seams
+
+- The camera pose event exposes only the position as writable; the eased
+  turn (yaw, pitch and the roll) has no write yet, so the position half of
+  the smoothing applies and the rotation half waits. The ask is filed on
+  horizon-rust/horizon as issue #18694 and tracked until patched, at which
+  point the springs go back to full parity.
+
+Licence: CC0-1.0. Source: https://github.com/Sparticle62ops/horizon-smooth-f5
+"""
+authors = ["Coun7ered", "sparticle"]
+owners = ["Sparticle62ops"]
+owner_ids = [209812745]
+license = "CC0-1.0"
+source = "https://github.com/Sparticle62ops/horizon-smooth-f5"
+icon = "icons/smooth_f5.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+[[versions]]
+version = "1.0.1"
+published = "2026-11-20"
+game = "26.3"
+file = "smooth_f5-1.0.1.hmod"
+sha256 = "50af4c4fdf47f1416f3afde952213e7921cc31a31dcaa62aaa89c2aae8561b5a"
+changelog = "Fixes from registry review: commands match the bare form the engine dispatches, the eased pose writes yaw and pitch on the camera pose hook with the runtime's own basis, licence fields line up with the upstream CC0-1.0"
+
+[[versions]]
+version = "1.0.0"
+published = "2026-11-19"
+game = "26.3"
+file = "smooth_f5-1.0.0.hmod"
+sha256 = "254b5e084d857a22150bae3be529641605c6a01ff308b11ed84aabe785fe2015"
+changelog = "Rebuilt on the f00125f native-mod API: camera_pose wired (eased position), settings page + /smoothf5 kept"

@@ -35,3 +35,11 @@ game = "26.3"
 file = "dysoncubeproject.hmod"
 sha256 = "063195efbfe9cf23791c1147642aa47eab9c7c23a612146a803cfee90a6c07dc"
 changelog = "First publication in the SDK format."
+
+[[versions]]
+version = "0.2.1"
+published = "2026-11-21"
+game = "26.3"
+file = "dysoncubeproject.hmod"
+sha256 = "dbdc5aa7bb629c6caabc16b6e476493bf5170c830f13711d25e620f38c9e6b94"
+changelog = """Slice 2, the shared per-player sphere. Slice 1 gave each controller its own sphere because the old pin had no level saved data; at this pin the sphere is a dimension-scoped attachment, so receivers subscribe to a sphere named by the placing player's UUID, several receivers share one reservoir, and the store survives a save, a quit and a relaunch. Proven in game: two receivers on one sphere grow it 2,000 FE a tick together rather than 4,000, roofing one moves that power to the other at the same rate, a second sphere id stays independent, the rate is flat at night and 2,000 by day, the caps hold at a billion FE a tick into a hundred million FE with nothing overflowing, and the sphere survives a relaunch. Five carried recipes craft with their ingredients consumed. The slice also fixed two of its own defects: a local enum named `Command` made `fits` against another build report the package as not fitting, and the run needed `--offscreen` for its menu legs. The sync packet stays a client gap, and the EM Rail Ejector is now possible because there is a sphere to land beams into."""

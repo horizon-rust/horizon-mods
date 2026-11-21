@@ -1,0 +1,37 @@
+id = "map_preview"
+kind = "native-mod"
+name = "Map Preview"
+summary = "See a map's picture in its tooltip and in its inventory slot, so you can tell your maps apart"
+description = """
+See what's on a map without holding it.
+
+- **Tooltip preview**: hover a filled map and its picture shows in the tooltip. Always, or only while holding Shift, in three sizes, on paper or on the map background.
+- **Slot preview**: every map in your hotbar, inventory and chests shows a small copy of its picture: as a full slot, with a border, or inside the map item's own frame.
+- **Locked maps** get a glass rim, taken from your resource pack's glass texture.
+- Frames follow your resource pack's map textures at any resolution, and maps update live as you explore.
+
+All in Mods > Map Preview > Config.
+
+Client side only: it works in single player and on any server. A preview needs the map's picture on your client: the server sends it for maps you carry, as vanilla does, so a map you've never carried may show no preview until you pick it up once.
+
+The mod API doesn't show a client mod a map's pixels, so besides the mod API this mod patches one game function (input_hud_begin) to read the game's own map data and palette. It works on the Horizon build it is made for.
+
+Source: https://github.com/selfmonoraque5/map-preview
+
+The map frame, glass and background modes were contributed by FitchWorks. Inspired by Map Tooltip by VendoAU (https://modrinth.com/mod/map-tooltip) and Map In Slot by Crec0 (https://modrinth.com/mod/map-in-slot). Written from scratch for Horizon: it contains none of their code or assets and is not made or endorsed by them."""
+authors = ["selfmonoraque5"]
+owners = ["selfmonoraque5"]
+owner_ids = [86315101]
+license = "MIT"
+source = "https://github.com/selfmonoraque5/map-preview"
+icon = "icons/map_preview.png"
+categories = ["utility"]
+tags = ["maps", "tooltip", "inventory", "preview", "client-side"]
+
+[[versions]]
+version = "2.0.1"
+published = "2026-11-20"
+game = "26.3"
+file = "map_preview-2.0.1.hmod"
+sha256 = "3bd6559055c078710e86c286d8f7ef538b831f30a0a56723dcaee849f6007eb0"
+changelog = "Rebuilt on Horizon's new mod API (the .hmod SDK) for Nightly 2026-11-19 5ef7734, with its game patches checked for that build. Settings now open from Mods > Map Preview > Config and start from the defaults once."

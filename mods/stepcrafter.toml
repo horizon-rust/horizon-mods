@@ -1,0 +1,24 @@
+id = "stepcrafter"
+kind = "native-mod"
+name = "stepcrafter"
+summary = "A Horizon port of stepcrafter."
+description = """
+The first port of Step Crafter, and it opens with the family the mod exists for: a machine that keeps a stock of one target item inside a minimum and maximum band by crafting one step at a time from its own inventory. Set the target and the band, load the ingredients, and it crafts until the maximum and then holds rather than overshooting; empty one ingredient and it reports not enough ingredients and resumes when the stock returns. Proven in game across a full band and a half one: a zero to sixteen run in steps of four consumes exactly four coal and four sticks and holds over sixty more ticks, taking eight torches moves them to the inventory, and a sixty-four to one-hundred-and-twenty-eight band fills to one hundred and twenty-eight with the active state reading true while running and false when idle. A survival break drops the machine and spills its eight torches, a non-operator is refused, and the carried recipe crafts with its ingredients consumed while a wrong grid makes nothing. Two things were only visible in game and are recorded rather than hidden: a stock kept in the block entity's own saved compound was lost between ticks, so it moved to a container the engine owns, and a moved machine must be re-targeted because a container block lets the engine spill rather than carrying a payload. The parts that need the parent's autocrafting network are recorded as blocked with their symbols instead of being shipped inert.
+"""
+authors = ["AdLf0208"]
+owners = ["AdLf0208"]
+owner_ids = [107615167]
+license = "MIT"
+source = "https://github.com/AdLf0208/stepcrafter"
+icon = "icons/stepcrafter.png"
+categories = ["utility"]
+tags = ["port", "horizon"]
+
+
+[[versions]]
+version = "0.2.0"
+published = "2026-11-21"
+game = "26.3"
+file = "stepcrafter.hmod"
+sha256 = "32b80ec228f8ac978b4413f6e207b79ca1660aa986ca4f13acb8607de970abad"
+changelog = """The first port of Step Crafter, and it opens with the family the mod exists for: a machine that keeps a stock of one target item inside a minimum and maximum band by crafting one step at a time from its own inventory. Set the target and the band, load the ingredients, and it crafts until the maximum and then holds rather than overshooting; empty one ingredient and it reports not enough ingredients and resumes when the stock returns. Proven in game across a full band and a half one: a zero to sixteen run in steps of four consumes exactly four coal and four sticks and holds over sixty more ticks, taking eight torches moves them to the inventory, and a sixty-four to one-hundred-and-twenty-eight band fills to one hundred and twenty-eight with the active state reading true while running and false when idle. A survival break drops the machine and spills its eight torches, a non-operator is refused, and the carried recipe crafts with its ingredients consumed while a wrong grid makes nothing. Two things were only visible in game and are recorded rather than hidden: a stock kept in the block entity's own saved compound was lost between ticks, so it moved to a container the engine owns, and a moved machine must be re-targeted because a container block lets the engine spill rather than carrying a payload. The parts that need the parent's autocrafting network are recorded as blocked with their symbols instead of being shipped inert."""

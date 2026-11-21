@@ -38,3 +38,11 @@ game = "26.3"
 file = "refinedstorage.hmod"
 sha256 = "7be4a4152b9d5ecab139b8c4f9ae87208788f4e9f6842c9d167fb4316830fd38"
 changelog = "First release"
+
+[[versions]]
+version = "0.2.3"
+published = "2026-11-21"
+game = "26.3"
+file = "refinedstorage.hmod"
+sha256 = "a36d3a5d7378cfc3283558fb382daa59e9337c2f939d73be363000e3d8ac02da"
+changelog = """Slice 3, the wireless transmitter: a block that admits a use only when the player is in the same dimension and within its range, and refuses otherwise by naming the reason. Proven in game with a differential for every rule: a use two and a half blocks away is accepted and the same use at seventeen is refused as out of range with the numbers in the reply; the sixteen-block boundary itself is accepted, which is the case a strict comparison would get wrong; an offline transmitter refuses even in range, and the dimension is checked before the node's activeness so an End-side use against an Overworld transmitter says different dimension; and the same command with the same position and player coordinates under the Overworld answers accepted, so only the dimension differs. The transmitter joins the network through its facing side only, which the field test shows as one node when it faces away and three when it faces the cable. The block places against the clicked face and drops itself, and its carried recipe crafts with the ingredients consumed while a wrong ingredient makes nothing. This version also fixes a shape defect the port has carried since slice one: the boxes were written in pixels where the engine reads block units, so the cable's outline sat outside its own cell and no small block could be hit at all; halves are corrected to sixteenths and the cable is now breakable, which is what let this slice's loot assertion pass."""

@@ -1,0 +1,61 @@
+id = "solistice_shader_lite"
+kind = "shaderpack"
+name = "Solistice Shader Lite"
+summary = "A lightweight realistic Minecraft shader featuring beautiful water, dynamic foliage, realistic lighting, atmospheric skies, and optimized performance for Androi"
+description = """
+Solistice Shader Lite
+
+Transform your vanilla Minecraft experience with Solistice Shader Lite!
+
+Designed to bring beautiful visuals while maintaining performance, especially on lower-end Android devices.
+
+Features
+
+- Realistic animated water
+- Improved water reflections
+- Dynamic waving plants and leaves
+- Realistic lighting and shadows
+- Atmospheric sky and clouds
+- Enhanced weather effects
+- Improved visual atmosphere
+- Performance optimization
+
+Performance Profiles
+
+- LOW – Optimized for lower-end devices.
+- BALANCED – A balance between visuals and performance.
+- HIGH – Enhanced visual quality.
+
+Compatibility
+
+Designed for compatible Minecraft shader loaders on Android.
+
+Start with LOW for the best performance on lower-end devices.
+
+Enjoy a more beautiful Minecraft experience!"""
+authors = ["Jerron GAMES MC"]
+owners = ["JerronMC"]
+owner_ids = [310990255]
+license = "MIT"
+source = "https://github.com/JerronMC/Minecraft-Horizon-Shaders"
+icon = "icons/solistice_shader_lite.png"
+categories = ["realistic", "atmosphere", "foliage"]
+tags = ["visual", "performance", "gameplay"]
+
+[[versions]]
+version = "1.0.2"
+published = "2026-11-15"
+game = "26.3"
+file = "solistice_shader_lite-1.0.2.zip"
+sha256 = "8bc5e483e0bf885885ab12c3f29b48c81c966eb5c20b04bd5974851b394b665c"
+changelog = """
+Solistice Shader Lite 1.0.2
+
+- Improved realistic water waves and reflections.
+- Improved foliage and leaf wind animation.
+- Fixed water rendering issues.
+- Improved shadow rendering and stability.
+- Fixed black flickering during camera movement.
+- Improved lighting, atmosphere, and clouds.
+- Added LOW, BALANCED, and HIGH performance profiles.
+- Optimized shader performance for Android devices."""
